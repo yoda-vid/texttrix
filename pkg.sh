@@ -43,15 +43,27 @@
 ##############################
 
 # Compiler
-JAVA="/usr/java/j2sdk1.4.2_01/bin" # assuming compiler from J2SDK 1.4.2
+JAVA="" # assuming compiler from J2SDK 1.4.2
 SYSTEM=`uname -s`
 CYGWIN="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	JAVA="/cygdrive/c/j2sdk1.4.2_01/bin" # assuming comipler in C drive
 	CYGWIN="true"
 fi
-
+READ_PARAMETER=0
+for arg in $@
+do
+	if [ $READ_PARAMETER -eq 1 ]
+	then
+		# no output b/c assuming plug.sh will be called
+		JAVA=$arg
+		READ_PARAMETER=0
+	fi
+	if [ `expr match $arg -java` -ne 0 ]
+	then
+		READ_PARAMETER=1
+	fi
+done
 # Source directories
 BASE_DIR=""
 # Determine the base dir if not specified above
@@ -88,7 +100,16 @@ then
 	mkdir $BLD_DIR
 fi
 cd $BLD_DIR # base of operations
-sh $TTX_DIR/plug.sh # build the plugins
+
+#############
+# Plug-in building
+echo "Compiling the Text Trix program and its plug-ins..."
+sh $TTX_DIR/plug.sh "-java $JAVA" # build the plugins
+
+##########
+# Packaging
+
+echo "Packaging the files..."
 
 # remove old build packages and setup new ones
 rm -rf $PKGDIR $PKG $SRCPKGDIR $SRCPKG

@@ -79,7 +79,8 @@ v.0.3.5
 	-open help documents in blank Text Pad if active; FIXED (#799563): same mechanism to open the help documents as to open regular files, except that the mechanism renders the help documents uneditable
 -add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window
 -update JarAjar to allow for MacOS X integration
--
+-align the "About" option pane with the main window; ADDED: now opens on top of the center of the main window
+-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system, but with option to specify the paths if not in PATH
 
 v.0.3.4
 -preferences:

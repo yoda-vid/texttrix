@@ -544,7 +544,9 @@ public class LibTTx {
 	 * 
 	 * @param c the text diaplay, almost always with multiple lines, 
 	 * such as <code>JTextArea</code> of <code>TextPad</code>
-	 * @return
+	 * @return an array of the visible lines, with each element consisting
+	 * of one line from the display, whether the line terminates in a hard
+	 * or a soft return
 	 */
 	public static String[] getVisibleLines(JTextComponent c) {
 		String[] lines = new String[100]; // defaults to 100 lines

@@ -46,12 +46,20 @@ package com.textflex.texttrix;
  */
 public abstract class StoppableThread extends Thread {
 	
-	private boolean stopped = false;
+	private boolean stopped = false; // flag to stop the thread
 	
+	/**Checks whether the flag to stop the thread is set to <code>true</code>.
+	 * 
+	 * @return <code>true</code> if the stop flag has been set
+	 */
 	public boolean isStopped() {
 		return stopped;
 	}
 	
+	/**Sets the stop flag.
+	 * 
+	 * @param aStopped stop value
+	 */
 	public void setStopped(boolean aStopped) {
 		stopped = aStopped;
 	}

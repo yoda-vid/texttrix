@@ -1777,7 +1777,7 @@ public class TextTrix extends JFrame {
 	/**Saves text from the given <code>TextPad</code>
 	 * to a given path.
 	 * 
-	 * @param path file path in which to save
+	 * @param pad the pad whose conents will be saved
 	 * @return true if the file saved successfully
 	 * @see #saveFile(String, TextPad)
 	 * @see #saveFile(String)
@@ -1886,7 +1886,6 @@ public class TextTrix extends JFrame {
 				try {
 					if (reader != null)
 						reader.close();
-					System.out.println("I'm here3");
 				} catch (IOException e) {
 					//    e.printStackTrace(); 
 					return false;
@@ -2019,7 +2018,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the file is saved successfully
 	 * @see #getSavePath(JFrame)
 	 */
-	private static boolean getSavePathOnExit(JFrame owner) {
+	public static boolean getSavePathOnExit(JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name, 
@@ -2077,18 +2076,19 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
-	/** Helper function to <code>fileSaveDialog</code>.
-	Unlike <code>getSavePathOnExit(JFrame)</code>, this method
-	attempts to update the graphical components.
-	Opens the file save dialog to retrieve the file's new name.
-	If the file will overwrite another file, prompts the user
-	with a dialog box to determine whether to continue with the 
-	overwrite, get another name, or cancel the whole operation.
-	@param owner the frame to which the dialog will serve; can be null
-	@return true if the file is saved successfully
-	@see #getSavePathOnExit(JFrame)
+	/**Opens the file save dialog to retrieve the new name of the
+	 * given <code>TextPad</code>.
+	 * If the file will overwrite another file, prompts the user
+	 * with a dialog box to determine whether to continue with the 
+	 * overwrite, get another name, or cancel the whole operation.
+	 * Unlike <code>getSavePathOnExit(JFrame)</code>, this method
+	 * attempts to update the graphical components.
+	 * @param pad the <code>TextPad</code> whose file will be saved
+	 * @param owner the frame to which the dialog will serve; can be null
+	 * @return true if the file is saved successfully
+	 * @see #getSavePathOnExit(JFrame)
 	*/
-	private boolean getSavePath(TextPad pad, JFrame owner) {
+	public boolean getSavePath(TextPad pad, JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name, 
@@ -2164,7 +2164,18 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
-	private boolean getSavePath(JFrame owner) {
+	
+	/**Opens the file save dialog to retrieve the new name of the 
+	 * currently selected <code>TextPad</code>.
+	 * If the file will overwrite another file, prompts the user
+	 * with a dialog box to determine whether to continue with the 
+	 * overwrite, get another name, or cancel the whole operation.
+	 * Unlike <code>getSavePathOnExit(JFrame)</code>, this method
+	 * attempts to update the graphical components.
+	 * @return true if the file is saved successfully
+	 * @see #getSavePathOnExit(JFrame)
+	*/
+	public boolean getSavePath(JFrame owner) {
 		return getSavePath(null, owner);
 	}
 
@@ -2291,7 +2302,7 @@ public class TextTrix extends JFrame {
 	 * interrupts and destroys the timer object.
 	 * @param pad the pad containing the document to save automatically
 	 * @see #stopTextPadAutoSaveTimer(TextPad)
-	 * @see #getSavePath(String, TextPad)
+	 * @see #getSavePath(TextPad, JFrame)
 	 */
 	public void startTextPadAutoSaveTimer(TextPad pad) {
 		// TextPads store the timer as a Thread object since the timer's
@@ -2323,7 +2334,7 @@ public class TextTrix extends JFrame {
 	 * and destroying the object.
 	 * 
 	 * @param pad the pad with the auto-save timer to stop
-	 * @see #startTextPadAutoTimer(TextPad)
+	 * @see #startTextPadAutoSaveTimer(TextPad)
 	 */
 	public void stopTextPadAutoSaveTimer(TextPad pad) {
 		StoppableThread timer = pad.getAutoSaveTimer();
@@ -2659,7 +2670,7 @@ public class TextTrix extends JFrame {
 								// creates a save prompt dialog
 								int choice =
 									JOptionPane.showConfirmDialog(
-										null,
+										getThis(),
 										"We're about to auto-save this baby"
 											+ " ("
 											+ textPad.getFilename()
@@ -2686,7 +2697,7 @@ public class TextTrix extends JFrame {
 								// into the file save dialog 
 								int choice =
 									JOptionPane.showConfirmDialog(
-										null,
+										getThis(),
 										"We're about to auto-save this baby"
 											+ " ("
 											+ textPad.getFilename()
@@ -3234,8 +3245,7 @@ public class TextTrix extends JFrame {
 					Action prefsAction =
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
-								//							reloadPlugIns();
-	refreshPlugInsPanel();
+							refreshPlugInsPanel();
 							getPrefs().setVisible(true); //show();
 						}
 					};
@@ -3408,7 +3418,7 @@ public class TextTrix extends JFrame {
 							String text = readText("about.txt");
 							String iconPath = "images/texttrixsignature.png";
 							JOptionPane.showMessageDialog(
-								null,
+								getThis(),
 								text,
 								"About Text Trix",
 								JOptionPane.PLAIN_MESSAGE,
