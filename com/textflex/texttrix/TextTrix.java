@@ -890,16 +890,21 @@ public class TextTrix extends JFrame {
 	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
     }
 
-    /**Sets an action's properties.
-       Assumes that the action has a name.
-     * @param action action to set
-     * @param description tool tip
+    /** Sets an action's properties.
+	Assumes that the action has a name, and that the name is used
+	in the menu that will house the action.
+	@param action action to set
+	@param name the action's name, from which to get the mnemonic
+	@param description tool tip
+	@param charsUnavailable a string of characters unavailable to use
+	as mnemonics, as in those already in the menu where the action
+	will be placed
      */
     public void setAction(Action action, String name, String description,
 			  String charsUnavailable) {
 	char mnemonic = 0;
 	int i = 0;
-	//	String name = (String)action.getValue("NAME");
+	// tries to get a mnemonic that has not been taken
 	for (i = 0; i < name.length()
 		 && charsUnavailable
 		 .indexOf((mnemonic = name.charAt(i)))
@@ -910,13 +915,13 @@ public class TextTrix extends JFrame {
 	    action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
 	    charsUnavailable += mnemonic;
 	}
+	// adds the description
 	action.putValue(Action.SHORT_DESCRIPTION, description);
     }
 
-    /**Creates an image icon.
-     * Retrieves the image file from a jar archive.
-     * @param path image file location relative to TextTrix.class
-     * @return icon from archive; null if the file cannot be retrieved
+    /** Creates an image icon.
+	@param path image file location relative to TextTrix.class
+	@return icon from archive; null if the file cannot be retrieved
      */
     public ImageIcon makeIcon(String path) {
 	URL iconURL = TextTrix.class.getResource(path);
@@ -940,19 +945,21 @@ public class TextTrix extends JFrame {
 	return file;
     }
 
-    /**Displays a read-only file in a <code>Text Pad</code>.  
-     * May change name to <code>readDocumentation</code> for 
-     * consistency with <code>readText</code>.
-     * @param path read-only text file's path.  Can also display
-     * non-read-only text files, but can't edit.
+    /** Displays a read-only file in a <code>Text Pad</code>.  
+	Assumes the file exists and can be read as text.
+	TODO: May change name to <code>readDocumentation</code> for 
+	consistency with <code>readText</code>.
+	@param path read-only text file's path.  Can also display
+	non-read-only text files, but can't edit them.
      */
     public void displayFile(String path) {
 	try {
-	    // getResourceAsStream to make future usable as an applet
-	    BufferedReader reader = 
-		new BufferedReader(new InputStreamReader(TextTrix.class.
-							 getResourceAsStream(path)));
-	    String text = readText(reader);
+	    // uses getResourceAsStream to ensure future usability as an applet
+	    InputStreamReader in 
+		= new InputStreamReader(TextTrix.class.
+					getResourceAsStream(path));
+	    BufferedReader reader = new BufferedReader(in);
+	    String text = readText(reader); // retrieve the text
 	    reader.close();
 	    addTextArea(textAreas, tabbedPane, new File(path));
 	    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
@@ -1065,7 +1072,8 @@ public class TextTrix extends JFrame {
 	String text = "";
 	try {
 	    InputStream in = TextTrix.class.getResourceAsStream(path);
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader reader 
+		= new BufferedReader(new InputStreamReader(in));
 	    String line;
 	    while ((line = reader.readLine()) != null)
 		text = text + line + "\n";
@@ -1098,7 +1106,8 @@ public class TextTrix extends JFrame {
      * each new file; names the tab, <code>Filen.txt</code>,
      * where <code>n</code> is the tab number.
      */
-    public void addTextArea(ArrayList arrayList, JTabbedPane tabbedPane, File file) {
+    public void addTextArea(ArrayList arrayList, JTabbedPane tabbedPane, 
+			    File file) {
 	TextPad textPad = new TextPad(file);
 	// final variables so can use in inner class;
 			
@@ -1141,7 +1150,7 @@ public class TextTrix extends JFrame {
 	    tabbedPane.setTitleAt(i, title + " *");
 	} else {
 	    tabbedPane.setTitleAt(i, title + "  ");
-		//		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
+	    //		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 	}
     }
 
@@ -1257,8 +1266,10 @@ public class TextTrix extends JFrame {
 	TextPad t = getSelectedTextPad();
 	if (t != null) {
 	    try {
+		// open the stream to write to
 		PrintWriter out = new 
 		    PrintWriter(new FileWriter(path), true);
+		// write to it
 		out.print(t.getText());
 		out.close();
 		t.setChanged(false);
@@ -1275,9 +1286,19 @@ public class TextTrix extends JFrame {
 	}
     }
 
+    /** Opens a file into a text pad.
+	Calls the file open dialog.
+	Opens the file into a new pad unless the currently selected one
+	is empty.
+	Sets the file's name as a the tab's title and the path as the
+	tab's tool tip.
+	Assumes that the file is readable as text.
+	@param file file to open
+    */
     public boolean openFile(File file) {
 	String path = file.getPath();
-	if (file.isFile()) {
+	// ensures that the file exists and is not a directory
+	if (file.isFile()) { // file rather than directory
 	    TextPad t = getSelectedTextPad();
 	    try {
 		BufferedReader reader = 
@@ -1301,22 +1322,19 @@ public class TextTrix extends JFrame {
 		t.setCaretPosition(0);
 		t.setChanged(false);
 		t.setFile(path);
-		//			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-		//	      files[i].getName());
 		updateTitle(textAreas, tabbedPane);
 		reader.close();
 		setOpenDir(file.getParent());
-		//		String parentFilePath = file.getParent();
+		// openDir not yet set when opening first file
 		if (getOpenDir() == null) 
 		    setOpenDir(System.getProperty("user.dir"));
-		//		System.out.println("path: " + path + ", openDir: " + file.getParent());
 		return true;
 	    } catch(IOException exception) {
 		exception.printStackTrace();
 	    }
-	} else if (file.isDirectory()) {
+	} else if (file.isDirectory()) { // directory: can't open
 	    System.out.println(path + " is a directory");
-	} else if (!file.exists()) {
+	} else if (!file.exists()) { // non-existent
 	    System.out.println(path + " does not exist");
 	}
 	return false;
@@ -1351,21 +1369,32 @@ public class TextTrix extends JFrame {
 	return false;
     }
 
+    /** Helper function to <code>fileSaveDialog</code>.
+	Opens the file save dialog to retrieve the file's new name.
+	If the file will overwrite another file, prompts the user
+	with a dialog box to determine whether to continue with the 
+	overwrite, get another name, or cancel the whole operation.
+	@param owner the frame to which the dialog will serve
+    */
     private static boolean getSavePath(JFrame owner) {
 	boolean repeat = false;
+	// repeat the retrieval until gets an unused file name, 
+	// overwrites a used one, or the user cancels the save
 	do {
+	    // display the file save dialog
 	    int result = chooser.showSaveDialog(owner);
 	    if (result == JFileChooser.APPROVE_OPTION) {
 		String path = chooser.getSelectedFile().getPath();
-		//		System.out.println("path: " + path);
 		File f = new File(path);
 		int choice = 0;
+		// check whether a file by the chosen name already exists
 		if (f.exists()) {
 		    String overwrite = path 
 			+ "\nalready exists.  Should I overwrite it?";
 		    String[] options = { "But of course",
 					 "Please, no!",
 					 "Cancel" };
+		    // dialog warning of a possible overwrite
 		    choice 
 			= JOptionPane
 			.showOptionDialog(owner,
@@ -1379,11 +1408,11 @@ public class TextTrix extends JFrame {
 					  options,
 					  options[1]);
 		}
-		if (choice == 1) {
+		if (choice == 1) { // don't overwrite, but choose another name
 		    repeat = true;
-		} else if (choice == 2) {
+		} else if (choice == 2) { // don't overwrite.
 		    return false;
-		} else {
+		} else { // write, even if overwriting
 		    saveFile(path);
 		    setSaveDir(chooser.getSelectedFile().getParent());
 		    tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
