@@ -77,12 +77,8 @@ public class LibTTx {
 				   String into a URL no longer works.
 				*/
 				try {
-					//		    System.out.println(plugInDir.toString());
 					path =
 						plugInDir.toString() + File.separator + plugInList[i];
-					//		    System.out.println("path: " + path);
-					//		    String urlPath = "file://" + path;
-					//		    URL url = new URL(urlPath);
 					URL url = new File(path).toURL();
 					//		    System.out.println(url.toString());
 					loader = new URLClassLoader(new URL[] { url });

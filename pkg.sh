@@ -108,6 +108,7 @@ rm -rf plugins/CVS plugins/*/CVS plugins/*/com/CVS plugins/*/com/textflex/CVS \
 
 # zip up and move to destination
 cd $BLD_DIR
+cp $PKGDIR/$JAR $TTX_DIR
 zip -r $PKG $PKGDIR
 zip -r $SRCPKG $SRCPKGDIR
 rm -rf $DEST/$PKGDIR*
