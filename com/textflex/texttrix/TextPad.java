@@ -278,19 +278,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			"deletePrevChar",
 			getActionByName(DefaultEditorKit.deletePrevCharAction));
 			
-		/*
-		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_TAB, Event.SHIFT_MASK),
-			"deletePrevTab");
-		amap.put(
-			"deletePrevChar",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent evt) {
-					if (autoIndent && isLeadingTab()) {
-						try {
-							getDocument().remove(getLeadingCharIndex(), 1)
-			);
-		*/
 	}
 
 	/** Creates the partial-Emacs shortcuts, consisting of single character and
@@ -342,20 +329,15 @@ public class TextPad extends JTextPane implements StateEditable {
 			"endLineChar",
 			getActionByName(DefaultEditorKit.endLineAction));
 
-		// (ctrl-d) delete next char		
+		// (ctrl-d) delete next char, including indent updates
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK),
 			"deleteNextChar");
-		/*
-		amap.put(
-			"deleteNextChar",
-			getActionByName(DefaultEditorKit.deleteNextCharAction));
-		*/
 		amap.put(
 			"deleteNextChar",
 			new DeleteNextCharAction());
 			
-			
+		// (DEL) delete previous character, including indent updates
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
 			"deleteNextChar");
@@ -363,7 +345,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			"deleteNextChar",
 			new DeleteNextCharAction());
 		
-
 		// (alt-b) go to beginning of current word
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.ALT_MASK),
@@ -393,23 +374,28 @@ public class TextPad extends JTextPane implements StateEditable {
 	 *
 	 */
 	private void emacsShortcuts() {
+		
+		// (ctrl-V) page down
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK),
 			"pageDown");
 		amap.put("pageDown", getActionByName(DefaultEditorKit.pageDownAction));
-
+		
+		// (alt-V) page up
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.ALT_MASK),
 			"pageUp");
 		amap.put("pageUp", getActionByName(DefaultEditorKit.pageUpAction));
-
+		
+		// (alt-shift-<) go home (of the document, that is)
 		imap.put(
 			KeyStroke.getKeyStroke(
 				KeyEvent.VK_COMMA,
 				Event.ALT_MASK | Event.SHIFT_MASK),
 			"begin");
 		amap.put("begin", getActionByName(DefaultEditorKit.beginAction));
-
+		
+		// (alt-shift->) go to the end
 		imap.put(
 			KeyStroke.getKeyStroke(
 				KeyEvent.VK_PERIOD,
@@ -429,23 +415,25 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void setDefaultTabs(int tabChars) {
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
-
+		
+		// Creates the tabs and fills them with the default indent
 		TabStop[] tabs = new TabStop[30]; // just enough to fit default frame
 		for (int i = 0; i < tabs.length; i++)
 			tabs[i] = new TabStop((i + 1) * tabWidth);
 		TabSet tabSet = new TabSet(tabs);
+		
+		// resets any other indents or styles to their default settings
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
 		StyleConstants.setLeftIndent(attribs, 0);
 		StyleConstants.setFirstLineIndent(attribs, 0);
-		//StateEdit stateEdit = new StateEdit(this);
+		
+		// apply the change without recording an undo
 		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument()
 			.setParagraphAttributes(0, getDocument().getLength() + 1,
 		// next char
 		attribs, false); // false to preserve default font
-		//stateEdit.end();
-		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
 	/** Sets the displayed tab size to 0.
@@ -470,18 +458,16 @@ public class TextPad extends JTextPane implements StateEditable {
 		for (int i = 0; i < 30; i++) {
 			tabs[i] = new TabStop(i * tabWidth * -1);
 		}
-		
 		TabSet tabSet = new TabSet(tabs);
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
-		//StateEdit stateEdit = new StateEdit(this);
+		
+		// apply the change without recording an undo
 		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument()
 			.setParagraphAttributes(0, getDocument().getLength() + 1,
 		// next char
 		attribs, false); // false to preserve default font
-		//stateEdit.end();
-		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
 	/** Sets the displayed indentation for the entire text. 
@@ -498,7 +484,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	/** Sets the displayed indentation for the region beginning at 
 	 * <code>start</code> through any paragraph that begins at <code>end</code>.
 	 * By only affecting the displayed size, this method is useful 
-	 * to represent tabs as styled indents.
+	 * to represent tabs as styled indents.  The underlying text remains untouched.
 	 * @param tabChars the number of characters that each tab represents
 	 * @param start the position from which to start indenting
 	 * @param end the first position from which to no longer indent
@@ -510,20 +496,20 @@ public class TextPad extends JTextPane implements StateEditable {
 		int i = start;
 		int j = 0;
 		String s = getAllText();
+		
+		// indent every paragraph from "start" to "end" acc
+		// to each paragraph's number of tabs
 		while (i < end) {
-			//			System.out.println("i: " + i + ", j: " + j);
+			// find next newline
 			j = s.indexOf("\n", i);
-			if (j == -1) j = end - 1;
+			if (j == -1) j = end - 1; // if found none, go to end
+			
+			// count and graphically indent tabs at head of curr line
 			int tabs = leadingTabsCount(s, i);
-			//System.out.println("tabs: " + tabs);
 			if (tabs >= 0)
 				indent(tabChars, tabs, i, j - i + 1);
 			i = j + 1;
 		}
-		/*
-		int tabs = leadingTabsCount(s, i);
-		indent(tabChars, tabs, i, s.length() + 1);
-		*/
 	}
 
 	/** Counts the number of continuous tabs from a given position.

@@ -7,13 +7,11 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-4, Text Flex
+Copyright (c) 2002-5, Text Flex
 All rights reserved.
 
 -----------------
-Welcome to the Text Trix[tm] writer!  Text Trix tinkers with text. The text 
-processor houses bunches of practical and goofy tools to mess with text. 
-Make it really right, or wonderfully wrong.
+Welcome to Text Trix[tm], the text tinker from Text Flex[tm]! Text Trix serves as a super chest of text tools to help renew your text. The tool chest has a number of built-in features to help organize and navigate through your code or text documents. And every tool chest has space for a host of tools, or in Text Trix, "plug-ins" that each update large amounts of text in a specific way.
 
 System Req:
 -Java[tm] 2 Standard Edition (J2SE) Software Development Kit (SDK), v.1.4+, 
@@ -31,17 +29,17 @@ Instructions for compilation:
 	and type "unzip texttrix-x.y.z-src.zip"
 -Compile the Java classes:
 	-Change into the Text Trix directory: "cd texttrix-x.y.z"
-	-Build the Text Trix program and its plug-ins: "sh build.sh --plug --pkg".  
-	If the Java compile commands are not located in your path, specify their 
-	folder with the argument, "--java [path-to-java-compiler-binaries]".  If 
-	necessary, modify the "DEST" variable in the script file, "build.sh", to 
-	point to the final destination directory for the packages you are building.  
-	Note: make sure *not* to set "BASE_DIR" to the directory containing 
-	"texttrix-x.y.z-src".
--To make a self-extracting Jar Ajar[tm] package for your newly compiled Text 
-Trix package, download the Jar Ajar packaging suite 
-(http://textflex.com/jarajar).  Install it, launch its graphical packager, and 
-you'lll be able to fill in the details in no time.
+	-Auto-configure the build environment: "sh texttrix/configure".  To specify the location of the Java compiler, pass the argument, "--java=[path-to-java-compiler-binaries]".  Pass "--help" to see other options.
+	-Build Text Trix and its plug-ins: "make all".
+	-Text Trix is ready to go!  To run it, type: "sh texttrix/run.sh".
+
+(Optional:) Installation
+	-Type: "make install".  By default, Text Trix will be installed into /usr/local/texttrix-x.y.z.  To customize the location, pass, "--prefix=[install-path]", while running "configure" (see above).
+	-You can also run the "texttrix/pkg.sh" script to create distributable packages.
+	-To make a self-extracting Jar Ajar[tm] package for your newly compiled Text 
+	Trix package, download the Jar Ajar packaging suite 
+	(http://textflex.com/jarajar).  Install it, launch its graphical packager, and 
+	you'lll be able to fill in the details in no time.
 
 Troubleshooting:
 -Ensure that the Java 2 Software Development Kit, v.1.4+, is installed.  To 

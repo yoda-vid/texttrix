@@ -1227,6 +1227,20 @@ public class TextTrix extends JFrame {
 			plugInsPath = plugInsPath.substring(pathStart + protocol.length());
 		// plugInsPath now in normal syntax
 		plugInsFile = new File(plugInsPath); // the actual file
+		
+		// If necessary, adjust path to properly navigate across the network
+		if (!plugInsFile.exists()) {
+			// According to testing on Windows XP, an extra backslash needs
+			// to be added to the start of the path to create the format: 
+			// "\\COMPUTER_NAME\ShareName"
+			plugInsFile = new File("\\" + plugInsPath);
+		}
+		
+		if (!plugInsFile.exists()) {
+			System.out.println("We truly apologize, but we haven't been able to locate"
+				+ newline + plugInsFile.toString()
+				+ newline + "for your plug-ins.");
+		}
 
 		/*
 		 * A possible workaround for an apparent JRE v.1.4 bug that fails to

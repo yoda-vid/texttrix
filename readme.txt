@@ -7,13 +7,11 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-4, Text Flex
+Copyright (c) 2002-5, Text Flex
 All rights reserved.
 
 -----------------
-Welcome to the Text Trix[tm] writer!  Text Trix tinkers with text. The text 
-processor houses bunches of practical and goofy tools to mess with text. 
-Make it really right, or wonderfully wrong.
+Welcome to Text Trix[tm], the text tinker from Text Flex[tm]! Text Trix serves as a super chest of text tools to help renew your text. The tool chest has a number of built-in features to help organize and navigate through your code or text documents. And every tool chest has space for a host of tools, or in Text Trix, "plug-ins" that each update large amounts of text in a specific way.
 
 System Reqs:
 -Java[tm] Virtual Machine, v.1.4+ (http://java.sun.com/getjava/index.html), 
