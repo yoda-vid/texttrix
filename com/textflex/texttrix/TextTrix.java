@@ -2180,6 +2180,24 @@ public class TextTrix extends JFrame {
 			fileSaveDialog(owner);
 		}
 	}
+	
+	private class FileCloseAction extends AbstractAction {
+		
+		public FileCloseAction(String name, Icon icon) {
+			putValue(Action.NAME, name);
+			putValue(Action.SMALL_ICON, icon);
+		}
+		
+		public void actionPerformed(ActionEvent evt) {
+			int i = tabbedPane.getSelectedIndex();
+			if (i >= 0) {
+				updateTabIndexHistory = false;
+				removeTabIndexHistory(i);
+				updateTabIndexHistory = true;
+				closeTextArea(i, textAreas, tabbedPane);
+			}
+		}
+	}
 
 	/**Responds to changes in the <code>TextPad</code> text areas.
 	 * Updates the titles to reflect text alterations.
@@ -2400,6 +2418,10 @@ public class TextTrix extends JFrame {
 
 					// close file; check if saved
 					Action closeAction =
+						new FileCloseAction(
+							"Close",
+							LibTTx.makeIcon("images/closeicon-16x16.png"));
+					/*
 						new AbstractAction(
 							"Close",
 							LibTTx.makeIcon("images/closeicon-16x16.png")) {
@@ -2413,12 +2435,24 @@ public class TextTrix extends JFrame {
 							}
 						}
 					};
+					*/
 					LibTTx.setAcceleratedAction(
 						closeAction,
 						"Close",
 						closeActionMnemonic,
 						closeActionShortcut);
 					fileMenu.add(closeAction);
+
+					Action closeActionForBtn = 
+						new FileCloseAction(
+							"Close",
+							LibTTx.makeIcon("images/door-60deg-16x16.png"));
+					LibTTx.setAction(closeActionForBtn, "Close file", 'W');
+					JButton closeButton = toolBar.add(closeActionForBtn);
+					closeButton.setBorderPainted(false);
+					LibTTx.setRollover(
+						closeButton,
+						"images/closeicon-16x16.png");
 
 					// (ctrl-s) save file; no dialog if file already created
 					Action saveAction =
@@ -2450,7 +2484,7 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAcceleratedAction(
 						saveAction,
-						"Save",
+						"Save file",
 						'S',
 						KeyStroke.getKeyStroke("ctrl S"));
 					fileMenu.add(saveAction);
@@ -2459,6 +2493,9 @@ public class TextTrix extends JFrame {
 					LibTTx.setRollover(
 						saveButton,
 						"images/saveicon-roll-16x16.png");
+						
+					// Tool Bar: begin plug-ins
+					toolBar.addSeparator();
 
 					// save w/ file save dialog
 					Action saveAsAction =
@@ -2469,7 +2506,7 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(saveAsAction, "Save as...", '.');
 					fileMenu.add(saveAsAction);
 
-					// Begin exit entires
+					// Menu: begin exit entries
 					fileMenu.addSeparator();
 
 					// exit file; close each tab separately, checking for saves

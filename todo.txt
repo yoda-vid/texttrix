@@ -56,11 +56,13 @@ v.0.3.5
 	-option to turn off; ADDED: Prefs option to turn off the activateWindowsTogether feature
 	-close open plug-in windows, or else they will no longer respond to activation requests; ADDED: dialog warning that plug-in windows will be closed when saving preferences while any of the windows are open
 	-try putting windowing events in separate thread so can still capture function from click on first window clicked
+	-check toFront() failures with one Fedora Core 1 installation
 -pass main Text Trix window position parameters to plug-in dialogs
 -Java Web Start compatibility
 -printing
 -fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
--PlugInWindow class to provide core windowing functions automatically
+-PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application
+-button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
 
 v.0.3.4
 -preferences:
