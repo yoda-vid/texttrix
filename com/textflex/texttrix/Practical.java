@@ -37,6 +37,9 @@
 package net.sourceforge.texttrix;
 
 import java.lang.*;
+import java.io.*;
+import java.util.*;
+import java.net.*;
 
 /**The practical text tools for <code>Text Trix</code>.
  * These tools generally manipulate text at the user's will
@@ -232,4 +235,43 @@ public class Practical {
 		String text = aText;
 		return text;
 	}
+
+	public static String displayUnicode(String text) {
+	}
+
+	/**Load a two-column table of non-printing Unicode characters 
+	 * and their escape sequences.
+	 * The first column consists of the Unicode characters.
+	 * The second columns hold the corresponding "escape sequences."
+	 * Eg, Col. 1 might contain <code>\u000a</code>, while Col. 2 would contain
+	 * <code>"\n"</code>.
+	 */
+	public static String[][] loadUnicodeArray(String path) {
+		try {
+			InputStream in = Practical.class.getResourceAsStream(path);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			StringTokenizer token;
+			String delimiters = "| =";
+			String line;
+			ArrayList unicodeChars = new ArrayList();
+			ArrayList unicodeEsc = new ArrayList();
+			for (int i = 0; (line = reader.readLine()) != null; i++) {
+				token = new StringTokenizer(line, delimiters);
+				unicodeChars.add(token.nextToken());
+				unicodeEsc.add(token.nextToken());
+			}
+			int n = unicodeChars.size();
+			String unicode[][] = new String[n][2];
+			for (int i = 0; i < n; i++) {
+				unicode[i][0] = (String)unicodeChars.get(i);
+				unicode[i][1] = (String)unicodeEsc.get(i);
+			}
+			return unicode;
+		} catch(IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+			
+
 }
