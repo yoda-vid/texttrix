@@ -30,6 +30,7 @@ New features include:
 Bug fixes include:
 -Plug-ins work again on selected text
 -Tab history browsing follows new routes correctly for better quick-flipping among files
+-When undo-ing, users no longer have to undo all the stylistic indents after turning on auto-indent
 
 ----v.0.3.3 (7/01/03)----
 

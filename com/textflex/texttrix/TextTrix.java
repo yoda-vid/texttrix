@@ -105,7 +105,7 @@ public class TextTrix extends JFrame {
 			'O',
 			KeyStroke.getKeyStroke("alt O"));
 
-		// creates an action that could store preferences without closing the window;
+		// creates an action that could store and apply preferences without closing the window;
 		// the class, not the calling function, creates the action b/c no need to report
 		// back to the calling function;
 		// contrast "cancelAction", which requires the calling function to both dispose of
@@ -113,6 +113,7 @@ public class TextTrix extends JFrame {
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
 				getPrefs().storePrefs();
+				applyPrefs();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -2780,6 +2781,7 @@ public class TextTrix extends JFrame {
 					openFile(new File(file));
 				}
 			};
+			LibTTx.setAction(act, file); // tool tip displays full file path
 			return act;
 		}
 		

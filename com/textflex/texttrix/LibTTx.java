@@ -389,6 +389,16 @@ public class LibTTx {
 		action.putValue(Action.SHORT_DESCRIPTION, description);
 		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
 	}
+	
+	/**Sets an action's properties.
+	 * @param action action to set
+	 * @param description tool tip
+	 */
+	public static void setAction(
+		Action action,
+		String description) {
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+	}
 
 	/** Sets an action's properties.
 	Assumes that the action has a name, and that the name is used

@@ -43,39 +43,41 @@ Note: "./" is the "check-mark" symbol
 -tab history doesn't always follow new tab route; FIXED: when add a new entry in the middle of the history, erase the forward history, just as browsers do
 -when refocusing one window from Text Trix, bring the other windows to the forefront
 -compound edits during plug-in edits
+-plug-ins' pref list fields sizes
+-preferences panel to choose default paths
+-auto-save
 
 ----Current Work----
 
 v.0.3.4
 -preferences:
 	-file history:
-		-store file paths of last opened or saved files; ADDED: using java.util.prefs (reqs JRE 1.4) to store paths, w/o duplicates
-		-File menu with menu items for each file; ADDED: descending menu items
-		-dynamically update menu items; ADDED: regenerates menu entries after opening each file
-		-truncate long paths; ADDED: "..." substitutes for excessive middle path characters
-		-choose number of files to remember; ADDED: adjustable file history count
+		-store file paths of last opened or saved files; ADDED: using java.util.prefs (reqs JRE 1.4) to store paths, w/o duplicates ./
+		-File menu with menu items for each file; ADDED: descending menu items ./
+		-dynamically update menu items; ADDED: regenerates menu entries after opening each file ./
+		-truncate long paths; ADDED: "..." substitutes for excessive middle path characters, but show full path in tool tip ./
+		-choose number of files to remember; ADDED: adjustable file history count ./
 	-panel:
-		-create preferences panel; ADDED: panel complete with tabs, okay/apply/cancel buttons
-		-remember panel size; ADDED: record panel size whenever hit "ok" button
-		-remember program size and location; ADDED: record whenever move or resize the program window
-	-auto-indent automatically for given extensions; ADDED: can turn on/off and customize extensions
+		-create preferences panel; ADDED: panel complete with tabs, okay/apply/cancel buttons ./
+		-remember panel size; ADDED: record panel size whenever hit "ok" button ./
+		-remember program size and location; ADDED: record whenever move or resize the program window ./
+	-auto-indent automatically for given extensions; ADDED: can turn on/off and customize extensions ./
 	-plug-ins:
-		-load all (default) or only specific plug-ins; ADDED: load plug-ins dynamically whenever open Preferences panel; include all plug-ins or specify from list
+		-load all (default) or only specific plug-ins; ADDED: load plug-ins dynamically whenever open Preferences panel; include all plug-ins or specify from list ./
 	-keybindings:
-		-standard keybindings; ADDED: universal shortcuts model along with other key combos found on typical desktop systems
-		-hybrid keybindings; ADDED: mesh of standard keybindings and Emacs ones by including single character and line Emacs shortcuts
-		-emacs keybindindings; ADDED: single-key shortcuts added on top of hybrid keybindings, with necessary extra adjustments
-	-default paths
--GUI worker threads; ADDED: menu creation and updating in own threads to simultaneously load various graphics
--programming src code file filter; ADDED: filter to accept java, cpp, and c files
--fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts
--close files from left to right; REVISED: allows tab restoration to easily open files in the same order that they were at closing
--clear default name from file chooser when saving new file; ADDED: if file doesn't exist, goes to the most recent directory but gives a blank name to prevent overwriting an existing file
--provide original name by default when saving-as an already saved file; ADDED: provides the name; ADDED: uses the "All Files" filter when opening files
--fix StringIndexOutOfBoundsError when running most plug-ins on selected text; FIXED: TextTrix.textTinker passed in only the selected region, but the plug-ins treated it as if they received the whole text; revised PlugIn spec so that default to run(String) rather than making all run methods abstract; plug-ins w/ alwaysEntireText == true need to override run(String, int, int) to respond to selection boundaries
--re-highlight selected text in Search plug-in; ADDED: if "Selected Area Only" option chosen in stats mode, will rehighlight; otherwise, removes highlighting to avoid giving the false impression that the stats are for the selected area only
--tab history doesn't always follow most recent path
--when undo after auto-indent, have to undo all the indents; FIXED: subclassed UndoManager so can flag to ignore style changes, such as auto-indents
+		-standard keybindings; ADDED: universal shortcuts model along with other key combos found on typical desktop systems ./
+		-hybrid keybindings; ADDED: mesh of standard keybindings and Emacs ones by including single character and line Emacs shortcuts ./
+		-emacs keybindindings; ADDED: single-key shortcuts added on top of hybrid keybindings, with necessary extra adjustments ./
+-GUI worker threads; ADDED: menu creation and updating, including file history updates, in own threads to simultaneously load various graphics ./
+-programming src code file filter; ADDED: filter to accept java, cpp, and c files ./
+-fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts ./
+-close files from left to right; REVISED: allows tab restoration to easily open files in the same order that they were at closing ./
+-clear default name from file chooser when saving new file; ADDED: if file doesn't exist, goes to the most recent directory but gives a blank name to prevent overwriting an existing file ./
+-provide original name by default when saving-as an already saved file; ADDED: provides the name; ADDED: uses the "All Files" filter when first opening files ./
+-fix StringIndexOutOfBoundsError when running most plug-ins on selected text; FIXED: TextTrix.textTinker(PlugIn) passed in only the selected region, but the plug-ins treated it as if they received the whole text; revised PlugIn spec so that default to run(String) rather than making all run methods abstract; plug-ins w/ alwaysEntireText == true need to override run(String, int, int) to respond to selection boundaries ./
+-re-highlight selected text in Search plug-in; ADDED: if "Selected Area Only" option chosen in stats mode, will rehighlight; otherwise, removes highlighting to avoid giving the false impression that the stats are for the selected area only ./
+-tab history doesn't always follow most recent path; FIXED: when in middle of history and switch to tab not next in history, erases the history forward from that point to conform to browsers' behavior ./
+-when undo after auto-indent, have to undo all the indents; FIXED: subclassed UndoManager so can flag to ignore style changes, such as auto-indents ./
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./
