@@ -44,8 +44,10 @@ import java.io.*;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
-/** The main <code>TextTrix</code> class.  Sets up the window
-    and the <code>TextPad</code>s.
+/**The main <code>TextTrix</code> class.
+ * Takes care of most graphical user interface operations, such as 
+ * setting up and responding to changes in the <code>Text Pad</code>s, 
+ * tool bar, menus, and dialogs.
 */
 public class TextTrix extends JFrame {
 	// to keep track of all the TextPads
@@ -260,8 +262,10 @@ public class TextTrix extends JFrame {
 				String about = readText(reader);
 				reader.close();
 				// displays in an message dialog
-				JOptionPane op = new JOptionPane();
-				op.showMessageDialog(op, about);
+				JOptionPane.showMessageDialog(null, about, "About Text Trix", 
+						JOptionPane.PLAIN_MESSAGE, 
+						new ImageIcon(
+							TextTrix.class.getResource("texttrixsignature.png")));
 			} catch(IOException exception) {
 				exception.printStackTrace();
 			}

@@ -38,6 +38,14 @@ package net.sourceforge.texttrix;
 
 import java.lang.*;
 
+/**The practical text tools for <code>Text Trix</code>.
+ * These tools generally manipulate text at the user's will
+ * according to chosen patterns.  Eventually the user should be able to 
+ * manipulate those patterns to the user's own preferences.
+ * This class provides the static methods that both the graphical 
+ * <code>Text Trix</code> and its command-line version, <code>Txtrx</code>, 
+ * use to tweak text.
+ */
 public class Practical {
 
 	public Practical() {
@@ -69,10 +77,8 @@ public class Practical {
 		int n = 0; // string index
 		String searchChars = " <>"; // inline message reply chars
 		String inlineReplySigns = "<>"; // inline message indicators
-//		boolean isPrevInlineReply = false;
 		boolean isCurrentLineReply = false; // current line part of message reply
 		boolean isNextLineReply = false; // next line part of message reply
-//		System.out.println(s.length() + "");
 
 		// check for inline reply symbols at start of string
 		n = containingSeq(s, n, searchChars, inlineReplySigns);
@@ -84,36 +90,19 @@ public class Practical {
 		}
 	
 		while (n < s.length()) {
-//			System.out.println(n + "");
 			int inlineReply = 0; // eg ">" or "<" from inline email msg replies
 			int nextInlineReply = 0; // inline replies on next line
 	    	int singleReturn = s.indexOf("\n", n); // next hard return occurrence
 			boolean isDoubleReturn = false; // double hard return flag
-//		    int nextReturn = -1;
 		    int dash = -1; // next dash occurrence 
 	    	int asterisk = -1; // next asterisk occurrence
 			int tab = -1; // next tab occurence
-//			int spaces = 0;
 	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag occurrence
 		    int endPre = s.indexOf("</pre>", n); // next cloisng pre tag occurrence
-
-			/*
-			boolean isInlineReply = false;
-			while (s.length() > i
-					&& searchChars.indexOf(nextChar = s.charAt(i)) != -1) {
-				i++;
-				if (inlineReplySigns.indexOf(nextChar) != -1) {
-					isInlineReply = true;
-				}
-			}
-			if (isInlineReply) 
-				inlineReply = i - n;
-			*/
 			
 			// check the character after a hard return
 			if (singleReturn != -1) {
 				int afterSingRet = singleReturn + 1;
-//				nextReturn = s.indexOf('\n', afterSingRet);
 				// get the length of chars inline msg reply chars after the return
 				inlineReply = containingSeq(s, afterSingRet, searchChars, inlineReplySigns);
 				// if the reply chars contine another hard return, find the length
@@ -124,62 +113,12 @@ public class Practical {
 					nextInlineReply = containingSeq(s, afterSingRet + inlineReply + 1,
 							searchChars, inlineReplySigns);
 				}
-//				System.out.println("inlineReply is " + inlineReply);
-				/*
-//				searchChars = " <>";
-				i = singleReturn + 1;
-				boolean isNextInlineReply = false;
-				while (s.length() > i
-						&& searchChars.indexOf(nextChar = s.charAt(i)) != -1) {
-					i++;
-					if (inlineReplySigns.indexOf(nextChar) != -1) {
-						isNextInlineReply = true;
-					}
-				}
-				if (isNextInlineReply) 
-					nextInlineReply = i - singleReturn - 1;
-				*/
 				tab = s.indexOf("\t", singleReturn + 1);
 				dash = s.indexOf("-", singleReturn + 1);
 				asterisk = s.indexOf("*", singleReturn + 1);
-				/*
-				int afterSingleReturnNextInlineReply
-				if (s.length() > afterSingleReturnNextInlineReply
-						&& s.charAt(afterSingleReturnNextInlineReply) == '\n') {
-					nextReturn = afterSingleReturnNextInlineReply;
-				}
-				*/
 			}
 			isNextLineReply = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 			
-//			System.out.println("isCurrentLineReply is " + isCurrentLineReply);
-//			System.out.println("isNextLineReply is " + isNextLineReply);
-
-			/*
-			if (inlineReply == 0 && singleReturn != -1) {
-				tab = s.indexOf("\t", n + singleReturn + 1);
-				int afterSingleReturn = singleReturn + 1;
-				// check whether will exceed length of text
-				// add one to spaces if next leading character has a space.
-				while (s.length() > afterSingleReturn && 
-						s.charAt(afterSingleReturn++) == ' ') {
-			    	spaces++;
-				}
-			}
-			*/
-/*
-		    // only catch dashes and asterisks after newline
-	    	while (dash != -1 && dash < singleReturn) {
-				dash = s.indexOf("-", n + dash + 1);
-		    }
-	    	while (asterisk != -1 && asterisk < singleReturn) {
-				asterisk = s.indexOf("*", n + asterisk + 1);
-		    }
-*/	
-		    // find all leading spaces after a single return
-
-//			System.out.println("Past dashes, asterisks, and leading spaces");
-
 			/* Append the chars to keep while removing single returns
 			 * and their inline msg reply chars appropriately.
 			 */
@@ -201,7 +140,6 @@ public class Practical {
 			// Also catches null strings
 			// Skips final "--------" for inline replies if no singleReturn after
 	    	} else if (singleReturn == -1) {
-//				System.out.println("I'm here.");
 				stripped.append(s.substring(n));
 				/* to add final dashed line after reply, even when no final
 				 * return, uncomment these lines
@@ -215,29 +153,11 @@ public class Practical {
 						+ "\n\n----Original Message----\n\n");
 				n = (isDoubleReturn) ? (singleReturn + inlineReply + 2 + nextInlineReply)
 					: (singleReturn + inlineReply + 1);
-//				System.out.println("I'm here");
-//			} else if (singleReturn != -1 && isCurrentInlineReply 
-//						&& inlineReply == 0 && singleReturn != s.length()) {
 			} else if (isCurrentLineReply && !isNextLineReply) {
 				stripped.append(s.substring(n, singleReturn)
 						+ "\n------------------------\n\n"); // dashed start, so own line
 				n = (isDoubleReturn) ? (singleReturn + inlineReply + 2 + nextInlineReply)
 					: (singleReturn + inlineReply + 1);
-				/*
-				stripped.append("\n\n------------------------\n\n" + s.substring(n, singleReturn));
-				if (isDoubleReturn) {
-					n = (singleReturn + inlineReply + 2 + nextInlineReply);
-				} else if (singleReturn == -1) {
-					n = s.length();
-				} else {
-					n = (singleReturn + inlineReply + 1);
-				}
-//				n = (isDoubleReturn) ? (singleReturn + 2 + nextInlineReply) 
-//					: (singleReturn + inlineReply + 1);
-//					*/
-			// preserve doubly-returned lines, as between paragraphs
-//	    	} else if (nextReturn != -1 
-//					&& singleReturn == nextReturn - 1 - inlineReply) {
 			} else if (isDoubleReturn) {
 				stripped.append(s.substring(n, singleReturn) + "\n\n");
 				n = singleReturn + inlineReply + 2 + nextInlineReply; // skip over processed rets
@@ -266,93 +186,7 @@ public class Practical {
 		    }
 		// flag whether the current line is part of a msg reply
 		isCurrentLineReply = isNextLineReply;
-//		isPrevInlineReply = isCurrentInlineReply;
 		}	
-		
-		/*
-		return stripped;
-		String stripped = "";
-	
-		while (!s.equals("")) {
-	    	int singleReturn = s.indexOf("\n");
-		    int doubleReturn = s.indexOf("\n\n");
-		    int dash = s.indexOf("-");
-	    	int asterisk = s.indexOf("*");
-//	    int space = s.indexOf(" ", singleReturn + 1);
-			int tab = s.indexOf("\t", singleReturn + 1);
-	    	int spaces = 0;
-	 	    int startPre = s.indexOf("<pre>");
-		    int endPre = s.indexOf("</pre>");
-	
-		    // only catch dashes and asterisks after newline
-	    	while (dash != -1 && dash < singleReturn) {
-				dash = s.indexOf("-", dash + 1);
-		    }
-	    	while (asterisk != -1 && asterisk < singleReturn) {
-				asterisk = s.indexOf("*", asterisk + 1);
-		    }
-	
-		    // find all leading spaces
-			int oneAfterSingleReturn = singleReturn + 1;
-			// check whether have exceeded length of text
-			// add one to spaces if next leading character has a space.
-			while (s.length() > oneAfterSingleReturn && 
-					(String.valueOf(s.charAt(oneAfterSingleReturn))).equals(" ")) {
-			    spaces++;
-			}
-
-			// skip <pre>-delimited sections, removing only the <pre> tags
-		    if (startPre != -1 && 
-					(startPre < s.length() || startPre < singleReturn)) {
-				// go to the end of the "pre" section
-				if (endPre != -1) {
-		    		stripped = stripped 
-						+ s.substring(0, startPre) 
-						+ s.substring(startPre + 5, endPre);
-			    	s = s.substring(endPre + 6);
-			    // if user forgets closing "pre" tag, goes to end
-				} else {
-		    		stripped = stripped 
-						+ s.substring(0, startPre) 
-						+ s.substring(startPre + 5);
-		    		s = "";
-				}
-			// add the rest of the text if no more single returns exist.
-			// Also catches null strings
-	    	} else if (singleReturn == -1) {
-				stripped = stripped + s;
-				s = "";
-			// preserve doubly-returned lines, as between paragraphs
-	    	} else if (singleReturn == doubleReturn) {
-				stripped = stripped 
-			    	+ s.substring(0, doubleReturn + 2);
-				s = s.substring(doubleReturn + 2);
-			// preserve separate lines for lines starting w/
-			// dashes or asterisks or spaces before them
-		    } else if (dash == singleReturn + 1 + spaces
-			    	   || asterisk == singleReturn + 1 + spaces) {
-				// + 2 to pick up the dash
-				stripped = stripped 
-			    	+ s.substring(0, singleReturn + 2 + spaces);
-				s = s.substring(singleReturn + 2 + spaces);
-			// preserve separate lines for ones starting with tabs
-			} else if (tab == singleReturn + 1) {
-				stripped = stripped + s.substring(0, singleReturn + 1);
-				s = s.substring(singleReturn + 1);
-			// join the tail-end of the text
-		    } else {
-				// don't add space if single return is at beginning of line
-				// or a space exists right before the single return.
-				if (singleReturn == 0 || s.charAt(singleReturn - 1) == ' ') {
-					stripped = stripped + s.substring(0, singleReturn);
-				// add space if none exists right before the single return
-				} else {
-					stripped = stripped + s.substring(0, singleReturn) + " ";
-				}
-				s = s.substring(singleReturn + 1);
-		    }
-		}
-		*/
 		return stripped.toString();
     }
 

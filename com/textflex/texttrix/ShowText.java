@@ -45,7 +45,7 @@ package net.sourceforge.texttrix;
 
 import java.io.*;
 
-/**Shows Txtrx's help documentation.
+/**Shows <code>Txtrx</code>'s help documentation.
  * The documentation is hard-coded to allow a standalone Txtrx version
  * to consist of a single file.  Txtrx could then be used without
  * installation.
