@@ -7,8 +7,10 @@
 #####################
 WKDIR="/home/davit/src/texttrix" # work directory
 DIR="com/textflex/texttrix" # src package structure
+PLUGINS=( "nonprintingchars NonPrintingChars" "extrareturnsremover ExtraReturnsRemover" "htmlreplacer HTMLReplacer" ) # the chosen plugins
 # CYGWIN USERS: change the first argument to "javac -classpath"
-# below from "..:$1" to "`cygpath ..:$1`"
+# below from "..:$1" to "`cygpath ..:$1`" by commenting and uncommenting
+# the appropriate lines below
 
 #####################
 # Only change for new plugins and extra tweaking
@@ -21,10 +23,12 @@ javac $DIR/*.java
 # list the directory names and their corresponding classes in the "for" line;
 # the jars must have the same name and caps as their classes
 cd plugins
-for dirs in "nonprintingchars NonPrintingChars" "extrareturnsremover ExtraReturnsRemover" "htmlreplacer HTMLReplacer"
+for i in "${PLUGINS[@]}"
 do
-	set -- $dirs
+	set -- $i
 	# extends the PlugIn class of the Text Trix package
+	# CYGWIN USERS: uncomment the following line, and comment the next:
+	#javac -classpath "`cygpath ..:$1`" $1/$DIR/*.java
 	javac -classpath ..:$1 $1/$DIR/*.java
 	cd $1
 	# gives the jar the same name and caps as the plugin's class
