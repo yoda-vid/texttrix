@@ -306,7 +306,7 @@ public class TextTrix extends JFrame {
 	JButton findButton = toolBar.add(findAction);
 	findButton.setBorderPainted(false);
 	setRollover(findButton, "images/find-roll-16x16.png");
-	findButton.setToolTipText(readText("find.html"));
+	findButton.setToolTipText(readText("findbutton.html"));
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
 	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
@@ -323,7 +323,7 @@ public class TextTrix extends JFrame {
 	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
 	removeReturnsButton.setBorderPainted(false);
 	setRollover(removeReturnsButton, "images/returnicon-roll-16x16.png");
-	removeReturnsButton.setToolTipText(readText("removeReturnsButton.html"));
+	removeReturnsButton.setToolTipText(readText("removereturnsbutton.html"));
 
 	// Non-printing-character display
 	Action nonPrintingCharViewerAction = new AbstractAction(
@@ -338,7 +338,7 @@ public class TextTrix extends JFrame {
 	JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
 	nonPrintingCharViewerButton.setBorderPainted(false);
 	setRollover(nonPrintingCharViewerButton, "images/nonprinting-roll-16x16.png");
-	nonPrintingCharViewerButton.setToolTipText(readText("nonPrintingButton.html"));
+	nonPrintingCharViewerButton.setToolTipText(readText("nonprintingbutton.html"));
 
 	// HTML replacement
 	Action htmlReplacerAction = new AbstractAction(
