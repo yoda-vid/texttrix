@@ -44,26 +44,30 @@ import java.awt.*;
     class that they await invocation.
 */
 public class PlugInEvent extends AWTEvent {
-    /** An event ID number greater than any of AWT's own events */
-    public static final int PLUG_IN_EVENT = AWTEvent.RESERVED_ID_MAX + 5000;
-    public static final String SELECTION = "selection";
-    private String type = null;
+	/** An event ID number greater than any of AWT's own events */
+	public static final int PLUG_IN_EVENT = AWTEvent.RESERVED_ID_MAX + 5000;
+	public static final String SELECTION = "selection";
+	private String type = null;
 
-    /** Creates the event and gives it an ID number.
+	/** Creates the event and gives it an ID number.
 	@param p the <code>PlugIn</code> object creating the event
-     */
-    public PlugInEvent(PlugIn p) {
-	super(p, PLUG_IN_EVENT);
-    }
+	 */
+	public PlugInEvent(PlugIn p) {
+		super(p, PLUG_IN_EVENT);
+	}
 
-    /** Creates the event and gives it an ID number.
+	/** Creates the event and gives it an ID number.
 	@param p the <code>PlugIn</code> object creating the event
-     */
-    public PlugInEvent(PlugIn p, String aType) {
-	this(p);
-	type = aType;
-    }
+	 */
+	public PlugInEvent(PlugIn p, String aType) {
+		this(p);
+		type = aType;
+	}
 
-    public void setType(String aType) { type = aType; }
-    public String getType() { return type; }
+	public void setType(String aType) {
+		type = aType;
+	}
+	public String getType() {
+		return type;
+	}
 }
