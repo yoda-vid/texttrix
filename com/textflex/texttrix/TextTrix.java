@@ -67,8 +67,10 @@ public class TextTrix extends JFrame {
 		    addTextArea(textAreas, tabbedPane, "");
 		}
 	    });
+	/* Comment-out until key bindings pref
 	newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
 						      InputEvent.CTRL_MASK));
+	*/
 
 	JMenuItem openItem = new JMenuItem("Open...");
 	fileMenu.add(openItem);
@@ -170,9 +172,10 @@ public class TextTrix extends JFrame {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).selectAll();
 		}
 	    });
+/* Comment-out until bindings pref
 	selectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
 							    InputEvent.CTRL_MASK));
-
+*/
 	/* Help menu items */
 	JMenuItem aboutItem = helpMenu.add(new AbstractAction("About...") {
 		public void actionPerformed(ActionEvent evt) {
