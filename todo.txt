@@ -74,7 +74,10 @@ v.0.3.6
 	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED (#1007490): removed obsolete advice
 	-ExtraReturnsRemover
-		-dialog interface, including options for the email divisions and numbered lists
+		-dialog interface; ADDED: similar layout as in Search plug-in
+		-make email markers optional; ADDED: check box option (pending testing)
+		-configurable list markers; ADDED: comma-delimited list of markers that indicate a list item, such as "-", "*", or "[outline])" for outline-formatted lists, eg "IV)" or "a)"
+		-line length threshold; ADDED: configurable threshold to preserve short lines, as in some poetry (pending testing)
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
