@@ -222,6 +222,10 @@ public class TextPad extends JEditorPane implements StateEditable{
 		return ((dir = file.getParent()) != null) ? dir : "";
 	}
 
+	public int getTabSize() {
+		return tabSize;
+	}
+
 	/**Sets the file to a file object.
 	 * @param aFile file to hold the text area's contents.
 	 */
@@ -241,6 +245,10 @@ public class TextPad extends JEditorPane implements StateEditable{
 		setText(text);
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit)stateEdit);
+	}
+	
+	public void setTabSize(int size) {
+		tabSize = size;
 	}
 
 	/**Check whether the file has been created.
@@ -272,6 +280,7 @@ public class TextPad extends JEditorPane implements StateEditable{
 		doc.addUndoableEditListener(undoManager);
 		if (doc.getClass() == PlainDocument.class) {
 			doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(tabSize));
+//			System.out.println("That's me");
 		}
 	}
 
@@ -311,14 +320,14 @@ public class TextPad extends JEditorPane implements StateEditable{
 		setText(text);
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit)stateEdit);
-		if (isEmpty()) {
-			stateEdit = new StateEdit(this);
+		if (getText() == null) {
+			undo();
+			/*
 			setDocument(getEditorKit().createDefaultDocument());
 			setContentType("text/plain");
 			applyDocumentSettings();
-			setText(text);						
-			stateEdit.end();
-			undoManager.addEdit((UndoableEdit)stateEdit);
+			setText(text);
+			*/
 		}
 	}
 	
@@ -421,7 +430,12 @@ public class TextPad extends JEditorPane implements StateEditable{
 	public void storeState(Hashtable state) {
 		state.put("contenttype", getContentType());
 //		System.out.println("Stored:" + (String)state.get("contenttype"));
-		state.put("text", getText());
+		String text = getText();
+		if (text == null) 
+			text = "";
+		state.put("text", text);
+		// store the current document so can reapply undos later
+		state.put("doc", getDocument());
 /*		Document d = (Document)state.get("doc");
 		String s = "";
 		try { s = d.getText(0, d.getLength()); } catch(BadLocationException e) {}
@@ -432,11 +446,14 @@ public class TextPad extends JEditorPane implements StateEditable{
 	public void restoreState(Hashtable state) {
 		String contentType = (String)state.get("contenttype");
 		String text = (String)state.get("text");
-		setDocument(getEditorKit().createDefaultDocument());
+//		setDocument(getEditorKit().createDefaultDocument());
 		if (contentType != null) 
 			setContentType(contentType);
+		// set document after setting the editor kit so can apply the doc's settings
+		setDocument((Document)state.get("doc"));
 		if (text != null) 
 			setText(text);
+//		applyDocumentSettings();
 /*			String s = "";
 			try { s = doc.getText(0, doc.getLength()); } catch(BadLocationException e) {}
 			System.out.println("Stored:" + s);

@@ -342,13 +342,13 @@ public class TextTrix extends JFrame {
 			public void actionPerformed(ActionEvent evt) {
 				int tab = tabbedPane.getSelectedIndex();
 				if (tab != -1) {
+					viewHTML();
+					/*
 					TextPad t = (TextPad)textAreas.get(tab);
 					if (!t.getContentType().equals("text/html")) {
 						t.viewHTML();
 						reinitializeTextPadDocumentSettings();
 					}
-					/*
-					/*
 					if (t.isEmpty()) {
 						t.setContentType("text/plain");
 						t.setText(text);
@@ -363,12 +363,14 @@ public class TextTrix extends JFrame {
 			public void actionPerformed(ActionEvent evt) {
 				int tab = tabbedPane.getSelectedIndex();
 				if (tab != -1) {
+					viewRTF();
+					/*
 					TextPad t = (TextPad)textAreas.get(tab);
 					if (!t.getContentType().equals("text/rtf")) {
 						t.viewRTF();
 						reinitializeTextPadDocumentSettings();
 					}
-					/*
+				
 					*/
 				}
 			}
@@ -901,16 +903,16 @@ public class TextTrix extends JFrame {
 	 * each new file; names the tab, <code>Filen.txt</code>,
 	 * where <code>n</code> is the tab number.
 	 */
-	public void addTextArea(ArrayList arrayList, 
-			final JTabbedPane tabbedPane, File file) {
-			final TextPad textPad = new TextPad(30, 20, file);
+	public void addTextArea(ArrayList arrayList, JTabbedPane tabbedPane, File file) {
+		TextPad textPad = new TextPad(30, 20, file);
 		// final variables so can use in inner class;
 			
-		JScrollPane scrollPane = new JScrollPane(textPad, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		JScrollPane scrollPane = new JScrollPane(textPad, 
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		DocumentListener listener = new TextPadDocListener();
 			
 		// 1 more than highest tab index since will add tab
-		final int i = tabbedPane.getTabCount();
+		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + "  ", scrollPane);
 //		textPad.setLineWrap(true);
 //		textPad.setWrapStyleWord(true);
@@ -940,14 +942,14 @@ public class TextTrix extends JFrame {
 		}
 	}
 
-	public void reinitializeTextPadDocumentSettings() {
-		int tabIndex = tabbedPane.getSelectedIndex();
-		if (tabIndex != -1) {
-			TextPad t = (TextPad)textAreas.get(tabIndex);
-			t.getDocument().addDocumentListener(new TextPadDocListener());
-			t.setChanged(true);
-			updateTitle(textAreas, tabbedPane);
-		}
+	public void addExtraTextPadDocumentSettings(TextPad textPad) {
+//		int tabIndex = tabbedPane.getSelectedIndex();
+//		if (tabIndex != -1) {
+//			TextPad t = (TextPad)textAreas.get(tabIndex);
+		textPad.getDocument().addDocumentListener(new TextPadDocListener());
+		textPad.setChanged(true);
+		updateTitle(textAreas, tabbedPane);
+//		}
 	}
 
 	public void viewPlain() {
@@ -956,11 +958,40 @@ public class TextTrix extends JFrame {
 			TextPad t = (TextPad)textAreas.get(tab);
 			if (!t.getContentType().equals("text/plain")) {
 				t.viewPlain();
-				reinitializeTextPadDocumentSettings();
+				addExtraTextPadDocumentSettings(t);
 			}
 		}
 	}
 	
+	public void viewHTML() {
+		int tab = tabbedPane.getSelectedIndex();
+		if (tab != -1) {
+			TextPad t = (TextPad)textAreas.get(tab);
+			if (!t.getContentType().equals("text/html")) {
+				t.viewHTML();
+				addExtraTextPadDocumentSettings(t);
+			}
+		}
+	}
+	
+	public void viewRTF() {
+		int tab = tabbedPane.getSelectedIndex();
+		if (tab != -1) {
+			TextPad t = (TextPad)textAreas.get(tab);
+			if (!t.getContentType().equals("text/rtf")) {
+				t.viewRTF();
+				addExtraTextPadDocumentSettings(t);
+			}
+		}
+	}
+	
+	public void read(TextPad textPad, Reader in, Object desc) throws IOException {
+		textPad.read(in, desc);
+		textPad.applyDocumentSettings();
+		addExtraTextPadDocumentSettings(textPad);
+//		textPad.getDocument().addDocumentListener(new TextPadDocListener());
+	}
+
 	/**Removes a tab containing a text area.
 	 * @param i tab index
 	 * @param l text area array list
@@ -1070,38 +1101,38 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = null;
 			int tabIndex = tabbedPane.getSelectedIndex();
-	    		if (tabIndex != -1) 
+	    	if (tabIndex != -1) 
 				t = (TextPad)textAreas.get(tabIndex);
 			// File("") evidently brings file dialog to last path, 
 			// whether last saved or opened path
 			String dir = openDir;
 			if (t != null && (dir = t.getDir()) == "") 
 				dir = openDir;
-	    		chooser.setCurrentDirectory(new File(dir));
+	    	chooser.setCurrentDirectory(new File(dir));
 //			chooser.setSelectedFile(new File(""));
 
 		    	int result = chooser.showOpenDialog(owner);
 
 		    	if (result == JFileChooser.APPROVE_OPTION) {
-				String path = chooser.getSelectedFile().getPath();
+					String path = chooser.getSelectedFile().getPath();
 
 				try {
-			    	BufferedReader reader = 
+		    		BufferedReader reader = 
 						new BufferedReader(new FileReader(path));
 //					String text = readText(reader);
 					
-			    	// check if tabs exist; get TextPad if true
+					// check if tabs exist; get TextPad if true
 					/* t.getText() != null, even if have typed nothing in it.
 					 * Add tab and set its text if no tabs exist or if current
 					 * tab has tokens; set current tab's text otherwise */
 					if (tabIndex == -1 || !t.isEmpty()) { 
 						addTextArea(textAreas, tabbedPane, new File(path));
 						t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-						t.read(reader, path);
+						read(t, reader, path);
 //						t.setText(text);
 		    		} else {
 //						t.setPage(url);
-						t.read(reader, path);
+						read(t, reader, path);
 //						t.setText(text);
 			   		}
 					t.setCaretPosition(0);

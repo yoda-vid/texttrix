@@ -76,7 +76,8 @@ public class Tools {
 		 * function completely excludes pre-tag-delimited areas from hard
 		 * return removal.
 		 */
-		StringBuffer stripped = new StringBuffer(s.length()); // new string
+		int len = s.length();
+		StringBuffer stripped = new StringBuffer(len); // new string
 		int n = start; // string index
 		String searchChars = " >"; // inline message reply chars
 		String inlineReplySigns = ">"; // inline message indicators
@@ -214,8 +215,11 @@ public class Tools {
 		isCurrentLineReply = isNextLineReply;
 		// flag to ignore <pre> tags if in inline message reply
 		ignorePre = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
-		}	
-		return stripped.toString() + s.substring(n);
+		}
+		String finalText = stripped.toString();
+		if (n < len)
+			finalText += s.substring(n);
+		return finalText;
     }
 
 	/**Finds the first continuous string consisting of any of a given
@@ -252,48 +256,82 @@ public class Tools {
 		int len = text.length();
 		StringBuffer s = new StringBuffer(len);
 		int n = start;
-		char c;
+		char c = '\0';
+//		boolean textRegion = false;
 
 		// append text preceding the selection
-		s.append(text.substring(0, n));
+//		s.append(text.substring(0, n));
 		// add to the stringbuffer char by char, deleting and replacing 
 		// tags as appropriate
 		while (n < end) {
-			// tags
-			if ((c = text.charAt(n)) == '<' && n < len - 1) {
+//			System.out.println("n: " + n);
+			while (n < end && ((c = text.charAt(n)) == ' ' || c == '\t')) 
 				n++;
-				// <p> tags
-				if (startsWithAny(lowerCase, new String[] {"p>", "p "}, n)) {
-					s.append("\n\n");
-				// <br> tags
-				} else if (startsWithAny(lowerCase, 
-							new String[] {"br>", "br>", "/br>", "/br "}, n)) {
-					s.append("\n");
-				// <b> tags: replace with "*"
-				} else if (startsWithAny(lowerCase, 
-							new String[] {"b>", "b ", "/b>", "/b "}, n)) {
-					s.append("*");
-				// <i> tags: replace with "/"
-				} else if (startsWithAny(lowerCase, 
-							new String[] {"i>", "i ", "/i>", "/i "}, n)) {
-					s.append("/");
-				// <u> tags: replace with "_"
-				} else if (startsWithAny(lowerCase, 
-							new String[] {"u>", "u ", "/u>", "/u >"}, n)) {
-					s.append("_");
-				// any other closing tag
-				} else if (startsWithAny(lowerCase, new String[] {"/"}, n)) {
+			while (n < end && (c = text.charAt(n)) != '\n') {
+			// tags
+				if (c == '<' && n < len - 1) {
+//					textRegion = true;
+					n++;
+					// <p> tags
+					if (startsWithAny(lowerCase, new String[] {"p>", "p "}, n)) {
+						s.append("\n\n");
+					// <br> tags
+					} else if (startsWithAny(lowerCase, 
+								new String[] {"br>", "br>"}, n)) {
+						s.append("\n");
+					// <b> tags: replace with "*"
+					} else if (startsWithAny(lowerCase, 
+								new String[] {"b>", "b ", "/b>", "/b "}, n)) {
+						s.append("*");
+					// <i> tags: replace with "/"
+					} else if (startsWithAny(lowerCase, 
+								new String[] {"i>", "i ", "/i>", "/i "}, n)) {
+						s.append("/");
+					// <u> tags: replace with "_"
+					} else if (startsWithAny(lowerCase, 
+								new String[] {"u>", "u ", "/u>", "/u >"}, n)) {
+						s.append("_");
+					// any other closing tag
+					} else if (startsWithAny(lowerCase, new String[] {"/"}, n)) {
+					}
+					int nToBe = -1;
+					n = ((nToBe = lowerCase.indexOf('>', n)) != -1) ? nToBe : end;
+				/*
+				} else if (c == ' ') {
+					s.append(c);
+					while (++n < len && (c = text.charAt(n)) == ' ')
+						;
+					if (n < len) 
+						s.append(c);
+				*/
+				// skip over hard returns and tabs
+				} else if (c == '\n' || c == '\t') {
+				// add non-tag, non hard return/tab chars
+				} else {
+					s.append(c);
 				}
-				n = lowerCase.indexOf('>', n);
-			// skip over hard returns and tabs
-			} else if (c == '\n' || c == '\t') {
-			// add non-tag, non hard return/tab chars
-			} else {
-				s.append(c);
+				n++;
+//				System.out.println("n: " + n + ", text so far: " + s.toString());
 			}
 			n++;
 		}
-		return s.toString() + text.substring(n);
+
+		// wipe out multiple spaces within the tagless text
+		String taglessText = s.toString();
+		int taglessLen = taglessText.length();
+		s = new StringBuffer(taglessLen);
+		for (int i = 0; i < taglessLen; i++) {
+			s.append(c = taglessText.charAt(i));
+			if (c == ' ') {
+//				System.out.println(taglessLen + "," + i);
+				while (i < taglessLen - 1 && (c = taglessText.charAt(i + 1)) == ' ')
+					i++;
+			}
+		}
+		String finalText = text.substring(0, start) + s.toString();
+		if (n < len) 
+			finalText += text.substring(n);
+		return finalText;
 	}
 
 	/**Checks whether any of the strings in an array are at the start
@@ -308,6 +346,7 @@ public class Tools {
 	 */
 	public static boolean startsWithAny(String s, String strs[], int offset) {
 		for (int i = 0; i < strs.length; i++) {
+//			System.out.println("starts' i: " + i);
 			if (s.startsWith(strs[i], offset)) {
 				return true;
 			}
