@@ -76,7 +76,7 @@ public class TextTrix extends JFrame {
 	setTitle("Text Trix");
 	// pre-set window size
 	setSize(500, 600); // TODO: adjust to user's screen size
-	ImageIcon im = makeIcon("images/minicon.png"); // set minimized icon
+	ImageIcon im = makeIcon("images/minicon-16x16.png"); // set frame icon
 	if (im !=null) 
 	    setIconImage(im.getImage());		
 	// make first tab and text area
