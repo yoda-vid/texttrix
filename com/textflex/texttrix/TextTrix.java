@@ -121,8 +121,7 @@ public class TextTrix extends JFrame {
 	    };
 	// per Mozilla keybinding
 	setAcceleratedAction(newAction, "New", 'T', 
-			     KeyStroke.getKeyStroke("ctrl T"));//KeyEvent.VK_T,
-	//					 InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl T"));
 	fileMenu.add(newAction);
 	/* tab shifts defined under View menu section;
 	 * alternatively, move to tabs using default Java key-bindings:
@@ -135,8 +134,7 @@ public class TextTrix extends JFrame {
 	    = new FileOpenAction(TextTrix.this, "Open", 
 				 makeIcon("images/openicon-16x16.png"));
 	setAcceleratedAction(openAction, "Open", 'O', 
-			     KeyStroke.getKeyStroke("ctrl O"));//KeyEvent.VK_O,
-	//					 InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl O"));
 	fileMenu.add(openAction);
 	JButton openButton = toolBar.add(openAction);
 	openButton.setBorderPainted(false);
@@ -175,7 +173,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(closeAction, "Close", 'C', 
-		  KeyStroke.getKeyStroke("ctrl W"));//KeyEvent.VK_W, InputEvent.CTRL_MASK));
+		  KeyStroke.getKeyStroke("ctrl W"));
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
@@ -198,7 +196,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(saveAction, "Save", 'S', 
-			     KeyStroke.getKeyStroke("ctrl S"));//KeyEvent.VK_S, InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl S"));
 	fileMenu.add(saveAction);
 	JButton saveButton = toolBar.add(saveAction);
 	saveButton.setBorderPainted(false);
@@ -223,7 +221,7 @@ public class TextTrix extends JFrame {
 	// Doesn't work if close all tabs unless click ensure window focused, 
 	// such as clicking on menu
 	setAcceleratedAction(exitAction, "Exit", 'X', 
-		  KeyStroke.getKeyStroke("ctrl Q"));//KeyEvent.VK_Q, InputEvent.CTRL_MASK));
+		  KeyStroke.getKeyStroke("ctrl Q"));
 	fileMenu.add(exitAction);
 
 	/* Edit menu items */
@@ -236,7 +234,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(undoAction, "Undo", 'U', 
-		  KeyStroke.getKeyStroke("ctrl Z"));//KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+		  KeyStroke.getKeyStroke("ctrl Z"));
 	editMenu.add(undoAction);
 
 	// (ctrl-y) redo; multiple redos available
@@ -247,7 +245,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(redoAction, "Redo", 'R', 
-			     KeyStroke.getKeyStroke("ctrl R"));//KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl R"));
 	editMenu.add(redoAction);
 
 	// Start Cut, Copy, Paste actions
@@ -261,7 +259,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(cutAction, "Cut", 'C', 
-			     KeyStroke.getKeyStroke("ctrl X"));//KeyEvent.VK_X, InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl X"));
 	editMenu.add(cutAction);
 	popup.add(cutAction);
 
@@ -273,7 +271,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(copyAction, "Copy", 'O', 
-			     KeyStroke.getKeyStroke("ctrl C"));//KeyEvent.VK_C, InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl C"));
 	editMenu.add(copyAction);
 	popup.add(copyAction);
 
@@ -285,7 +283,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(pasteAction, "Paste", 'P', 
-			     KeyStroke.getKeyStroke("ctrl V"));//KeyEvent.VK_V, InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl V"));
 	editMenu.add(pasteAction);
 	popup.add(pasteAction);
 
@@ -300,7 +298,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(selectAllAction, "Select all", 'S', 
-			     KeyStroke.getKeyStroke("ctrl L"));//KeyEvent.VK_L, InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl L"));
 	editMenu.add(selectAllAction);
 	popup.add(selectAllAction);
 
@@ -353,8 +351,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(prevTabAction, "Preeceding tab", 'P', 
-			     KeyStroke.getKeyStroke("ctrl OPEN_BRACKET"));//KeyEvent.VK_OPEN_BRACKET, 
-	//					 InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl OPEN_BRACKET"));
 	viewMenu.add(prevTabAction);
 
 	// (ctrl-]) switch to the next tab
@@ -369,8 +366,7 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	setAcceleratedAction(nextTabAction, "Next tab", 'N', 
-			     KeyStroke.getKeyStroke("ctrl CLOSE_BRACKET"));//KeyEvent.VK_CLOSE_BRACKET, 
-	//					 InputEvent.CTRL_MASK));
+			     KeyStroke.getKeyStroke("ctrl CLOSE_BRACKET"));
 	viewMenu.add(nextTabAction);
 
 	viewMenu.addSeparator();
@@ -480,143 +476,7 @@ public class TextTrix extends JFrame {
 
 
 	// Load plugins; add to appropriate menu
-
-	/* The code has a relatively elaborate mechanism to locate
-	   the plugins folder and its JAR files.  Why not use
-	   the URL that the Text Trix class supplies?
-	   Text Trix needs to locate the specific, absolute path and name
-	   of each JAR plugin to load it.  Text Trix's URL must
-	   be truncated to its root directory's location and built
-	   back up through the plugins directory.  Using getParentFile()
-	   to the program's root and appending the path from there to
-	   the plugins allows one to use URLClassLoader directly with
-	   the resulting URL.
-
-	   Unfortunately, some systems do not
-	   locate local files with this method.  The following
-	   elaborate system works around this apparent JRE bug by
-	   further breaking the URL into a normal path and loading
-	   a file from it.
-
-	   Unfortunately again, a new feature from JRE v.1.4
-	   prevents the JRE causes spaces to be converted to "%20"
-	   turning URL's into strings.  The JRE cannot load files
-	   with "%20" in them, however; hus 
-	   "c:\Program Files\texttrix-x.y.z\plugins"
-	   never gets loaded.  The workaround is to replace all "%20"'s in
-	   the string with " ".  Along with v.1.4 comes new String regex
-	   tools to make the operation simple, but prior versions
-	   give crash after a NoSuchMethodError.  The replacement must be done 
-	   manually.
-	*/
-
-	// TODO: add additional plugins on the fly
-	// this class's location
-	String relClassLoc = "com/textflex/texttrix/TextTrix.class";
-       	URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
-	String strClassDir = urlClassDir.getPath(); // to check whether JAR
-	//	System.out.println(strClassDir);
-	File fileClassDir = new File(urlClassDir.getPath());
-	File baseDir = null;
-	// move into JAR's parent directory only if launched from a JAR
-	if (strClassDir.indexOf(".jar!/" + relClassLoc) != -1) {
-	    baseDir = fileClassDir.getParentFile().getParentFile()
-		.getParentFile().getParentFile().getParentFile();
-	} else { // not from JAR; one less parent directory
-	    baseDir = fileClassDir.getParentFile().getParentFile()
-		.getParentFile().getParentFile();
-	}
-	// convert "%20", the escape character for a space, into " ";
-	// required for starting with JRE v.1.4.0
-	// (see http://developer.java.sun.com/developer/ //
-	// bugParade/bugs/4466485.html)
-	String strBaseDir = baseDir.toString();
-	int space = 0;
-	while ((space = strBaseDir.indexOf("%20")) != -1) {
-	    if (strBaseDir.length() > space + 3) {
-		strBaseDir = strBaseDir.substring(0, space) 
-		    + " " + strBaseDir.substring(space + 3);
-	    } else {
-		strBaseDir = strBaseDir.substring(0, space) + " ";
-	    }
-	}
-	/* Though simpler, this method crashes after a NoSuchMethodError
-	   under JRE <= 1.3.
-	baseDir = new File(baseDir.toString().replaceAll("%20", " "));
-	File pluginsFile = new File(baseDir, "plugins");
-	*/
-	//	System.out.println(strBaseDir);
-	//	File f = new File("/home/share");
-	//	System.out.println(baseDir.getPath());
-	//	String plugInsPath = "";
-	//	try {
-	//	    plugInsPath = baseDir.getCanonicalPath() + "/plugins";
-	//	} catch (IOException e) {}
-	//	String sep = System.getProperty("file.separator");
-	//	plugInsPath = baseDir.toString() + sep + "plugins";
-	//	String[] a = baseDir.list();
-	//	System.out.println(plugInsPath);
-
-	// plugins directory;
-	// considered nonexistent since baseDir's path in URL syntax
-       	File pluginsFile = new File(strBaseDir, "plugins");
-	String pluginsPath = pluginsFile.getPath();
-
-	// directory path given as URL; need to parse into normal syntax
-	String protocol = "file:";
-	int pathStart = pluginsPath.indexOf(protocol);
-	// check if indeed given as URL;
-	// if so, delete protocal and any preceding info
-	if (pathStart != -1)
-	    pluginsPath = pluginsPath.substring(pathStart + protocol.length());
-	/*
-	try {
-	    pluginsPath = URLEncoder.encode(pluginsPath, "UTF-8");
-	} catch (UnsupportedEncodingException e) {
-	    e.printStackTrace();
-	}
-	*/
-	//	System.out.println(pluginsPath);
-	// pluginsPath now in normal syntax
-	pluginsFile = new File(pluginsPath); // the actual file
-
-
-
-	/* A possible workaround for an apparent JRE v.1.4 bug that
-	   fails to open files with spaces in their paths.
-	   This workaround convert any file or directory names
-	   with their "8.3" formatted equivalents.
-	   For example, "Program Files" is converted to 
-	   "PROGRA~1", which some systems might map to the intended file.
-	*/
-	/*
-	if (!pluginsFile.exists()) {
-	    String seg = "";
-	    StringTokenizer tok = new StringTokenizer(pluginsPath, "/\\");
-	    StringBuffer buf = new StringBuffer(pluginsPath.length());
-	    for (int i = 0; tok.hasMoreTokens(); i++) {
-		seg = tok.nextToken();
-		if (seg.length() > 8) 
-		    seg = seg.substring(0, 6).toUpperCase() + "~1";
-		buf.append(File.separator + seg);
-	    }
-	    pluginsPath = buf.toString();
-	    pluginsFile = new File(pluginsPath); // the actual file
-	    //	    System.out.println(pluginsPath);
-	}
-	*/
-
-	//	System.out.println(f.getPath());
-	//	try { f = new File(new URI(f.toString())); } catch (URISyntaxException e) {}
-	//	System.out.println(f.exists());
-	//	System.out.println(plugInsPath);
-	// load in plugins from plugins directory
-	plugIns = LibTTx.loadPlugIns(pluginsFile);
-	if (plugIns != null) {
-	    for (int i = 0; i < plugIns.length; i++) {
-		makePlugInAction(plugIns[i]);
-	    }
-	}
+	setupPlugins();
 
 
 	/* Place menus and other UI components */
@@ -647,6 +507,7 @@ public class TextTrix extends JFrame {
 	constraints.anchor = GridBagConstraints.CENTER;
 	add(tabbedPane, constraints, 0, 2, 1, 1, 100, 100);
 
+	// load files specified at start from command-line
 	if (paths != null) {
 	    for (int i = 0; i < paths.length; i++) {
 		openFile(new File(paths[i]));
@@ -768,6 +629,124 @@ public class TextTrix extends JFrame {
 	button.setBorderPainted(false);
 	setRollover(button, rollIcon);
 	button.setToolTipText(detailedDescription);
+    }
+
+    public void setupPlugins() {
+
+	/* The code has a relatively elaborate mechanism to locate
+	   the plugins folder and its JAR files.  Why not use
+	   the URL that the Text Trix class supplies?
+	   Text Trix needs to locate each JAR plugin's absolute path and name.
+	   Text Trix's URL must
+	   be truncated to its root directory's location and built
+	   back up through the plugins directory.  Using getParentFile()
+	   to the program's root and appending the rest of the 
+	   path to the plugins allows one to use URLClassLoader directly with
+	   the resulting URL.
+
+	   Unfortunately, some systems do not
+	   locate local files with this method.  The following
+	   elaborate system works around this apparent JRE bug by
+	   further breaking the URL into a normal path and loading
+	   a file from it.
+
+	   Unfortunately again, a new feature from JRE v.1.4
+	   causes spaces in URL strings to be converted to "%20"
+	   turning URL's into strings.  The JRE cannot load files
+	   with "%20" in them, however; for example, 
+	   "c:\Program Files\texttrix-x.y.z\plugins"
+	   never gets loaded.  The workaround is to replace all "%20"'s in
+	   the string with " ".  Along with v.1.4 comes new String regex
+	   tools to make the operation simple, but prior versions
+	   crash after a NoSuchMethodError.  The replacement must be done 
+	   manually.
+	*/
+
+	// TODO: add additional plugins on the fly
+	// this class's location
+	String relClassLoc = "com/textflex/texttrix/TextTrix.class";
+       	URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
+	String strClassDir = urlClassDir.getPath(); // to check whether JAR
+	//	System.out.println(strClassDir);
+	File fileClassDir = new File(urlClassDir.getPath());
+	File baseDir = null;
+	// move into JAR's parent directory only if launched from a JAR
+	if (strClassDir.indexOf(".jar!/" + relClassLoc) != -1) {
+	    baseDir = fileClassDir.getParentFile().getParentFile()
+		.getParentFile().getParentFile().getParentFile();
+	} else { // not from JAR; one less parent directory
+	    baseDir = fileClassDir.getParentFile().getParentFile()
+		.getParentFile().getParentFile();
+	}
+	// convert "%20", the escape character for a space, into " ";
+	// required for starting with JRE v.1.4.0
+	// (see http://developer.java.sun.com/developer/ //
+	// bugParade/bugs/4466485.html)
+	String strBaseDir = baseDir.toString();
+	int space = 0;
+	// continue while still have "%20", the spaces symbol
+	while ((space = strBaseDir.indexOf("%20")) != -1) {
+	    if (strBaseDir.length() > space + 3) {
+		strBaseDir = strBaseDir.substring(0, space) 
+		    + " " + strBaseDir.substring(space + 3);
+	    } else {
+		strBaseDir = strBaseDir.substring(0, space) + " ";
+	    }
+	}
+	/* Though simpler, this method crashes after a NoSuchMethodError
+	   under JRE <= 1.3.
+	baseDir = new File(baseDir.toString().replaceAll("%20", " "));
+	File pluginsFile = new File(baseDir, "plugins");
+	*/
+
+	// plugins directory;
+	// considered nonexistent since baseDir's path in URL syntax
+       	File pluginsFile = new File(strBaseDir, "plugins");
+	String pluginsPath = pluginsFile.getPath();
+
+	// directory path given as URL; need to parse into normal syntax
+	String protocol = "file:";
+	int pathStart = pluginsPath.indexOf(protocol);
+	// check if indeed given as URL;
+	// if so, delete protocal and any preceding info
+	if (pathStart != -1)
+	    pluginsPath = pluginsPath.substring(pathStart + protocol.length());
+	//	System.out.println(pluginsPath);
+	// pluginsPath now in normal syntax
+	pluginsFile = new File(pluginsPath); // the actual file
+
+
+
+	/* A possible workaround for an apparent JRE v.1.4 bug that
+	   fails to open files with spaces in their paths.
+	   This workaround converts any file or directory names
+	   with their "8.3" formatted equivalents.
+	   For example, "Program Files" is converted to 
+	   "PROGRA~1", which some systems might map to the intended file.
+	*/
+	/*
+	if (!pluginsFile.exists()) {
+	    String seg = "";
+	    StringTokenizer tok = new StringTokenizer(pluginsPath, "/\\");
+	    StringBuffer buf = new StringBuffer(pluginsPath.length());
+	    for (int i = 0; tok.hasMoreTokens(); i++) {
+		seg = tok.nextToken();
+		if (seg.length() > 8) 
+		    seg = seg.substring(0, 6).toUpperCase() + "~1";
+		buf.append(File.separator + seg);
+	    }
+	    pluginsPath = buf.toString();
+	    pluginsFile = new File(pluginsPath); // the actual file
+	    //	    System.out.println(pluginsPath);
+	}
+	*/
+
+	plugIns = LibTTx.loadPlugIns(pluginsFile);
+	if (plugIns != null) {
+	    for (int i = 0; i < plugIns.length; i++) {
+		makePlugInAction(plugIns[i]);
+	    }
+	}
     }
 
     /**Gets the last path for opening a file.
