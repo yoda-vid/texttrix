@@ -44,6 +44,7 @@ import java.io.*;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
+import javax.swing.text.*;
 
 /**The main <code>TextTrix</code> class.
  * Takes care of most graphical user interface operations, such as 
@@ -491,12 +492,44 @@ public class TextTrix extends JFrame {
 
 
 
-
-
-	String plugInsPath = "plugins";
-	plugIns = LibTTx.loadPlugIns(plugInsPath);
-	for (int i = 0; i < plugIns.length; i++) {
-	    makePlugInAction(plugIns[i]);
+	String relClassLoc = "com/textflex/texttrix/TextTrix.class";
+       	URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
+	String strClassDir = urlClassDir.getPath();
+	//	System.out.println(urlClassDir.toString());
+	File fileClassDir = new File(urlClassDir.getPath());
+	File baseDir = null;
+	if (strClassDir.indexOf(".jar!/" + relClassLoc) != -1) {
+	    baseDir = fileClassDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile();//.getAbsoluteFile();
+	} else {
+	    baseDir = fileClassDir.getParentFile().getParentFile().getParentFile().getParentFile();
+	}
+	//	File f = new File("/home/share");
+	//	System.out.println(baseDir.getPath());
+	String plugInsPath = "";
+	//	try {
+	//	    plugInsPath = baseDir.getCanonicalPath() + "/plugins";
+	//	} catch (IOException e) {}
+	String sep = System.getProperty("file.separator");
+	//	plugInsPath = baseDir.toString() + sep + "plugins";
+	//	String[] a = baseDir.list();
+	//	System.out.println(plugInsPath);
+       	File f = new File(baseDir, "plugins");//null;
+	String path = f.getPath();
+	String protocol = "file:";
+	int pathStart = path.indexOf(protocol);
+	if (pathStart != -1)
+	    path = path.substring(pathStart + protocol.length());
+	//	System.out.println(path);
+	f = new File(path);
+	//	System.out.println(f.getPath());
+	//	try { f = new File(new URI(f.toString())); } catch (URISyntaxException e) {}
+	//	System.out.println(f.exists());
+	//	System.out.println(plugInsPath);
+	plugIns = LibTTx.loadPlugIns(f);
+	if (plugIns != null) {
+	    for (int i = 0; i < plugIns.length; i++) {
+		makePlugInAction(plugIns[i]);
+	    }
 	}
 
 
@@ -740,19 +773,33 @@ public class TextTrix extends JFrame {
 			viewPlain();
 			TextPad t = (TextPad)textAreas
 			    .get(tabbedPane.getSelectedIndex());
-			String text = t.getText();
+			Document doc = t.getDocument();
+			//			String text = t.getText();
+			String text = null;
 
 			// only modify the selected text, and make 
 			// the action undoable
-			int start = 0;
-			int end = 0;
-			if ((start = t.getSelectionStart()) 
-			    == (end = t.getSelectionEnd())) {
-			    // may need to add original text to history buffer
-			    // before making the change
-			    t.setUndoableText(pl.run(text, 0, text.length()));
-			} else {
-			    t.setUndoableText(pl.run(text, start, end));
+			int start = t.getSelectionStart();
+			int end = t.getSelectionEnd();
+			try {
+			    if (start == end) {
+				// may need to add original text to history buffer
+				// before making the change
+				//			    t.setUndoableText(pl.run(text, 0, text.length()));
+				text = doc.getText(0, doc.getLength());
+				text = pl.run(text);
+				doc.remove(0, doc.getLength());
+				doc.insertString(0, text, null);
+			    } else {
+				//				t.setUndoableText(pl.run(text, start, end));
+				int len = end - start;
+				text = doc.getText(start, len);
+				text = pl.run(text);
+				doc.remove(start, len);
+				doc.insertString(start, text, null);
+			    }
+			} catch (BadLocationException e) {
+			    e.printStackTrace();
 			}
 		    }
 		}

@@ -25,24 +25,44 @@ public class LibTTx {
     }
     */
 
-    public static PlugIn[] loadPlugIns(String path) {
-	String plugInDirName = path;//"plugins";
-	File plugInDir = new File(plugInDirName);
+    public static PlugIn[] loadPlugIns(File plugInDir) {
+	//	String plugInDirName = path;//"plugins";
+	//	File plugInDir = new File(plugInDirName);
 	String endsWith = ".jar"; // only list files ending w/ team.txt
 	EndsWithFileFilter filter = new EndsWithFileFilter();
 	filter.add(endsWith);
 	String[] plugInList = plugInDir.list(filter);
-	PlugIn[] plugIns = new PlugIn[plugInList.length];
+	//       	System.out.println(LibTTx.class.getClassLoader().getResource("com").toString());
+	//	System.out.println((new File(LibTTx.class.getResource("com").getFile())).getParentFile().getAbsoluteFile().toString());
+	//	System.out.println(LibTTx.class.getResource("LibTTx.class").getFile());
+	//	System.out.println(ClassLoader.getSystemResource("texttrix.jar").toString());
+	//	String dr = System.getProperty("user.dir");
+	//	String sp = System.getProperty("file.separator");
+	//	try { System.out.println(new URL("file://" + dr + sp 
+	//					 + "plugins"));
+	//	} catch (MalformedURLException e) {}
+	PlugIn[] plugIns = null;
 	// traverse /teams dir, listing names w/o the ending
 	if (plugInList != null) {
+	    plugIns = new PlugIn[plugInList.length];
 	    for (int i = 0; i < plugInList.length; i++) {
 		//		URL = 
 		ClassLoader loader = null;
+		String path = null;
 		try {
+		    /*
 		    String dir = System.getProperty("user.dir");
 		    String sep = System.getProperty("file.separator");
 		    URL url = new URL("file://" + dir + sep 
 				      + "plugins" + sep + plugInList[i]);
+		    */
+		    //		    System.out.println(plugInDir.toString());
+		    String sep = System.getProperty("file.separator");
+		    path = plugInDir.toString() 
+			+ sep + plugInList[i];
+		    String urlPath = "file://" + path;
+		    URL url = new URL(urlPath);
+		    //		    System.out.println(url.toString());
 		    loader = new URLClassLoader(new URL[] { url } );
 		    //		    System.out.println(url.toString());
 		} catch (MalformedURLException e) {}
@@ -50,6 +70,7 @@ public class LibTTx {
 		    + plugInList[i]
 		    .substring(0, plugInList[i].indexOf(".jar"));
 		plugIns[i] = (PlugIn) createObject(name, loader);
+		plugIns[i].setPath(path);
 	    }
 	}
 	return plugIns;
