@@ -739,10 +739,11 @@ public class TextTrix extends JFrame {
 	    baseDir = fileClassDir.getParentFile().getParentFile()
 		.getParentFile().getParentFile();
 	}
-	// convert "%20", the escape character for a space, into " ";
-	// required for starting with JRE v.1.4.0
-	// (see http://developer.java.sun.com/developer/ //
-	// bugParade/bugs/4466485.html)
+	/* convert "%20", the escape character for a space, into " ";
+	   required for starting with JRE v.1.4.0
+	   (see http://developer.java.sun.com/developer/ //
+	   bugParade/bugs/4466485.html)
+	*/
 	String strBaseDir = baseDir.toString();
 	int space = 0;
 	// continue while still have "%20", the spaces symbol
@@ -1283,7 +1284,12 @@ public class TextTrix extends JFrame {
 	try {
 	    if (t != null) {
 		File f = new File(path);
+		/* if don't use canWrite(), work instead by 
+		   catching exception and either handling it there
+		   or returning signal of the failure
+		 */
 		/*
+		// ensure that the file can be written
 		if (f.canWrite())
 		    System.out.println("can write");
 		else 
@@ -1297,6 +1303,7 @@ public class TextTrix extends JFrame {
 		out.close();
 		t.setChanged(false);
 		t.setFile(path);
+		// the the tab title to indicate that no unsaved changes
 		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 				      t.getName() + "  ");
 		return true;
@@ -1334,23 +1341,23 @@ public class TextTrix extends JFrame {
 		   if current tab has tokens; set current tab's 
 		   text otherwise
 		*/
-		if (t == null || !t.isEmpty()) { 
+		if (t == null || !t.isEmpty()) {  // open file in new pad
 		    addTextArea(textAreas, tabbedPane, file);
 		    t = (TextPad)textAreas.get(tabbedPane
 					       .getSelectedIndex());
 		    read(t, reader, path);
-		    //		    System.out.println("I'm here");
-		} else {
+		} else { // open file in current, empty pad
 		    read(t, reader, path);
-		    //		    System.out.println("Oh, but I'm here");
 		}
 		t.setCaretPosition(0);
 		t.setChanged(false);
 		t.setFile(path);
 		updateTitle(textAreas, tabbedPane);
 		reader.close();
+		// set the path to the last opened directory
 		setOpenDir(file.getParent());
-		// openDir not yet set when opening first file
+		// file.getParent() returns null when opening file
+		// from the command-line and passing in a relative path
 		if (getOpenDir() == null) 
 		    setOpenDir(System.getProperty("user.dir"));
 		return true;
@@ -1368,9 +1375,10 @@ public class TextTrix extends JFrame {
     }
 
 
-    /**Evokes a save dialog, with a filter for text files.
-     * Sets the tabbed pane tab to the saved file name.
-     * @return true if the approve button is chosen, false if otherwise
+    /** Evokes a save dialog, with a filter for text files.
+	Sets the tabbed pane tab to the saved file name.
+	@param owner parent frame; can be null
+	@return true if the approve button is chosen, false if otherwise
      */
     public static boolean fileSaveDialog(JFrame owner) {
 	//	int tabIndex = tabbedPane.getSelectedIndex();
@@ -1401,7 +1409,8 @@ public class TextTrix extends JFrame {
 	If the file will overwrite another file, prompts the user
 	with a dialog box to determine whether to continue with the 
 	overwrite, get another name, or cancel the whole operation.
-	@param owner the frame to which the dialog will serve
+	@param owner the frame to which the dialog will serve; can be null
+	@return true if the file is saved successfully
     */
     private static boolean getSavePath(JFrame owner) {
 	boolean repeat = false;
@@ -1410,7 +1419,7 @@ public class TextTrix extends JFrame {
 	do {
 	    // display the file save dialog
 	    int result = chooser.showSaveDialog(owner);
-	    if (result == JFileChooser.APPROVE_OPTION) {
+	    if (result == JFileChooser.APPROVE_OPTION) { // save button chosen
 		String path = chooser.getSelectedFile().getPath();
 		File f = new File(path);
 		int choice = 0;
@@ -1440,13 +1449,14 @@ public class TextTrix extends JFrame {
 		} else if (choice == 2) { // don't overwrite.
 		    return false;
 		} else { // write, even if overwriting
-		    if (saveFile(path)) {
+		    // try to save the file and check if successful
+		    if (saveFile(path)) { // success
 			setSaveDir(chooser.getSelectedFile().getParent());
 			tabbedPane.setToolTipTextAt(tabbedPane
 						    .getSelectedIndex(), 
 						    path);
 			return true;
-		    } else {
+		    } else { // fail; request another try at saving
 			String msg = path + " couldn't be written to "
 			    + "that location.\nWould you like to try "
 			    + "another directory or filename?";
@@ -1454,13 +1464,19 @@ public class TextTrix extends JFrame {
 			repeat = yesNoDialog(owner, msg, title);
 		    }
 		}
-	    } else {
+	    } else { // cancel button chosen
 		return false;
 	    }
-	} while (repeat);
+	} while (repeat); // repeat if retrying save after failure
 	return false;
     }
 
+    /** Front-end, helper function to ask yes/no questions.
+	@param owner parent frame; can be null
+	@param msg message to display in the main window section
+	@param title title to display in the title bar
+	@return true for "Yes", false for "No"
+    */
     private static boolean yesNoDialog(JFrame owner, String msg, 
 				String title) {
 	int choice = JOptionPane
@@ -1470,6 +1486,7 @@ public class TextTrix extends JFrame {
 			       JOptionPane.YES_NO_OPTION,
 			       JOptionPane.
 			       QUESTION_MESSAGE);
+	// true for Yes, false for No
 	if (choice == JOptionPane.YES_OPTION) {
 	    return true;
 	} else {
@@ -1536,6 +1553,9 @@ public class TextTrix extends JFrame {
 	       where the array has length 0.
 	    */
 
+	    /* WORKAROUND: call true, false, true on setMultiSelectionEnabled
+	       to ensure that the same file can be opened
+	    */
 	    chooser.setMultiSelectionEnabled(true); 
 	    chooser.setMultiSelectionEnabled(false); 
 	    chooser.setMultiSelectionEnabled(true); 
@@ -1551,26 +1571,23 @@ public class TextTrix extends JFrame {
 	    // displays the dialog and opens all files selected
 	    boolean repeat = false;
 	    do {
-		//		System.out.println("multi: " + chooser.isMultiSelectionEnabled());
 		int result = chooser.showOpenDialog(owner);
-		if (result == JFileChooser.APPROVE_OPTION) {
-		    //		    String msg = "At least one chosen file 
+		// bring up the dialog and retrieve the result
+		if (result == JFileChooser.APPROVE_OPTION) { // Open button
 		    String msg = "";
 		    String title = "Couldn't open";
 		    File[] files = chooser.getSelectedFiles();
 		    boolean allFound = true;
-		    //		    String[] unopenables = new String[files.length];
-		    //		    int unopenablesIndx = 0;
 		    for (int i = 0; i < files.length; i++) {
-			if (!openFile(files[i]))
-			    //			    unopenables[unopenablesIndex++] = files[i].getPath();
-			    //			    System.out.println(files[i].getPath());
-			//			    allFound = false;
+			if (!openFile(files[i])) // record unopened files
 			    msg = msg + files[i] + "\n";
 		    }
-		    if (msg.equals("")) {
+		    // request another opportunity to open files if any
+		    // failures
+		    if (msg.equals("")) { // no unopened files
 			repeat = false;
-		    } else {
+		    } else { // some files left unopened
+			// notify the user which files couldn't be opened
 			msg = "The following files couldn't be opened:\n"
 			    + msg + "Would you like to try again?";
 			/*
@@ -1583,8 +1600,14 @@ public class TextTrix extends JFrame {
 			String msg = unopenables + "wasn't
 			+ "found.\nWould you like to try again?";
 			*/
+			// request another chance to open them or other files
 			repeat = yesNoDialog(owner, msg, title);
 		    }
+		    /* Original workaround.
+		       Utilizes the fact that getSelectedFiles() returns an 
+		       array of length 0, which getSelectedFile() returns the
+		       intended file object.
+		    */
 		    /*
 		    if (files.length == 0) {
 			File f1 = chooser.getSelectedFile();
@@ -1610,10 +1633,10 @@ public class TextTrix extends JFrame {
 			}
 		    }
 		    */
-		} else {
+		} else { // Cancel button
 		    repeat = false;
 		}
-	    } while (repeat);
+	    } while (repeat); // repeat if failed opens for user to retry
 	}
 
     }
