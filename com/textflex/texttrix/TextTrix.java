@@ -619,40 +619,47 @@ public class TextTrix extends JFrame {
 	button.setToolTipText(LibTTx.readText(detailedDescriptionBuf));
     }
 
+    /** Run a text-manipulating plugin on the selected text pad's text.
+	If a given region is selected, the plugin will only work on that
+	area.
+	@param pl plugin to invoke
+    */
     public void textTinker(PlugIn pl) {
 	TextPad t = getSelectedTextPad();
 	if (t != null) {
-	    viewPlain();
-	    Document doc = t.getDocument();
-	    //			String text = t.getText();
-	    String text = null;
+	    viewPlain(); // plugins generally need to work on displayed text
+	    // work through Document rather than getText/setText since
+	    // the latter method does not seem to work on all systems,
+	    // evidently only delivering and working on the current line
+	    Document doc = t.getDocument(); 
+	    String text = null; // text from the Document methods
 
 	    // only modify the selected text, and make 
 	    // the action undoable
 	    int start = t.getSelectionStart();
-	    int end = t.getSelectionEnd();
+	    int end = t.getSelectionEnd(); // at the first unselected character
 	    try {
-		if (start == end) {
-		    // may need to add original text to history buffer
-		    // before making the change
-		    //			    t.setUndoableText(pl.run(text, 0, text.length()));
-		    text = doc.getText(0, doc.getLength());
-		    text = pl.run(text);
-		    doc.remove(0, doc.getLength());
-		    doc.insertString(0, text, null);
+		// determines whether a region is selected or not;
+		// if not, works on the text pad's entire text
+		if (start == end) { // no selection
+		    text = doc.getText(0, doc.getLength()); // all the text
+		    text = pl.run(text); // invoke the plugin
+		    doc.remove(0, doc.getLength()); // remove all the text
+		    doc.insertString(0, text, null); // insert text
 		    // approximates the original caret position
 		    if (start > doc.getLength()) {
+			// otherwise errors toward end of document sometimes
 			t.setCaretPosition(doc.getLength());
 		    } else {
 			t.setCaretPosition(start);
 		    }
 		} else {
-		    //				t.setUndoableText(pl.run(text, start, end));
-		    int len = end - start;
-		    text = doc.getText(start, len);
-		    text = pl.run(text);
-		    doc.remove(start, len);
-		    doc.insertString(start, text, null);
+		    int len = end - start; // length of selected region
+		    text = doc.getText(start, len); // only get the region
+		    text = pl.run(text); // invoke the plugin
+		    doc.remove(start, len); // remove only the region
+		    doc.insertString(start, text, null); // insert text
+		    // caret automatically returns to end of selected region
 		}
 			    
 			    
@@ -662,6 +669,14 @@ public class TextTrix extends JFrame {
 	}
     }
 
+    /** Loads and set up the plugins.
+	Retrieves them from the "plugins" directory, located in the same
+	directory as the executable JAR for TextTrix.class or the 
+	"com" directory in the "com/textflex/texttrix" sequence holding
+	TextTrix.class.
+	TODO: also search the user's home directory or user determined
+	locations, such as ones a user specifies via a preferences panel.
+    */
     public void setupPlugins() {
 
 	/* The code has a relatively elaborate mechanism to locate
@@ -698,7 +713,6 @@ public class TextTrix extends JFrame {
 	String relClassLoc = "com/textflex/texttrix/TextTrix.class";
        	URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
 	String strClassDir = urlClassDir.getPath(); // to check whether JAR
-	//	System.out.println(strClassDir);
 	File fileClassDir = new File(urlClassDir.getPath());
 	File baseDir = null;
 	// move into JAR's parent directory only if launched from a JAR
@@ -724,8 +738,10 @@ public class TextTrix extends JFrame {
 		strBaseDir = strBaseDir.substring(0, space) + " ";
 	    }
 	}
-	/* Though simpler, this method crashes after a NoSuchMethodError
-	   under JRE <= 1.3.
+	/* Though simpler, this alternative solution crashes 
+	   after a NoSuchMethodError under JRE <= 1.3.
+	*/
+	/*
 	baseDir = new File(baseDir.toString().replaceAll("%20", " "));
 	File pluginsFile = new File(baseDir, "plugins");
 	*/
@@ -742,7 +758,6 @@ public class TextTrix extends JFrame {
 	// if so, delete protocal and any preceding info
 	if (pathStart != -1)
 	    pluginsPath = pluginsPath.substring(pathStart + protocol.length());
-	//	System.out.println(pluginsPath);
 	// pluginsPath now in normal syntax
 	pluginsFile = new File(pluginsPath); // the actual file
 
@@ -772,6 +787,7 @@ public class TextTrix extends JFrame {
 	}
 	*/
 
+	// load the plugins and create actions for them
 	plugIns = LibTTx.loadPlugIns(pluginsFile);
 	if (plugIns != null) {
 	    for (int i = 0; i < plugIns.length; i++) {
@@ -799,7 +815,6 @@ public class TextTrix extends JFrame {
      */
     public static TextPad getSelectedTextPad() {
 	int i = tabbedPane.getSelectedIndex();
-	//	System.out.println("index: " + i + ", count: " + tabbedPane.getTabCount());
 	if (i != -1) {
 	    return (TextPad)textAreas.get(i);
 	} else {
@@ -885,7 +900,6 @@ public class TextTrix extends JFrame {
 	char mnemonic = 0;
 	int i = 0;
 	//	String name = (String)action.getValue("NAME");
-	//	System.out.println("name: " + name);
 	for (i = 0; i < name.length()
 		 && charsUnavailable
 		 .indexOf((mnemonic = name.charAt(i)))
