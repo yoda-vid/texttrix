@@ -37,6 +37,31 @@
 
 # Text Trix Plug-In Packager
 
+HELP="
+Compiles Text Trix plug-ins and the Text Trix code, which the plug-ins
+extend.
+
+Syntax:
+	plug.sh [ -java java-compiler-binaries-path ] [ -help ]
+(\"sh \" might need to precede the command on the same line, in case
+the file pkg.sh does not have executable permissions.)
+
+Parameters:
+	-java java-compiler-binaries-path: Specifies the path to javac, 
+	jar, and other Java tools necessary for compilation.  
+	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	to specify the path, which would override any command-line 
+	specification.
+	
+	-help: Lends a hand by displaying yours truly.
+	
+Copyright:
+	Copyright (c) 2003-4 Text Flex
+
+Last updated:
+	2004-03-17
+"
+
 #####################
 # User-defined variables
 # Check them!
@@ -69,7 +94,11 @@ do
 		echo "Using the Java binary directory at $JAVA"
 		READ_PARAMETER=0
 	fi
-	if [ `expr match "$arg" -java` -ne 0 ]
+	if [ "x$arg" = "x-help" -o "x$arg" = "x-h" ]
+	then
+		echo "$HELP"
+		exit 0
+	elif [ "x$arg" = "x-java" ]
 	then
 		READ_PARAMETER=1
 	fi

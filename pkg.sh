@@ -92,11 +92,11 @@ do
 		fi
 		READ_PARAMETER=0
 	fi
-	if [ `expr match "$arg" -help` -ne 0 ]
+	if [ "x$arg" = "x-help" -o "x$arg" = "x-h" ]
 	then
 		echo "$HELP"
 		exit 0
-	elif [ `expr match "$arg" -java` -ne 0 ]
+	elif [ "x$arg" = "x-java" ]
 	then
 		READ_PARAMETER=1
 	fi
