@@ -39,6 +39,7 @@ import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
 import javax.swing.event.*;
+import javax.swing.undo.*;
 
 /**The writing pad and text manipulator.
    Consists of standard text editing methods
@@ -46,11 +47,15 @@ import javax.swing.event.*;
 */
 public class TextPad extends JTextArea {
 	boolean changed = false;
-
-    public TextPad(int w, int h) {
+	String path;
+	DocumentListener docListener = new TextPadDocListener();	
+	UndoManager undoManager = new UndoManager();
+	
+    public TextPad(int w, int h, String aPath) {
 		super(w, h);
-		DocumentListener docListener = new TextPadDocListener();	
+		path = aPath;
 		getDocument().addDocumentListener(docListener);
+		getDocument().addUndoableEditListener(undoManager);
 	}
 
 	public boolean getChanged() {
@@ -59,6 +64,24 @@ public class TextPad extends JTextArea {
 
 	public void setChanged(boolean b) {
 		changed = b;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String aPath) {
+		path = aPath;
+	}
+
+	public void undo() {
+		if (undoManager.canUndo())
+			undoManager.undo();
+	}
+
+	public void redo() {
+		if (undoManager.canRedo())
+			undoManager.redo();
 	}
 
     /** Strips inserted, extra hard returns.  For example,
