@@ -118,7 +118,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			
 			/**Responds to key events right after the key is pressed.
 			 * Unlike keyTyped(KeyEvent), backspaces have not yet
-			 * been processed, even for JVM == v.1.5.
+			 * been processed, for both JVM < v.1.5 and == v.1.5.
 			 * 
 			 */
 			public void keyPressed(KeyEvent evt) {
@@ -126,7 +126,9 @@ public class TextPad extends JTextPane implements StateEditable {
 				if (autoIndent
 					&& keyCode == KeyEvent.VK_BACK_SPACE
 					&& isLeadingTab()) {
-					System.out.println("leading tab");
+//					System.out.println("leading tab");
+					// no longer should JVM_15 b/c the behavior applies
+					// to <= JVM_15 in keyPressed
 					indentCurrentParagraph(getTabSize(), true);//JVM_15);
 				}
 				//				System.out.println("keyChar:" + keyCode);
@@ -475,7 +477,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Renders tabs as spaces, but indents the entire region a given number of spaces
 	 * per tab.
 	 * @param tabChars number of spaces for each tab to represent
-	 * @param unindentNotJVM_15 an unindent has occurred within a Java Virtual
+	 * @param decrementTab an unindent has occurred within a Java Virtual
 	 * Machine whose version precedes 1.5
 	 * @see #indentCurrentParagraph(int)
 	 */
@@ -504,7 +506,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		if (decrementTab) {
 			--tabs;
 		}
-		System.out.println("tabs: " + tabs);
+//		System.out.println("tabs: " + tabs);
 		int end = s.indexOf("\n", start);
 		indent(tabChars, tabs, start, (end == -1 ? s.length() : end + 1) - start);
 	}
