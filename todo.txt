@@ -19,7 +19,6 @@ v.0.5 series: advanced interface
 -printing
 -drag selected text
 -text area focus w/ each JTabbedPane switch
--shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order
 -check on line-down and changed-file breaks
 -more sophisticated find/replace search
 -status bar, incl line count
@@ -41,9 +40,10 @@ v.0.3.3
 -URLClassLoader can't load plugins in JRE v.1.4.2-beta-b19; FIXED: create file from path and convert file into URL rather than creating URL address manually before converting ./
 -plugin methods allowing dialog boxes, listeners, etc
 	-plugin types to specify how to implement them; eg "run", "dialog", "listener"
-	-dialog types create a dialog object that TextTrix invokes on its text
+	-dialog types create a dialog object that TextTrix invokes on its text; ADDED: PlugIn now has two separate methods that TextTrix invokes: startPlugIn and runPlugIn; TextTrix calls startPlugIn when the user first presses the plug-in's button, which can in turn either immediately notify TextTrix to call runPlugIn or allow the plug-in to create its own dialog box to set options and a button to make the notification
 	-listener types create listeners that TextTrix attaches to given TextPad
 -plugin adaptor class to permit unimplemented methods
+-shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order; ADDED: "Back" and "Forward" buttons with an unlimited history
 
 v.0.3.2
 -update tab tooltip when rename ./

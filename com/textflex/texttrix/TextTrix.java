@@ -67,6 +67,10 @@ public class TextTrix extends JFrame {
     private JMenu trixMenu = null; // trix plugins
     private JMenu toolsMenu = null; // tools plugins
     private JToolBar toolBar = null; // icons
+    private int[] tabIndexHistory = new int[10];
+    private int tabIndexHistoryIndex = -1;
+    private int currTabIndex = 0;
+    private boolean updateTabIndexHistory = true;
 
     /** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -82,15 +86,21 @@ public class TextTrix extends JFrame {
 	tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	// keep the tabs the same width when substituting chars
 	tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
-	// make first tab and text area
-	addTextArea(textAreas, tabbedPane, makeNewFile());
+	// initialize tabIndexHistory
+	for (int i = 0; i < tabIndexHistory.length; i++) 
+	    tabIndexHistory[i] = -1;
 	// adds a change listener to listen for tab switches and display
 	// the options of the tab's TextPad
 	tabbedPane.addChangeListener(new ChangeListener() {
 		public void stateChanged(ChangeEvent evt) {
 		    TextPad t = getSelectedTextPad();
-		    if (t != null) 
+		    if (t != null) {
 			setAutoIndent(t.getAutoIndent());
+			if (updateTabIndexHistory) {
+			    addTabIndexHistory(currTabIndex);
+			}
+			currTabIndex = tabbedPane.getSelectedIndex();
+		    }
 		}
 	    });
 	// display tool tips for up to 100s
@@ -178,8 +188,12 @@ public class TextTrix extends JFrame {
 			       makeIcon("images/closeicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    int i = tabbedPane.getSelectedIndex();
-		    if (i >= 0) 
+		    if (i >= 0) {
+			updateTabIndexHistory = false;
+			removeTabIndexHistory(i);
+			updateTabIndexHistory = true;
 			closeTextArea(i, textAreas, tabbedPane);
+		    }
 		}
 	    };
 	setAcceleratedAction(closeAction, "Close", 'C', 
@@ -368,6 +382,44 @@ public class TextTrix extends JFrame {
 
 	/* View menu items */
 	
+	// (ctrl-shift-[) switch back in the tab history
+	Action backTabAction = new AbstractAction("Back") {
+		public void actionPerformed(ActionEvent evt) {
+		    if (--tabIndexHistoryIndex >= 0) {
+			//			&& tabIndexHistoryIndex < tabIndexHistory.length) {
+			updateTabIndexHistory = false;
+			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + tabIndexHistory[tabIndexHistoryIndex]);
+			tabbedPane.setSelectedIndex(tabIndexHistory[tabIndexHistoryIndex]);
+			updateTabIndexHistory = true;
+		    } else {
+			++tabIndexHistoryIndex;
+		    }
+		}
+	    };
+	setAcceleratedAction(backTabAction, "Back", 'B', 
+			     KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
+	viewMenu.add(backTabAction);
+
+	// (ctrl-shift-]) switch forwared in the tab history
+	Action forwardTabAction = new AbstractAction("Forward") {
+		public void actionPerformed(ActionEvent evt) {
+		    int i = 0;
+		    if (++tabIndexHistoryIndex < tabIndexHistory.length
+			&& (i = tabIndexHistory[tabIndexHistoryIndex]) != -1) {
+			updateTabIndexHistory = false;
+			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + i);
+			tabbedPane.setSelectedIndex(i);
+			updateTabIndexHistory = true;
+			//			++tabIndexHistoryIndex;
+		    } else {
+			--tabIndexHistoryIndex;
+		    }
+		}
+	    };
+	setAcceleratedAction(forwardTabAction, "Foreward", 'F', 
+			     KeyStroke.getKeyStroke("ctrl shift CLOSE_BRACKET"));
+	viewMenu.add(forwardTabAction);
+
 	// (ctrl-[) switch to the preceding tab
 	Action prevTabAction = new AbstractAction("Preceeding tab") {
 		public void actionPerformed(ActionEvent evt) {
@@ -551,6 +603,8 @@ public class TextTrix extends JFrame {
 	//	contentPane.add(new TextArea(10, 5), BorderLayout.SOUTH);
 
 
+	// make first tab and text area
+	addTextArea(textAreas, tabbedPane, makeNewFile());
 	// load files specified at start from command-line
 	if (paths != null) {
 	    for (int i = 0; i < paths.length; i++) {
@@ -918,6 +972,99 @@ public class TextTrix extends JFrame {
     public static boolean getAutoIndent() {
 	return autoIndent.isSelected();
     }
+
+
+
+
+
+
+
+
+
+
+
+    public void addTabIndexHistory(int mostRecent) {
+	boolean repeat = true;
+	boolean shift = false;
+	/*
+	if (!(tabIndexHistoryIndex >= tabIndexHistory.length)
+	    && tabIndexHistoryIndex >= 0
+	    && tabIndexHistory[tabIndexHistoryIndex] != -1)
+	    ++tabIndexHistoryIndex;
+	*/
+	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
+	for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
+	    if (shift) {
+		if (tabIndexHistory[i] == -1) {
+		    //		    tabIndexHistory[i] = mostRecent;
+		    repeat = false;
+		} else {
+		    tabIndexHistory[i - 1] = tabIndexHistory[i];
+		}
+	    } else {
+		if (tabIndexHistory[i] == mostRecent) {
+		    shift = true;
+		} else if (tabIndexHistory[i] == -1) {
+		    //		    tabIndexHistory[i] = mostRecent;
+		    repeat = false;
+		}
+	    }
+	}
+	if (shift) {
+	    //	    --tabIndexHistoryIndex; 
+	    tabIndexHistory[--tabIndexHistoryIndex] = mostRecent;
+	} else if (tabIndexHistoryIndex >= tabIndexHistory.length) {
+	    tabIndexHistory = (int[])LibTTx.growArray(tabIndexHistory);
+	    tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
+	    /*
+	    --tabIndexHistoryIndex;
+	    if (repeat) {
+		System.arraycopy(tabIndexHistory, 1, 
+				 tabIndexHistory, 0, tabIndexHistory.length - 1);
+		tabIndexHistory[tabIndexHistory.length - 1] = mostRecent;
+	    }
+	    */
+	} else if (tabIndexHistoryIndex >= 0) {
+	    tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
+	    /*
+	    for (int i = tabIndexHistoryIndex + 1; 
+		 i < tabIndexHistory.length; i++)
+		tabIndexHistory[i] = -1;
+	    */
+	}
+	for (int i = 0; i < tabIndexHistory.length; i++) {
+	    System.out.print("tabIndexHistory[" + i + "]: " + tabIndexHistory[i] + "; ");
+	    System.out.println();
+	}
+	tabIndexHistoryIndex++;
+    }
+
+    public void removeTabIndexHistory(int removed) {
+	boolean shift = false;
+	System.out.print("removed: " + removed + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; new: ");
+	for (int i = 0; i < tabIndexHistory.length; i++) {
+	    if (tabIndexHistory[i] == removed) {
+		if (i <= tabIndexHistoryIndex) --tabIndexHistoryIndex;
+		shift = true;
+	    }
+	    if (shift) {
+		tabIndexHistory[i] = (i < tabIndexHistory.length - 1)
+		    ? tabIndexHistory[i + 1] : -1;
+	    }
+	    if (tabIndexHistory[i] > removed) {
+		tabIndexHistory[i] = --tabIndexHistory[i];
+	    }
+	    /*
+	    if (tabIndexHistory[i] == -1)
+		tabIndexHistoryIndex = i;
+	    */
+	    System.out.print(tabIndexHistory[i] + ",");
+	}
+	System.out.println();
+	//	--tabIndexHistoryIndex;
+    }
+
+
 
     /**Sets the given path as the most recently one used
      * to open a file.
