@@ -161,6 +161,10 @@ public class Prefs extends JFrame {
 	private String[] ignores = null; // ...to exclude
 	private static final String INCLUDE_PLUG_INS = "includePlugIns"; // includes
 	private static final String IGNORE_PLUG_INS = "ignorePlugIns"; // excludes
+	private static final String PLUG_IN_WIDTH = "plugInWidth_";
+	private static final String PLUG_IN_HEIGHT = "plugInHeight_";
+	private static final String PLUG_IN_X_LOC = "plugInXLoc_";
+	private static final String PLUG_IN_Y_LOC = "plugInYLoc_";
 
 	/** Constructs a preferences interface.
 	 * Loads its previous size settings.  Relies on the calling function to
@@ -418,6 +422,19 @@ public class Prefs extends JFrame {
 		internalPrefs.putInt(PRGM_X_LOC, (int) p.getX());
 		internalPrefs.putInt(PRGM_Y_LOC, (int) p.getY());
 	}
+	
+	public void storePlugInSize(String filename, int width, int height) {
+		plugInsPrefs.putInt(PLUG_IN_WIDTH + filename, width);
+		plugInsPrefs.putInt(PLUG_IN_HEIGHT + filename, height);
+		System.out.println("size saved: " + filename + ", " + width + "(X), " + height + "(Y)");
+	}
+	
+	public void storePlugInLocation(String filename, Point p) {
+		plugInsPrefs.putInt(PLUG_IN_X_LOC + filename, (int) p.getX());
+		plugInsPrefs.putInt(PLUG_IN_Y_LOC + filename, (int) p.getY());
+		System.out.println("location saved: " + filename + ", " 
+			+ p.getX() + "(X), " + p.getY() + "(Y)");
+	}
 
 	/** Stores whether the program should reopen tabs automatically.
 	 * The program can reopen the tabs left open at exit during the
@@ -612,6 +629,18 @@ public class Prefs extends JFrame {
 	 */
 	public int getPrgmYLoc() {
 		return internalPrefs.getInt(PRGM_Y_LOC, 0);
+	}
+	public int getPlugInWidth(String filename) {
+		return plugInsPrefs.getInt(PLUG_IN_WIDTH + filename, 0);
+	}
+	public int getPlugInHeight(String filename) {
+		return plugInsPrefs.getInt(PLUG_IN_HEIGHT + filename, 0);
+	}
+	public int getPlugInXLoc(String filename) {
+		return plugInsPrefs.getInt(PLUG_IN_X_LOC + filename, 0);
+	}
+	public int getPlugInYLoc(String filename) {
+		return plugInsPrefs.getInt(PLUG_IN_Y_LOC + filename, 0);
 	}
 	/** Gets the stored flag for re-opening tabs.
 	 * 

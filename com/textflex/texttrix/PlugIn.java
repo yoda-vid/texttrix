@@ -114,6 +114,9 @@ public abstract class PlugIn extends JComponent {
 	public void addWindowAdapter() {
 	}
 	
+	public void addWindowComponentListener() {
+	}
+	
 	public void activateWindow() {
 	}
 	
@@ -439,10 +442,32 @@ public abstract class PlugIn extends JComponent {
 		return path;
 	}
 	
+	public String getFilename() {
+		int lastSep = LibTTx.reverseIndexOf(path, File.separator, path.length());
+		return lastSep != -1 && lastSep != path.length() - 1 
+			? path.substring(lastSep + 1) : path;
+	}
+	
 	public WindowAdapter getWindowAdapter() {
 //		System.out.println("making winAdapter");
 //		return winAdapter;
 		return null;
+	}
+	
+	public void setWindowSize(int width, int height) {
+	}
+	public void setWindowLocation(Point p) {
+	}
+	public int getWindowWidth() {
+		return 0;
+	}
+	public int getWindowHeight() {
+		return 0;
+	}
+	public Point getWindowLocation() {
+		return null;
+	}
+	public void setWindowComponentListener(ComponentListener compListener) {
 	}
 
 }

@@ -85,7 +85,7 @@ public class TextTrix extends JFrame {
 	private static Action prefsCancelAction = null; // prefs action to reject
 	private static boolean updateFileHist = false;
 	// flag to update file history menu entries
-	private static JMenu fileMenu = new JMenu("File");
+	private static JMenu fileMenu = null;//new JMenu("File");
 	// file menu, which incl file history
 	private static int fileHistStart = -1;
 	// starting position of file history in file menu
@@ -102,6 +102,10 @@ public class TextTrix extends JFrame {
 	one <code>TextPad</code>.
 	 */
 	public TextTrix(final String[] paths) {
+		
+		// create file menu in constructor rather than when defining class
+		// variables b/c would otherwise use bold font for this menu alone
+		fileMenu = new JMenu("File");
 
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
@@ -607,7 +611,7 @@ public class TextTrix extends JFrame {
 		*/
 		if (!getPrefs().getAllPlugIns()
 			&& !LibTTx.inUnsortedList(pl.getPath(), includes)) {
-			System.out.println(pl.getPath());
+//			System.out.println(pl.getPath());
 			return;
 		}
 		String name = pl.getName(); // plugin name
@@ -657,6 +661,33 @@ public class TextTrix extends JFrame {
 			pl.setWindowAdapter(winAdapter);
 			//			System.out.println(pl.getName());
 			pl.addWindowAdapter();
+			
+			
+			// restore window size and location
+			final String filename = pl.getFilename();
+			pl.setWindowSize(getPrefs().getPlugInWidth(filename), 
+				getPrefs().getPlugInHeight(filename));
+			pl.setWindowLocation(
+				new Point(getPrefs().getPlugInXLoc(filename), 
+				getPrefs().getPlugInYLoc(filename)));
+
+			// store window size and location with each movement
+			ComponentListener compListener = new ComponentListener() {
+				public void componentMoved(ComponentEvent evt) {
+					getPrefs().storePlugInLocation(filename, 
+						pl.getWindowLocation());
+				}
+				public void componentResized(ComponentEvent evt) {
+					getPrefs().storePlugInSize(filename, 
+						pl.getWindowWidth(), pl.getWindowHeight());
+				}
+				public void componentShown(ComponentEvent evt) {
+				}
+				public void componentHidden(ComponentEvent evt) {
+				}
+			};
+			pl.setWindowComponentListener(compListener);
+			pl.addWindowComponentListener();
 		}
 
 		// action to start the plug in, such as invoking its options
@@ -2783,6 +2814,7 @@ public class TextTrix extends JFrame {
 					/* Create new menu and tool bars */
 
 					// remove the old components if necessary
+//					UIManager.put("Menu.font", new Font("SansSerif", Font.PLAIN, 12));
 					if (menuBar != null) {
 						contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");

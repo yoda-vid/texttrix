@@ -40,6 +40,7 @@ package com.textflex.texttrix;
 import javax.swing.*;
 import java.io.*;
 import java.awt.event.*;
+import java.awt.*;
 
 /**<code>PlugInWindow</code> simplifies the task of making a window for
  * a <code>PlugIn</code>.  To integrate these windows with the main application,
@@ -56,6 +57,7 @@ public abstract class PlugInWindow extends PlugIn {
 
 	private WindowAdapter winAdapter = null; // window listener
 	private JFrame window = null; // window
+	private ComponentListener winCompListener = null;
 	
 	/**Constructs a plug-in adapted for window control.
 	 * After creating the window, <code>setWindow(JFrame)</code> must be called
@@ -86,7 +88,7 @@ public abstract class PlugInWindow extends PlugIn {
 	 */
 	public void startPlugIn() {
 		setTmpActivated(true);
-		window.setVisible(true);//show(); DEPRECATED as of JVM v.1.5.0
+		window.setVisible(true);
 	}
 
 	/**Attaches a window listener to the window.
@@ -96,6 +98,10 @@ public abstract class PlugInWindow extends PlugIn {
 	public void addWindowAdapter() {
 		window.addWindowListener(winAdapter);//getWindowAdapter());
 //		System.out.println("added");
+	}
+	
+	public void addWindowComponentListener() {
+		window.addComponentListener(winCompListener);
 	}
 	
 	/**Makes the window visible.
@@ -134,6 +140,10 @@ public abstract class PlugInWindow extends PlugIn {
 	public void setWindowAdapter(WindowAdapter adapter) {
 		winAdapter = adapter;
 	}
+	
+	public void setWindowComponentListener(ComponentListener aWinCompListener) {
+		winCompListener = aWinCompListener;
+	}
 
 
 	/**Runs the plugin on all the given text.
@@ -153,6 +163,22 @@ public abstract class PlugInWindow extends PlugIn {
 		window = aWindow;
 	}
 	
+	public void setWindowLocation(Point p) {
+		window.setLocation(p);
+	}
+	
+	/**Sets the size of the window.
+	 * Does not change the size if either the given width or height parameters
+	 * are 0, which would otherwise produce an unusable window.  The values
+	 * are usually 0 only because the size has never been stored in the 
+	 * preferences.
+	 */
+	public void setWindowSize(int width, int height) {
+		if (width != 0 && height != 0) {
+			window.setSize(width, height);
+		} 
+	}
+	
 	/**Gets the window.
 	 * 
 	 * @return the window
@@ -168,6 +194,18 @@ public abstract class PlugInWindow extends PlugIn {
 //		System.out.println("making winAdapter");
 //		return winAdapter;
 		return winAdapter;
+	}
+	
+	public Point getWindowLocation() {
+		return window.getLocation();
+	}
+	
+	public int getWindowWidth() {
+		return window.getWidth();
+	}
+	
+	public int getWindowHeight() {
+		return window.getHeight();
 	}
 	
 	/** Mandates that the subclass calls another function to retrieve the default icon,
