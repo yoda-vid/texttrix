@@ -98,7 +98,7 @@ public class TextTrix extends JFrame {
 		new HashPrintRequestAttributeSet();
 	private PageFormat pageFormat = null;
 	private JLabel statusBar = null;
-//	private NumberFormat statusBarNumFormat = null;
+	//	private NumberFormat statusBarNumFormat = null;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -109,7 +109,7 @@ public class TextTrix extends JFrame {
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
 		fileMenu = new JMenu("File");
-		
+
 		// adds a window listener that responds to closure of the main
 		// window by calling the exit function
 		addWindowListener(new WindowAdapter() {
@@ -117,11 +117,11 @@ public class TextTrix extends JFrame {
 				exitTextTrix();
 			}
 		});
-		
+
 		// adds a window listener that focuses all currently open plug-in
 		// windows before re-focusing the main window
 		addWindowListener(new WindowAdapter() {
-			
+
 			// focusing operations
 			public void windowActivated(WindowEvent e) {
 				if (!getPrefs().getActivateWindowsTogether()) {
@@ -132,7 +132,7 @@ public class TextTrix extends JFrame {
 					focusAllWindows();
 				}
 			}
-			
+
 			// prevent further focusing if just focused
 			public void windowDeactivated(WindowEvent e) {
 				setTmpActivated(true);
@@ -311,7 +311,7 @@ public class TextTrix extends JFrame {
 		fileHist = new FileHist();
 
 		// invoke the worker thread to create the initial menu bar;
-		(menuBarCreator = new MenuBarCreator()).start();
+		 (menuBarCreator = new MenuBarCreator()).start();
 
 		// open the initial files and create the status bar;
 		// must make sure that all of the operations do not require anything from
@@ -321,15 +321,15 @@ public class TextTrix extends JFrame {
 				// creates a panel to store the components that will
 				// fit into the center position of the main window
 				JPanel centerPanel = new JPanel(new BorderLayout());
-				
+
 				// makes the status bar
 				statusBar = new JLabel("Welcome to the Text Trix writer!");
-				
+
 				// adds the panel's compoenents
 				centerPanel.add(tabbedPane, BorderLayout.CENTER);
 				centerPanel.add(statusBar, BorderLayout.SOUTH);
-//				contentPane.add(statusBar, BorderLayout.SOUTH);
-				
+				//				contentPane.add(statusBar, BorderLayout.SOUTH);
+
 				// adds the panel to the main window, central position
 				contentPane.add(centerPanel, BorderLayout.CENTER);
 
@@ -360,12 +360,10 @@ public class TextTrix extends JFrame {
 
 				// make the file history menu entries and set the auto-indent check box
 				syncMenus();
-				
-				
-				
+
 			}
 		});
-		
+
 	}
 
 	/**Publically executable starter method.
@@ -1420,7 +1418,6 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
-	
 
 	/**Exits <code>TextTrix</code> by closing each tab individually,
 	 * checking for unsaved text areas in the meantime.
@@ -1866,13 +1863,15 @@ public class TextTrix extends JFrame {
 		String path = file.getPath();
 		// ensures that the file exists and is not a directory
 		if (file.canRead() || resource) { // readable file
-//			System.out.println("I'm here");
+			//			System.out.println("I'm here");
 			TextPad t = getSelectedTextPad();
 			BufferedReader reader = null;
 			try {
 				if (resource) {
-					reader = new BufferedReader(
-						new InputStreamReader(TextTrix.class.getResourceAsStream(path)));
+					reader =
+						new BufferedReader(
+							new InputStreamReader(
+								TextTrix.class.getResourceAsStream(path)));
 				} else {
 					reader = new BufferedReader(new FileReader(path));
 				}
@@ -1883,7 +1882,7 @@ public class TextTrix extends JFrame {
 				*/
 				if (t == null || !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
-//					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
+					//					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				} else { // open file in current, empty pad
@@ -1924,11 +1923,10 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-	
+
 	public boolean openFile(File file) {
 		return openFile(file, true, false);
 	}
-	
 
 	/** Automatically auto-indents the given Text Pad.
 	 * Determines whether the Text Pad's filename extension matches the 
@@ -2197,7 +2195,6 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
-	
 	/**Opens the file save dialog to retrieve the new name of the 
 	 * currently selected <code>TextPad</code>.
 	 * If the file will overwrite another file, prompts the user
@@ -2346,14 +2343,14 @@ public class TextTrix extends JFrame {
 		// hasn't started, or stopTextPadAutoSaveTimer has stopped it;
 		// if try to restart, get ThreadStateException for some reason
 		// TODO: find out how to restart thread
-		
+
 		if (timer == null) {
 			pad.setAutoSaveTimer(timer = new TextPadAutoSaveTimer(pad));
 			timer.start();
 		} else if (timer.isStopped()) {
 			timer.start();
 		}
-		 
+
 		/* else if (timer instanceof TextPadAutoSaveTimer 
 					&& !(textTimer = (TextPadAutoSaveTimer) timer).isAlive()) {//.isStopped()) {
 					// only restarts if stopped; otherwise would continually
@@ -2388,7 +2385,7 @@ public class TextTrix extends JFrame {
 	private JFrame getThis() {
 		return this;
 	}
-	
+
 	/**Gets the number of the current newline in the given pad.
 	 * Word-wrapped lines are not counted, but only lines with
 	 * hard breaks.
@@ -2398,13 +2395,14 @@ public class TextTrix extends JFrame {
 	 * the document
 	 */
 	public int getLineNumber(TextPad pad) {
-//		TextPad pad = getSelectedTextPad();
-//		Element root = pad.getDocument().getDefaultRootElement();
+		//		TextPad pad = getSelectedTextPad();
+		//		Element root = pad.getDocument().getDefaultRootElement();
 		int offset = pad.getCaretPosition();
-		return pad.getDocument().getDefaultRootElement()
-			.getElementIndex(offset) + 1;
+		return pad.getDocument().getDefaultRootElement().getElementIndex(
+			offset)
+			+ 1;
 	}
-	
+
 	/**Gets the number of newlines in the given pad.
 	 * Word-wrapped lines are not counted, but only lines with
 	 * hard breaks.
@@ -2415,7 +2413,7 @@ public class TextTrix extends JFrame {
 	public int getTotalLineNumber(TextPad pad) {
 		return pad.getDocument().getDefaultRootElement().getElementCount();
 	}
-	
+
 	/**Updates the status bar with the latest line number information.
 	 * 
 	 * @param pad the pad
@@ -2425,10 +2423,10 @@ public class TextTrix extends JFrame {
 		int lineNum = getLineNumber(pad);
 		int totLines = getTotalLineNumber(pad);
 		// cast to float for float division rather than int division
-		int percentage = (int)((float)lineNum / (float)totLines * 100);
-//		System.out.println("percentage: " + percentage);
-		statusBar.setText(lineNum + ", " + totLines + " " 
-			+ "(" + percentage + "%)");
+		int percentage = (int) ((float) lineNum / (float) totLines * 100);
+		//		System.out.println("percentage: " + percentage);
+		statusBar.setText(
+			lineNum + ", " + totLines + " " + "(" + percentage + "%)");
 	}
 
 	/**Evokes a open file dialog, from which the user can
@@ -2661,7 +2659,7 @@ public class TextTrix extends JFrame {
 		 * has been selected.
 		 *
 		 */
-		public void setChanged() {			
+		public void setChanged() {
 			final TextPad pad = getSelectedTextPad();
 			if (!pad.getChanged()) {
 				pad.setChanged(true);
@@ -2694,15 +2692,16 @@ public class TextTrix extends JFrame {
 		public TextPadAutoSaveTimer(TextPad aTextPad) {
 			textPad = aTextPad;
 		}
-		
+
+		/**Starts the auto-save timer.
+		 * 
+		 */
 		public void start() {
-			
-			//if (thread == null) {
-				setStopped(false);
-				thread = new Thread(this, "thread");
-				thread.start();
-			//}
-			
+
+			setStopped(false);
+			thread = new Thread(this, "thread");
+			thread.start();
+
 		}
 
 		/**Saves the file after the time interval that the preferences
@@ -2718,20 +2717,9 @@ public class TextTrix extends JFrame {
 			//			stopped = false;
 			//			while (getPrefs().getAutoSave() && !interrupted()) {
 			try {
-				System.out.println("Waiting to save...");
-				// pauses for the preferences-specified time interval;
-				// repeats if a file chooser dialog is already open, such
-				// as during a save-as operation;
-				// TODO: see whether to repeat only if about to issue a prompt
-				// or show the save-as chooser
-				/*
-				do {
-					sleep(getPrefs().getAutoSaveInterval() * 60000);
-					System.out.println("repeating");
-				} while (isChooserShowing()); //chooser.isShowing());
-				*/
+//				System.out.println("Waiting to save...");
 				sleep(getPrefs().getAutoSaveInterval() * 60000);
-				System.out.println("...saving...");
+//				System.out.println("...saving...");
 				// don't need getPrefs().getAutoSave() && b/c only start
 				// timer if auto-save pref set, and interrupt already called
 				// if unset while timer running
@@ -2770,7 +2758,7 @@ public class TextTrix extends JFrame {
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
 								saveFile(textPad);
-								System.out.println("now saved!");
+//								System.out.println("now saved!");
 							} else {
 								// asks users whether they would like to supply a file 
 								// path rather than diving immediately and cryptically
@@ -2797,35 +2785,27 @@ public class TextTrix extends JFrame {
 								// solicits users for a file name;
 								// main prgm as dialog owner
 								fileSaveDialog(textPad, getThis());
-								System.out.println("now saved!");
+//								System.out.println("now saved!");
 							}
 						}
 					});
-				} else {
-					//					stopped = true;
 				}
-				//				interrupted();
-				//				return;
-				setStopped(true);
+				setStopped(true); // thread stops after clean-up fns
 			} catch (InterruptedException e) {
-				//				stopped = true;
-				//				return;
 				// ensures that an interrupt during the sleep is still flagged
 				setStopped(true);
 				Thread.currentThread().interrupt();
 			}
-
-			//			}
-		}
-		public boolean isChooserShowing() {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					chooserShowing = chooser.isShowing();
-				}
-			});
-			return chooserShowing;
 		}
 		
+		/**Requests the thread to stop by setting the <code>stopped</code>
+		 * flag, interrupting the running thread, and setting the current
+		 * thread to <code>null</code>.
+		 * Note that the <code>StoppableThread</code> object remains, only
+		 * the <ocde>Thread</code> object created at the starting of the 
+		 * <code>StoppableThread</code> is destroyed
+		 * 
+		 */
 		public void requestStop() {
 			setStopped(true);
 			if (thread != null) {
@@ -2833,22 +2813,6 @@ public class TextTrix extends JFrame {
 				thread = null;
 			}
 		}
-		/*
-				public boolean isStopped() {
-					return stopped;
-				}
-		*/
-		/*
-		public void stopRequested() {
-			stopRequested = true;
-			interrupt();
-		}
-		
-		public void resetTimer() {
-			stopRequested();
-			(new Thread(this)).start();
-		}
-		*/
 	}
 
 	/** Listener to pop up a context menu when right-clicking.
@@ -2882,7 +2846,7 @@ public class TextTrix extends JFrame {
 	 * thread starts.
 	 * @author davit
 	 */
-	private class MenuBarCreator implements Runnable {//extends Thread {
+	private class MenuBarCreator implements Runnable { //extends Thread {
 
 		/** Begins creating the bars.
 		 * 
@@ -2890,7 +2854,6 @@ public class TextTrix extends JFrame {
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
-		
 
 		/** Performs the menu and associated bars' creation.
 		 * 
@@ -3523,7 +3486,7 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 					helpMenu.add(shortcutsAction);
-					
+
 					/*
 					// features descriptions; opens new tab;
 					// reads from "features.txt" in same dir as this class

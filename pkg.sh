@@ -150,14 +150,15 @@ sh $TTX_DIR/plug.sh -java "$JAVA" # build the plugins
 
 echo "Packaging the files..."
 
-# remove old build packages and setup new ones
+# remove old build packages and set up new ones
 rm -rf $PKGDIR $PKG $SRCPKGDIR $SRCPKG
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf $TTX_DIR/com $TTX_DIR/readme.txt $TTX_DIR/readme-src.txt \
 	$TTX_DIR/todo.txt $TTX_DIR/changelog.txt \
-	$TTX_DIR/$DIR/license.txt $PKGDIR
+	$TTX_DIR/$DIR/license.txt $TTX_DIR/logo.ico $PKGDIR
 
+# create the master package, which will eventually become the binary package
 cd $PKGDIR
 # remove unnecessary files and directories
 rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~
@@ -165,16 +166,19 @@ rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~
 unix2dos *.txt $DIR/*.txt
 chmod 664 *.txt $DIR/*.txt # prevent execution of text files
 
+# create the source package from the master package
 cd $BLD_DIR
-cp -rf $PKGDIR texttrix
-rm $PKGDIR/readme-src.txt
-mkdir $SRCPKGDIR # copy to source package
-mv texttrix $SRCPKGDIR
+cp -rf $PKGDIR texttrix # master --> one folder within source package
+mkdir $SRCPKGDIR # create empty source package to hold copy of master
+mv texttrix $SRCPKGDIR # copy to source package
 cp $TTX_DIR/plug.sh $TTX_DIR/pkg.sh $TTX_DIR/pkg-jaj.sh \
 	$TTX_DIR/manifest-additions.mf \
 	$SRCPKGDIR/texttrix # copy scripts to source pkg
 cp $TTX_DIR/plugins/*.jar $PKGDIR/plugins # only want jars in binary package
 cp -rf $PLGS_DIR $SRCPKGDIR/plugins
+rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
+
+# create binary package
 
 # create binaries
 cd $BLD_DIR/$PKGDIR
@@ -187,8 +191,8 @@ else
 fi
 rm -rf com
 
-# remove all but source and related files
-cd $BLD_DIR/$SRCPKGDIR
+# convert master package to binary one
+cd $BLD_DIR/$SRCPKGDIR # remove all but source and related files
 rm -rf texttrix/$DIR/*.class
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins

@@ -43,6 +43,7 @@ Note: "./" is the "check-mark" symbol
 -preferences panel to choose default paths and file type filters
 -Java Web Start compatibility
 -option to remember which specific files used auto-indent
+-group tabs in separate tabbed panes
 
 ----Current Work----
 
