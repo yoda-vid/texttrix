@@ -45,7 +45,7 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-import java.lang.reflect.*;
+//import java.lang.reflect.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -147,8 +147,10 @@ public class TextTrix extends JFrame {
 					});
 				} catch (Exception e) {
 				}
+				
 				if (t != null)
 					t.requestFocusInWindow();
+				
 				//focuser();
 				/*
 				try {					
@@ -162,6 +164,15 @@ public class TextTrix extends JFrame {
 				*/
 			}
 		});
+		/*
+		tabbedPane.addMouseListener(new MouseAdapter() {
+			public void mouseReleased(MouseEvent e) {
+				TextPad t = getSelectedTextPad();
+				if (t != null)
+					t.requestFocusInWindow();
+			}
+		})
+		*/;
 
 		/*
 		t.setVisible(true);
@@ -325,8 +336,8 @@ public class TextTrix extends JFrame {
 				"Save",
 				LibTTx.makeIcon("images/saveicon-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
-					// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
-//	int tabIndex = tabbedPane.getSelectedIndex();
+				// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
+				//	int tabIndex = tabbedPane.getSelectedIndex();
 				TextPad t = getSelectedTextPad();//null;
 				if (t != null) {//tabIndex != -1) {
 				
@@ -534,27 +545,22 @@ public class TextTrix extends JFrame {
 		   Text Trix history.  To traverse up and down that history,
 		   the user can use the Ctrl-Shift-]\[ shortcut keys.
 		   
-		   These shortcuts intend to expand upon the default Java key-bindings
-		   for tab cycling.  These shortcuts remain available to those
-		   more familiar with other Java applications employing these default
-		   settings:
-		   -Ctrl-up to tabs
-		   -Leftt/Right to switch tabs
-		   -Tab back down to TextPad area
+		   The default Java key-bindings for tab switchin no longer apply since 
+		   the focus switches automatically to the newly selected tab.
 		*/
 
 		// (ctrl-shift-[) switch back in the tab history
 		Action backTabAction = new AbstractAction("Back") {
 			public void actionPerformed(ActionEvent evt) {
-					// switch back only up through the first record;
-		// keep from recording the past selected tabs
-		// as newly selected one;
-		// the current index always refers to the next
-		// available position to add selections, while
-		// the previous index refers to the current selection;
-		// to go back, the value at two positions back must be 
-		// checked
-	if (--tabIndexHistoryIndex >= 1) {
+				// switch back only up through the first record;
+				// keep from recording the past selected tabs
+				// as newly selected one;
+				// the current index always refers to the next
+				// available position to add selections, while
+				// the previous index refers to the current selection;
+				// to go back, the value at two positions back must be 
+				// checked
+				if (--tabIndexHistoryIndex >= 1) {
 					//			&& tabIndexHistoryIndex < tabIndexHistory.length) {
 					// uncouple the tab index history while switching
 					// to the past tabs -- leave the tabs as a
@@ -697,8 +703,8 @@ public class TextTrix extends JFrame {
 		// shortcuts description; opens new tab
 		Action shortcutsAction = new AbstractAction("Shortcuts") {
 			public void actionPerformed(ActionEvent evt) {
-					// reads from "shortcuts.txt" in same dir as this class
-	String path = "shortcuts.txt";
+				// reads from "shortcuts.txt" in same dir as this class
+				String path = "shortcuts.txt";
 				displayFile(path);
 			}
 		};
@@ -708,8 +714,8 @@ public class TextTrix extends JFrame {
 		// features descriptions; opens new tab
 		Action featuresAction = new AbstractAction("Features descriptions") {
 			public void actionPerformed(ActionEvent evt) {
-					// reads from "features.txt" in same dir as this class
-	String path = "features.txt";
+				// reads from "features.txt" in same dir as this class
+				String path = "features.txt";
 				displayFile(path);
 			}
 		};
@@ -719,8 +725,8 @@ public class TextTrix extends JFrame {
 		// license; opens new tab
 		Action licenseAction = new AbstractAction("License") {
 			public void actionPerformed(ActionEvent evt) {
-					// reads from "license.txt" in same directory as this class
-	String path = "license.txt";
+				// reads from "license.txt" in same directory as this class
+				String path = "license.txt";
 				displayFile(path);
 			}
 		};
@@ -880,6 +886,9 @@ public class TextTrix extends JFrame {
 		*/
 	}
 
+	/**Switches focus synchronously to the selected <code>TextPad</code>,
+	 * if one exists. 
+	 */	
 	public static void focuser() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -924,8 +933,8 @@ public class TextTrix extends JFrame {
 		// create the listener to respond to events that the plug in fires
 		PlugInAction listener = new PlugInAction() {
 			public void runPlugIn(PlugInEvent event) {
-					//		    if (evt.getType() == PlugInEvent.COMPLETE)
-	textTinker(pl);
+				//		    if (evt.getType() == PlugInEvent.COMPLETE)
+				textTinker(pl);
 			}
 		};
 		// register the listener so the plug in knows to fire it
@@ -935,9 +944,9 @@ public class TextTrix extends JFrame {
 		// panel if it has one
 		Action startAction = new AbstractAction(name, icon) {
 			public void actionPerformed(ActionEvent evt) {
-					// invoke the plugin's text manipulation on the current
-		// TextPad's text
-	pl.startPlugIn();
+				// invoke the plugin's text manipulation on the current
+				// TextPad's text
+				pl.startPlugIn();
 			}
 		};
 
@@ -2235,8 +2244,8 @@ public class TextTrix extends JFrame {
 		}
 	}
 
-	/** Solicits user command-line input on an independent thread.
-	 */
+	/* Solicits user command-line input on an independent thread.
+	 *
 	private class Focuser extends Thread {
 		/* Components within JTabbedPane tabs apparently do not respond to 
 		   requestFocusInWindow() until the tab becomes visible.  
@@ -2270,7 +2279,7 @@ public class TextTrix extends JFrame {
 		   to blink in the area.  Nonetheless, the component
 		   eventually does update its focus report, and the thread can
 		   know to stop.
-		*/
+		*
 		private Thread thread = null;
 		private TextPad pad = null;
 
@@ -2279,7 +2288,7 @@ public class TextTrix extends JFrame {
 		}
 
 		/** Starts the thread.
-		*/
+		*
 		public void start() {
 			if (thread == null) {
 				thread = new Thread(this, "Thread");
@@ -2290,7 +2299,7 @@ public class TextTrix extends JFrame {
 
 		/** Requests user command-line input.
 		    Does not exit until the user hits "Return".
-		*/
+		*
 		public void run() {
 			//TextPad pad = getSelectedTextPad();
 			/*
@@ -2298,7 +2307,7 @@ public class TextTrix extends JFrame {
 				sleep(100);
 			} catch (InterruptedException e) {
 			}
-			*/
+			*
 			while (!interrupted() && pad != null && pad != getFocusOwner()) {
 				/*
 				try {
@@ -2310,7 +2319,7 @@ public class TextTrix extends JFrame {
 					Thread.currentThread().interrupt();
 				}
 				* 
-				*/
+				*
 				//		    pad.requestFocusInWindow();
 				try {
 					EventQueue.invokeAndWait(new Runnable() {
@@ -2336,15 +2345,18 @@ public class TextTrix extends JFrame {
 			System.out.println("...done");
 			//				thread = null;
 		}
+		
 
 		/** Stops the thread and resets the input value.
 		 
 		public void stop() {
 			thread = null;
 		}
-		*/
+		*
 	}
-	/**Responds to tab changes in the JTabbedPane.
+	*/
+	
+	/*Responds to tab changes in the JTabbedPane.
 	 * Not presently working.
 	 *
 	 private class TabSwitchListener implements ChangeListener {
