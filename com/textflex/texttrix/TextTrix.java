@@ -58,6 +58,7 @@ public class TextTrix extends JFrame {
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
+	private static FileFilter allFilter = null;
 	private static JCheckBoxMenuItem autoIndent = null;
 	private static String openDir = ""; // most recently path opened to
 	private static String saveDir = ""; // most recently path saved to
@@ -211,6 +212,7 @@ public class TextTrix extends JFrame {
 
 		// set text and web file filters for open/save dialog boxes
 		chooser = new JFileChooser();
+		allFilter = chooser.getFileFilter();
 		final ExtensionFileFilter webFilter = new ExtensionFileFilter();
 		webFilter.addExtension("html");
 		webFilter.addExtension("htm");
@@ -1891,6 +1893,8 @@ public class TextTrix extends JFrame {
 				dir = openDir;
 			//	    System.out.println("dir: " + dir);
 			chooser.setCurrentDirectory(new File(dir));
+			chooser.setSelectedFile(new File(""));
+			chooser.setFileFilter(allFilter);
 			// allows one to open multiple files;
 			// must disable for save dialog
 

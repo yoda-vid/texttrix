@@ -39,6 +39,7 @@ Note: "./" is the "check-mark" symbol
 	-adjust when single word spans multiple lines, including when hit enter in the middle
 -truncate filenames on tabs
 -automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
+-when saving an already existing file, match the file filter with the file's extension
 
 ----Current Work----
 
@@ -67,7 +68,7 @@ v.0.3.4
 -fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts
 -close files from left to right; REVISED: allows tab restoration to easily open files in the same order that they were at closing
 -clear default name from file chooser when saving new file; ADDED: if file doesn't exist, goes to the most recent directory but gives a blank name to prevent overwriting an existing file
--provide original name by default when saving-as an already saved file; ADDED: provides the name
+-provide original name by default when saving-as an already saved file; ADDED: provides the name; ADDED: uses the "All Files" filter when opening files
 -fix StringIndexOutOfBoundsError when running most plug-ins on selected text; FIXED: TextTrix.textTinker passed in only the selected region, but the plug-ins treated it as if they received the whole text; revised PlugIn spec so that default to run(String) rather than making all run methods abstract; plug-ins w/ alwaysEntireText == true need to override run(String, int, int) to respond to selection boundaries
 -re-highlight selected text in Search plug-in; ADDED: if "Selected Area Only" option chosen in stats mode, will rehighlight; otherwise, removes highlighting to avoid giving the false impression that the stats are for the selected area only
 
