@@ -184,21 +184,25 @@ public class TextTrix extends JFrame {
 	chooser.setMultiSelectionEnabled(true); // allow opening multiple files
 	
 	// close file; check if saved
-	Action closeAction = new AbstractAction("Close", makeIcon("images/closeicon-16x16.png")) {
+	Action closeAction = 
+	    new AbstractAction("Close", 
+			       makeIcon("images/closeicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    int i = tabbedPane.getSelectedIndex();
 		    if (i >= 0) 
 			closeTextArea(i, textAreas, tabbedPane);
 		}
 	    };
-	setAction(closeAction, "Close", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_W,
-								    InputEvent.CTRL_MASK));
+	setAction(closeAction, "Close", 'C', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK));
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
-	Action saveAction = new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
+	Action saveAction = 
+	    new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
-		    // can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
+		    // can't use tabbedPane.getSelectedComponent() 
+		    // b/c returns JScrollPane
 		    int tabIndex = tabbedPane.getSelectedIndex();
 		    TextPad t = null;
 		    if (tabIndex != -1) {
@@ -809,9 +813,9 @@ public class TextTrix extends JFrame {
     public void displayFile(String path) {
 	try {
 	    // getResourceAsStream to make future usable as an applet
-	    BufferedReader reader = new BufferedReader(new
-						       InputStreamReader(TextTrix.class.
-									 getResourceAsStream(path)));
+	    BufferedReader reader = 
+		new BufferedReader(new InputStreamReader(TextTrix.class.
+							 getResourceAsStream(path)));
 	    String text = readText(reader);
 	    reader.close();
 	    addTextArea(textAreas, tabbedPane, new File(path));
@@ -865,15 +869,17 @@ public class TextTrix extends JFrame {
 	    String s = "Please save first.";
 	    tabbedPane.setSelectedIndex(tabIndex);
 	    // dialog with 3 choices: save, discard, cancel
-	    int choice = JOptionPane.showOptionDialog(					
-						      null,
-						      "This file has not yet been saved.\nWhat would you like me to do with it?",
-						      "Save before close",
-						      JOptionPane.WARNING_MESSAGE,
-						      JOptionPane.DEFAULT_OPTION,
-						      null,				
-						      new String[] { "Save", "Toss it out", "Cancel" },
-						      "Save");
+	    int choice = 
+		JOptionPane.showOptionDialog(null,
+					     "This file has not yet been saved.\nWhat would you like me to do with it?",
+					     "Save before close",
+					     JOptionPane.WARNING_MESSAGE,
+					     JOptionPane.DEFAULT_OPTION,
+					     null,
+					     new String[] { 
+						 "Save", "Toss it out", 
+						 "Cancel" },
+					     "Save");
 	    switch (choice) {
 		// save the text area's contents
 	    case 0:
@@ -958,8 +964,9 @@ public class TextTrix extends JFrame {
 	TextPad textPad = new TextPad(file);
 	// final variables so can use in inner class;
 			
-	JScrollPane scrollPane = new JScrollPane(textPad, 
-						 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	JScrollPane scrollPane = 
+	    new JScrollPane(textPad, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+			    JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	//		scrollPane.setRequestFocusEnabled(false);
 	DocumentListener listener = new TextPadDocListener();
 			
@@ -980,18 +987,21 @@ public class TextTrix extends JFrame {
      * have been changed or not.
      * Appends "<code> *</code>" if the file has unsaved changes; 
      * appends "<code>  </code>" otherwise.
-     * @param arrayList array of <code>TextPad</code>s that the tabbed pane displays
+     * @param arrayList array of <code>TextPad</code>s that the 
+     * tabbed pane displays
      * @param tabbedPane tabbed pane to update
      */
     public void updateTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
 	int i = tabbedPane.getSelectedIndex();
 	TextPad textPad = (TextPad)arrayList.get(i);
-	String title = tabbedPane.getTitleAt(i);
+	//	String title = tabbedPane.getTitleAt(i);
+	String title = textPad.getName();
 	// convert to filename; -2 b/c added 2 spaces
 	if (textPad.getChanged()) {
-	    tabbedPane.setTitleAt(i, textPad.getName() + " *");
+	    tabbedPane.setTitleAt(i, title + " *");
 	} else {
-	    tabbedPane.setTitleAt(i, title.substring(0, title.length() - 1) + " ");
+	    tabbedPane.setTitleAt(i, title + "  ");
+		//		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 	}
     }
 
@@ -1209,8 +1219,9 @@ public class TextTrix extends JFrame {
 			t.setCaretPosition(0);
 			t.setChanged(false);
 			t.setFile(path);
-			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-					      files[i].getName());
+			//			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+			//	      files[i].getName());
+			updateTitle(textAreas, tabbedPane);
 			reader.close();
 			setOpenDir(chooser.getSelectedFile().getParent());
 		    } catch(IOException exception) {
