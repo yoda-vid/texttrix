@@ -60,7 +60,10 @@ Note: "./" is the "check-mark" symbol
 
 ----Current Work----
 
-v.0.3.6
+v.0.5.0
+
+-from v.0.5.0rc1
+	-fix failure to reuse initial tab; FIXED: updated openFile(File) to reuse unused tab by default, while the main openFile now ensures that the tab has not been changed before reusing it for a newly opened file, even if the tab is blank
 -auto-wrap-indent additions and fixes
 	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with Shift+TAB
 	-decrement line's tab with Shift+TAB; ADDED: if no text selected, current line loses one leading tab if auto indent mode and line indented
@@ -94,6 +97,7 @@ v.0.3.6
 		-line length threshold; ADDED: configurable threshold to preserve short lines, as in some poetry
 		-selected text; ADDED: an option in the dialog window rather than an assumption based on text selection
 		-results section to summarize removals; ADDED: results displays num chars removed, minus those added b/c of email markes
+		-update tool tip
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included

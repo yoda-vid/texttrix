@@ -1965,7 +1965,7 @@ public class TextTrix extends JFrame {
 				 * tab and set its text if no tabs exist or if current tab has
 				 * tokens; set current tab's text otherwise.
 				 */
-				if (t == null || !reuseTab || !t.isEmpty()) { // open file in new pad
+				if (t == null || !reuseTab || !t.isEmpty() || t.getChanged()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
 					t = getSelectedTextPad();
 					read(t, reader, path);
@@ -2025,7 +2025,7 @@ public class TextTrix extends JFrame {
 	 * @see #openFile(File, boolean, boolean)
 	 */
 	public boolean openFile(File file) {
-		return openFile(file, true, false, false);
+		return openFile(file, true, false, true);
 	}
 	
 	/**Opens a file as editable and not from a resource.

@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-4
+# Portions created by the Initial Developer are Copyright (C) 2003-5
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -39,12 +39,14 @@
 # Overview Variables
 ##################
 
-TTX_VER=0.3.6
+TTX_VER=0.3.6 # curr ver num; only used for default install loc
 HELP="
-Builds Text Trix, the super text tool chest.
+Generates a customized Makefile to build Text Trix, the super tool 
+chest for text.
 
 Syntax:
-      configure [--java=java-compiler-path] [--help] 
+      configure [--java=java-compiler-path] [--prefix=install-location] 
+		[--help] 
 (The command may need to be invoked with \"sh configure\", if
 the file \"configure\" does not have executable permissions.)
 
@@ -55,12 +57,13 @@ envrionemnt.
 
 Parameters:
 	--help: Lends a hand by displaying yours truly.
+	
+	--prefix=install-location: the directory in which to install Text Trix.
+	Defaults to /usr/local/texttrix-x.y.z, where x.y.z is set by the 
+	variable, TTX_VER.
 		
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
-	jar, and other Java tools necessary for compilation.  
-	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
-	to specify the path, which would override any command-line 
-	specification.
+	--java=java-compiler-path: Specifies the path to javac, 
+	jar, and other Java tools necessary for compilation.
 
 Copyright:
 	Copyright (c) 2003-4 Text Flex
@@ -127,7 +130,7 @@ do
 		READ_PARAMETER=1
 	elif [ `expr substr $arg 1 ${#PAR_PREFIX}` \
 			= $PAR_PREFIX \
-		-a ${#PAR_PREFIX} -eq $n ] # specify the graphical environment
+		-a ${#PAR_PREFIX} -eq $n ] # specify the install location
 	then
 		READ_PREFIX=1
 		READ_PARAMETER=1
@@ -164,7 +167,8 @@ fi
 # Source directories
 # Note that currently requires the user to remain case-sensitive with the name
 # of the base dir, even if Cygwin navigates w/o regard to case.
-# Determine the base dir if not specified above
+# Determine the base dir if not specified above.
+# Any "/." used to invoke the script are removed for Cygwin compatibility.
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
 	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
@@ -177,7 +181,7 @@ then
 	BASE_DIR="${BASE_DIR%/texttrix/configure}" # assumes the script's name is plug.sh
 	BASE_DIR="${BASE_DIR%/.}"
 fi
-MAKEFILE="$PWD/Makefile"
+MAKEFILE="$PWD/Makefile" # name of resulting Makefile
 
 
 
@@ -215,7 +219,7 @@ LICENSE="
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-4
+# Portions created by the Initial Developer are Copyright (C) 2003-5
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -250,7 +254,7 @@ else
 fi
 
 
-# Common macros
+# Common and main Text Trix macros
 
 PKG_DIR="com/textflex/texttrix"
 PKG="com.textflex.texttrix"
@@ -260,8 +264,15 @@ targetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SRC_FILES))'
 ttxBaseDir='$(BASE_DIR)/texttrix'
 ttxBasePkgDir="$ttxBaseDir"'/$(PKG_DIR)'
 
+#############
+# Text Trix build rule
+# Allows building by calling either TextTrix or texttrix
+
+# main rule
 ttxRule='TextTrix texttrix: TextTrix_setup $(TARGET_FILES)'
 
+# setup rule
+# Ensures proper placement of files
 ttxSetupRule='TextTrix_setup: '
 ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/$(PKG_DIR)'
 ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/plugins'
@@ -269,7 +280,10 @@ ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$t
 ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/$(PKG_DIR)/images'
 ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/images/*.png"' texttrix/$(PKG_DIR)/images; fi'
 
-
+# class rule
+# Customized for building w/i Cygwin or Linux environments.
+# "-source 1.3" is used to allow for maximal build versatility, though Text Trix does have
+# classes only introduced since JVM 1.4
 ttxClassRule='texttrix/$(PKG_DIR)/%.class: $(BASE_DIR)/texttrix/$(PKG_DIR)/%.java'
 if [ $CYGWIN = true ]
 then
@@ -278,9 +292,16 @@ else
 	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.3 -sourcepath $(BASE_DIR)/texttrix -classpath texttrix $? -d texttrix'
 fi
 
+#########
+# List of phony rules
 phony='.PHONY: TextTrix texttrix TextTrix_setup'
-clean=""
 
+clean="" # prep for building up the clean rule
+
+#########
+# Plug-in rules
+# Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
+# sensitive format
 PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
 plgTargetFiles=""
@@ -289,26 +310,34 @@ plgSetupRules=""
 plgClassRules=""
 for plg in $PLGS
 do
+	# plug-in directories have all-lower cases, while the vars have just the opposite
 	plgDir=`echo "$plg" | tr "[:upper:]" "[:lower:]"`
 	plgVar=`echo "$plg" | tr "[:lower:]" "[:upper:]"`
 	
+	# plug-in source files
 	plgSrcFilesVar="$plgVar"_SRC_FILES
 	plgSrcFiles="$plgSrcFiles""\n$plgSrcFilesVar"'=$(wildcard $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/*.java)'
 	
+	# plug-in target files
 	plgTargetFilesVar="$plgVar"_TARGET_FILES
 	plgTargetFiles="$plgTargetFiles""\n$plgTargetFilesVar"'=$(patsubst $(BASE_DIR)/%.java,%.class,$('"$plgSrcFilesVar"'))'
 	
+	# parsing arguments to javac from directory information
 	plgSrcpath='$(BASE_DIR)/texttrix:$(BASE_DIR)/plugins/'"$plgDir"
 	plgClasspath=texttrix:plugins/"$plgDir"
 	plgBaseDir='$(BASE_DIR)/plugins/'"$plgDir"
 	plgBasePkgDir="$plgBaseDir"'/$(PKG_DIR)'
 	
+	# main rule, which includes dependency on texttrix to ensure PlugIn and 
+	# related class updating
 	plgRules="$plgRules""\n$plg"": texttrix $plg"'_setup $('"$plgTargetFilesVar"')'"\n"
 	
+	# setup rule
 	plgSetupRules="$plgSetupRules""\n$plg"'_setup:'
 	plgSetupRules="$plgSetupRules""\n\t"'mkdir -p plugins/'"$plgDir"'/$(PKG_DIR)'
 	plgSetupRules="$plgSetupRules""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$plgBasePkgDir/*.html $plgBasePkgDir/*.png plugins/$plgDir/"'$(PKG_DIR); fi'"\n"
-		
+	
+	# class rule
 	plgClassRules="$plgClassRules""\nplugins/$plgDir"'/$(PKG_DIR)/%.class: $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/%.java'
 	if [ $CYGWIN = true ]
 	then
@@ -316,12 +345,16 @@ do
 	else
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath"' -classpath '"$plgSrcpath"' $? -d plugins/'"$plgDir"
 	fi
+	# each plug-in must be packaged in a JAR file and moved to the "plugins" folder
+	# within "texttrix"
 	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; jar -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
 	plgClassRules="$plgClassRules""\n\tmv plugins/$plgDir/$plg.jar texttrix/plugins"
 	plgClassRules="$plgClassRules""\n"
 	
+	# add to list of phony args
 	phony="$phony $plg $plg"_setup
 	
+	# add targets to list of files to clean
 	clean="$clean "'$('"$plgTargetFilesVar)"
 done
 
@@ -333,7 +366,8 @@ fi
 echo "Setting TTX_VER to...$TTX_VER"
 echo "Setting the installation path to...$PREFIX"
 
-# common macros collections
+
+# Common macros collections
 COMMON_VARS="TTX_VER=$TTX_VER
 BASE_DIR=$BASE_DIR
 PREFIX=$PREFIX
@@ -347,8 +381,9 @@ $plgSrcFiles
 $plgTargetFiles
 "
 
+########
 # API rule
-
+# links to online Java documentation
 LINK="-link http://java.sun.com/j2se/1.5.0/docs/api"
 api='api: $(TARGET_FILES)'"\n\t"'mkdir docs/api'
 if [ $CYGWIN = true ]
@@ -359,6 +394,7 @@ else
 fi
 
 
+###########
 # Installation rules
 
 install='install: install_setup'
@@ -373,12 +409,16 @@ installSetup="$installSetup""\n\t"'mkdir -p $(PREFIX)/plugins'
 
 phony="$phony clean all install install_setup"
 
+###########
 # Clean-up rule
 
 clean='clean: '"\n\t""rm -f $clean"' $(TARGET_FILES)'
 clean="$clean""\n\t"'rm -f $(BASE_DIR)/texttrix/plugins/*.jar'
 
-# rules collection
+
+
+
+# Rules collection
 RULES="all: texttrix $PLGS
 
 $phony
@@ -401,6 +441,9 @@ $api
 
 $clean
 "
+
+########
+# Write the Makefile
 
 echo -n "Creating Makefile..."
 echo -e "$LICENSE" >> $MAKEFILE

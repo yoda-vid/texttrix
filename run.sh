@@ -18,7 +18,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-4
+# Portions created by the Initial Developer are Copyright (C) 2003-5
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -81,6 +81,8 @@ READ_JAVA=0
 ################
 # Automatically detect the Cygwin environment
 
+echo "Welcome to Text Trix!"
+echo ""
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
@@ -156,6 +158,5 @@ then
 	BASE_DIR="${BASE_DIR%/.}"
 fi
 
-echo "Welcome to Text Trix!"
 cd "$BASE_DIR"
 "$JAVA"java com/textflex/texttrix/TextTrix
