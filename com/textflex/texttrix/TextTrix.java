@@ -484,8 +484,8 @@ public class TextTrix extends JFrame {
 				public void keyTyped(KeyEvent e) {
 					if (textPad.getChanged()) {
 						String title = tabbedPane.getTitleAt(i);
-						// convert to filename; -3 b/c added 2 spaces
-						title = title.subString(0, title.length() - 3);
+						// convert to filename; -2 b/c added 2 spaces
+						title = title.substring(0, title.length() - 2);
 						if (!title.endsWith(" *"))
 							tabbedPane.setTitleAt(i, title + " *");
 					}

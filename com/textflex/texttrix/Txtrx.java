@@ -38,15 +38,27 @@ package net.sourceforge.texttrix;
 
 import java.io.*;
 
+/**The command-line version of Text Trix.
+ * Takes an arguments specifying the practical or goofy functions to apply
+ * to the subsequent list of text files.
+ * If no command is specified, defaults to "verbose", which simply
+ * outputs the file on screen.
+ */
 public class Txtrx {
 
 	public Txtrx() {
 	}
 
+	/**Invokes Txtrx and filters the parameters.
+	 * @param args array of the commands with a leading dash,
+	 * followed by the filenames to manipulate
+	 */
 	public static void main(String[] args) {
-		if (args.length > 1) {
+		// more than 1 argument or a single, non-command argument
+		if (args.length > 1 || (args.length == 1 && !args[0].startsWith("-"))) {
 			applyCmds(args);
-		} else if (args.length == 1 && args[0].indexOf("-") == 0) {
+		// only argument is the commands
+		} else if (args.length == 1) {
 			System.out.println("Please supply files to goof with.");
 		} else {
 			// likely want to replace by automatically calling --help
@@ -63,24 +75,26 @@ public class Txtrx {
 	 */
 	public static void applyCmds(String[] args) {
 		String cmds = args[0];
-		String cmd;
+		String cmd = "";
 		boolean verbose = false;
 		int fileIndex = 1;
 		
 		// one or more args: files
-		if (cmds.indexOf("-") != 0) {
+		if (!cmds.startsWith("-")) {
 			verbose = true;
 			cmd = "v";
 			fileIndex = 0;
 		// one or more args: commands that include "v", files
 		} else if (cmds.indexOf("v") != -1) {
 			verbose = true;
-			cmds.replace("-", "");
-			cmds.replace("v", "");
+			cmds = removeSubstring(cmds, "-");
+			cmds = removeSubstring(cmds, "v");
+		} else {
+			cmds = removeSubstring(cmds, "-");
 		}
 	
-		for (fileIndex; fileIndex < args.length; fileIndex++) {
-			String path = args[fileIndex];
+		for (int i = fileIndex; i < args.length; i++) {
+			String path = args[i];
 			String text;
 			/** prob not necessary since prob does automatically
 			if (path.charAt(0) == "/") {
@@ -94,20 +108,49 @@ public class Txtrx {
 				BufferedReader reader =
 					new BufferedReader(new FileReader(path));
 				text = readFile(reader, path);
+				reader.close();
+				if (cmd == "v") {
+					System.out.println(text);
+				} else {
+					while (cmds != null) {
+						if (cmds.length() > 1) {
+							cmd = cmds.substring(0, 1);
+							text = applyCmd(cmd, text);
+							cmds = cmds.substring(1);
+						} else {
+							text = applyCmd(cmds, text);
+							cmds = null;
+						}
+					}
+					writeFile(text, path);
+					if (verbose)
+						System.out.println(text);
+				}			
 			} catch(IOException e) {
 				System.out.println(path + " is not a file");
-			}
-			
-			if (cmd == "v") {
-				displayText(text);
-			} else if (cmds != null) {
-				text = applyCmd(cmds.substring(0, 1), text);
-				cmds = cmds.substring(1);
-				if (verbose)
-					displayText(text);
-				writeFile(text);
-			}			
+			}	
 		}
+	}
+
+	public static String removeSubstring(String aString, String aSubstring) {
+		String string = aString;
+		int l = aSubstring.length();
+		int i;
+		
+		while (string != null 
+				&& l != 0 
+				&& (i = string.indexOf(aSubstring)) != -1) {
+			if (string.equals(aSubstring)) {
+				string = null;
+			} else if (i == 0) {
+				string = string.substring(l);
+			} else if (i + l == string.length()) {
+				string = string.substring(0, i);
+			} else {
+				string = string.substring(0, i) + string.substring(i + l);
+			}
+		}
+		return string;
 	}
 
 	/**Applies a single command to a given string.
@@ -116,30 +159,47 @@ public class Txtrx {
 	 * "h" is the HTML tag replacer (practical function).
 	 * @param text text to modify
 	 */
-	public String applyCmd(String cmd, String text) {
-		if (cmd == "r") {
+	public static String applyCmd(String cmd, String aText) {
+		String text = aText;
+	
+		if (cmd.equals("r")) {
 			return Practical.removeExtraHardReturns(text);
-		} else if (cmd == "h") {
+		} else if (cmd.equals("h")) {
 			return Practical.replaceHTMLTags(text);
 		} else {
 			return text;
 		}
 	}
-	
-	public static String readFile(BufferedReader reader) {
+
+	/**Extracts the contents of a text stream.
+	 * @param reader buffered stream for text input from a file
+	 * @return the file's text as a string
+	 */
+	public static String readFile(BufferedReader reader, String path) {
 		try {
 			String text = "";
 			String line;
-			while (line = reader.readLine() != null) {
+			while ((line = reader.readLine()) != null) {
 				text = text + line + "\n";
 			}
 			return text;
 		} catch(IOException e) {
 			System.out.println(path + " is apparently not a text file");
-			return text;
+			return "";
 		}
 	}
 
-	public static void writeFile(String text) {
+	/**Writes text to a file.
+	 * @param text the text to write to the file
+	 * @param path the file's path to write to
+	 */
+	public static void writeFile(String text, String path) {
+		try {
+			PrintWriter writer = new PrintWriter(new FileWriter(path), true);
+			writer.print(text);
+			writer.close();
+		} catch(IOException e) {
+			System.out.println(path + " is not accessible");
+		}
 	}
 }

@@ -129,7 +129,7 @@ public class Practical {
 		return stripped;
     }
 
-	public static String removeHTMLTags(String atext) {
+	public static String replaceHTMLTags(String aText) {
 		String text = aText;
 		return text;
 	}
