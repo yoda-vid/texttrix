@@ -777,7 +777,17 @@ public class TextTrix extends JFrame {
 					//System.out.println("looking for: " + pl.getFilename());
 					if ((diag = getPlugInDialog(pl.getFilename())) != null) {
 						//System.out.println("found it!");
+						TextPad t = getSelectedTextPad();
+						int selectionStart = -1;
+						int selectionEnd = -1;
+						if (t != null) {
+							selectionStart = t.getSelectionStart();
+							selectionEnd = t.getSelectionEnd();
+						}
 						diag.setVisible(true);
+						if (t != null && selectionStart != selectionEnd) {
+							textSelection(t, 0, selectionStart, selectionEnd);
+						}
 					}
 				}
 			}

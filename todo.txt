@@ -49,23 +49,21 @@ v.0.3.6
 -auto-wrap-indent additions and fixes
 	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with SHIFT+TAB
 	-adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
-	-fix tab delete in Linux
-	-fix loss of auto-wrap-indent when applying search plug-in
-	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
+	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975, 709862): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
 	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
 	-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
-	-fix graphical indent when backspace at head of unindented line; FIXED: corrected isLeadingTab()
 	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
 -plug-in updates
 	-plug-in model
 		-option for plug-in to specify the region to replace; ADDED: when the plug-in wants to replace only a section of the text it has received, the plug-in can specify this region along with the text to replace it; TextTrix uses Document and indentRegion controls for speedy, specific updates
+		-re-highlight text after opening new plug-in dialog window; FIXED: no longer lose highlight when opening plug-in dialogs
 	-Search plug-in fixes
-		-fix replace-all fn to not exceed the selection boundaries; FIXED: replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
-		-make selected-area-only and wrap boxes alternate choices; ADDED: since the two options are mutually exclusive, turning on one turns off the other, while both can also be unchecked simultaneously
+		-fix replace-all fn to not exceed the selection boundaries; FIXED (#1007487): replace-all used to exceed boundaries by a few characters, but now no longer appears to do so; replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
+		-Selected-Area-Only and Wrap check boxes should reflect their mutual exclusivity; ADDED: since the two options opose one another, turning on one turns off the other, while both can also be unchecked simultaneously
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
 		-add summary field; ADDED: "Results: " label summarizes the find/replace findings
 	-HTMLReplacer plug-in comprehensiveness
-		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
+		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED (#1007490): removed obsolete advice
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
@@ -78,7 +76,7 @@ v.0.3.6
 	-reorganize to compact unnecessarily large fields; ADDED: divided general prefs panel from 2 to 3 columns
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
--stop auto-save thread when close file; FIXED: removing tab stops the timer
+-stop auto-save thread when close file; FIXED (#1007497): removing tab stops the timer
 -refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
 -drag-n-drop files to open them in Text Trix
 -new build process
