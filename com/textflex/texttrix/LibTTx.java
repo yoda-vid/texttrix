@@ -97,7 +97,7 @@ public class LibTTx {
 		    String urlPath = "file://" + path;
 		    //		    URL url = new URL(urlPath);
 		    URL url = new File(path).toURL();
-		    System.out.println(url.toString());
+		    //		    System.out.println(url.toString());
 		    loader = new URLClassLoader(new URL[] { url } );
 		    //		    System.out.println(url.toString());
 		} catch (MalformedURLException e) {}

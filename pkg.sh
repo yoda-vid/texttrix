@@ -27,7 +27,15 @@ sh plug.sh # build the plugins
 rm -rf $PKGDIR $PKG $SRCPKGDIR $SRCPKG
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
-cp -rf com changelog.txt todo.txt readme.txt license.txt about.txt shortcuts.txt features.txt $PKGDIR
+for docs in "about.txt" "shortcuts.txt" "features.txt" "license.txt"
+do
+	if [[ ! -f $docs ]]
+	then
+		cp $DIR/$docs .
+	fi
+	cp $docs $PKGDIR
+done
+cp -rf com changelog.txt todo.txt readme.txt $PKGDIR
 cd $PKGDIR
 # remove unnecessary files and directories
 rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~

@@ -76,25 +76,6 @@ public class TextTrix extends JFrame {
 	setTitle("Text Trix");
 	// pre-set window size
 	setSize(500, 600); // TODO: adjust to user's screen size
-	try {
-	    System.out.println("java ver num: " + System.getProperty("java.vm.version") + ", " + System.getProperty("os.name"));
-	    if (System.getProperty("os.name").equals("Linux")
-		&& System.getProperty("java.vm.version").indexOf("1.4.2") != -1) {
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf"
-					 + ".gtk.GTKLookAndFeel");
-		//	    } else if (System.getProperty("mrj.version") != null) {
-
-	    } else {
-		UIManager.setLookAndFeel(UIManager
-					 .getSystemLookAndFeelClassName());
-	    }
-	    SwingUtilities.updateComponentTreeUI(TextTrix.this);
-	} catch (Exception e) {
-	    //	    e.printStackTrace();
-	    String msg = "Sorry, couldn't find that look-and-feel."
-		+ "  Defaulting to the Metal one.";
-	    System.out.println(msg);
-	}
 	ImageIcon im = makeIcon("images/minicon-32x32.png"); // set frame icon
 	if (im !=null) 
 	    setIconImage(im.getImage());
@@ -251,16 +232,16 @@ public class TextTrix extends JFrame {
 	fileMenu.addSeparator();
 	
 	// (ctrl-q) exit file; close each tab separately, checking for saves
-	Action exitAction = new AbstractAction("Exit") {
+	Action quitAction = new AbstractAction("Quit") {
 		public void actionPerformed(ActionEvent evt) {
 		    exitTextTrix();
 		}
 	    };
 	// Doesn't work if close all tabs unless click ensure window focused, 
 	// such as clicking on menu
-	setAcceleratedAction(exitAction, "Exit", 'X', 
+	setAcceleratedAction(quitAction, "Quit", 'Q', 
 		  KeyStroke.getKeyStroke("ctrl Q"));
-	fileMenu.add(exitAction);
+	fileMenu.add(quitAction);
 
 	/* Edit menu items */
 
@@ -589,6 +570,36 @@ public class TextTrix extends JFrame {
      * @param args command-line arguments; not yet used
      */
     public static void main(String[] args) {
+	// set the look and feel;
+	// TODO: allow dynamic switching in Preferences section
+	try {
+	    //	    System.out.println("java ver num: " + System.getProperty("java.vm.version") + ", " + System.getProperty("os.name"));
+	    /** GTK+ look and feel for Java v.1.4.2 running on Linux,
+		otherwise the default look and feel, such as the new XP 
+		interface for Microsoft Windows XP systems with Java v.1.4.2.
+		According to http://java.sun.com/j2se/1.4.2/docs/guide/ //
+		swing/1.4/Post1.4.html, UIManager
+		.getSystemLookAndFeelClassName() will return GTK+ by default
+		in Java v.1.5.
+	    */
+	    if (System.getProperty("os.name").equals("Linux")
+		&& System.getProperty("java.vm.version").indexOf("1.4.2") 
+		!= -1) { // GTK+ only for available systems
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf"
+					 + ".gtk.GTKLookAndFeel");
+		//	    } else if (System.getProperty("mrj.version") != null) {
+
+	    } else { // default interface
+		UIManager.setLookAndFeel(UIManager
+					 .getSystemLookAndFeelClassName());
+	    }
+	    //	    SwingUtilities.updateComponentTreeUI(TextTrix.this);
+	} catch (Exception e) {
+	    //	    e.printStackTrace();
+	    String msg = "Sorry, couldn't find that look-and-feel."
+		+ "  Defaulting to the Metal one.";
+	    System.out.println(msg);
+	}
 	TextTrix textTrix = new TextTrix(args);
 	textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	// make sure still goes through the exit routine if close
