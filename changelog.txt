@@ -12,7 +12,22 @@ plans for future ones.)
 ----v.0.3 Series: FEATure Series (FEATS)----
 --------------------------------------
 
-----v.0.3.5 (4//04)----
+----v.0.3.5 (6/1/04)----
+
+Text Trix, the text tinker, whips into gear with its new WYSIWYP printing system, auto-save function, and integrated windowing design.  "WYSIWYP" derives from the lofty standard for pure text processing, "WYSIWYG," or "What You See Is What You Get."  Here we extend the standard from "What You Get" to "What You Print," so that what you see on the page is exactly what you get in print.  Feel free to adjust the window width, squeezing the text together or spreading it over few lines, and see a print preview of it.
+
+The new auto-save and integrated windowing design ensure that you can focus on your text instead of managing its surroundings.  Auto-save saves your files automatically, on your time scale.  The integrated windowing remembers plug-in windows' positions and focuses all windows simultaneously so that the entire Text Trix workspace remains visible.
+
+Behind the scenes, Text Trix development remains at the forefront.  That includes developing Text Trix, complete with revised build and packaging scripts for one-step building in most cases, and using Text Trix to develop other programs through the new status bar with line tracking and the word-wrap auto-indent updated for compatibility with the upcoming v.1.5 of the Java Virtual Machine.  Text Trix continues to focus on text--its own, that of other programs, yours.
+
+New features
+-What You See Is What You Print (WYSIWYP) printing system to print what you see on screen
+-Auto-save, by your preference and according to your chosen time interval
+-Integrated windowing design, which remembers your window positions and keeps them together
+-Status bar to track hard-return lines
+-Build scripts revised for one-step building in most cases by accepting an optional Java path argument and auto-detecting the Cygwin environment
+-PlugIn classes split into parent PlugIn and child PlugInWindow classes to simplify graphical plug-in development
+
 
 ----v.0.3.4 (8/26/03)----
 

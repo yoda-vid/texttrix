@@ -60,8 +60,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
 	private static boolean JVM_15 = false; // flags that running on JVM 1.5
-//	private double scale = 1;
-	private StoppableThread autoSaveTimer = null; // timer to auto save the text
+	//	private double scale = 1;
+	private StoppableThread autoSaveTimer = null;
+	// timer to auto save the text
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -104,17 +105,23 @@ public class TextPad extends JTextPane implements StateEditable {
 					autoIndent
 						&& keyChar == KeyEvent.VK_BACK_SPACE
 						&& isLeadingTab()) {
-					// performs the action before deleting the char
-/*					System.out.println("I'm here");
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						
-					}
-*/					
+					// performs the action before deleting the char, the
+					// opposite of the assumption in indentCurrentParagraph
 					indentCurrentParagraph(getTabSize(), !JVM_15);
 				}
+				//				indentCurrentParagraph();
 			}
+			/* else if (autoIndent && keyChar == KeyEvent.VK_PASTE) {
+					indentCurrentParagraph(getTabSize());
+				}
+			}
+			*/
+
+			public void keyPressed(KeyEvent evt) {
+				//				int keyCode = evt.getKeyChar();
+				//				System.out.println("keyChar:" + keyCode);
+			}
+
 		});
 
 		applyKeybindings(prefs);
@@ -209,6 +216,12 @@ public class TextPad extends JTextPane implements StateEditable {
 				*/
 			}
 		});
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.SHIFT_MASK),
+			"deletePrevChar");
+		amap.put(
+			"deletePrevChar",
+			getActionByName(DefaultEditorKit.deletePrevCharAction));
 	}
 
 	/** Creates the partial-Emacs shortcuts, consisting of single character and
@@ -374,17 +387,34 @@ public class TextPad extends JTextPane implements StateEditable {
 		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
-	/** Sets the region's displayed indentation. 
-	 * Only affects the displayed size.  Useful to represent tabs as styled indents.
+	/** Sets the displayed indentation for the entire text. 
+	 * Only affects the displayed size.  
+	 * Useful to represent tabs as styled indents.
+	 * @param tabChars the number of characters that each tab represents
+	 * @see #setDefaultTabs(int)
+	 * @see #setIndentTabs(int, int, int)
+	 */
+	public void setIndentTabs(int tabChars) {
+		setIndentTabs(tabChars, 0, getAllText().length());
+	}
+
+	/** Sets the displayed indentation for the region beginning at 
+	 * <code>start</code> through any paragraph that begins at <code>end</code>.
+	 * By only affecting the displayed size, this method is useful 
+	 * to represent tabs as styled indents.
+	 * @param tabChars the number of characters that each tab represents
+	 * @param start the position from which to start indenting
+	 * @param end the last position from which to begin indenting
 	 * @see #setDefaultTabs(int)
 	 * @see #setIndentTabs(int)
 	 */
-	public void setIndentTabs(int tabChars) {
-		int i = 0;
+	public void setIndentTabs(int tabChars, int start, int end) {
+		//		System.out.println("start: " + start + ", end: " + end);
+		int i = start;
 		int j = 0;
 		String s = getAllText();
-		while (i < s.length() && (j = s.indexOf("\n", i + 1)) != -1) {
-			//	    System.out.println("i: " + i + ", j: " + j);
+		while (i < end && (j = s.indexOf("\n", i + 1)) != -1) {
+			//			System.out.println("i: " + i + ", j: " + j);
 			int tabs = leadingTabsCount(s, i);
 			if (tabs > 0)
 				indent(tabChars, tabs, i, j - i + 1);
@@ -421,7 +451,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
 
-
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
 		//StateEdit stateEdit = new StateEdit(this);
@@ -441,7 +470,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @see #indentCurrentParagraph(int)
 	 */
 	/* JVM v.1.5 simply processes tabs according to the
-	 * number currently present, just as indentCurrentParagraph operates;
+	 * number currently present, and indentCurrentParagraph operates accordingly:
 	 * both methods assume that the tab character change has already been 
 	 * accomplished.  Tab deletions in JVM < v.1.5, by contrast, 
 	 * appear to not be processed until the KeyListener methods finish.
@@ -449,7 +478,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * method now assumes that the tabs have been processed but also allows
 	 * for a parameter to flag when a tab deletion takes place in JVM < v.1.5. 
 	 */
-	public void indentCurrentParagraph(int tabChars, boolean unindentNotJVM_15) {
+	public void indentCurrentParagraph(
+		int tabChars,
+		boolean unindentNotJVM_15) {
 		String s = getAllText();
 		//	System.out.println("caret pos: " + caretPos);
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
@@ -457,10 +488,22 @@ public class TextPad extends JTextPane implements StateEditable {
 		if (unindentNotJVM_15) {
 			--tabs;
 		}
-//		System.out.println("tabs: " + tabs);
+		//		System.out.println("tabs: " + tabs);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
-	
+
+	/** Indents the current paragraph, no matter where the caret is within it.
+	 * Renders tabs as spaces, but indents the entire region according to the 
+	 * currently set number of spaces per tab.  
+	 * Assumes that either an indent, as opposed to an unindent,
+	 * has occurred, or that the Java Virtual Machine is >= v.1.5, or both. 
+	 * @see #indentCurrentParagraph(int, boolean)
+	 * @see #indentCurrentParagraph(int)
+	 */
+	public void indentCurrentParagraph() {
+		indentCurrentParagraph(getTabSize(), false);
+	}
+
 	/** Indents the current paragraph, no matter where the caret is within it.
 	 * Renders tabs as spaces, but indents the entire region a given number of spaces
 	 * per tab.  Assumes that either an indent, as opposed to an unindent,
@@ -477,13 +520,13 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param tabChars number of spaces for each tab to represent
 	 *
 	public void unindentCurrentParagraph(int tabChars) {
-//		setDefaultTabs(tabChars);
-//		setIndentTabs(tabChars);
+	//		setDefaultTabs(tabChars);
+	//		setIndentTabs(tabChars);
 		String s = getAllText();
 		//	System.out.println("caret pos: " + caretPos);
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
 		int tabs = leadingTabsCount(s, start) - 1; // don't subtract 1 b/c tab already deleted
-//		indent(tabChars, 0, start, s.indexOf("\n", start) - start);
+	//		indent(tabChars, 0, start, s.indexOf("\n", start) - start);
 		System.out.println("tabs: " + tabs);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
@@ -535,7 +578,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			return "";
 		}
 	}
-	
+
 	public File getFile() {
 		return file;
 	}
@@ -592,7 +635,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void setAutoIndent(boolean b) {
 		if (autoIndent = b) {
-			setNoTabs(); //0, 0);
+			setNoTabs();
 			setIndentTabs(getTabSize());
 		} else {
 			setDefaultTabs(getTabSize());
@@ -859,6 +902,41 @@ public class TextPad extends JTextPane implements StateEditable {
 			setDocument(doc);
 	}
 
+	/**Pastes in text, auto-indenting it as necessary.
+	 * If the text pad is in auto-indent mode, the pasted text is graphically
+	 * indented to match each of its tabbed paragraphs.
+	 * 
+	 */
+	/* The JVM automatically captures ctrl-V paste events, overriding
+	 * any ctrl-V paste shortcut.  To add events to a paste action,
+	 * the actual paste method in the text pane needs to be overridden.
+	 * Here the new method checks for auto-indentation and graphically
+	 * indents the newly spliced in paragraphs as necessary.
+	 * 
+	 */
+	public void paste() {
+		int start = getCaretPosition();
+		super.paste();
+
+		if (autoIndent) {
+			int end = getCaretPosition();
+			int prevBreak = end;
+			String text = getAllText();
+			do {
+				//				System.out.println("prevBreak: " + prevBreak);
+				setCaretPosition(prevBreak);
+				indentCurrentParagraph();
+			} while (
+				start
+					< (prevBreak = LibTTx.reverseIndexOf(text, "\n", prevBreak)));
+			setCaretPosition(end);
+		}
+	}
+
+	public boolean isAutoIndent() {
+		return autoIndent;
+	}
+
 	/** Sets the number of characters that each tab represents.
 	 * The tab is still represented by a '/t' rather than the given number
 	 * of characters; this setting is merely for display purposes.
@@ -877,7 +955,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	public int getTabSize() {
 		return tabSize;
 	}
-	
+
 	/**Creates a print pad for this <code>TextPad</code> object.
 	 * The text pad needs to create its own print pad so that the 
 	 * text pad can pass its contents array of each visible line
@@ -887,10 +965,11 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * <code>TextPad</code>, and the current font
 	 */
 	public PrintPad createPrintPad() {
-		return new PrintPad(LibTTx.getVisibleLines(this), 
+		return new PrintPad(
+			LibTTx.getVisibleLines(this),
 			new Font(getFont().getAttributes()));
 	}
-	
+
 	/**Gets the current auto-save timer.
 	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
 	 * with changed content if the user has enabled the feature.
@@ -934,7 +1013,7 @@ class UndoManagerTTx extends UndoManager {
 		// call superclass' method
 		return super.addEdit(anEdit);
 	}
-	
+
 	/** Flags the manager to ignore the next change in style.
 	 * For example, stylistic auto-indentation indents should maybe be ignored
 	 * @param b <code>true</code> to ignore the next style change
@@ -942,9 +1021,7 @@ class UndoManagerTTx extends UndoManager {
 	public void setIgnoreNextStyleChange(boolean b) {
 		ignoreNextStyleChange = b;
 	}
-	
-	
-	
+
 	/** Gets the state of the flag for ignoring the next style change.
 	 * 
 	 * @return <code>true</code> if the next style will be ignored

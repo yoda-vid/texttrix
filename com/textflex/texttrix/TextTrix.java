@@ -2917,6 +2917,7 @@ public class TextTrix extends JFrame {
 						printActionShortcut =
 							KeyStroke.getKeyStroke("ctrl shift P");
 					} else if (prefs.isEmacsKeybindings()) {
+//						System.out.println("applying emacs shortcuts");
 						// Emacs: Hybrid + Emacs single-key shortcuts
 						// TODO: create double-key shortcuts, such as ctrl-x, ctrl-s for saving
 						fileMenuMnemonic = 'I';
@@ -3015,21 +3016,6 @@ public class TextTrix extends JFrame {
 						new FileCloseAction(
 							"Close",
 							LibTTx.makeIcon("images/closeicon-16x16.png"));
-					/*
-						new AbstractAction(
-							"Close",
-							LibTTx.makeIcon("images/closeicon-16x16.png")) {
-						public void actionPerformed(ActionEvent evt) {
-							int i = tabbedPane.getSelectedIndex();
-							if (i >= 0) {
-								updateTabIndexHistory = false;
-								removeTabIndexHistory(i);
-								updateTabIndexHistory = true;
-								closeTextArea(i, textAreas, tabbedPane);
-							}
-						}
-					};
-					*/
 					LibTTx.setAcceleratedAction(
 						closeAction,
 						"Close",
@@ -3041,7 +3027,8 @@ public class TextTrix extends JFrame {
 						new FileCloseAction(
 							"Close",
 							LibTTx.makeIcon("images/door-60deg-16x16.png"));
-					LibTTx.setAction(closeActionForBtn, "Close file", 'W');
+					LibTTx.setAction(closeActionForBtn, "Close file", 
+						closeActionMnemonic);
 					JButton closeButton = toolBar.add(closeActionForBtn);
 					closeButton.setBorderPainted(false);
 					LibTTx.setRollover(
@@ -3231,9 +3218,8 @@ public class TextTrix extends JFrame {
 					// paste
 					Action pasteAction = new AbstractAction("Paste") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad) textAreas
-								.get(tabbedPane.getSelectedIndex()))
-								.paste();
+							TextPad t = getSelectedTextPad();
+							t.paste();
 						}
 					};
 					LibTTx.setAcceleratedAction(

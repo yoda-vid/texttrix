@@ -29,7 +29,6 @@ Note: "./" is the "check-mark" symbol
 -new, unsaved(?) files don't register in the tab history(?)
 -use java.util.ResourceBundle for internationalization and further keybinding customization
 -auto-indent:
-	-refresh after paste
 	-adjust when single word spans multiple lines, including when hit enter in the middle
 -truncate filenames on tabs
 -automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
@@ -45,8 +44,13 @@ Note: "./" is the "check-mark" symbol
 -option to remember which specific files used auto-indent
 -group tabs in separate tabbed panes
 -when have multiple files with same filename, add more of path to tab titles
--enable shift-backspace as normal backspace
 -tab groupings: open sets of files at once
+-print images and multi-formatted text
+-integrated windowing design updates
+	-try putting windowing events in separate thread so can still capture function from click on first window clicked
+	-check toFront() failures with one Fedora Core 1 installation
+	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
+	-check for breakage of single thread rule
 
 ----Current Work----
 
@@ -61,19 +65,15 @@ v.0.3.5
 	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected; to prevent automatic reactivation while shifting to other windows, flag renders window inactivatable until timer unsets flag; window deactivation listener also sets the flag to prevent Text Trix from automatically requesting activation immediately after switching activation to another program
 	-option to turn off; ADDED: Prefs option to turn off the activateWindowsTogether feature
 	-close open plug-in windows, or else they will no longer respond to activation requests; ADDED: dialog warning that plug-in windows will be closed when saving preferences while any of the windows are open
-	-try putting windowing events in separate thread so can still capture function from click on first window clicked
-	-check toFront() failures with one Fedora Core 1 installation
-	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
-	-check for breakage of single thread rule
 -save plug-in window positions
 	-component listener to store plug-in position nfo in prefs; ADDED: component listener captures plug-in window size and location changes to store in the prefs according to plug-ins' filenames
 	-restore plug-in window position parameters from last opening;  ADDED: TextTrix restores these parameters from prefs when creating plug-in action
 -printing
 	-print text as viewed in Text Pad; ADDED: prints plain text with line breaks at the same location as the current Text Pad displays the text
 	-print preview; ADDED: screen shows each page before printing, with print button to enter the print dialog directly
-	-print images and multi-formatted text
-	-check print width anomalies
--fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
+-auto-indent fixes
+	-fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
+	-refresh after paste; FIXED: overrides paste method to auto-indent the entire pasted region if necessary
 -PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application
 -button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
 -file type filters update; ADDED: added *.js and *.sh to the programming file type filter and *.js to the Web filter
@@ -84,6 +84,7 @@ v.0.3.5
 -add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window
 -update JarAjar to allow for MacOS X integration
 -align the "About" option pane with the main window; ADDED: now opens on top of the center of the main window
+-enable shift-backspace as normal backspace; FIXED: added as action in TextPad
 -build scripts update
 	-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to hard-code path
 	-option to output help documentation; ADDED: helps docs output
