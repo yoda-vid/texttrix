@@ -56,6 +56,7 @@ public class TextPad extends JTextPane implements StateEditable{
     private Hashtable actions;
     //	private int tabSize = 0;
     private boolean autoIndent = false;
+    private int tabSize = 4; // default tab size
 
     /**Constructs a <code>TextPad</code> that includes a file
      * for the text area.
@@ -142,6 +143,17 @@ public class TextPad extends JTextPane implements StateEditable{
 			event.consume();
 		    } else if (autoIndent && keyChar == KeyEvent.VK_ENTER) {
 			autoIndent();
+		    } else if (autoIndent 
+			       && keyChar == KeyEvent.VK_TAB
+			       && isLeadingTab()) {
+			// performs the action after adding the tab
+			//			System.out.println("autoIndent: " + autoIndent + ", char: " + keyChar + ", leading tab: " + isLeadingTab());
+			indentCurrentParagraph(getTabSize());
+		    } else if (autoIndent
+			       && keyChar == KeyEvent.VK_BACK_SPACE
+			       && isLeadingTab()) {
+			// performs the action before deleting the char
+			unindentCurrentParagraph(getTabSize());
 		    }
 		}
 	    });
@@ -187,6 +199,77 @@ public class TextPad extends JTextPane implements StateEditable{
 
     }
 
+    public void setDefaultTabs(int tabChars) {
+	//	setFont(new Font("Dialog", Font.PLAIN, 12));
+	//String[] fontFams = 
+	//	for (j = 0; 
+	//	System.out.println(getFont().getFontName());
+	int charWidth = getFontMetrics(getFont()).charWidth(' ');
+	int tabWidth = charWidth * tabChars;
+
+	TabStop[] tabs = new TabStop[30]; // just enough to fit default frame
+	for (int i = 0; i < tabs.length; i++) 
+	    tabs[i] = new TabStop((i + 1) * tabWidth);
+	TabSet tabSet = new TabSet(tabs);
+	SimpleAttributeSet attribs = new SimpleAttributeSet();
+	StyleConstants.setTabSet(attribs, tabSet);
+	StyleConstants.setLeftIndent(attribs, 0);
+	getStyledDocument()
+	    .setParagraphAttributes(0,
+				    getDocument().getLength() + 1, // next char
+				    attribs,
+				    false); // false to preserve default font
+	//	setFont(new Font("Dialog", Font.PLAIN, 12));
+	//	return true;
+    }
+
+    public void setNoTabs() {//int offset, int length) {
+	//	System.out.println("set no tabs at position " + offset + " for " + length + " chars");
+	TabStop[] tabs = new TabStop[1];
+	tabs[0] = new TabStop(0);
+	TabSet tabSet = new TabSet(tabs);
+	SimpleAttributeSet attribs = new SimpleAttributeSet();
+	StyleConstants.setTabSet(attribs, tabSet);
+	/*
+	getStyledDocument()
+	    .setCharacterAttributes(offset,
+				    length, // next char
+				    attribs,
+				    true); // false to preserve default font
+	*/
+	getStyledDocument()
+	    .setParagraphAttributes(0,
+				    getDocument().getLength() + 1, // next char
+				    attribs,
+				    false); // false to preserve default font
+	/*
+	StyleConstants.setBold(attribs, true);
+	getStyledDocument()
+	    .setCharacterAttributes(offset + 1,
+				    length, // next char
+				    attribs,
+				    true); // false to preserve default font
+	*/
+    }
+
+    public void setIndentTabs(int tabChars) {
+	int i = 0;
+	int j = 0;
+	String s = getAllText();
+	while (i < s.length() && (j = s.indexOf("\n", i + 1)) != -1) {
+	    System.out.println("i: " + i + ", j: " + j);
+	    int tabs = leadingTabsCount(s, i);
+	    if (tabs > 0) indent(tabChars, tabs, i, j - i + 1);
+	    i = j + 1;
+	}
+	int tabs = leadingTabsCount(s, i);
+	indent(tabChars, tabs, i, s.length() + 1);
+	//       	setDefaultTabs(4);
+	//	System.out.println(getFont().getFontName());
+
+
+    }
+
     public boolean setDefaultTabs(int tabChars) {
 	//	setFont(new Font("Dialog", Font.PLAIN, 12));
 	//String[] fontFams = 
@@ -209,6 +292,84 @@ public class TextPad extends JTextPane implements StateEditable{
 	//	setFont(new Font("Dialog", Font.PLAIN, 12));
 	return true;
     }
+
+    /*
+    public void clearIndentTabs() {
+	SimpleAttributeSet attribs = new SimpleAttributeSet();
+	StyleConstants.setLeftIndent(attribs, 0);
+	getStyledDocument()
+	    .setParagraphAttributes(0,
+				    getDocument().getLength() + 1, // next char
+				    attribs,
+				    false); // false to preserve default font
+    }
+    */
+
+    public int leadingTabsCount(String s, int offset) {
+	int tabs = 0;
+	for (int i = offset; i < s.length()
+		 && s.charAt(i) == '\t'; i++)
+	    ++tabs;
+	System.out.println("I found " + tabs + " tabs");
+	return tabs;
+    }
+
+    public void indent(int tabChars, int tabs, int offset, int length) {
+	int charWidth = getFontMetrics(getFont()).charWidth(' ');
+	int tabWidth = charWidth * tabChars;
+
+	SimpleAttributeSet attribs = new SimpleAttributeSet();
+	StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
+	//	StyleConstants.setFirstLineIndent(attribs, -1 * tabs * tabWidth);
+	getStyledDocument()
+	    .setParagraphAttributes(offset,
+				    length, // next char
+				    attribs,
+				    false); // false to preserve default font
+    }
+
+    public void indentCurrentParagraph(int tabChars) {
+	String s = getAllText();
+	//	int caretPos = getCaretPosition();
+	//	System.out.println("caret pos: " + caretPos);
+	int start = reverseIndexOf(s, "\n", getCaretPosition()) + 1;
+	int tabs = leadingTabsCount(s, start);
+	indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
+	//	setNoTabs(start, 2);
+    }
+
+    public void unindentCurrentParagraph(int tabChars) {
+	String s = getAllText();
+	//	int caretPos = getCaretPosition();
+	//	System.out.println("caret pos: " + caretPos);
+	int start = reverseIndexOf(s, "\n", getCaretPosition()) + 1;
+	int tabs = leadingTabsCount(s, start) - 1;
+	indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
+	//	setNoTabs(start, tabs - 1);
+    }
+
+    public int reverseIndexOf(String str, String searchStr, int offset) {
+	int i = offset - 1;
+	//	System.out.println("len: " + searchStr.length());
+	while (i >= 0 
+	       && !str.substring(i, i + searchStr.length()).equals(searchStr)) {
+	    i--;
+	}
+	return i;
+    }
+
+    public boolean isLeadingTab() {
+	int i = getCaretPosition() - 1;
+	try {
+	    while (i > 0 && getDocument().getText(i, 1).equals("\t"))
+		i--;
+	    return i == 0 || getDocument().getText(i, 1).equals("\n");
+	} catch (BadLocationException e) {
+	    System.out.println("Can't find no tabs, dude.");
+	    return false;
+	}
+    }
+
 
     /**Gets the value showing whether the text in the text area
      * has changed.
@@ -305,7 +466,12 @@ public class TextPad extends JTextPane implements StateEditable{
      * @param b <code>true</code> to auto-indent
      */
     public void setAutoIndent(boolean b) {
-	autoIndent = b;
+	if (autoIndent = b) {
+	    setNoTabs();//0, 0);
+	    setIndentTabs(getTabSize());
+	} else {
+	    setDefaultTabs(getTabSize());
+	}
     }
 
     /**Check whether the file has been created.
@@ -338,6 +504,11 @@ public class TextPad extends JTextPane implements StateEditable{
     public void applyDocumentSettings() {
 	Document doc = getDocument();
 	doc.addUndoableEditListener(undoManager);
+	setDefaultTabs(getTabSize());
+	if (autoIndent) {
+	    setIndentTabs(getTabSize());
+	    setNoTabs();
+	}
 	setDefaultTabs(4);
 	/* no plain docs in JTextPane
 	   if (doc.getClass() == PlainDocument.class) {
@@ -603,4 +774,8 @@ public class TextPad extends JTextPane implements StateEditable{
 	if (doc !=null) 
 	    setDocument(doc);
     }
+
+    public void setTabSize(int aTabSize) { tabSize = aTabSize; }
+
+    public int getTabSize() { return tabSize; }
 }

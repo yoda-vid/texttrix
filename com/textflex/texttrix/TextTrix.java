@@ -337,7 +337,7 @@ public class TextTrix extends JFrame {
 	setAcceleratedAction(autoIndentAction, 
 			     "Automatically repeat tabs with the next line",
 			     'I', 
-			     KeyStroke.getKeyStroke("ctrl shift I"));
+			     KeyStroke.getKeyStroke("alt shift I"));
 	//	autoIndent.addActionListener(autoIndentAction);
 	autoIndent = new JCheckBoxMenuItem(autoIndentAction); // auto-indent
 	optionsMenu.add(autoIndent);
@@ -679,7 +679,7 @@ public class TextTrix extends JFrame {
 		    doc.insertString(start, text, null); // insert text
 		    // caret automatically returns to end of selected region
 		}
-			    
+		//		if (t.getAutoIndent()) t.setIndentTabs(t.getTabSize());
 			    
 	    } catch (BadLocationException e) {
 		e.printStackTrace();

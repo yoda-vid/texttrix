@@ -23,7 +23,6 @@ v.0.5 series: advanced interface
 -check on line-down and changed-file breaks
 -more sophisticated find/replace search
 -status bar, incl line count
--set tab display size
 -check on lost I-bar after switching to HTML view
 -check on lack of shortcuts in MacOS X
 -feature to insert hard returns after a given number of characters
@@ -32,6 +31,12 @@ v.0.5 series: advanced interface
 -check on shortcuts in HTML/RTF views
 -plugin adaptor class to permit leaving some methods unimplemented
 -plugin methods allowing dialog boxes, listeners, etc
+
+v.0.3.3
+-set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./
+-JTabbedPane tabs still adjust their widths when the asterisk indicating unsaved changes pops up; FIXED: using monospaced font to substitute characters w/o incurring any width changes ./
+-word delete often only deletes half words in Windows systems; FIXED: Document methods rather than getText()/setText() to determine characters; not sure why the latter methods work for viewPlain() and similar methods, though
+-update tab tool tip when open file; FIXED: set the tool tip, not just the tab title ./
 
 v.0.3.2
 -update tab tooltip when rename ./
