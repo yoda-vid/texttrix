@@ -16,8 +16,9 @@ Note: "./" is the "check-mark" symbol
 -elim multiple spaces via Extra Returns Remover
 -check on shortcuts in HTML/RTF views
 -plug-ins: listener types create listeners that TextTrix attaches to given TextPad
--pop-up dialog when null pointers for hard-coded documentation names
--"Letter Pulse" plug-in: check on auto-indent adjustments after switching tabs in the middle of a pulse session
+-"Letter Pulse" plug-in
+	-check on auto-indent adjustments after switching tabs in the middle of a pulse session
+	-make HTML-view pulsing possible
 -check on Forward/Back when opening multiple tabs
 -Forward/Back icon?
 -new, unsaved(?) files don't register in the tab history(?)
@@ -75,7 +76,7 @@ v.0.3.5
 	-main window title should update after user closes a tab; FIXED (#962436): for some reason, tabbed pane change listener not invoked when close tab, so need to update title manually when closing tabs
 	-file type filters update; ADDED: added *.js and *.sh to the programming file type filter and *.js to the Web filter
 	-enable shift-backspace as normal backspace; FIXED (#961922): added as action in TextPad ./
-	-point user to texttrix website if missing any documentation; ADDED: missing file JOptionPane dialog ./
+	-point user to texttrix website if missing any documentation; FIXED (#703846): missing file JOptionPane dialog ./
 -help menu items update
 	-remove "Features Descriptions" menu item and document; FIXED (#799565): removed to focus on the plug-in tool tips, displayed dynamically for loaded plug-ins ./
 	-open help documents in blank Text Pad if active; FIXED (#799563): same mechanism to open the help documents as to open regular files, except that the mechanism renders the help documents uneditable ./
@@ -86,6 +87,7 @@ v.0.3.5
 	-PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application ./
 	-move word-search functions to LibTTX to make accessible to all plug-ins; ADDED: moved the word-finding function ./
 	-add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window ./
+	-allow single-step undo of plug-in text changes; FIXED (#963011): employs new CompoundEdit mechanism in TextPad to restore original state through single undo action
 -status bar
 	-add status bar for line numbers and other messages; ADDED: status bar at bottom of a new panel, which holds tabbed pane and status bar so user can still move tool bar to southern position of main window; tab change listener to update status bar when switching tabs ./
 	-add line numbers for lines with hard breaks; ADDED: current line number, total lines, and position as percentage of document length ./

@@ -60,9 +60,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
 	private static boolean JVM_15 = false; // flags that running on JVM 1.5
-	//	private double scale = 1;
-	private StoppableThread autoSaveTimer = null;
-	// timer to auto save the text
+	private StoppableThread autoSaveTimer = null; // timer to auto save the text
+	private CompoundEdit compoundEdit = null;
+	private boolean compoundEditing = false;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -90,7 +90,7 @@ public class TextPad extends JTextPane implements StateEditable {
 				char keyChar = event.getKeyChar();
 				if (event.isControlDown()
 					&& keyChar == KeyEvent.VK_BACK_SPACE) {
-					// TODO: may not be necessary, at least w/ JVM => v.1.4.2
+					// TODO: may not be necessary, at least w/ JVM >= v.1.4.2
 					event.consume();
 				} else if (autoIndent && keyChar == KeyEvent.VK_ENTER) {
 					autoIndent();
@@ -99,7 +99,6 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& keyChar == KeyEvent.VK_TAB
 						&& isLeadingTab()) {
 					// performs the action after adding the tab
-					//			System.out.println("autoIndent: " + autoIndent + ", char: " + keyChar + ", leading tab: " + isLeadingTab());
 					indentCurrentParagraph(getTabSize());
 				} else if (
 					autoIndent
@@ -109,7 +108,6 @@ public class TextPad extends JTextPane implements StateEditable {
 					// opposite of the assumption in indentCurrentParagraph
 					indentCurrentParagraph(getTabSize(), !JVM_15);
 				}
-				//				indentCurrentParagraph();
 			}
 
 			public void keyPressed(KeyEvent evt) {
@@ -599,13 +597,24 @@ public class TextPad extends JTextPane implements StateEditable {
 	/**Execute an edit, capture the state changes, and make the changes
 	 * undoable.
 	 * @param text text to edit
-	 */
+	 *
 	public void setUndoableText(String text) {
 		StateEdit stateEdit = new StateEdit(this);
 		setText(text);
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit) stateEdit);
 	}
+	
+	
+	public StateEdit startUndoableEdit() {
+		return new StateEdit(this);
+	}
+	
+	public void endUndoableEdit(StateEdit stateEdit) {
+		stateEdit.end();
+		undoManager.addEdit((UndoableEdit) stateEdit);
+	}
+	*/
 
 	/**Sets the auto-indent selection.
 	 * @param b <code>true</code> to auto-indent
@@ -910,6 +919,38 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	/**Starts a compound edit sequence, which tracks multiple edits to
+	 * allow them to be undone in one fell swoop.
+	 * Does nothing if a compound edit is already in progress.
+	 * 
+	 * @see #stopCompoundEdit()
+	 */
+	public void startCompoundEdit() {
+		if (!isCompoundEditing()) {
+			compoundEdit = new CompoundEdit();
+			compoundEditing = true;
+		}
+	}
+	
+	/**Stores a compound edit sequence in the undo manager.
+	 * 
+	 * @see #startCompoundEdit()
+	 */
+	public void stopCompoundEdit() {
+		compoundEdit.end();
+		compoundEditing = false;
+		undoManager.addEdit(compoundEdit);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**Checks the value of the auto-indent flag.
 	 * 
 	 * @return <code>true</code> if the pad is flagged to auto-indent
@@ -917,6 +958,19 @@ public class TextPad extends JTextPane implements StateEditable {
 	public boolean isAutoIndent() {
 		return autoIndent;
 	}
+	/**Checks the value of the compound edit flag.
+	 * 
+	 * @return <code>true</code> if the text pad is currently tracking
+	 * a compound edit
+	 */
+	public boolean isCompoundEditing() {
+		return compoundEditing;
+	}
+	
+	
+	
+	
+	
 
 	/** Sets the number of characters that each tab represents.
 	 * The tab is still represented by a '/t' rather than the given number
@@ -966,48 +1020,73 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void setAutoSaveTimer(StoppableThread aAutoSaveTimer) {
 		autoSaveTimer = aAutoSaveTimer;
 	}
-}
-
-/** Subclass of the <code>UndoManager</code>.
- * Allows the code to ignore undos.
- * @author davit
- */
-class UndoManagerTTx extends UndoManager {
-	private boolean ignoreNextStyleChange = false;
-
-	/** Sublcassed method to add ability to ignore undos when flagged.
-	 * If <code>ignoreNextStyleChange</code> is set to <code>true</code>,
-	 * the method doesn't call the superclass' corresponding method.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/** Subclass of the <code>UndoManager</code>.
+	 * Allows the code to ignore undos.
+	 * @author davit
 	 */
-	public synchronized boolean addEdit(UndoableEdit anEdit) {
-		// check if undoable
-		if (anEdit instanceof AbstractDocument.DefaultDocumentEvent) {
-			AbstractDocument.DefaultDocumentEvent de =
-				(AbstractDocument.DefaultDocumentEvent) anEdit;
-			// ignore if flag set and a change event
-			if (de.getType() == DocumentEvent.EventType.CHANGE
-				&& ignoreNextStyleChange) {
-				ignoreNextStyleChange = false; // reset the ignore flag
-				return false;
+	private class UndoManagerTTx extends UndoManager {
+		private boolean ignoreNextStyleChange = false;
+
+		/** Sublcassed method to add ability to ignore undos when flagged.
+		 * If <code>ignoreNextStyleChange</code> is set to <code>true</code>,
+		 * the method doesn't call the superclass' corresponding method.
+		 */
+		public synchronized boolean addEdit(UndoableEdit anEdit) {
+			// check if undoable
+			if (anEdit instanceof AbstractDocument.DefaultDocumentEvent) {
+				AbstractDocument.DefaultDocumentEvent de =
+					(AbstractDocument.DefaultDocumentEvent) anEdit;
+				// ignore if flag set and a change event
+				if (de.getType() == DocumentEvent.EventType.CHANGE
+					&& ignoreNextStyleChange) {
+					ignoreNextStyleChange = false; // reset the ignore flag
+					return false;
+				}
+			}
+			// call superclass' method
+			return super.addEdit(anEdit);
+		}
+		
+		/**Subclassed method to check for compound edits.
+		 * If a compound edit is in progress, the edit is added to the 
+		 * compound edit object; otherwise, the method operates as normally.
+		 * 
+		 * @param evt the edit event
+		 */
+		public void undoableEditHappened(UndoableEditEvent evt) {
+			if (isCompoundEditing()) {
+				compoundEdit.addEdit(evt.getEdit());
+			} else {
+				super.undoableEditHappened(evt);
 			}
 		}
-		// call superclass' method
-		return super.addEdit(anEdit);
+
+		/** Flags the manager to ignore the next change in style.
+		 * For example, stylistic auto-indentation indents should maybe be ignored
+		 * @param b <code>true</code> to ignore the next style change
+		 */
+		public void setIgnoreNextStyleChange(boolean b) {
+			ignoreNextStyleChange = b;
+		}
+
+		/** Gets the state of the flag for ignoring the next style change.
+		 * 
+		 * @return <code>true</code> if the next style will be ignored
+		 */
+		public boolean getIgnoreNextStyleChange() {
+			return ignoreNextStyleChange;
+		}
 	}
 
-	/** Flags the manager to ignore the next change in style.
-	 * For example, stylistic auto-indentation indents should maybe be ignored
-	 * @param b <code>true</code> to ignore the next style change
-	 */
-	public void setIgnoreNextStyleChange(boolean b) {
-		ignoreNextStyleChange = b;
-	}
-
-	/** Gets the state of the flag for ignoring the next style change.
-	 * 
-	 * @return <code>true</code> if the next style will be ignored
-	 */
-	public boolean getIgnoreNextStyleChange() {
-		return ignoreNextStyleChange;
-	}
 }
+

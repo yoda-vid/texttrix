@@ -42,14 +42,11 @@ import java.util.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.filechooser.FileFilter;
-
-//import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import java.awt.print.*;
 import javax.print.attribute.*;
-//import java.text.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -770,8 +767,10 @@ public class TextTrix extends JFrame {
 			int end = t.getSelectionEnd(); // at the first unselected character
 			PlugInOutcome outcome = null;
 			try {
+				t.startCompoundEdit();
 				// determines whether a region is selected or not;
-				// if not, works on the text pad's entire text
+				// if not, or plug-in flags to works on the text pad's entire text,
+				// does so
 				if (start == end || pl.getAlwaysEntireText()) { // no selection
 					text = doc.getText(0, doc.getLength()); // all the text
 
@@ -821,6 +820,7 @@ public class TextTrix extends JFrame {
 					if ((i = outcome.getSelectionStart()) != -1)
 						textSelection(t, start, i, outcome.getSelectionEnd());
 				}
+				t.stopCompoundEdit();
 			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
