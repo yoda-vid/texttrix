@@ -15,7 +15,10 @@ Welcome to Text Trix!  We're just getting underway here.  Please try us out!
 
 System Req:
 -Java[tm] 2 Software Development Kit 1.4+, freely available from Sun 
-Microsystems (http://java.sun.com/j2se/1.4.2/download.html)
+Microsystems (http://java.sun.com/j2se/1.4.2/download.html); also available from 
+IBM (https://www6.software.ibm.com/dl/lxdk/lxdk-p), such as the only major kit for 
+Linux PPC systems (IBM SDK for 32-bit iSeries/pSeries)
+-To use the compile script on Windows systems, use Cygwin (http://www.cygwin.com/)
 
 Instructions for compilation:
 -Unzip Text Trix:
@@ -25,15 +28,10 @@ Instructions for compilation:
 	-type "unzip texttrix-x.y.z-src.zip"
 -Compile the Java classes:
 	-Change into the Text Trix directory: "cd texttrix-x.y.z"
-	-The easiest way to compile is running the shell script: 
-	Update the variables in "texttrix/pkg.sh" to point to your desired locations.
-	The default ones almost certainly will not work!  Next, run 
-	"sh texttrix/pkg.sh," which works on Linux and Cygwin systems.
-	-Without the script, first compile the main Text Trix classes:
-	"cd texttrix", "javac com/textflex/texttrix/*.java", and next
-	-compile each plugin: "cd ../plugins", 
-	"javac -classpath ..:[plugin folder] [plugin /
-	folder]/com/textflex/texttrix/*.java"
+	-Update the variables in the "texttrix" folder's shell scripts, "pkg.sh" and "plug.sh".  
+	The default values almost certainly will not work!  Make sure *not* to set "BASE_DIR" 
+	to the directory containing "texttrix-0.3.4-src".
+	-Next, run "sh texttrix/pkg.sh," which works on Linux and Cygwin systems.
 -Package the plugins into uncompressed JARs: in the "plugins" folder, type for 
 each plugin, "cd [plugin folder]", "jar -cvf0 [plugin name, using upper case
 characters identically to that in the plugin .java file] com"
@@ -50,6 +48,11 @@ either add the commands' directory to PATH or type the full path for each use
 of the command, such as "[path to the java]/java".
 -Note that the script "pkg-jaj.sh" has not yet worked under all tested 
 environments
+-If not using the script:
+	-First compile the main Text Trix classes: 
+	"cd texttrix", "javac com/textflex/texttrix/*.java", and next
+	-Compile each plugin: "cd ../plugins", 
+	"javac -classpath ..:[plugin folder] [plugin folder]/com/textflex/texttrix/*.java"
 -See http://textflex.com/texttrix/faq.html for more details
 
 Run...away?
