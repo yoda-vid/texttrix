@@ -293,6 +293,9 @@ else
 	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.3 -sourcepath $(BASE_DIR)/texttrix -classpath texttrix $? -d texttrix'
 fi
 
+phony='.PHONY: TextTrix texttrix TextTrix_setup'
+
+
 PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
 plgTargetFiles=""
@@ -331,10 +334,22 @@ do
 	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; jar -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
 	plgClassRules="$plgClassRules""\n\tmv plugins/$plg/$plg.jar texttrix/plugins"
 	plgClassRules="$plgClassRules""\n"
+	
+	phony="$phony $plg $plg"_setup
 done
+
+# Setup installation directory
+if [ x"$PREFIX" = x ]
+then
+	PREFIX='/usr/local/texttrix-$(TTX_VER)'
+fi
+echo "Setting TTX_VER to...$TTX_VER"
+echo "Setting the installation path to...$PREFIX"
+
 # common macros collections
 COMMON_VARS="TTX_VER=$TTX_VER
 BASE_DIR=$BASE_DIR
+PREFIX=$PREFIX
 JAVAC="$JAVA"javac
 PKG_DIR=$PKG_DIR
 $srcFiles
@@ -345,22 +360,21 @@ $plgTargetFiles
 
 # Clean-up rule
 
-clean_up='rm -f $(TARGET_FILES) $(APP_BIN) $(APP_DRAFT_BIN) $(APP_AR) $(APP_OBJ)'
+clean='clean: '"\n\t"'rm -f $(TARGET_FILES) $(APP_BIN) $(APP_DRAFT_BIN) $(APP_AR) $(APP_OBJ)'
 
 # Installation rules
 
-if [ x"$PREFIX" = x ]
-then
-	PREFIX='/usr/local/texttrix-$(TTX_VER)'
-fi
-install='if [ -d $(PREFIX) ]; then mkdir $(PREFIX)'
-install_java='mkdir $(PREFIX)/texttrix/$(PKG) $(PREFIX)/plugin; cp -f $(TARGET_FILES) $(PREFIX)/$(PKG)'
-install_java="$install_java""\n\t"'cp -f about.txt gpl.txt players savedGames teams com $(PREFIX)'
+install='intall: if [ -d $(PREFIX) ]; then mkdir $(PREFIX)'
+install="$install""\n\t"'mkdir $(PREFIX)/texttrix/$(PKG) $(PREFIX)/plugin; cp -f $(TARGET_FILES) $(PREFIX)/$(PKG)'
+
+phony="$phony clean all install install"
 
 # rules collection
-RULES=".PHONY: all
+RULES="all: texttrix $PLGS
 
-install: instal_java
+$phony
+
+$install
 
 $ttxRule
 
@@ -372,10 +386,7 @@ $plgRules
 $plgSetupRules
 $plgClassRules
 
-all: texttrix $PLGS
-
-clean: 
-	$clean_up
+$clean
 "
 
 echo -n "Creating Makefile..."

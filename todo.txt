@@ -42,6 +42,7 @@ Note: "./" is the "check-mark" symbol
 -update JarAjar to allow for MacOS X integration
 -convert player "starter" field into numerical ranking system for depth charts
 -rename files in place
+-new icons!
 
 ----Current Work----
 
@@ -53,6 +54,8 @@ v.0.3.6
 	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
 	-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
 	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
+	-adjust isLeadingTab() or the backspace unindenter to check if the text is selected, since selecting text backward and culminating at a leading tab causes a graphical unindent after a backspace
+	-update indents when paste over selected area
 -plug-in updates
 	-plug-in model
 		-option for plug-in to specify the region to replace; ADDED: when the plug-in wants to replace only a section of the text it has received, the plug-in can specify this region along with the text to replace it; TextTrix uses Document and indentRegion controls for speedy, specific updates
@@ -62,8 +65,11 @@ v.0.3.6
 		-Selected-Area-Only and Wrap check boxes should reflect their mutual exclusivity; ADDED: since the two options opose one another, turning on one turns off the other, while both can also be unchecked simultaneously
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
 		-add summary field; ADDED: "Results: " label summarizes the find/replace findings
+		-option to search backward
 	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED (#1007490): removed obsolete advice
+	-ExtraReturnsRemover
+		-dialog interface, including options for the email divisions and numbered lists
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
@@ -75,18 +81,22 @@ v.0.3.6
 	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval; adopts same default size and location as with plugIns
 	-reorganize to compact unnecessarily large fields; ADDED: divided general prefs panel from 2 to 3 columns
 -plug-in load failure shouldn't tear down the entire menu bar creation
--new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
+-update icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -stop auto-save thread when close file; FIXED (#1007497): removing tab stops the timer
 -refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
 -drag-n-drop files to open them in Text Trix
 -new build process
 	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
 	-build the API through the Makefile
+	-rules to clean and install
 -fix tab history from failing
 -bookmarks groups
 	-open all files in a group
 	-create separate dialog window listing all the files, where files can be added be dragging their tab into the box
 	-move to each tab by clicking on a file in the group dialog window
+-add forward and back icons
+-forward and back to previous edit positions
+-function to go directly to a line number
 
 ----Past Releases----
 
