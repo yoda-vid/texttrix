@@ -1029,10 +1029,12 @@ public class TextTrix extends JFrame {
 						pl.getAlwaysEntireText()
 							? pl.run(text, start, end)
 							: pl.run(text, end);
-					doc.remove(0, doc.getLength());
-					// remove all the text
-					doc.insertString(0, outcome.getText(), null);
-					// insert text
+					if (!outcome.getNoTextChange()) {
+						// remove all the text
+						doc.remove(0, doc.getLength());
+						// insert text
+						doc.insertString(0, outcome.getText(), null);
+					}
 					// approximates the original caret position
 					int i = -1;
 					if ((i = outcome.getSelectionStart()) != -1) {
@@ -1050,10 +1052,12 @@ public class TextTrix extends JFrame {
 					// only get the region
 					outcome = pl.run(text, start, end);
 					// invoke the plugin
-					doc.remove(start, len);
-					// remove only the region
-					doc.insertString(start, outcome.getText(), null);
-					// insert text
+					if (!outcome.getNoTextChange()) {
+						// remove only the region
+						doc.remove(start, len);
+						// insert text
+						doc.insertString(start, outcome.getText(), null);
+					}
 					// caret automatically returns to end of selected region
 					int i = -1;
 					if ((i = outcome.getSelectionStart()) != -1)

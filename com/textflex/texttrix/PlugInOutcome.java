@@ -37,41 +37,65 @@
 package com.textflex.texttrix;
 
 public class PlugInOutcome {
-    private String text = null;
-    private int selectionStart = -1;
-    private int selectionEnd = -1;
-    //    private int caretPosition = -1;
+	private String text = null;
+	private int selectionStart = -1;
+	private int selectionEnd = -1;
+	private boolean noTextChange = false;
+	//    private int caretPosition = -1;
 
-    public PlugInOutcome() {
-    }
+	public PlugInOutcome() {
+	}
 
-    public PlugInOutcome(String aText) {
-	text = aText;
-    }
+	public PlugInOutcome(String aText) {
+		text = aText;
+	}
 
-    public PlugInOutcome(String aText,
-			 int aSelectionStart, int aSelectionEnd) {
-	this(aText);
-	//	caretPosition = aCaretPosition; 
-	selectionStart = aSelectionStart;
-	selectionEnd = aSelectionEnd;
-    }
+	public PlugInOutcome(
+		String aText,
+		int aSelectionStart,
+		int aSelectionEnd) {
+		this(aText);
+		//	caretPosition = aCaretPosition; 
+		selectionStart = aSelectionStart;
+		selectionEnd = aSelectionEnd;
+	}
+	
+	public PlugInOutcome(
+		String aText,
+		int aSelectionStart,
+		int aSelectionEnd,
+		boolean aNoTextChange) {
+		this(aText, aSelectionStart, aSelectionEnd);
+		noTextChange = aNoTextChange;
+	}
 
-    //    public void setCaretPosition(int aCaretPosition) { caretPosition = aCaretPosition; }
-    public void setText(String aText) { text = aText; }
-    public void setSelectionStart(int aSelectionStart) { 
-	selectionStart = aSelectionStart; 
-    }
-    public void setSelectionEnd(int aSelectionEnd) { 
-	selectionEnd = aSelectionEnd; 
-    }
+	//    public void setCaretPosition(int aCaretPosition) { caretPosition = aCaretPosition; }
+	public void setText(String aText) {
+		text = aText;
+	}
+	public void setSelectionStart(int aSelectionStart) {
+		selectionStart = aSelectionStart;
+	}
+	public void setSelectionEnd(int aSelectionEnd) {
+		selectionEnd = aSelectionEnd;
+	}
+	
+	public void setNoTextChange(boolean aNoTextChange) {
+		noTextChange = aNoTextChange;
+	}
 
-
-
-
-    //    public int getCaretPosition() { return caretPosition; }
-    public String getText() { return text; }
-    public int getSelectionStart() { return selectionStart; }
-    public int getSelectionEnd() { return selectionEnd; }
+	//    public int getCaretPosition() { return caretPosition; }
+	public String getText() {
+		return text;
+	}
+	public int getSelectionStart() {
+		return selectionStart;
+	}
+	public int getSelectionEnd() {
+		return selectionEnd;
+	}
+	public boolean getNoTextChange() {
+		return noTextChange;
+	}
 
 }
