@@ -1364,7 +1364,7 @@ public class TextTrix extends JFrame {
 	@param path read-only text file's path.  Can also display
 	non-read-only text files, but can't edit them.
 	@return true if the file displays, false if otherwise
-	 */
+	 *
 	public boolean displayFile(String path) {
 		InputStream in = null;
 		BufferedReader reader = null;
@@ -1395,6 +1395,7 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
+	*/
 
 	/**Exits <code>TextTrix</code> by closing each tab individually,
 	 * checking for unsaved text areas in the meantime.
@@ -1553,7 +1554,7 @@ public class TextTrix extends JFrame {
 	 * allows editing.
 	 * @param reader text file stream
 	 * @return text from file
-	 */
+	 *
 	public String readText(BufferedReader reader) {
 		String text = "";
 		String line;
@@ -1566,6 +1567,7 @@ public class TextTrix extends JFrame {
 		// no stream closure operations b/c assume calling function takes care of them
 		return text;
 	}
+	*/
 
 	/**Creates a new <code>TextPad</code> object, a text area 
 	 * for writing, and gives it a new tab.  Can call for
@@ -1830,14 +1832,20 @@ public class TextTrix extends JFrame {
 	Assumes that the file is readable as text.
 	@param file file to open
 	*/
-	public boolean openFile(File file) {
+	public boolean openFile(File file, boolean editable, boolean resource) {
 		String path = file.getPath();
 		// ensures that the file exists and is not a directory
-		if (file.canRead()) { // readable file
+		if (file.canRead() || resource) { // readable file
+//			System.out.println("I'm here");
 			TextPad t = getSelectedTextPad();
 			BufferedReader reader = null;
 			try {
-				reader = new BufferedReader(new FileReader(path));
+				if (resource) {
+					reader = new BufferedReader(
+						new InputStreamReader(TextTrix.class.getResourceAsStream(path)));
+				} else {
+					reader = new BufferedReader(new FileReader(path));
+				}
 
 				// check if tabs exist; get TextPad if true
 				/* t.getText() != null, even if have typed nothing in it. Add tab and set its text 
@@ -1845,11 +1853,13 @@ public class TextTrix extends JFrame {
 				*/
 				if (t == null || !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
-					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
+//					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
+					t = getSelectedTextPad();
 					read(t, reader, path);
 				} else { // open file in current, empty pad
 					read(t, reader, path);
 				}
+				t.setEditable(editable);
 				t.setCaretPosition(0);
 				t.setChanged(false);
 				t.setFile(path);
@@ -1876,6 +1886,7 @@ public class TextTrix extends JFrame {
 				try {
 					if (reader != null)
 						reader.close();
+					System.out.println("I'm here3");
 				} catch (IOException e) {
 					//    e.printStackTrace(); 
 					return false;
@@ -1884,6 +1895,11 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
+	
+	public boolean openFile(File file) {
+		return openFile(file, true, false);
+	}
+	
 
 	/** Automatically auto-indents the given Text Pad.
 	 * Determines whether the Text Pad's filename extension matches the 
@@ -3409,7 +3425,10 @@ public class TextTrix extends JFrame {
 					Action shortcutsAction = new AbstractAction("Shortcuts") {
 						public void actionPerformed(ActionEvent evt) {
 							String path = "shortcuts.txt";
-							displayFile(path);
+							//displayFile(path);
+							// ArrayIndexOutOfBoundsException while opening file from
+							// from menu is an JVM 1.5.0-beta1 bug (#4962642) 
+							openFile(new File(path), false, true);
 						}
 					};
 					LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
@@ -3437,7 +3456,10 @@ public class TextTrix extends JFrame {
 					Action licenseAction = new AbstractAction("License") {
 						public void actionPerformed(ActionEvent evt) {
 							String path = "license.txt";
-							displayFile(path);
+							//displayFile(path);
+							// ArrayIndexOutOfBoundsException while opening file from
+							// from menu is an JVM 1.5.0-beta1 bug (#4962642) 
+							openFile(new File(path), false, true);
 						}
 					};
 					LibTTx.setAction(licenseAction, "License", 'L');
