@@ -3384,7 +3384,8 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 					helpMenu.add(shortcutsAction);
-
+					
+					/*
 					// features descriptions; opens new tab;
 					// reads from "features.txt" in same dir as this class
 					Action featuresAction =
@@ -3399,6 +3400,7 @@ public class TextTrix extends JFrame {
 						"Features descriptions",
 						'F');
 					helpMenu.add(featuresAction);
+					*/
 
 					// license; opens new tab;
 					// reads from "license.txt" in same directory as this class

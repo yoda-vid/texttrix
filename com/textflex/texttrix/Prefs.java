@@ -614,49 +614,76 @@ public class Prefs extends JFrame {
 		plugInsList = s;
 	}
 	
+	/**Sets the flag that indicates that the plug-in preferences have changed.
+	 * 
+	 * @param b
+	 *
 	public void setPlugInsPrefsChanged(boolean b) {
 		plugInsPrefsChanged = b;
 	}
+	*/
 
 	/** Gets the stored width for the program.
 	 * 
-	 * @return width
+	 * @return width in pixels
 	 */
 	public int getPrgmWidth() {
 		return internalPrefs.getInt(PRGM_WIDTH, 500);
 	}
 	/** Gets the stored height for the program.
 	 * 
-	 * @return height
+	 * @return height in pixels
 	 */
 	public int getPrgmHeight() {
 		return internalPrefs.getInt(PRGM_HEIGHT, 600);
 	}
-	/** Gets the stored vertical location for the program.
+	/** Gets the stored horizontal location for the program.
 	 * 
-	 * @return vertical location of upper-left corner othe program window,
-	 * relative to the upper-left corner of the screen
+	 * @return horizontal location in pixels of upper-left corner of the 
+	 * program window, relative to the upper-left corner of the screen
 	 */
 	public int getPrgmXLoc() {
 		return internalPrefs.getInt(PRGM_X_LOC, 0);
 	}
 	/** Gets the stored vertical location for the program.
 	 * 
-	 * @return vertical location of upper-left corner othe program window,
-	 * relative to the upper-left corner of the screen
+	 * @return vertical location in pixels of upper-left corner of the 
+	 * program window, relative to the upper-left corner of the screen
 	 */
 	public int getPrgmYLoc() {
 		return internalPrefs.getInt(PRGM_Y_LOC, 0);
 	}
+	/** Gets the stored width of the plug-in's window.
+	 * 
+	 * @param filename the <code>.jar</code> filename of the plug-in
+	 * @return width in pixels
+	 */
 	public int getPlugInWidth(String filename) {
 		return plugInsPrefs.getInt(PLUG_IN_WIDTH + filename, 0);
 	}
+	/** Gets the stored height of the plug-in's window.
+	 * 
+	 * @param filename the <code>.jar</code> filename of the plug-in
+	 * @return height in pixels
+	 */
 	public int getPlugInHeight(String filename) {
 		return plugInsPrefs.getInt(PLUG_IN_HEIGHT + filename, 0);
 	}
+	/** Gets the stored horizontal location of the plug-in's window.
+	 * 
+	 * @param filename the <code>.jar</code> filename of the plug-in
+	 * @return horizontal location in pixels of upper-left corner of the 
+	 * program window, relative to the upper-left corner of the screen
+	 */
 	public int getPlugInXLoc(String filename) {
 		return plugInsPrefs.getInt(PLUG_IN_X_LOC + filename, 0);
 	}
+	/** Gets the stored vertical location of the plug-in's window.
+	 * 
+	 * @param filename the <code>.jar</code> filename of the plug-in
+	 * @return vertical  location in pixels of upper-left corner of the 
+	 * program window, relative to the upper-left corner of the screen
+	 */
 	public int getPlugInYLoc(String filename) {
 		return plugInsPrefs.getInt(PLUG_IN_Y_LOC + filename, 0);
 	}
@@ -694,7 +721,7 @@ public class Prefs extends JFrame {
 	public boolean getAutoIndent() {
 		return generalPrefs.getBoolean(AUTO_INDENT, false);
 	}
-	/** Gets the stored the list of file extensions of files to automatically
+	/** Gets the stored list of file extensions of files to automatically
 	 * turn on auto-indent for.
 	 * 
 	 * @return comma-or-space-delimited list of file extensions, where the
@@ -703,15 +730,36 @@ public class Prefs extends JFrame {
 	public String getAutoIndentExt() {
 		return generalPrefs.get(AUTO_INDENT_EXT, "");
 	}
+	/**Gets the stored flag for whether the windows should become active 
+	 * together.
+	 * 
+	 * @return <code>true</code> if activating one window should bring
+	 * all the other Text Trix windows to the foreground
+	 */
 	public boolean getActivateWindowsTogether() {
 		return generalPrefs.getBoolean(ACTIVATE_WINDOWS_TOGETHER, true);
 	}
+	/**Gets the stored flag for whether the program should automatically
+	 * save changed files.
+	 * 
+	 * @return <code>true</code> if the program should auto-save files
+	 */
 	public boolean getAutoSave() {
 		return generalPrefs.getBoolean(AUTO_SAVE, false);
 	}
+	/**Gets the stored interval between the first change in a file and
+	 * its automatic save.
+	 * 
+	 * @return the duration in minutes
+	 */
 	public int getAutoSaveInterval() {
 		return generalPrefs.getInt(AUTO_SAVE_INTERVAL, 5);
 	}
+	/**Gets the flag for whether the program should prompt the user for
+	 * save confirmation before the program automatically saves the file.
+	 * 
+	 * @return <code>true</code> if the program should prompt the user
+	 */
 	public boolean getAutoSavePrompt() {
 		return generalPrefs.getBoolean(AUTO_SAVE_PROMPT, false);
 	}
@@ -831,6 +879,10 @@ public class Prefs extends JFrame {
 					
 					
 					// auto-saves files
+					
+					// auto-save check box;
+					// selecting this box enables the user to alter the other
+					// auto-save parameters 
 					String autoSaveTxt =
 						"Save changed files automatically:";
 					String autoSaveTipTxt =
@@ -847,18 +899,22 @@ public class Prefs extends JFrame {
 						}
 					});
 					
+					// the time interval selector to 
 					autoSaveIntervalLbl = 
 						new JLabel("Minutes between auto saves:");
 					String autoSaveIntervalTipTxt =
-						"<html>The number of minutes between automatically"
-						+ "<br>saving the file.  If the file is manually"
+						"<html>The number of minutes between first changing"
+						+ "<br>changing a file and automatically"
+						+ "<br>saving it.  If the file is manually"
 						+ "<br>saved, the interval timer is reset.</html>";
 					autoSaveIntervalLbl.setToolTipText(autoSaveIntervalTipTxt);
-					
+					// the numerical model for the spinner
 					autoSaveIntervalMdl =
 						new SpinnerNumberModel(getAutoSaveInterval(), 1, 100, 1);
 					autoSaveIntervalSpinner = new JSpinner(autoSaveIntervalMdl);
 					
+					// the prompt for confirmation from the user before automatically
+					// saving a file
 					String autoSavePromptTxt =
 						"Prompt before auto-saving files:";
 					String autoSavePromptTipTxt =
@@ -869,6 +925,8 @@ public class Prefs extends JFrame {
 						new JCheckBox(autoSavePromptTxt, getAutoSavePrompt());
 					autoSavePromptChk.setToolTipText(autoSavePromptTipTxt);
 					
+					// enables the auto-save settings if the main auto-save
+					// function is active
 					setAutoSaveSelectors(autoSaveChk.isSelected());
 					
 					// add components to a grid-bag layout

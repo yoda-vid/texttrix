@@ -70,7 +70,7 @@ public abstract class PlugInWindow extends PlugIn {
 
 	private WindowAdapter winAdapter = null; // window listener
 	private JFrame window = null; // window
-	private ComponentListener winCompListener = null;
+	private ComponentListener winCompListener = null; // window's component listener
 	
 	/**Constructs a plug-in adapted for window control.
 	 * After creating the window, <code>setWindow(JFrame)</code> must be called
@@ -113,6 +113,12 @@ public abstract class PlugInWindow extends PlugIn {
 //		System.out.println("added");
 	}
 	
+	/**Attaches a component listener to the window for external responses
+	 * to windowing events, such as resizing and repositioning.
+	 * For example, the main program could now store plug-in window size
+	 * and position information in the program's preferences file.
+	 * 
+	 */
 	public void addWindowComponentListener() {
 		window.addComponentListener(winCompListener);
 	}
@@ -154,6 +160,10 @@ public abstract class PlugInWindow extends PlugIn {
 		winAdapter = adapter;
 	}
 	
+	/**Sets the window's component listener.
+	 * 
+	 * @see #addWindowComponentListener()
+	 */
 	public void setWindowComponentListener(ComponentListener aWinCompListener) {
 		winCompListener = aWinCompListener;
 	}
@@ -213,10 +223,18 @@ public abstract class PlugInWindow extends PlugIn {
 		return window.getLocation();
 	}
 	
+	/**Gets the width of the plug-in's window.
+	 * 
+	 * @return the width in pixels
+	 */
 	public int getWindowWidth() {
 		return window.getWidth();
 	}
 	
+	/**Getst the height of the plug-in's window.
+	 * 
+	 * @return the height in pixels
+	 */
 	public int getWindowHeight() {
 		return window.getHeight();
 	}

@@ -150,14 +150,25 @@ public class PrintPadPreview extends JDialog {
 			contentPane);
 	}
 	
+	/**Creates the panel that previews the potential print output.
+	 * 
+	 * @author David Young
+	 */
 	private class PreviewPanel extends JPanel {
 		
-		private int currPage = 0;
+		private int currPage = 0; // current page, starting at 0
 		
+		/**Constructs the panel.
+		 * 
+		 *
+		 */
 		public PreviewPanel() {
 			
 		}
 		
+		/**Paints the preview onto the panel.
+		 * 
+		 */
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			Graphics2D g2D = (Graphics2D)g;
@@ -212,6 +223,10 @@ public class PrintPadPreview extends JDialog {
 			}
 		}
 		
+		/**Advances or decrements the preview document by the given number of pages.
+		 * 
+		 * @param by the number of pages to skip
+		 */
 		public void flipPage(int by) {
 			int newPage = currPage + by;
 			if (newPage >= 0 && newPage < book.getNumberOfPages()) {

@@ -34,7 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 package com.textflex.texttrix;
 
 import java.lang.reflect.*;
@@ -58,7 +57,7 @@ import javax.swing.text.*;
  * @author davit
  */
 public class LibTTx {
-	
+
 	/** Constructs the library object, almost never necessary since
 	 * virtually all of its methods are static.
 	 *
@@ -93,14 +92,12 @@ public class LibTTx {
 		// all plugins are in the package, com.textflex.texttrix
 		String name =
 			"com.textflex.texttrix."
-				+ plugInName.substring(
-					0,
-					plugInName.indexOf(".jar"));
+				+ plugInName.substring(0, plugInName.indexOf(".jar"));
 		PlugIn plugIn = (PlugIn) createObject(name, loader);
 		plugIn.setPath(path);
 		return plugIn;
 	}
-	
+
 	/** Loads the specified plug-in from a given directory.
 	 * 
 	 * @param plugInDir the directory that houses the plug-in JAR files
@@ -119,8 +116,7 @@ public class LibTTx {
 		   String into a URL no longer works.
 		*/
 		try {
-			path =
-				plugInDir.toString() + File.separator + plugInName;
+			path = plugInDir.toString() + File.separator + plugInName;
 			URL url = new File(path).toURL();
 			//		    System.out.println(url.toString());
 			loader = new URLClassLoader(new URL[] { url });
@@ -130,14 +126,12 @@ public class LibTTx {
 		// all plugins are in the package, com.textflex.texttrix
 		String name =
 			"com.textflex.texttrix."
-				+ plugInName.substring(
-					0,
-					plugInName.indexOf(".jar"));
+				+ plugInName.substring(0, plugInName.indexOf(".jar"));
 		PlugIn plugIn = (PlugIn) createObject(name, loader);
 		plugIn.setPath(path);
 		return plugIn;
 	}
-	
+
 	/** Gets a list of all the plug-ins in a given directory.
 	 * 
 	 * @param plugInDir the plug-in directory
@@ -152,7 +146,7 @@ public class LibTTx {
 		String[] plugInList = plugInDir.list(filter);
 		return plugInList;
 	}
-	
+
 	/** Gets a list of the paths to each plug-in JAR file.
 	 * 
 	 * @param plugInDir plug-in directory
@@ -165,8 +159,6 @@ public class LibTTx {
 		}
 		return list;
 	}
-		
-		
 
 	/** Loads all the plugins from a given directory.
 	Assumes that all files ending in "<code>.jar</code>" are plugins.
@@ -211,7 +203,7 @@ public class LibTTx {
 		}
 		return obj;
 	}
-	
+
 	/** Creates an array from a comma-delimited string.
 	 * Each portion of the string is placed in a separate element in the array.
 	 * @param s string to convert
@@ -223,18 +215,33 @@ public class LibTTx {
 		StringTokenizer tokenizer = new StringTokenizer(s, ",");
 		while (tokenizer.hasMoreTokens()) {
 			if (arrayInd >= array.length) {
-				array = (String[])growArray(array);
+				array = (String[]) growArray(array);
 			}
 			array[arrayInd++] = tokenizer.nextToken();
 		}
-		return (String[])truncateArray(array, arrayInd);
+		return (String[]) truncateArray(array, arrayInd);
 	}
 	
-	public static String createStringFromArray(String[] array, int offset, int len, boolean newlines) {
+	/**Creates a string from a one-dimensional array of strings.
+	 * 
+	 * @param array the array of strings
+	 * @param offset the element at which to start
+	 * @param len the number of elements to append to the output string
+	 * @param newlines <code>true</code> if newlines should be appended
+	 * the end of each element's string that doesn't alreay have a newline there
+	 * @return the final, strung string
+	 */
+	public static String createStringFromArray(
+		String[] array,
+		int offset,
+		int len,
+		boolean newlines) {
 		StringBuffer buf = new StringBuffer(1000);
 		int finalLen = offset + len;
 		for (int i = offset; i < finalLen && i < array.length; i++) {
 			buf.append(array[i]);
+			// appends newlines at the end of each element if it doesn't
+			// already have one
 			if (newlines && !array[i].endsWith("\n")) {
 				buf.append("\n");
 			}
@@ -242,14 +249,32 @@ public class LibTTx {
 		return buf.toString();
 	}
 	
-	public static String createStringFromArray(String[] array, boolean newlines) {
+	/**Creates a string from an array of strings.
+	 * All elements from the array are included.
+	 * 
+	 * @param array the array of strings
+	 * @param newlines <code>true</code> if newlines should be appended
+	 * the end of each element's string that doesn't alreay have a newline there
+	 * @return the final, strung string
+	 * @return the final, strung string
+	 */
+	public static String createStringFromArray(
+		String[] array,
+		boolean newlines) {
 		return createStringFromArray(array, 0, array.length, newlines);
 	}
-	
+
+	/**Checks whether a string is the same as an element in an array of strings.
+	 * 
+	 * @param find the string to find
+	 * @param list the array of strings in which to try tot find it
+	 * @return <code>true</code> if an equivalent string is found
+	 */
 	public static boolean inUnsortedList(String find, String[] list) {
 		String check = null;
 		for (int i = 0; i < list.length && (check = list[i]) != null; i++) {
-			if (check.equals(find)) return true;
+			if (check.equals(find))
+				return true;
 		}
 		return false;
 	}
@@ -287,7 +312,7 @@ public class LibTTx {
 		System.arraycopy(array, 0, newArray, 0, length);
 		return newArray;
 	}
-	
+
 	/** Searches backward in a text to find a given normal-oriented string.
 	 * For example, in the text, text = "Mr. Smith went to the door went out,"
 	 * reverseIndexOf(text, "went", 14) would return 10. 
@@ -296,7 +321,10 @@ public class LibTTx {
 	 * @param offset index of first character not included in the search
 	 * @return index of found string; -1 if not found
 	 */
-	public static int reverseIndexOf(String str, String searchStr, int offset) {
+	public static int reverseIndexOf(
+		String str,
+		String searchStr,
+		int offset) {
 		int i = offset - 1;
 		//	System.out.println("len: " + searchStr.length());
 		while (i >= 0
@@ -406,14 +434,12 @@ public class LibTTx {
 		action.putValue(Action.SHORT_DESCRIPTION, description);
 		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
 	}
-	
+
 	/**Sets an action's properties.
 	 * @param action action to set
 	 * @param description tool tip
 	 */
-	public static void setAction(
-		Action action,
-		String description) {
+	public static void setAction(Action action, String description) {
 		action.putValue(Action.SHORT_DESCRIPTION, description);
 	}
 
@@ -486,7 +512,7 @@ public class LibTTx {
 		constraints.weighty = wy;
 		pane.add(c, constraints);
 	}
-	
+
 	/**Counts the number of lines visible in the given text component.
 	 * For example, the text in a JTextArea may have newlines only at
 	 * paragraph divisions or blank lines, but the graphical text
@@ -504,17 +530,24 @@ public class LibTTx {
 		int offset = 0;
 		int count = 0;
 		try {
-			while (offset < len){
+			while (offset < len) {
 				offset = Utilities.getRowEnd(c, offset) + 1;
 				count++;
 			}
-		} catch(BadLocationException e) {
+		} catch (BadLocationException e) {
 		}
 		return count;
 	}
 	
+	/**Gets the visible lines in a text component, each line filling an
+	 * element of an array of strings.
+	 * 
+	 * @param c the text diaplay, almost always with multiple lines, 
+	 * such as <code>JTextArea</code> of <code>TextPad</code>
+	 * @return
+	 */
 	public static String[] getVisibleLines(JTextComponent c) {
-		String[] lines = new String[100];
+		String[] lines = new String[100]; // defaults to 100 lines
 		int linesIdx = 0;
 		int len = c.getDocument().getLength();
 		int offset = 0;
@@ -522,17 +555,20 @@ public class LibTTx {
 		try {
 			while (offset < len) {
 				end = Utilities.getRowEnd(c, offset) + 1;
+				// grows the array if full
 				if (linesIdx >= lines.length) {
-					lines = (String[])growArray(lines);
+					lines = (String[]) growArray(lines);
 				}
-				lines[linesIdx++] = c.getDocument().getText(offset, end - offset);
+				// adds the line
+				lines[linesIdx++] =
+					c.getDocument().getText(offset, end - offset);
 				offset = end;
 			}
-		} catch(BadLocationException e) {
+		} catch (BadLocationException e) {
 		}
-		return (String[])truncateArray(lines, linesIdx);
+		return (String[]) truncateArray(lines, linesIdx);
 	}
-	
+
 }
 
 /** Filters filenames to select only files with particular endings.
