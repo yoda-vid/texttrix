@@ -34,7 +34,7 @@
 
 */
 
-package net.sourceforge.texttrix;
+package com.textflex.texttrix;
 
 import java.lang.*;
 import java.io.*;
@@ -67,7 +67,7 @@ public class Tools {
      * from inline email message replies, are also removed.
      * @param s the full text from which to strip extra hard returns
      * @return stripped text
-     */
+     *
     public static String removeExtraHardReturns(String s, int start, int end) {
 	/* This function works by generally checking the characters afer
 	 * a hard return to determine whether to keep it or not.
@@ -75,7 +75,7 @@ public class Tools {
 	 * check the beginning of the string separately.  Additionally, the
 	 * function completely excludes pre-tag-delimited areas from hard
 	 * return removal.
-	 */
+	 *
 	int len = s.length();
 	StringBuffer stripped = new StringBuffer(len); // new string
 	int n = start; // string index
@@ -159,7 +159,7 @@ public class Tools {
 			
 	    /* Append the chars to keep while removing single returns
 	     * and their inline msg reply chars appropriately.
-	     */
+	     *
 	    // skip <pre>-delimited sections, removing only the <pre> tags
 	    // The <pre> tags should each be at the start of its own line.
 	    if (startPre == n && !ignorePre) {
@@ -183,7 +183,7 @@ public class Tools {
 		 * return, uncomment these lines
 		 if (isCurrentReply)
 		 stripped.append("\n-----------------------\n\n");
-		*/
+		*
 		n = end;
 		// mark that start of inline message reply
 	    } else if (!isCurrentLineReply && isNextLineReply) {
@@ -235,7 +235,7 @@ public class Tools {
 	   if (n < len)
 	   finalText += s.substring(n);
 	   return finalText;
-	*/
+	*
 	return stripped.toString() + s.substring(n);
     }
 
@@ -248,7 +248,7 @@ public class Tools {
      * @param innerChars required chars to return the length of the first
      * continuous string of chars from <code>chars</code>; if no
      * <code>innerChars</code> are found, returns 0
-     */
+     *
     public static int containingSeq(String seq, int start, 
 				    String chars, String innerChars) {
 	char nextChar;
@@ -268,7 +268,7 @@ public class Tools {
      * if available.  Otherwise, simply removes the tag.
      * @param text text from which to remove HTML tags
      * @return text with HTML tags removed
-     */
+     *
     public static String htmlReplacer(String text, int start, int end) {
 	String lowerCase = text.toLowerCase(); // so ignore tag upper/lower case
 	int len = text.length();
@@ -413,7 +413,7 @@ public class Tools {
 	/*
 	  System.out.println("start: " + start + ", end: " + end + ", n: " + n);
 	  return text.substring(0, start) + s.toString() + text.substring(n);
-	*/
+	*
     }
 
     /**Checks whether any of the strings in an array are at the start
@@ -425,7 +425,7 @@ public class Tools {
      * @return <code>true</code> if any of the array's strings 
      * start <code>s</code>, 
      * <code>false</code> if otherwise
-     */
+     *
     public static boolean startsWithAny(String s, String strs[], int offset) {
 	for (int i = 0; i < strs.length; i++) {
 	    //			System.out.println("starts' i: " + i);
@@ -441,7 +441,7 @@ public class Tools {
      * paragraph and tab markers.  The representations become part of the text.
      * @param text text to convert
      * @return text with added String representations
-     */
+     *
     public static String showNonPrintingChars(String text, int start, int end) {
 	int len = text.length();
 	StringBuffer s = new StringBuffer(len);
@@ -466,6 +466,7 @@ public class Tools {
 	}
 	return s.toString() + text.substring(end);
     }
+*/
 
     /**Load a table of equivalencies between two strings.
      * The first column consists of one string, and the second column of the 

@@ -34,7 +34,7 @@
 
 */
 
-package net.sourceforge.texttrix;
+package com.textflex.texttrix;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,6 +67,12 @@ public class TextTrix extends JFrame {
     private static int fileIndex = 0; // for giving each TextPad a unique name
     private static FindDialog findDialog; // find dialog
     //	private static int tabSize = 0; // user-defined tab display size
+    private static PlugIn[] plugIns = null;
+    private static Action[] plugInActions = null;
+    private static String charsUnavailable = "";
+    private JMenu trixMenu = new JMenu("Trix");
+    private JMenu toolsMenu = new JMenu("Tools");
+    private JToolBar toolBar = new JToolBar("Functions and features");
 
     /**Constructs a new <code>TextTrix</code> frame and starting 
      * <code>TextPad</code>.
@@ -121,15 +127,12 @@ public class TextTrix extends JFrame {
 	editMenu.setMnemonic('E');
 	JMenu viewMenu = new JMenu("View");
 	viewMenu.setMnemonic('V');
-	JMenu trixMenu = new JMenu("Trix");
 	trixMenu.setMnemonic('T');
-	JMenu toolsMenu = new JMenu("Tools");
 	toolsMenu.setMnemonic('O');
 	JMenu helpMenu = new JMenu("Help");
 	helpMenu.setMnemonic('H');
 
 	// make tool bar
-	JToolBar toolBar = new JToolBar("Functions and features");
 	toolBar.addMouseListener(new PopupListener());
 
 
@@ -459,6 +462,14 @@ public class TextTrix extends JFrame {
 	    };
 	setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
+
+
+
+
+
+	/* Tools menu */
+
+
 	
 	// (ctrl-shift-F) find and replace Tools feature
 	Action findAction = new AbstractAction("Find and replace", 
@@ -478,6 +489,19 @@ public class TextTrix extends JFrame {
 	setRollover(findButton, "images/find-roll-16x16.png");
 	findButton.setToolTipText(readText("findbutton.html"));
 
+
+
+
+
+	String plugInsPath = "plugins";
+	plugIns = LibTTx.loadPlugIns(plugInsPath);
+	for (int i = 0; i < plugIns.length; i++) {
+	    makePlugInAction(plugIns[i]);
+	}
+
+
+
+	/*
 	// remove hard returns except between paragraphs and within lists; 
 	// also remove " > " and similar pre-appendages to lines
 	Action removeReturnsAction = 
@@ -517,6 +541,11 @@ public class TextTrix extends JFrame {
 	removeReturnsButton
 	    .setToolTipText(readText("removereturnsbutton.html"));
 	
+	*/
+
+
+
+	/*
 	// non-printing-character display
 	Action nonPrintingCharViewerAction = 
 	    new AbstractAction("View non-printing characters", 
@@ -558,6 +587,7 @@ public class TextTrix extends JFrame {
 		    "images/nonprinting-roll-16x16.png");
 	nonPrintingCharViewerButton
 	    .setToolTipText(readText("nonprintingbutton.html"));
+	
 
 	// HTML replacement
 	Action htmlReplacerAction = 
@@ -591,6 +621,7 @@ public class TextTrix extends JFrame {
 	htmlReplacerButton.setBorderPainted(false);
 	setRollover(htmlReplacerButton, "images/htmlreplacer-roll-16x16.png");
 	htmlReplacerButton.setToolTipText(readText("htmlreplacer.html"));
+	*/
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
@@ -691,6 +722,53 @@ public class TextTrix extends JFrame {
 	textTrix.getSelectedTextPad().requestFocusInWindow();
     }
 
+    public void makePlugInAction(final PlugIn pl) {
+	String name = pl.getName();
+	String category = pl.getCategory();
+	String description = pl.getDescription();
+	String detailedDescription 
+	    = LibTTx.readText(pl.getDetailedDescription());
+	ImageIcon icon = pl.getIcon();
+	ImageIcon rollIcon = pl.getRollIcon();
+	Action action = 
+	    new AbstractAction(name, icon) {
+		public void actionPerformed(ActionEvent evt) {
+		    int tabIndex = tabbedPane.getSelectedIndex();
+		    if (tabIndex != -1) {
+			// may want to automatically apply HTML replacer 
+			// after converting to plain
+			viewPlain();
+			TextPad t = (TextPad)textAreas
+			    .get(tabbedPane.getSelectedIndex());
+			String text = t.getText();
+
+			// only modify the selected text, and make 
+			// the action undoable
+			int start = 0;
+			int end = 0;
+			if ((start = t.getSelectionStart()) 
+			    == (end = t.getSelectionEnd())) {
+			    // may need to add original text to history buffer
+			    // before making the change
+			    t.setUndoableText(pl.run(text, 0, text.length()));
+			} else {
+			    t.setUndoableText(pl.run(text, start, end));
+			}
+		    }
+		}
+	    };
+	setAction(action, name);
+	if (category.equals("tools")) {
+	    toolsMenu.add(action);
+	} else {
+	    trixMenu.add(action);
+	}
+	JButton button = toolBar.add(action);
+	button.setBorderPainted(false);
+	setRollover(button, rollIcon);
+	button.setToolTipText(detailedDescription);
+    }
+
     /**Gets the last path for opening a file.
      * @return most recent path for opening a file
      */
@@ -753,6 +831,14 @@ public class TextTrix extends JFrame {
 	button.setRolloverEnabled(true);
     }
 		
+    /**Enable button rollover icon change.
+     * @param button <code>JButton</code> to display icon rollover change
+     * @param iconPath location of icon to change to
+     */
+    public void setRollover(JButton button, ImageIcon icon) {
+	button.setRolloverIcon(icon);
+	button.setRolloverEnabled(true);
+    }
 
     /**Set an action's properties.
      * @param action action to set
@@ -775,6 +861,27 @@ public class TextTrix extends JFrame {
     public void setAction(Action action, String description, char mnemonic) {
 	action.putValue(Action.SHORT_DESCRIPTION, description);
 	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+    }
+
+    /**Sets an action's properties.
+     * @param action action to set
+     * @param description tool tip
+     * @param mnemonic menu shortcut
+     */
+    public void setAction(Action action, String description) {
+	char mnemonic = 0;
+	int i = 0;
+	for (i = 0; i < description.length()
+		 && charsUnavailable
+		 .indexOf((mnemonic = description.charAt(i)))
+		 != -1;
+	     i++);
+	action.putValue(Action.SHORT_DESCRIPTION, description);
+	// otherwise haven't found a suitable char
+	if (i < description.length()) { 
+	    action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+	    charsUnavailable += mnemonic;
+	}
     }
 
     /**Creates an image icon.

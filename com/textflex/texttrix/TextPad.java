@@ -34,7 +34,7 @@
 
 */
 
-package net.sourceforge.texttrix;
+package com.textflex.texttrix;
 
 import javax.swing.*;
 import java.awt.*;
