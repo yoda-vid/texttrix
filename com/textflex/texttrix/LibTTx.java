@@ -182,6 +182,7 @@ public class LibTTx {
 		String text = "";
 		InputStream in = null;
 		BufferedReader reader = null;
+		// read in lines until none remain
 		try {
 			in = TextTrix.class.getResourceAsStream(path);
 			reader = new BufferedReader(new InputStreamReader(in));
@@ -191,7 +192,7 @@ public class LibTTx {
 		} catch (IOException exception) {
 			exception.printStackTrace();
 			return "";
-		} finally {
+		} finally { // clean-up code
 			try {
 				if (reader != null)
 					reader.close();
@@ -214,6 +215,8 @@ public class LibTTx {
 	public static String readText(BufferedReader reader) {
 		String text = "";
 		String line;
+		// read lines until none remain;
+		// the calling function should handle clean-up code for the reader stream
 		try {
 			while ((line = reader.readLine()) != null)
 				text = text + line + "\n";

@@ -37,7 +37,6 @@
 package com.textflex.texttrix;
 
 import javax.swing.*;
-//import java.net.*;
 import java.io.*;
 import java.util.jar.*;
 import javax.swing.event.*;
@@ -55,14 +54,15 @@ public abstract class PlugIn extends JComponent {
 	private String detailedDescription = null; // long, HTML-formatted desc.
 	private String name = null; // plugin name
 	private String iconPath = null; // path to main icon
-	private ImageIcon icon = null;
+	private ImageIcon icon = null; // the default icon
 	private String rollIconPath = null; // path to rollover icon
-	private ImageIcon rollIcon = null;
+	private ImageIcon rollIcon = null; // the roll-over icon
 	private String detailedDescriptionPath = null; // path to formatted desc.
 	private String category = null; // plugin category, eg "tools"
 	private String path = null; // plugin JAR's path
 	private JarFile jar = null; // plugin's JAR
 	private EventListenerList listenerList = null;
+	// flag to retrieve the entire text, not just the selected region
 	private boolean alwaysEntireText = false;
 
 	/** Constructs a plugin.
@@ -80,6 +80,7 @@ public abstract class PlugIn extends JComponent {
 		String aDetailedDescriptionPath,
 		String aIconPath,
 		String aRollIconPath) {
+			
 		name = aName;
 		category = aCategory;
 		description = aDescription;
@@ -87,9 +88,6 @@ public abstract class PlugIn extends JComponent {
 		iconPath = aIconPath;
 		rollIconPath = aRollIconPath;
 		listenerList = new EventListenerList();
-		//		System.out.println((new File(iconPath)).getAbsolutePath());
-		//		icon = getIcon(iconPath);
-		//		createIcon();
 	}
 
 	/** Registers a new plug-in listener to respond to notify
@@ -190,22 +188,15 @@ public abstract class PlugIn extends JComponent {
 	public String getIconPath() {
 		return iconPath;
 	}
-	/*
-	public ImageIcon getStoredIcon() {
-		return icon;
-	}
-	*/
 	/** Gets the plugin path to the rollover icon.
+	 * The roll-over icon displays when the mouse rolls over the plug-in's button.
+	 * This icon can also serve simply as an alternate icon, independent of any
+	 * roll-over mechanism.
 	@return path to the rollover icon
 	*/
 	public String getRollIconPath() {
 		return rollIconPath;
 	}
-	/*
-	public ImageIcon getStoredRollIcon() {
-		return rollIcon;
-	}
-	*/
 	/** Gets the plugin short description.
 	@return short description
 	*/
@@ -268,33 +259,44 @@ public abstract class PlugIn extends JComponent {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//		return new ImageIcon(bytes);
 		return new ImageIcon(bytes);
 		//System.out.println("created icon: " + (imgicon != null));
 	}
-	/*
-	public void createIcon(String path) {
-		icon = getImageIcon(path);
-	}
-	public void createRollIcon(String path) {
-		rollIcon = getImageIcon(path);
-	}
-	*/
+	
+	
+	/** Gets the default icon and stores it in <code>icon</code>
+	 * 
+	 * @param path path to the icon, relative to the plug-in's class file
+	 * @return the icon
+	 */
 	public ImageIcon getIcon(String path) {
 		if (icon == null)
 			icon = getImageIcon(path);
 		return icon;
-		//
 	}
+	/** Gets the roll-over icon and stores it in <code>icon</code>
+	 * 
+	 * @param path path to the icon, relative to the plug-in's class file
+	 * @return the icon
+	 */
 	public ImageIcon getRollIcon(String path) {
 		if (rollIcon == null)
 			rollIcon = getImageIcon(path);
 		return rollIcon;
-		//
 	}
 
+	/** Mandates that the subclass calls another function to retrieve the default icon,
+	 * ensuring that the path is relative to the plug-in rather than to the class 
+	 * <code>PlugIn</code>.
+	 * @return the icon
+	 */
 	public abstract ImageIcon getIcon();
 
+	/** Mandates that the subclass calls another function to retrieve the roll-over icon,
+	 * ensuring that the path is relative to the plug-in rather than to the class 
+	 * <code>PlugIn</code>.
+	 * @return the icon
+	 */
 	public abstract ImageIcon getRollIcon();
 
 	public BufferedReader getDetailedDescription(String descPath) {
