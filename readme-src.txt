@@ -18,7 +18,6 @@ System Req:
 Microsystems (http://java.sun.com/getjava/index.html)
 
 Instructions for compilation:
-
 -Unzip Text Trix:
 	-Use a graphical unzip program, or
 	-Change to the directory holding the zip file: 

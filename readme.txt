@@ -19,11 +19,10 @@ freely available from Sun Microsystems
 (http://java.sun.com/getjava/index.html)
 
 Instructions for use:
-
 -Unzip Text Trix by double-clicking on the Jar Ajar self-extracting file, 
 "texttrix-x.y.z-jarajar-extractor.jar".  Follow the instructions to unpack the 
 file.
--Double-click on "texttrix-x.y.z.jar" in the directory that you unpacked
+-Double-click on "TextTrix.jar" in the directory that you unpacked
 
 Troubleshooting:
 -Ensure that the Java 2 Runtime Environment, v.1.4+, is installed.  Point your 
