@@ -60,9 +60,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	private ActionMap amap = null; // map of actions
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
-	private static boolean JVM_15 = false;
+	private static boolean JVM_15 = false; // flags that running on JVM 1.5
 //	private double scale = 1;
-	private Thread autoSaveTimer = null;
+	private Thread autoSaveTimer = null; // timer to auto save the text
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -878,14 +878,31 @@ public class TextPad extends JTextPane implements StateEditable {
 		return tabSize;
 	}
 	
+	/**Creates a print pad for this <code>TextPad</code> object.
+	 * The text pad needs to create its own print pad so that the 
+	 * text pad can pass its contents array of each visible line
+	 * and also pass the current font. 
+	 * @return the print pad, including the current text, broken
+	 * up according to the visible, soft breaks in the 
+	 * <code>TextPad</code>, and the current font
+	 */
 	public PrintPad createPrintPad() {
 		return new PrintPad(LibTTx.getVisibleLines(this), 
 			new Font(getFont().getAttributes()));
 	}
 	
+	/**Gets the current auto-save timer.
+	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
+	 * with changed content if the user has enabled the feature.
+	 * @return the auto-save timer
+	 */
 	public Thread getAutoSaveTimer() {
 		return autoSaveTimer;
 	}
+	/**Sets the current auto-save timer.
+	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
+	 * with changed content if the user has enabled the feature.
+	 */
 	public void setAutoSaveTimer(Thread aAutoSaveTimer) {
 		autoSaveTimer = aAutoSaveTimer;
 	}

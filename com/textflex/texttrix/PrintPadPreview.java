@@ -50,21 +50,34 @@ import java.awt.event.*;
  */
 public class PrintPadPreview extends JDialog {
 	
-	private Book book = null;
+	private Book book = null; // the book of multiple pages to preview
 	
+	/**Constructs a preview dialog to display the given book of 
+	 * multiple pages.
+	 * 
+	 * @param frame the owner, which remains disabled until the preview 
+	 * screen is closed to prevent the addition of changes that will print
+	 * but not show up on the preview
+	 * @param aBook the multiple pages to print
+	 * @param printAction the action to print directly from the preview screen
+	 */
 	public PrintPadPreview(Frame frame, Book aBook, Action printAction) {
+		// disables the main Text Trix window, lest the user make changes
+		// that will show up in print but not on the preview dialog
 		super(frame, "Print Preview", true);
 		book = aBook;
 		setSize(300, 400);
 		//setTitle();
+		
+		// lays out the dialog contents
 		Container contentPane = getContentPane();
-
 		contentPane.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		final PreviewPanel previewer = new PreviewPanel();
-
+		
+		// switches to the previous page in the book
 		Action prevPageAction = new AbstractAction("Previous page", null) {
 			public void actionPerformed(ActionEvent e) {
 				previewer.flipPage(-1);
@@ -75,7 +88,8 @@ public class PrintPadPreview extends JDialog {
 			"Previous Page",
 			'P',
 			KeyStroke.getKeyStroke("alt P"));
-
+		
+		// switches to the next page in the book
 		Action nextPageAction = new AbstractAction("Next page", null) {
 			public void actionPerformed(ActionEvent e) {
 				previewer.flipPage(1);
@@ -87,6 +101,7 @@ public class PrintPadPreview extends JDialog {
 			'N',
 			KeyStroke.getKeyStroke("alt N"));
 		
+		// adds the dialog components
 		JButton prevPageButton = new JButton(prevPageAction);
 		LibTTx.addGridBagComponent(
 			prevPageButton,
