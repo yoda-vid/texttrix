@@ -917,9 +917,12 @@ public class TextTrix extends JFrame {
 					// if the plug-in flags that it has not changed the text,
 					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
+						replaceSection(t, doc, outcome, 0, doc.getLength());
+						/*
 						doc.remove(0, doc.getLength()); // remove all the text
 						doc.insertString(0, outcome.getText(), null);	// insert text
 						autoAutoIndent(t);
+						*/
 					}
 					// approximates the original caret position
 					int i = -1;
@@ -941,11 +944,14 @@ public class TextTrix extends JFrame {
 					// if the plug-in flags that it has not changed the text,
 					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
+						replaceSection(t, doc, outcome, start, len);
+						/*
 						// remove only the region
 						doc.remove(start, len);
 						// insert text
 						doc.insertString(start, outcome.getText(), null);
 						autoAutoIndent(t);
+						*/
 					}
 					// caret automatically returns to end of selected region
 					int i = -1;
@@ -957,6 +963,36 @@ public class TextTrix extends JFrame {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**Replaces a section of the given pad's document according
+	 * to the specifications in the plug-in outcome object.
+	 * @param t the pad to alter
+	 * @param outcome the specifications for altering the text
+	 * @param start the default char at which to begin replacing
+	 * text with that from <code>outcome</code>
+	 * @param len the default length of the section to replace
+	*/
+	public void replaceSection(TextPad t, 
+		Document doc, 
+		PlugInOutcome outcome, 
+		int start, 
+		int len) throws BadLocationException {
+		
+		// gathers the position of the region to replace if replaceStart
+		// from the outcome specifies it explicitly
+		if (outcome.getReplaceStart() != -1) {
+			start = outcome.getReplaceStart();
+			len = outcome.getReplaceEnd() - start;
+		}
+		
+		// replaces the section
+		doc.remove(start, len); // remove all the text
+		doc.insertString(start, outcome.getText(), null);	// insert text
+		
+		// auto-wrap-indent the new section
+		if (t.isAutoIndent() ) t.indentRegion(start, outcome.getText().length());
+		//autoAutoIndent(t);
 	}
 
 	/**

@@ -46,6 +46,10 @@ public class PlugInOutcome {
 	private int selectionStart = -1; // first char of region to highlight
 	private int selectionEnd = -1; // first char of region to no longer highlight
 	private boolean noTextChange = false; // flag to not update the text
+	// flag to replace only specified region;
+	// also the first char of region to replace
+	private int replaceStart = -1;
+	private int replaceEnd = -1; // the end char of the replacement region, non-inclusive
 
 	/** Creates an instance of the class.
 	 * 
@@ -73,6 +77,7 @@ public class PlugInOutcome {
 		String aText,
 		int aSelectionStart,
 		int aSelectionEnd) {
+		
 		this(aText);
 		selectionStart = aSelectionStart;
 		selectionEnd = aSelectionEnd;
@@ -91,9 +96,34 @@ public class PlugInOutcome {
 		int aSelectionStart,
 		int aSelectionEnd,
 		boolean aNoTextChange) {
+		
 		this(aText, aSelectionStart, aSelectionEnd);
 		noTextChange = aNoTextChange;
 	}
+	
+	/** Creates an instance of the class.
+	 * 
+	 * @param aText the resulting text
+	 * @param aSelectionStart first char of region to highlight; <code>-1</code>
+	 * indicates that the region should not be highlighted
+	 * @param aSelectionEnd first char of region to no longer highlight
+	 * @param aReplaceStart first char of the region to replace with 
+	 * <code>aText</code>
+	 * @param aReplaceEnd end char of the region to replace with 
+	 * <code>aText</code>, non-inclusive
+	 */
+	public PlugInOutcome(
+		String aText,
+		int aSelectionStart,
+		int aSelectionEnd,
+		int aReplaceStart,
+		int aReplaceEnd) {
+		
+		this(aText, aSelectionStart, aSelectionEnd);
+		replaceStart = aReplaceStart;
+		replaceEnd = aReplaceEnd;
+	}
+	
 
 
 
@@ -129,7 +159,20 @@ public class PlugInOutcome {
 	public void setNoTextChange(boolean aNoTextChange) {
 		noTextChange = aNoTextChange;
 	}
-
+	
+	/** Sets the replacement region start character.
+	 * Any value other than -1 flags <code>TextTrix.textTinker(PlugIn)</code>
+	 * to replace only the region from <code>replaceStart</code>
+	 * to <code>replaceEnd</code> with the <code>text</code> from this
+	 * <code>PlugInOutcome</code>.
+	 * @param n first char to start replacing
+	*/
+	public void setReplaceStart(int n) { replaceStart = n; }
+	
+	/** Sets the replacement region end character.
+	 * @param n end char to replace, non-inclusive
+	*/
+	public void setReplaceEnd(int n) { replaceEnd = n; }
 
 
 	/** Gets the resulting text.
@@ -162,5 +205,19 @@ public class PlugInOutcome {
 	public boolean getNoTextChange() {
 		return noTextChange;
 	}
+	
+	/** Gets the replacement region start character.
+	 * Any value other than -1 flags <code>TextTrix.textTinker(PlugIn)</code>
+	 * to replace only the region from <code>replaceStart</code>
+	 * to <code>replaceEnd</code> with the <code>text</code> from this
+	 * <code>PlugInOutcome</code>.
+	 * @return first char to start replacing
+	*/
+	public int getReplaceStart() { return replaceStart; }
+	
+	/** Gets the replacement region end character.
+	 * @return end char to replace, non-inclusive
+	*/
+	public int getReplaceEnd() { return replaceEnd; }
 
 }

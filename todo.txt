@@ -56,13 +56,15 @@ v.0.3.6
 	-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
 	-fix graphical indent when backspace at head of unindented line; FIXED: corrected isLeadingTab()
 	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
--plugin updates
-	-Search plugin fixes
+-plug-in updates
+	-plug-in model
+		-option for plug-in to specify the region to replace; ADDED: when the plug-in wants to replace only a section of the text it has received, the plug-in can specify this region along with the text to replace it; TextTrix uses Document and indentRegion controls for speedy, specific updates
+	-Search plug-in fixes
 		-fix replace-all fn to not exceed the selection boundaries; FIXED: replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
 		-make selected-area-only and wrap boxes alternate choices; ADDED: since the two options are mutually exclusive, turning on one turns off the other, while both can also be unchecked simultaneously
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
 		-add summary field
-	-HTMLReplacer plugin comprehensiveness
+	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
