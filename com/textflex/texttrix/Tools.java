@@ -327,4 +327,36 @@ public class Tools {
 			   all, wrap, ignoreCase);
     }
 
+    /** Locate escape characters and replace them with string 
+	representations.
+	@param text string to manipulate
+	@param start index in <code>s</code> at which to start manipulation
+	@param end index in <code>s</code> at which to no longer manipulate
+	@return text with added string representations
+    */	
+    public String print(String text, int start, int end) {
+	int len = text.length();
+	StringBuffer s = new StringBuffer(len);
+	char c;
+
+	// append text preceding the selection
+	s.append(text.substring(0, start));
+	// progress char by char, revealing newlines and tabs explicitly
+	for (int i = start; i < end; i++) {
+	    c = text.charAt(i);
+	    switch (c) {
+	    case '\n':
+		s.append("\\n" + c);
+		break;
+	    case '\t':
+		s.append("\\t" + c);
+		break;
+	    default:
+		s.append(c);
+		break;
+	    }
+	}
+	return s.toString() + text.substring(end);
+    }
+
 }
