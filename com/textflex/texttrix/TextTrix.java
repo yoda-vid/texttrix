@@ -1486,6 +1486,9 @@ public class TextTrix extends JFrame {
 		       -file opened
 		       -file saved via save chooser
 		       -same file opened by double-clicking
+
+		       In other words, a file just saved cannot be
+		       reopened.
 		   
 		       The problem does not appear when the chooser accept 
 		       button is chosen, a directory is changed before the file
