@@ -36,30 +36,56 @@
 
 package com.textflex.texttrix;
 
+/** Stores the outcome from a <code>PlugIn</code> event.
+ * Encapsulates the text, selection region, and flags for how the plug-in's
+ * calling function should handle the outcome.
+ * @author davit
+ */
 public class PlugInOutcome {
-	private String text = null;
-	private int selectionStart = -1;
-	private int selectionEnd = -1;
-	private boolean noTextChange = false;
-	//    private int caretPosition = -1;
+	private String text = null; // resulting text
+	private int selectionStart = -1; // first char of region to highlight
+	private int selectionEnd = -1; // first char of region to no longer highlight
+	private boolean noTextChange = false; // flag to not update the text
 
+	/** Creates an instance of the class.
+	 * 
+	 *
+	 */
 	public PlugInOutcome() {
 	}
-
+	
+	/** Creates an instance of the class.
+	 * 
+	 * @param aText the resulting text
+	 */
 	public PlugInOutcome(String aText) {
 		text = aText;
 	}
 
+	/** Creates an instance of the class.
+	 * 
+	 * @param aText the resulting text
+	 * @param aSelectionStart first char of region to highlight; <code>-1</code>
+	 * indicates that the region should not be highlighted
+	 * @param aSelectionEnd first char of region to no longer highlight
+	 */
 	public PlugInOutcome(
 		String aText,
 		int aSelectionStart,
 		int aSelectionEnd) {
 		this(aText);
-		//	caretPosition = aCaretPosition; 
 		selectionStart = aSelectionStart;
 		selectionEnd = aSelectionEnd;
 	}
-	
+
+	/** Creates an instance of the class.
+	 * 
+	 * @param aText the resulting text
+	 * @param aSelectionStart first char of region to highlight; <code>-1</code>
+	 * indicates that the region should not be highlighted
+	 * @param aSelectionEnd first char of region to no longer highlight
+	 * @param aNoTextChange flag to not update the text
+	 */
 	public PlugInOutcome(
 		String aText,
 		int aSelectionStart,
@@ -69,31 +95,70 @@ public class PlugInOutcome {
 		noTextChange = aNoTextChange;
 	}
 
-	//    public void setCaretPosition(int aCaretPosition) { caretPosition = aCaretPosition; }
+
+
+
+
+	/** Sets the resulting text.
+	 * 
+	 * @param aText text returning to the calling function
+	 */
 	public void setText(String aText) {
 		text = aText;
 	}
+	/** Sets the beginning of the selection region.
+	 * 
+	 * @param aSelectionStart first char of region to highlight; <code>-1</code>
+	 * indicates that the region should not be highlighted
+	 */
 	public void setSelectionStart(int aSelectionStart) {
 		selectionStart = aSelectionStart;
 	}
+	/** Sets the end of the selection region.
+	 * 
+	 * @param aSelectionEnd first char of region to no longer highlight
+	 */
 	public void setSelectionEnd(int aSelectionEnd) {
 		selectionEnd = aSelectionEnd;
 	}
-	
+	/** Sets the flag that indicates whether the calling function should update
+	 * its text with the outcome object's resulting text.
+	 * @param aNoTextChange <code>true</code> if the calling function should
+	 * not update its text; <code>false</code> by default
+	 */
 	public void setNoTextChange(boolean aNoTextChange) {
 		noTextChange = aNoTextChange;
 	}
 
-	//    public int getCaretPosition() { return caretPosition; }
+
+
+	/** Gets the resulting text.
+	 * 
+	 * @return the text with which the calling function should update its own text
+	 */
 	public String getText() {
 		return text;
 	}
+	/** Gets the position of the first character to highlight.
+	 * 
+	 * @return position of first char of region to select; <code>-1</code>
+	 * flags that the calling function should not select any text
+	 */
 	public int getSelectionStart() {
 		return selectionStart;
 	}
+	/** Gets the position of the first character to no longer highlight.
+	 * Only useful when <code>selectionStart != -1</code>
+	 * @return
+	 */
 	public int getSelectionEnd() {
 		return selectionEnd;
 	}
+	/** Gets the flag indicating whether the calling function should update
+	 * its text.
+	 * @return <code>true</code> if the calling function should not update
+	 * its text; <code>false</code> by default
+	 */
 	public boolean getNoTextChange() {
 		return noTextChange;
 	}

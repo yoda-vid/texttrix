@@ -37,17 +37,15 @@
 package com.textflex.texttrix;
 
 import java.awt.*;
-//import javax.swing.event.*;
-//import java.util.*;
 
 /** The event that <code>PlugIn</code>s create to notify their calling
     class that they await invocation.
 */
 public class PlugInEvent extends AWTEvent {
-	/** An event ID number greater than any of AWT's own events */
+	// an event ID number greater than any of AWT's own events
 	public static final int PLUG_IN_EVENT = AWTEvent.RESERVED_ID_MAX + 5000;
-	public static final String SELECTION = "selection";
-	private String type = null;
+	private String type = null; // type of event; currently unimplemented
+	public static final String SELECTION = "selection"; // a type
 
 	/** Creates the event and gives it an ID number.
 	@param p the <code>PlugIn</code> object creating the event
@@ -63,10 +61,24 @@ public class PlugInEvent extends AWTEvent {
 		this(p);
 		type = aType;
 	}
-
+	
+	
+	
+	
+	/** Sets the type of event.
+	 * Currently unimplemented
+	 * @param aType type of event
+	 */
 	public void setType(String aType) {
 		type = aType;
 	}
+	
+	
+	
+	/** Gets the type of event.
+	 * Currently unimplemented
+	 * @return type of event
+	 */
 	public String getType() {
 		return type;
 	}

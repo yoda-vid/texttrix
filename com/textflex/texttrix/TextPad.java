@@ -192,16 +192,15 @@ public class TextPad extends JTextPane implements StateEditable {
 				} catch (BadLocationException b) {
 					System.out.println("Deletion out of range.");
 				}
-				/*
-				// alternate method, essentially same as document except
-				// using the AccessibleJTextComponent class, 
-				// whose serializable
-				// objects may not be compatible w/ future releases
-				// access the text component itself to tell it to perform
-				// the deletions rather than building string manually, 
-				// a slow task
-				(new JTextComponent.AccessibleJTextComponent())
-				.delete(wordPos, getCaretPosition());
+				/* Alternate method, essentially same as document except
+				 * using the AccessibleJTextComponent class, whose serializable
+				 * objects may not be compatible w/ future releases access the 
+				 * text component itself to tell it to perform the deletions rather 
+				 * than building string manually, a slow task
+				 */
+				 /*
+				 (new JTextComponent.AccessibleJTextComponent())
+				 .delete(wordPos, getCaretPosition());
 				*/
 			}
 		});

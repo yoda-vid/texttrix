@@ -15,7 +15,7 @@ Welcome to Text Trix!  We're just getting underway here.  Please try us out!
 
 System Req:
 -Java[tm] 2 Software Development Kit 1.4+, freely available from Sun 
-Microsystems (http://java.sun.com/getjava/index.html)
+Microsystems (http://java.sun.com/j2se/1.4.2/download.html)
 
 Instructions for compilation:
 -Unzip Text Trix:
@@ -57,9 +57,8 @@ http://textflex.com/texttrix/faq.html or email support@textflex.com
 
 
 Text Trix and Text Flex are trademarks of Text Flex.
-Java and all Java-based marks are trademarks or registered trademarks of 
-Sun Microsystems, Inc. in the United States and other countries. Text Flex is 
-independent of Sun Microsystems, Inc.
+Sun Microsystems, Java, and all Java-based marks are trademarks or registered trademarks of Sun Microsystems, Inc. in the United States and 
+other countries. Text Flex is independent of Sun Microsystems, Inc.
 Linux is a registered trademark of Linus Torvalds.
 Microsoft and Windows are registered trademarks of Microsoft Corporation in 
 the United States and/or other countries.

@@ -117,7 +117,8 @@ public class TextTrix extends JFrame {
 						}
 					}
 				});
-
+				// this second call is necessary for unknown reasons;
+				// perhaps some events still follow the call in invokeLater (above) 
 				if (t != null)
 					t.requestFocusInWindow();
 			}
@@ -144,9 +145,7 @@ public class TextTrix extends JFrame {
 		// make tool bar
 		toolBar = new JToolBar("Trix and Tools");
 		toolBar.addMouseListener(new PopupListener());
-		//	toolBar.setFloatable(false); // necessary since not BorderLayout
 		toolBar.setBorderPainted(false);
-		//	SwingUtilities.updateComponentTreeUI(TextTrix.this);
 
 		popup = new JPopupMenu();
 		chooser = new JFileChooser();
@@ -585,10 +584,12 @@ public class TextTrix extends JFrame {
 		LibTTx.setAction(aboutAction, "About...", 'A');
 		helpMenu.add(aboutAction);
 
-		// shortcuts description; opens new tab
+		// TODO: add dialog to point to web doc files if local ones missing
+
+		// shortcuts description; opens new tab;
+		// reads from "shortcuts.txt" in same dir as this class
 		Action shortcutsAction = new AbstractAction("Shortcuts") {
-				// reads from "shortcuts.txt" in same dir as this class
-	public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent evt) {
 				String path = "shortcuts.txt";
 				displayFile(path);
 			}
@@ -596,10 +597,10 @@ public class TextTrix extends JFrame {
 		LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 		helpMenu.add(shortcutsAction);
 
-		// features descriptions; opens new tab
+		// features descriptions; opens new tab;
+		// reads from "features.txt" in same dir as this class
 		Action featuresAction = new AbstractAction("Features descriptions") {
-				// reads from "features.txt" in same dir as this class
-	public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent evt) {
 				String path = "features.txt";
 				displayFile(path);
 			}
@@ -607,18 +608,16 @@ public class TextTrix extends JFrame {
 		LibTTx.setAction(featuresAction, "Features descriptions", 'F');
 		helpMenu.add(featuresAction);
 
-		// license; opens new tab
+		// license; opens new tab;
+		// reads from "license.txt" in same directory as this class
 		Action licenseAction = new AbstractAction("License") {
-				// reads from "license.txt" in same directory as this class
-	public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent evt) {
 				String path = "license.txt";
 				displayFile(path);
 			}
 		};
 		LibTTx.setAction(licenseAction, "License", 'L');
 		helpMenu.add(licenseAction);
-
-		//	toolBar.addSeparator();
 
 		/* Trix and Tools menus */
 
@@ -761,7 +760,7 @@ public class TextTrix extends JFrame {
 		String category = pl.getCategory();
 		// plugin category, for menu adding
 		String description = pl.getDescription();
-		// brief description
+		// brief description; 
 		// reader for extended description
 		BufferedReader detailedDescriptionBuf = pl.getDetailedDescription();
 		ImageIcon icon = pl.getIcon(); // icon
@@ -777,10 +776,10 @@ public class TextTrix extends JFrame {
 		pl.addPlugInListener(listener);
 
 		// action to start the plug in, such as invoking its options
-		// panel if it has one
+		// panel if it has one;
+		// invokes the plugin's text manipulation on the current TextPad's text
 		Action startAction = new AbstractAction(name, icon) {
-				// invokes the plugin's text manipulation on the current TextPad's text
-	public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent evt) {
 				pl.startPlugIn();
 			}
 		};
@@ -855,7 +854,8 @@ public class TextTrix extends JFrame {
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						doc.remove(0, doc.getLength()); // remove all the text
-						doc.insertString(0, outcome.getText(), null); // insert text
+						doc.insertString(0, outcome.getText(), null);
+						// insert text
 					}
 					// approximates the original caret position
 					int i = -1;
@@ -889,7 +889,7 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
-	
+
 	/** Selects the given region of text.
 	 * Works on the given text pad.
 	 * @param t given text pad, not necessarily the selected one, though probably only
@@ -903,7 +903,8 @@ public class TextTrix extends JFrame {
 		if (end != -1) {
 			t.setCaretPosition(baseline + start);
 			t.moveCaretPosition(baseline + end);
-			t.getCaret().setSelectionVisible(true); // to ensure selection visibility
+			t.getCaret().setSelectionVisible(true);
+			// to ensure selection visibility
 		} else {
 			t.setCaretPosition(baseline + start);
 		}
@@ -1105,19 +1106,12 @@ public class TextTrix extends JFrame {
 		*/
 		boolean repeat = true;
 		boolean shift = false;
-		/*
-		if (!(tabIndexHistoryIndex >= tabIndexHistory.length)
-		    && tabIndexHistoryIndex >= 0
-		    && tabIndexHistory[tabIndexHistoryIndex] != -1)
-		    ++tabIndexHistoryIndex;
-		*/
 		//	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
 		for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
 			// shift the records as necessary to move a potential
 			// duplicate to the front of the history
 			if (shift) { // shift the records
 				if (tabIndexHistory[i] == -1) {
-					//		    tabIndexHistory[i] = mostRecent;
 					repeat = false;
 				} else {
 					tabIndexHistory[i - 1] = tabIndexHistory[i];
@@ -1126,14 +1120,12 @@ public class TextTrix extends JFrame {
 				if (tabIndexHistory[i] == mostRecent) {
 					shift = true;
 				} else if (tabIndexHistory[i] == -1) {
-					//		    tabIndexHistory[i] = mostRecent;
 					repeat = false;
 				}
 			}
 		}
 		// add the tab selection
 		if (shift) { // add the potential duplicate to the front of the record
-			//	    --tabIndexHistoryIndex; 
 			tabIndexHistory[--tabIndexHistoryIndex] = mostRecent;
 		} else if (tabIndexHistoryIndex >= tabIndexHistory.length) {
 			// increase the array size if necessary
@@ -1528,7 +1520,6 @@ public class TextTrix extends JFrame {
 	public void read(TextPad textPad, Reader in, Object desc)
 		throws IOException {
 		textPad.read(in, desc);
-		//	textPad.setDefaultTabs(4);
 		textPad.applyDocumentSettings();
 		addExtraTextPadDocumentSettings(textPad);
 	}
@@ -1858,7 +1849,8 @@ public class TextTrix extends JFrame {
 						// notify the user which files couldn't be opened
 						msg =
 							"The following files couldn't be opened:\n"
-								+ msg + "Would you like to try again?";
+								+ msg
+								+ "Would you like to try again?";
 						// request another chance to open them or other files
 						repeat = yesNoDialog(owner, msg, title);
 					}
@@ -1869,27 +1861,27 @@ public class TextTrix extends JFrame {
 					*/
 					/*
 					if (files.length == 0) {
-					File f1 = chooser.getSelectedFile();
-					System.out.println(f1.getPath());
-					// TODO: dialog informing that the file doesn't exist
-					if (f1 != null) {
+						File f1 = chooser.getSelectedFile();
+						System.out.println(f1.getPath());
+						// TODO: dialog informing that the file doesn't exist
+						if (f1 != null) {
 					    openFile(f1);
-					    repeat = false;
+					    	repeat = false;
+						} else {
+						    repeat = yesNoDialog(owner, msg, title);
+						}
 					} else {
-					    repeat = yesNoDialog(owner, msg, title);
-					}
-					} else {
-					//		System.out.println("files: " + files.length + ", file: ");// + f1.exists());
-					boolean allFound = true;
-					for (int i = 0; i < files.length; i++) {
-					    if (!openFile(files[i]))
-						allFound = false;
-					}
-					if (allFound) {
-					    repeat = false;
-					} else {
-					    repeat = yesNoDialog(owner, msg, title);
-					}
+						//		System.out.println("files: " + files.length + ", file: ");// + f1.exists());
+						boolean allFound = true;
+						for (int i = 0; i < files.length; i++) {
+						    if (!openFile(files[i]))
+								allFound = false;
+						}
+						if (allFound) {
+						    repeat = false;
+						} else {
+						    repeat = yesNoDialog(owner, msg, title);
+						}
 					}
 					*/
 				} else { // Cancel button
@@ -1955,7 +1947,7 @@ public class TextTrix extends JFrame {
 		public void changedUpdate(DocumentEvent e) {
 		}
 	}
-	
+
 	/** Listener to pop up a context menu when right-clicking.
 	 * 
 	 * @author davit
@@ -1980,7 +1972,6 @@ public class TextTrix extends JFrame {
 		}
 	}
 }
-
 
 /**Filters for files with specific extensions.
  */

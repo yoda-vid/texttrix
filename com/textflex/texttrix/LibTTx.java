@@ -43,8 +43,24 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 
+/** Library class to act as a tool chest for Text Trix functions.
+ * Most <code>LibTTx</code> functions are potentially relevant to multiple
+ * source files.  For greater accessibility, the functions are generic, often
+ * requiring Swing components or other objects to manipulate; developers
+ * should be aware that objects they pass may return altered.
+ * 
+ * <p>Since <code>LibTTx</code> consists almost entirely of 
+ * <code>static</code> methods, there is almost no need to create an
+ * object of it.
+ * 
+ * @author davit
+ */
 public class LibTTx {
-
+	
+	/** Constructs the library object, almost never necessary since
+	 * virtually all of its methods are static.
+	 *
+	 */
 	public LibTTx() {
 	}
 

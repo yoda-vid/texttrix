@@ -37,8 +37,6 @@
 
 package com.textflex.texttrix;
 
-//import java.awt.*;
-//import javax.swing.event.*;
 import java.util.*;
 
 /** Listener to <code>PlugIn</code> events.

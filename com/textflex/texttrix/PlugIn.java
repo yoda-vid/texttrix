@@ -61,7 +61,7 @@ public abstract class PlugIn extends JComponent {
 	private String category = null; // plugin category, eg "tools"
 	private String path = null; // plugin JAR's path
 	private JarFile jar = null; // plugin's JAR
-	private EventListenerList listenerList = null;
+	private EventListenerList listenerList = null; // list of listeners to notify
 	// flag to retrieve the entire text, not just the selected region
 	private boolean alwaysEntireText = false;
 
