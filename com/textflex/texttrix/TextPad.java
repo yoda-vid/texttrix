@@ -63,10 +63,6 @@ public class TextPad extends JTextArea {
 		getDocument().addUndoableEditListener(undoManager);
 		setTabSize(4); // probably add to preferences later
 
-		
-
-//		Keymap keymap = addKeymap("MyKeymap", getKeymap());
-
 		createActionTable(this);
 		InputMap imap = getInputMap(JComponent.WHEN_FOCUSED);
 		ActionMap amap = getActionMap();
@@ -111,37 +107,6 @@ public class TextPad extends JTextArea {
 		amap.put("nextWord", getActionByName(
 					DefaultEditorKit.nextWordAction));
 */
-		/*
-		keymap.addActionForKeyStroke(key, DefaultEditorKit.backwardAction);
-
-		action = getActionByName(DefaultEditorKit.forwardAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
-		keymap.addActionForKeyStroke(key, action);
-				
-		action = getActionByName(DefaultEditorKit.upwardAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK);
-		keymap.addActionForKeyStroke(key, action);
-		
-		action = getActionByName(DefaultEditorKit.downwardAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK);
-		keymap.addActionForKeyStroke(key, action);
-
-		action = getActionByName(DefaultEditorKit.nextWordAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.META_MASK);
-		keymap.addActionForKeyStroke(key, action);
-		
-		action = getActionByName(DefaultEditorKit.beginWordAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.META_MASK);
-		keymap.addActionForKeyStroke(key, action);
-		
-		action = getActionByName(DefaultEditorKit.beginLineAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_A, Event.CTRL_MASK);
-		keymap.addActionForKeyStroke(key, action);
-		
-		action = getActionByName(DefaultEditorKit.endLineAction);
-		key = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
-		keymap.addActionForKeyStroke(key, action);
-		*/
 	}
 
 	public boolean getChanged() {
@@ -159,6 +124,10 @@ public class TextPad extends JTextArea {
 			e.printStackTrace();
 			return "";
 		}
+	}
+
+	public String getName() {
+		return file.getName();
 	}
 
 	public void setFile(File aFile) {
@@ -232,15 +201,11 @@ public class TextPad extends JTextArea {
 	    }
 
 	    // find all leading spaces
-	    // see if first character is a space
-//	    if (space == singleReturn + 1) {
-//			spaces++;
-			// check each subsequent character to see if space
-			while (s.substring(singleReturn + spaces + 1,
-					   singleReturn + spaces + 2).equals(" ")) {
-		    	spaces++;
-			}
-//	    }
+		int oneAfterSingleReturn = singleReturn + 1;
+		while (s.length() > oneAfterSingleReturn && 
+				(String.valueOf(s.charAt(oneAfterSingleReturn))).equals(" ")) {
+		    spaces++;
+		}
 
 	    if (startPre != -1 && startPre < singleReturn) {
 			if (endPre != -1) {

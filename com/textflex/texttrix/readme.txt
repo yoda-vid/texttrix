@@ -1,5 +1,5 @@
 Text Trix
-a goofy gui text editor
+a goofy gui editor
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix
 This software is OSI Certified Open Source Software.
@@ -41,36 +41,31 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
 
-Shortcuts
+
+ReadMe
 
 
-Function	Shortcut	Notes
------------------------------------------------------------
-New tab	Ctrl-t		-brings up a new tab as Mozilla does
-Open file	Ctrl-o		-as usual
-Save file	Ctrl-s		-brings up "Save as..." dialog for new files
-Exit		Ctrl-q		-checks for unsaved files
-Undo		Ctrl-z		-multiple undos by pressing repeatedly
-Redo		Ctrl-r		-multiple redos by pressing repeatedly
-Cut		Ctrl-x		-as usual
-Copy		Ctrl-c		-as usual
-Paste		Ctrl-v		-as usual
-Forward char	Ctrl-f		-Emacs-style
-Backward char	Ctrl-b		-Emacs-style
-Up line		Ctrl-p		-Emacs-style, but includes wrapped lines
-Down line	Ctrl-n		-Emacs-style, but includes wrapped lines
-Beg of line	Ctrl-a		-Emacs-sytle
-End of line	Ctrl-e		-Emacs-style
+Welcome to Text Trix!  We're just getting underway here.
+Please try us out!
 
+System Reqs:
+-Java Runtime Environment or Software Development Kit 1.3+,
+freely available from Sun (http://java.sun.com/j2se/1.4)
 
-Goofy Features Notes
-------------------
-Hard Return Remover:
--this is our first feature! (a practical one)
--removes all hard returns, except between multiply-spaced lines of text
--to write a list without losing its hard returns, keep all the
-elements in a given block single-spaced, and use dashes or asterisks
-at the start of each line after the first; note that indents with tabs or
-spaces are a-ok
--text enclosed in <pre></pre> tags will not have hard
-returns removed
+Instructions for use:
+-unzipp TextTrix-x.y.z.zip
+-Windows users can simply double-click on TextTrix-x.y.z.jar
+
+-to start Text Trix via a command line:
+-move into the TextTrix folder:
+
+(Linux)
+$ cd [directory where unzipped]/TextTrix-x.y.z
+
+(Windows MS-Dos/command prompt)
+> cd [directory where unzipped]/TextTrix-x.y.z
+
+-start the TextTrix-x.y.z.jar file:
+(Linux or Windows) $ java -jar TextTrix-x.y.z.jar
+
+Be a text-ie techie!
