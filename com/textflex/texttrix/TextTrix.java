@@ -890,9 +890,15 @@ public class TextTrix extends JFrame {
 	    try {
 		// determines whether a region is selected or not;
 		// if not, works on the text pad's entire text
-		if (start == end || pl.getIgnoreSelection()) { // no selection
+		if (start == end || pl.getAlwaysEntireText()) { // no selection
 		    text = doc.getText(0, doc.getLength()); // all the text
-		    outcome = pl.run(text, start, end); // invoke the plugin
+		    //		    System.out.println(text);
+		    // invokes the plugin: start and ending selection positions
+		    // when "alwaysEntireText" b/c want to both get all of 
+		    // the text and show its highlighted portion,
+		    // rather than only getting that part of the text
+		    outcome = pl.getAlwaysEntireText() 
+			? pl.run(text, start, end) : pl.run(text, end); 
 		    doc.remove(0, doc.getLength()); // remove all the text
 		    doc.insertString(0, outcome.getText(), null); // insert text
 		    // approximates the original caret position

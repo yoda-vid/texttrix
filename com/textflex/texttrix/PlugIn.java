@@ -61,7 +61,7 @@ public abstract class PlugIn extends JComponent {
     //    private Action action = null;
     //    private JButton actionButton = null;
     private EventListenerList listenerList = null;
-    private boolean ignoreSelection = false;
+    private boolean alwaysEntireText = false;
 
     /** Constructs a plugin.
 	@param aName plugin name
@@ -106,12 +106,14 @@ public abstract class PlugIn extends JComponent {
 	@param x index at which to start
 	@param y first index at which to no longer work
     */
-    public abstract PlugInOutcome run(String s, int x, int y) ;
+    public abstract PlugInOutcome run(String s, int selectionStart, 
+				      int selectionEnd) ;
 
     /** Runs the plugin over all the given text.
 	@param s text to manipulate
+	@param x caret position
     */
-    public abstract PlugInOutcome run(String s);
+    public abstract PlugInOutcome run(String s, int caretPosition);
 
 
 
@@ -171,8 +173,8 @@ public abstract class PlugIn extends JComponent {
     /** Sets the plugin's selection status.
 	@param aIgnoreSelection
      */
-    public void setIgnoreSelection(boolean aIgnoreSelection) { 
-	ignoreSelection = aIgnoreSelection; 
+    public void setAlwaysEntireText(boolean aAlwaysEntireText) { 
+	alwaysEntireText = aAlwaysEntireText; 
     }
 
     /*
@@ -227,7 +229,7 @@ public abstract class PlugIn extends JComponent {
 	the selected text, should be retrieved.
 	@return category
     */
-    public boolean getIgnoreSelection() { return ignoreSelection; }
+    public boolean getAlwaysEntireText() { return alwaysEntireText; }
 
     /** Gets an icon.
 	@param iconPath icon's path
