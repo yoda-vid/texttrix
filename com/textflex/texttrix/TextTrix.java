@@ -79,7 +79,9 @@ public class TextTrix extends JFrame {
 	setSize(500, 600); // TODO: adjust to user's screen size
 	ImageIcon im = makeIcon("images/minicon-32x32.png"); // set frame icon
 	if (im !=null) 
-	    setIconImage(im.getImage());		
+	    setIconImage(im.getImage());
+	// keep the tabs the same width when substituting chars
+	tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 10));
 	// make first tab and text area
 	addTextArea(textAreas, tabbedPane, makeNewFile());
 	// adds a change listener to listen for tab switches and display
@@ -1159,7 +1161,7 @@ public class TextTrix extends JFrame {
 	arrayList.add(textPad);
 	// 1 more than highest tab index since will add tab
 	int i = tabbedPane.getTabCount();
-	tabbedPane.addTab(file.getName() + "  ", scrollPane);
+	tabbedPane.addTab(file.getName() + " ", scrollPane);
 	//		textPad.setLineWrap(true);
 	//		textPad.setWrapStyleWord(true);
 	textPad.getDocument().addDocumentListener(listener);
@@ -1184,9 +1186,9 @@ public class TextTrix extends JFrame {
 	String title = textPad.getName();
 	// convert to filename; -2 b/c added 2 spaces
 	if (textPad.getChanged()) {
-	    tabbedPane.setTitleAt(i, title + " *");
+	    tabbedPane.setTitleAt(i, title + "*");
 	} else {
-	    tabbedPane.setTitleAt(i, title + "  ");
+	    tabbedPane.setTitleAt(i, title + " ");
 	    //		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 	}
     }
@@ -1326,7 +1328,7 @@ public class TextTrix extends JFrame {
 		t.setFile(path);
 		// the the tab title to indicate that no unsaved changes
 		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-				      t.getName() + "  ");
+				      t.getName() + " ");
 		return true;
 		/*
 	    } else {
