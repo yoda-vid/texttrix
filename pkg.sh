@@ -44,9 +44,12 @@
 
 # Compiler
 JAVA="/usr/java/j2sdk1.4.2/bin" # assuming compiler from J2SDK 1.4.2
-if [ "$OSTYPE" = "cygwin" ]
+SYSTEM=`uname -s`
+CYGWIN="false"
+if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	JAVA="/cygdrive/c/j2sdk1.4.2/bin" # assuming comipler in C drive
+	CYGWIN="true"
 fi
 
 # Source directories
@@ -54,7 +57,7 @@ BASE_DIR=""
 # Determine the base dir if not specified above
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
-	if [ "${0:0:1}" = "/" ] # use script path if absolute
+	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
 	then
 		BASE_DIR="$0"
 	else # assume that script path is relative to current dir
@@ -116,7 +119,7 @@ cp -rf $PLGS_DIR $SRCPKGDIR/plugins
 # create binaries
 cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
-$JAVA/jar -cvfm $JAR $TTX_DIR/manifest-additions.mf $DIR/*.class $DIR/*.txt $DIR/images/*.png
+$JAVA/jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
 rm -rf com
 
 # remove all but source and related files

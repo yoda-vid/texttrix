@@ -44,16 +44,19 @@
 
 # Compiler location
 JAVA="/usr/java/j2sdk1.4.2/bin" # set for J2SDK ver. 1.4.2
-if [ "$OSTYPE" = "cygwin" ]
+SYSTEM=`uname -s`
+CYGWIN="false"
+if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	JAVA="/cygdrive/c/j2sdk1.4.1/bin" # assuming compiler in C drive
+	JAVA="/cygdrive/c/j2sdk1.4.2/bin" # assuming compiler in C drive
+	CYGWIN="true"
 fi
 
 # Source directories
 BASE_DIR=""
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
-	if [ "${0:0:1}" = "/" ]
+	if [ `expr index "$0" "/"` -eq 1 ]
 	then
 		BASE_DIR="$0"
 	else
@@ -74,21 +77,28 @@ PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" #
 #####################
 # change to work directory and compile Text Trix classes
 cd $BASE_DIR
-#echo "$PWD and $TTX_DIR"
-$JAVA/javac $TTX_DIR/$DIR/*.java
-
+if [ "$CYGWIN" = "true" ]
+then
+	$JAVA/javac "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
+else
+	$JAVA/javac "$TTX_DIR/$DIR/*.java"
+fi
 # change to plugins directory and compile and package each plugin;
 # list the directory names and their corresponding classes in the "for" line;
 # the jars must have the same name and caps as their classes
 cd $PLGS_DIR
+if [ ! -d "$TTX_DIR/plugins" ]
+then
+	mkdir "$TTX_DIR/plugins"
+fi
 for plugin in $PLUGINS
 do
 	plugin_dir=`echo "$plugin" | tr "[:upper:]" "[:lower:]"`
 	# extends the PlugIn class of the Text Trix package
 	# CYGWIN USERS: uncomment the following line, and comment the next:
-	if [ "$OSTYPE" = "cygwin" ]
+	if [ "$CYGWIN" = "true" ]
 	then
-		$JAVA/javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" $plugin_dir/$DIR/*.java
+		$JAVA/javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
 	else
 		$JAVA/javac -classpath $TTX_DIR:$plugin_dir $plugin_dir/$DIR/*.java
 	fi
