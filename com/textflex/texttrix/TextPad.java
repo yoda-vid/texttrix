@@ -54,7 +54,6 @@ public class TextPad extends JTextArea {
 	File file;
 	boolean changed = false;
 	String path;
-	DocumentListener docListener = new TextPadDocListener();	
 	UndoManager undoManager = new UndoManager();
 	Hashtable actions;
 
@@ -69,7 +68,6 @@ public class TextPad extends JTextArea {
 		super(w, h);
 		file = aFile;
 		// to listen for keypad events
-		getDocument().addDocumentListener(docListener);
 		// to allow multiple undos
 		getDocument().addUndoableEditListener(undoManager);
 		setTabSize(4); // probably add to preferences later
@@ -134,14 +132,23 @@ public class TextPad extends JTextArea {
 		});
 
 		// (ctrl-backspace) delete from caret to current word start
+		// First need to discard JTextComponent's usual dealing with ctrl-backspace
+		addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent event) {
+				char keyChar = event.getKeyChar();
+				if (event.isControlDown() && keyChar == KeyEvent.VK_BACK_SPACE)
+					event.consume();
+			}
+		});
+		
+		// Next apply own action
 		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
 				"deleteWord");
 		amap.put("deleteWord", new AbstractAction() {
 			public void actionPerformed(ActionEvent evt) {
-				int wordPos = getWordPosition();
-				setText(getText().substring(0, wordPos)
-					+ getText().substring(getCaretPosition()));
-				setCaretPosition(wordPos);
+				String text = getText();
+				setText(text.substring(0, getWordPosition())
+					+ text.substring(getCaretPosition()));
 			}
 		});
 
@@ -226,11 +233,23 @@ public class TextPad extends JTextArea {
 	/**Get the index of the current word's first character.
 	 */
 	public int getWordPosition() {
-		int caretPos; // current caret position
-		int newCaretPos; // caret position progressing to desired position
-		caretPos = newCaretPos = getCaretPosition();
-		char checkChar;
+		int caretPos = getCaretPosition(); // current caret position
+		int newCaretPos = caretPos - 1; // moving caret position
+		String delimiters = " .,;:-\\\'\"/_\t\n";
+		
 		// check that new caret not at start of string
+		while (newCaretPos > 0
+				&& delimiters.indexOf(getText().charAt(newCaretPos)) != -1) {
+			newCaretPos--;
+		}
+		while (newCaretPos > 0 
+				&& (delimiters.indexOf(getText().charAt(newCaretPos - 1)) == -1)) {
+			newCaretPos--;
+		}
+
+		return (newCaretPos <= 0) ? 0 : newCaretPos;
+	}
+		/*
 		while (newCaretPos > 0 && 
 				// check for space, comma, semicolon, etc
 				(((checkChar = getText().charAt(--newCaretPos)) != ' ')
@@ -245,6 +264,7 @@ public class TextPad extends JTextArea {
 				// if space, comma, etc, check before exiting to ensure that not
 				// directly before orig caret position
 				|| newCaretPos == caretPos - 1);
+				
 		// if caret didn't move or reached start of string,
 		// set new caret to one position before string since will increment
 		if (newCaretPos == caretPos - 1 || newCaretPos == 0) 
@@ -252,10 +272,29 @@ public class TextPad extends JTextArea {
 		// place cursor after space, comma, etc, or at start of string
 		return ++newCaretPos;
 	}
+	*/
 
 	/**Get the index of the next word's first character.
 	 */
 	public int getNextWordPosition() {
+		int caretPos = getCaretPosition(); // current caret position
+		int newCaretPos = caretPos; // moving caret position
+		int textLen = getText().length(); // end of text
+		String delimiters = " .,;:-\\\'\"/_\t\n";
+		
+		// check that new caret not at start of string
+		while (newCaretPos < textLen
+				&& delimiters.indexOf(getText().charAt(newCaretPos)) == -1) {
+			newCaretPos++;
+		}
+		while (newCaretPos < textLen
+				&& (delimiters.indexOf(getText().charAt(newCaretPos)) != -1)) {
+			newCaretPos++;
+		}
+
+		return newCaretPos;
+	}
+		/*
 		int caretPos; // current caret position
 		int newCaretPos; // caret position progressing to desired position
 		caretPos = newCaretPos = getCaretPosition();
@@ -275,6 +314,7 @@ public class TextPad extends JTextArea {
 				&& checkChar != '\'');
 		return newCaretPos;
 	}
+	*/
 	
 	/**Fills an array with the component's possible actions.
 	 * @param txtComp <code>Java Swing</code> text component
@@ -294,31 +334,5 @@ public class TextPad extends JTextArea {
 	 */
 	private Action getActionByName(String name) {
 		return (Action)(actions.get(name));
-	}
-
-
-	/**Listens for text changes in the text area.
-	 */
-	private class TextPadDocListener implements DocumentListener {
-	
-		/**Flags a text insertion.
-		 * @param e insertion event
-		 */
-		public void insertUpdate(DocumentEvent e) {
-			changed = true;
-		}
-
-		/**Flags a text removal.
-		 * @param e removal event
-		 */
-		public void removeUpdate(DocumentEvent e) {
-			changed = true;
-		}
-
-		/**Flags any sort of text change.
-		 * @param e any text change event
-		 */
-		public void changedUpdate(DocumentEvent e) {
-		}
 	}
 }

@@ -43,7 +43,7 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
-
+import javax.swing.event.*;
 /** The main <code>TextTrix</code> class.  Sets up the window
     and the <code>TextPad</code>s.
 */
@@ -540,27 +540,27 @@ public class TextTrix extends JFrame {
 			// final variables so can use in inner class;
 			
 			JScrollPane scrollPane = new JScrollPane(textPad);
+			DocumentListener listener = new TextPadDocListener();
 			
 			// 1 more than highest tab index since will add tab
 			final int i = tabbedPane.getTabCount();
 			tabbedPane.addTab(file.getName() + "  ", scrollPane);
 			textPad.setLineWrap(true);
 			textPad.setWrapStyleWord(true);
+			textPad.getDocument().addDocumentListener(listener);
 			// show " *" in tab title when text changed
-			textPad.addKeyListener(new KeyAdapter() {
-				public void keyTyped(KeyEvent e) {
-					if (textPad.getChanged()) {
-						String title = tabbedPane.getTitleAt(i);
-						// convert to filename; -2 b/c added 2 spaces
-						if (!title.endsWith(" *"))
-							tabbedPane.setTitleAt(i, textPad.getName() + " *");
-					}
-				}
-			});
 			arrayList.add(textPad);
 			tabbedPane.setSelectedIndex(i);
 	}
 
+	public void updateTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
+		int i = tabbedPane.getSelectedIndex();
+		TextPad textPad = (TextPad)arrayList.get(i);
+		String title = tabbedPane.getTitleAt(i);
+		// convert to filename; -2 b/c added 2 spaces
+		if (!title.endsWith(" *"))
+			tabbedPane.setTitleAt(i, textPad.getName() + " *");
+	}
 	/**Removes a tab containing a text area.
 	 * @param i tab index
 	 * @param l text area array list
@@ -705,6 +705,31 @@ public class TextTrix extends JFrame {
 		
 		public void actionPerformed(ActionEvent evt) {
     		fileSaveDialog();
+		}
+	}
+	
+	private class TextPadDocListener implements DocumentListener {
+	
+		/**Flags a text insertion.
+		 * @param e insertion event
+		 */
+		public void insertUpdate(DocumentEvent e) {
+			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(true);
+			updateTitle(textAreas, tabbedPane);
+		}
+
+		/**Flags a text removal.
+		 * @param e removal event
+		 */
+		public void removeUpdate(DocumentEvent e) {
+			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(true);
+			updateTitle(textAreas, tabbedPane);
+		}
+
+		/**Flags any sort of text change.
+		 * @param e any text change event
+		 */
+		public void changedUpdate(DocumentEvent e) {
 		}
 	}
 }
