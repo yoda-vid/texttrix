@@ -8,10 +8,10 @@
 WKDIR="/home/davit/src/texttrix" # work directory
 DIR="com/textflex/texttrix" # src package structure
 #PLUGINS=( "nonprintingchars NonPrintingChars" "extrareturnsremover ExtraReturnsRemover" "htmlreplacer HTMLReplacer" ) # the chosen plugins
-PLUGINS="NonPrintingChars ExtraReturnsRemover HTMLReplacer" # the chosen plugins
+PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer" # the chosen plugins
 # CYGWIN USERS: change the first argument to "javac -classpath"
-# below from "..:$plugin_dir" to "`cygpath ..:$plugin_dir`" 
-# by commenting and uncommenting the appropriate lines below
+# below from "..:$plugin_dir" to "`cygpath -p -w ..:$plugin_dir`" 
+# by commenting or uncommenting the appropriate lines below
 JAVA="/usr/java/j2sdk1.4.2/bin"
 
 #####################
@@ -30,12 +30,12 @@ do
 	plugin_dir=`echo "$plugin" | tr "[:upper:]" "[:lower:]"`
 	# extends the PlugIn class of the Text Trix package
 	# CYGWIN USERS: uncomment the following line, and comment the next:
-	#javac -classpath "`cygpath ..:$plugin_dir`" $plugin_dir/$DIR/*.java
+	#$JAVA/javac -classpath "`cygpath -p -w ..:$plugin_dir`" $plugin_dir/$DIR/*.java
 	$JAVA/javac -classpath ..:$plugin_dir $plugin_dir/$DIR/*.java
 	#cd $plugin_dir
 	# gives the jar the same name and caps as the plugin's class
 	cd $plugin_dir
-	$JAVA/jar -0cvf $plugin.jar $DIR/$plugin.class $DIR/*.png \
+	$JAVA/jar -0cvf $plugin.jar $DIR/*.class $DIR/*.png \
 	$DIR/*.html && mv $plugin.jar ..
 	cd ..
 	#mv $plugin.jar ..

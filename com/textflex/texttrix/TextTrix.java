@@ -58,15 +58,15 @@ public class TextTrix extends JFrame {
     private static String openDir = ""; // most recently path opened to
     private static String saveDir = ""; // most recently path saved to
     private static int fileIndex = 0; // for giving each TextPad a unique name
-    private static FindDialog findDialog = null; // find dialog
+    //    private static FindDialog findDialog = null; // find dialog
     //	private static int tabSize = 0; // user-defined tab display size
     private static PlugIn[] plugIns = null; // plugins from jar archives
     private static Action[] plugInActions = null; // plugin invokers
-    private static String toolsCharsUnavailable = ""; // chars for shorcuts
-    private static String trixCharsUnavailable = ""; // chars for shorcuts
     private JMenu trixMenu = null; // trix plugins
     private JMenu toolsMenu = null; // tools plugins
     private JToolBar toolBar = null; // icons
+    private String toolsCharsUnavailable = ""; // chars for shorcuts
+    private String trixCharsUnavailable = ""; // chars for shorcuts
     private int[] tabIndexHistory = new int[10]; // records for back/forward
     private int tabIndexHistoryIndex = 0; // index of next record
     //    private int currTabIndex = 0; // index of the current tab
@@ -81,7 +81,7 @@ public class TextTrix extends JFrame {
 	setTitle("Text Trix");
 	// pre-set window size
 	setSize(500, 600); // TODO: adjust to user's screen size
-	ImageIcon im = makeIcon("images/minicon-32x32.png"); // set frame icon
+	ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png"); // set frame icon
 	if (im !=null) 
 	    setIconImage(im.getImage());
 	tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -118,7 +118,7 @@ public class TextTrix extends JFrame {
   			t.requestFocusInWindow();
 			*/
 			/*
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 10; i++) {
 			    try { Thread.sleep(50); } catch (Exception e) {}
 			    getSelectedTextPad().requestFocusInWindow();
 			}
@@ -194,20 +194,20 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	// per Mozilla keybinding
-	setAcceleratedAction(newAction, "New", 'T', 
+	LibTTx.setAcceleratedAction(newAction, "New", 'T', 
 			     KeyStroke.getKeyStroke("ctrl T"));
 	fileMenu.add(newAction);
 
 	// (ctrl-o) open file; use selected tab if empty
 	Action openAction 
 	    = new FileOpenAction(TextTrix.this, "Open", 
-				 makeIcon("images/openicon-16x16.png"));
-	setAcceleratedAction(openAction, "Open", 'O', 
+				 LibTTx.makeIcon("images/openicon-16x16.png"));
+	LibTTx.setAcceleratedAction(openAction, "Open", 'O', 
 			     KeyStroke.getKeyStroke("ctrl O"));
 	fileMenu.add(openAction);
 	JButton openButton = toolBar.add(openAction);
 	openButton.setBorderPainted(false);
-	setRollover(openButton, "images/openicon-roll-16x16.png");
+	LibTTx.setRollover(openButton, "images/openicon-roll-16x16.png");
 
 	// set text and web file filters for open/save dialog boxes
 	final ExtensionFileFilter webFilter = new ExtensionFileFilter();
@@ -234,7 +234,7 @@ public class TextTrix extends JFrame {
 	// close file; check if saved
 	Action closeAction = 
 	    new AbstractAction("Close", 
-			       makeIcon("images/closeicon-16x16.png")) {
+			       LibTTx.makeIcon("images/closeicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    int i = tabbedPane.getSelectedIndex();
 		    if (i >= 0) {
@@ -245,13 +245,13 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAcceleratedAction(closeAction, "Close", 'C', 
+	LibTTx.setAcceleratedAction(closeAction, "Close", 'C', 
 		  KeyStroke.getKeyStroke("ctrl W"));
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
 	Action saveAction = 
-	    new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
+	    new AbstractAction("Save", LibTTx.makeIcon("images/saveicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    // can't use tabbedPane.getSelectedComponent() 
 		    // b/c returns JScrollPane
@@ -277,18 +277,18 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAcceleratedAction(saveAction, "Save", 'S', 
+	LibTTx.setAcceleratedAction(saveAction, "Save", 'S', 
 			     KeyStroke.getKeyStroke("ctrl S"));
 	fileMenu.add(saveAction);
 	JButton saveButton = toolBar.add(saveAction);
 	saveButton.setBorderPainted(false);
-	setRollover(saveButton, "images/saveicon-roll-16x16.png");
+	LibTTx.setRollover(saveButton, "images/saveicon-roll-16x16.png");
 
 	// save w/ file save dialog
 	Action saveAsAction 
 	    = new FileSaveAction(TextTrix.this, "Save as...", 
-				 makeIcon("images/saveasicon-16x16.png"));
-	setAction(saveAsAction, "Save as...", '.');
+				 LibTTx.makeIcon("images/saveasicon-16x16.png"));
+	LibTTx.setAction(saveAsAction, "Save as...", '.');
 	fileMenu.add(saveAsAction);
 	
 	// Start exit functions
@@ -302,7 +302,7 @@ public class TextTrix extends JFrame {
 	    };
 	// Doesn't work if close all tabs unless click ensure window focused, 
 	// such as clicking on menu
-	setAcceleratedAction(quitAction, "Quit", 'Q', 
+	LibTTx.setAcceleratedAction(quitAction, "Quit", 'Q', 
 		  KeyStroke.getKeyStroke("ctrl Q"));
 	fileMenu.add(quitAction);
 
@@ -315,7 +315,7 @@ public class TextTrix extends JFrame {
 		     .get(tabbedPane.getSelectedIndex())).undo();
 		}
 	    };
-	setAcceleratedAction(undoAction, "Undo", 'U', 
+	LibTTx.setAcceleratedAction(undoAction, "Undo", 'U', 
 		  KeyStroke.getKeyStroke("ctrl Z"));
 	editMenu.add(undoAction);
 
@@ -326,7 +326,7 @@ public class TextTrix extends JFrame {
 			.redo();
 		}
 	    };
-	setAcceleratedAction(redoAction, "Redo", 'R', 
+	LibTTx.setAcceleratedAction(redoAction, "Redo", 'R', 
 			     KeyStroke.getKeyStroke("ctrl R"));
 	editMenu.add(redoAction);
 
@@ -340,7 +340,7 @@ public class TextTrix extends JFrame {
 		     .get(tabbedPane.getSelectedIndex())).cut();
 		}
 	    };
-	setAcceleratedAction(cutAction, "Cut", 'C', 
+	LibTTx.setAcceleratedAction(cutAction, "Cut", 'C', 
 			     KeyStroke.getKeyStroke("ctrl X"));
 	editMenu.add(cutAction);
 	popup.add(cutAction);
@@ -352,7 +352,7 @@ public class TextTrix extends JFrame {
 		     .get(tabbedPane.getSelectedIndex())).copy();
 		}
 	    };
-	setAcceleratedAction(copyAction, "Copy", 'O', 
+	LibTTx.setAcceleratedAction(copyAction, "Copy", 'O', 
 			     KeyStroke.getKeyStroke("ctrl C"));
 	editMenu.add(copyAction);
 	popup.add(copyAction);
@@ -364,7 +364,7 @@ public class TextTrix extends JFrame {
 		     .get(tabbedPane.getSelectedIndex())).paste();
 		}
 	    };
-	setAcceleratedAction(pasteAction, "Paste", 'P', 
+	LibTTx.setAcceleratedAction(pasteAction, "Paste", 'P', 
 			     KeyStroke.getKeyStroke("ctrl V"));
 	editMenu.add(pasteAction);
 	popup.add(pasteAction);
@@ -379,7 +379,7 @@ public class TextTrix extends JFrame {
 		     .get(tabbedPane.getSelectedIndex())).selectAll();
 		}
 	    };
-	setAcceleratedAction(selectAllAction, "Select all", 'S', 
+	LibTTx.setAcceleratedAction(selectAllAction, "Select all", 'S', 
 			     KeyStroke.getKeyStroke("ctrl L"));
 	editMenu.add(selectAllAction);
 	popup.add(selectAllAction);
@@ -402,7 +402,7 @@ public class TextTrix extends JFrame {
 			t.setAutoIndent(autoIndent.isSelected());
 		}
 	    };
-	setAcceleratedAction(autoIndentAction, 
+	LibTTx.setAcceleratedAction(autoIndentAction, 
 			     "Automatically repeat tabs with the next line",
 			     'I', 
 			     KeyStroke.getKeyStroke("alt shift I"));
@@ -421,7 +421,7 @@ public class TextTrix extends JFrame {
 		    setAutoIndent(true);
 		}
 	    };
-	setAction(autoIndentAllAction, "Auto indent all files", 'A');
+	LibTTx.setAction(autoIndentAllAction, "Auto indent all files", 'A');
 	optionsMenu.add(autoIndentAllAction);
 		
 
@@ -478,7 +478,7 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAcceleratedAction(backTabAction, "Back", 'B', 
+	LibTTx.setAcceleratedAction(backTabAction, "Back", 'B', 
 			     KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
 	viewMenu.add(backTabAction);
 
@@ -505,7 +505,7 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAcceleratedAction(forwardTabAction, "Foreward", 'F', 
+	LibTTx.setAcceleratedAction(forwardTabAction, "Foreward", 'F', 
 			     KeyStroke.getKeyStroke("ctrl shift "
 						    + "CLOSE_BRACKET"));
 	viewMenu.add(forwardTabAction);
@@ -522,7 +522,7 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAcceleratedAction(prevTabAction, "Preeceding tab", 'P', 
+	LibTTx.setAcceleratedAction(prevTabAction, "Preeceding tab", 'P', 
 			     KeyStroke.getKeyStroke("ctrl OPEN_BRACKET"));
 	viewMenu.add(prevTabAction);
 
@@ -537,7 +537,7 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAcceleratedAction(nextTabAction, "Next tab", 'N', 
+	LibTTx.setAcceleratedAction(nextTabAction, "Next tab", 'N', 
 			     KeyStroke.getKeyStroke("ctrl CLOSE_BRACKET"));
 	viewMenu.add(nextTabAction);
 
@@ -550,7 +550,7 @@ public class TextTrix extends JFrame {
 		    viewPlain();
 		}
 	    };
-	setAction(togglePlainViewAction, "View as plain text", 'A');
+	LibTTx.setAction(togglePlainViewAction, "View as plain text", 'A');
 	viewMenu.add(togglePlainViewAction);
 
 	// view as HTML formatted text
@@ -559,7 +559,7 @@ public class TextTrix extends JFrame {
 		    viewHTML();
 		}
 	    };
-	setAction(toggleHTMLViewAction, "View as HTML", 'H');
+	LibTTx.setAction(toggleHTMLViewAction, "View as HTML", 'H');
 	viewMenu.add(toggleHTMLViewAction);
 	
 	// view as RTF formatted text
@@ -568,7 +568,7 @@ public class TextTrix extends JFrame {
 		    viewRTF();
 		}
 	    };
-	setAction(toggleRTFViewAction, "View as RTF", 'R');
+	LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'R');
 	viewMenu.add(toggleRTFViewAction);
 		
 	/* Help menu items */
@@ -576,7 +576,7 @@ public class TextTrix extends JFrame {
 	// about Text Trix, incl copyright notice and version number
 	Action aboutAction 
 	    = new AbstractAction("About...",
-				 makeIcon("images/minicon-16x16.png")) {
+				 LibTTx.makeIcon("images/minicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    String text = readText("about.txt");
 		    String iconPath = "images/texttrixsignature.png";
@@ -585,10 +585,10 @@ public class TextTrix extends JFrame {
 					   text, 
 					   "About Text Trix", 
 					   JOptionPane.PLAIN_MESSAGE, 
-					   makeIcon(iconPath));
+					   LibTTx.makeIcon(iconPath));
 		}
 	    };
-	setAction(aboutAction, "About...", 'A');
+	LibTTx.setAction(aboutAction, "About...", 'A');
 	helpMenu.add(aboutAction);
 	
 	// shortcuts description; opens new tab
@@ -599,7 +599,7 @@ public class TextTrix extends JFrame {
 		    displayFile(path);
 		}
 	    };
-	setAction(shortcutsAction, "Shortcuts", 'S');
+	LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 	helpMenu.add(shortcutsAction);
 
 	// features descriptions; opens new tab
@@ -610,7 +610,7 @@ public class TextTrix extends JFrame {
 		    displayFile(path);
 		}
 	    };
-	setAction(featuresAction, "Features descriptions", 'F');
+	LibTTx.setAction(featuresAction, "Features descriptions", 'F');
 	helpMenu.add(featuresAction);
 
 	// license; opens new tab
@@ -621,7 +621,7 @@ public class TextTrix extends JFrame {
 		    displayFile(path);
 		}
 	    };
-	setAction(licenseAction, "License", 'L');
+	LibTTx.setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
 
 	//	toolBar.addSeparator();
@@ -632,11 +632,12 @@ public class TextTrix extends JFrame {
 
 	/* Trix and Tools menus */
 
+	/*
 	// Find and Replace: fixed tool, not a plugin
 	// (ctrl-shift-F) find and replace Tools feature
 	Action findAction 
 	    = new AbstractAction("Find and replace", 
-				 makeIcon("images/find-16x16.png")) {
+				 LibTTx.makeIcon("images/find-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    if (findDialog == null) 
 			findDialog = new FindDialog(TextTrix.this);
@@ -644,13 +645,14 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	// need capital "F" b/c "shift"
-	setAcceleratedAction(findAction, "Find and replace", 'F', 
+	LibTTx.setAcceleratedAction(findAction, "Find and replace", 'F', 
 		  KeyStroke.getKeyStroke("ctrl shift F")); 
 	toolsMenu.add(findAction);
 	JButton findButton = toolBar.add(findAction);
 	findButton.setBorderPainted(false);
-	setRollover(findButton, "images/find-roll-16x16.png");
+	LibTTx.setRollover(findButton, "images/find-roll-16x16.png");
 	findButton.setToolTipText(readText("findbutton.html"));
+	*/
 
 
 	// Load plugins; add to appropriate menu
@@ -820,12 +822,13 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	
-	pl.setAction(runAction);
+	pl.LibTTx.setAction(runAction);
 	*/
 
 	// create the listener to respond to events that the plug in fires
 	PlugInAction listener = new PlugInAction() {
 		public void runPlugIn(PlugInEvent event) {
+		    //		    if (evt.getType() == PlugInEvent.COMPLETE)
 		    textTinker(pl); 
 		}
 	    };
@@ -845,17 +848,21 @@ public class TextTrix extends JFrame {
 
 	// add the action to the appropriate menu
 	if (category.equalsIgnoreCase("tools")) {
-	    setAction(startAction, name, description, toolsCharsUnavailable);
+	    toolsCharsUnavailable 
+		= LibTTx.setAction(startAction, name, description, 
+				   toolsCharsUnavailable);
 	    toolsMenu.add(startAction);
 	} else {
-	    setAction(startAction, name, description, trixCharsUnavailable);
+	    trixCharsUnavailable 
+		= LibTTx.setAction(startAction, name, description, 
+				   trixCharsUnavailable);
 	    trixMenu.add(startAction);
 	}
 
 	// add the action to a tool bar menu
 	JButton button = toolBar.add(startAction);
 	button.setBorderPainted(false);
-	setRollover(button, rollIcon);
+	LibTTx.setRollover(button, rollIcon);
 	if (detailedDescriptionBuf != null)
 	button.setToolTipText(LibTTx.readText(detailedDescriptionBuf));
     }
@@ -879,16 +886,20 @@ public class TextTrix extends JFrame {
 	    // the action undoable
 	    int start = t.getSelectionStart();
 	    int end = t.getSelectionEnd(); // at the first unselected character
+	    PlugInOutcome outcome = null;
 	    try {
 		// determines whether a region is selected or not;
 		// if not, works on the text pad's entire text
-		if (start == end) { // no selection
+		if (start == end || pl.getIgnoreSelection()) { // no selection
 		    text = doc.getText(0, doc.getLength()); // all the text
-		    text = pl.run(text); // invoke the plugin
+		    outcome = pl.run(text, start, end); // invoke the plugin
 		    doc.remove(0, doc.getLength()); // remove all the text
-		    doc.insertString(0, text, null); // insert text
+		    doc.insertString(0, outcome.getText(), null); // insert text
 		    // approximates the original caret position
-		    if (start > doc.getLength()) {
+		    int i = -1;
+		    if ((i = outcome.getSelectionStart()) != -1) {
+			textSelection(t, 0, i, outcome.getSelectionEnd());
+		    } else if (start > doc.getLength()) {
 			// otherwise errors toward end of document sometimes
 			t.setCaretPosition(doc.getLength());
 		    } else {
@@ -897,16 +908,30 @@ public class TextTrix extends JFrame {
 		} else {
 		    int len = end - start; // length of selected region
 		    text = doc.getText(start, len); // only get the region
-		    text = pl.run(text); // invoke the plugin
+		    outcome = pl.run(text, start, end); // invoke the plugin
 		    doc.remove(start, len); // remove only the region
-		    doc.insertString(start, text, null); // insert text
+		    doc.insertString(start, outcome.getText(), null); // insert text
 		    // caret automatically returns to end of selected region
+		    int i = -1;
+		    if ((i = outcome.getSelectionStart()) != -1) 
+			textSelection(t, start, i, outcome.getSelectionEnd());
 		}
 		//		if (t.getAutoIndent()) t.setIndentTabs(t.getTabSize());
 			    
 	    } catch (BadLocationException e) {
 		e.printStackTrace();
 	    }
+	}
+    }
+
+    public void textSelection(TextPad t, int baseline, int start, int end) {
+	if (end != -1) {
+	    t.setCaretPosition(baseline + start);
+	    t.moveCaretPosition(baseline + end);
+	    // to ensure selection visibility
+	    t.getCaret().setSelectionVisible(true); 
+	} else {
+	    t.setCaretPosition(baseline + start);
 	}
     }
 
@@ -1224,84 +1249,6 @@ public class TextTrix extends JFrame {
 	autoIndent.setSelected(b);
     }
 
-    /**Enable button rollover icon change.
-     * @param button <code>JButton</code> to display icon rollover change
-     * @param iconPath location of icon to change to
-     */
-    public void setRollover(JButton button, String iconPath) {
-	button.setRolloverIcon(makeIcon(iconPath));
-	button.setRolloverEnabled(true);
-    }
-		
-    /**Enable button rollover icon change.
-     * @param button <code>JButton</code> to display icon rollover change
-     * @param icon location of icon to change to
-     */
-    public void setRollover(JButton button, ImageIcon icon) {
-	button.setRolloverIcon(icon);
-	button.setRolloverEnabled(true);
-    }
-
-    /**Set an action's properties.
-     * @param action action to set
-     * @param description tool tip
-     * @param mnemonic menu shortcut
-     * @param keyStroke accelerator key shortcut
-     */
-    public void setAcceleratedAction(Action action, String description, 
-			  char mnemonic, KeyStroke keyStroke) {
-	action.putValue(Action.SHORT_DESCRIPTION, description);
-	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
-	action.putValue(Action.ACCELERATOR_KEY, keyStroke);
-    }
-	
-    /**Sets an action's properties.
-     * @param action action to set
-     * @param description tool tip
-     * @param mnemonic menu shortcut
-     */
-    public void setAction(Action action, String description, char mnemonic) {
-	action.putValue(Action.SHORT_DESCRIPTION, description);
-	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
-    }
-
-    /** Sets an action's properties.
-	Assumes that the action has a name, and that the name is used
-	in the menu that will house the action.
-	@param action action to set
-	@param name the action's name, from which to get the mnemonic
-	@param description tool tip
-	@param charsUnavailable a string of characters unavailable to use
-	as mnemonics, as in those already in the menu where the action
-	will be placed
-     */
-    public void setAction(Action action, String name, String description,
-			  String charsUnavailable) {
-	char mnemonic = 0;
-	int i = 0;
-	// tries to get a mnemonic that has not been taken
-	for (i = 0; i < name.length()
-		 && charsUnavailable
-		 .indexOf((mnemonic = name.charAt(i)))
-		 != -1;
-	     i++);
-	// otherwise haven't found a suitable char
-	if (i < name.length()) { 
-	    action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
-	    charsUnavailable += mnemonic;
-	}
-	// adds the description
-	action.putValue(Action.SHORT_DESCRIPTION, description);
-    }
-
-    /** Creates an image icon.
-	@param path image file location relative to TextTrix.class
-	@return icon from archive; null if the file cannot be retrieved
-     */
-    public ImageIcon makeIcon(String path) {
-	URL iconURL = TextTrix.class.getResource(path);
-	return (iconURL != null) ? new ImageIcon(iconURL) : null;
-    }
 
     /**Makes new file with next non-existent file of name format,
      * <code>NewFile<i>n</i>.txt</code>, where <code>n</code>
@@ -2064,213 +2011,6 @@ public class TextTrix extends JFrame {
 	}
     }
 
-    /**Find and replace dialog.
-     * Creates a dialog box accepting input for search and replacement 
-     * expressions as well as options to tailor the search.
-     */
-    private class FindDialog extends JDialog {
-	JTextField find; // search expression input
-	JTextField replace; // replacement expression input
-	JCheckBox word; // treat the search expression as a separate word
-	JCheckBox wrap; // search to the bottom and start again from the top
-	JCheckBox selection; // search only within a highlighted section
-	JCheckBox replaceAll; // replace all instances of search expression
-	JCheckBox ignoreCase; // ignore upper/lower case
-		
-	/**Construct a find/replace dialog box
-	 * @param owner frame to which the dialog box will be attached; 
-	 * can be null
-	 */
-	public FindDialog(JFrame owner) {
-	    super(owner, "Find and Replace", false);
-	    setSize(400, 150);
-	    Container contentPane = getContentPane();
-	    contentPane.setLayout(new GridBagLayout());
-	    GridBagConstraints constraints = new GridBagConstraints();
-	    constraints.fill = GridBagConstraints.HORIZONTAL;
-	    constraints.anchor = GridBagConstraints.CENTER;
-	    String msg = "";
-			
-	    // search expression input
-	    add(new JLabel("Find:"), constraints, 0, 0, 1, 1, 100, 0);
-	    add(find = new JTextField(20), constraints, 1, 0, 2, 1, 100, 0);
-	    find.addKeyListener(new KeyAdapter() {
-		    public void keyPressed(KeyEvent evt) {
-			if (evt.getKeyCode() == KeyEvent.VK_ENTER) 
-			    find();
-		    }
-		});		
-
-	    // replace expression input
-	    add(new JLabel("Replace:"), constraints, 0, 1, 1, 1, 100, 0);
-	    add(replace = new JTextField(20), constraints, 1, 1, 2, 1, 100, 0);
-	    replace.addKeyListener(new KeyAdapter() {
-		    public void keyPressed(KeyEvent evt) {
-			if (evt.getKeyCode() == KeyEvent.VK_ENTER) 
-			    findReplace();
-		    }
-		});
-			
-	    // treat search expression as a separate word
-	    add(word = new JCheckBox("Whole word only"), 
-		constraints, 0, 2, 1, 1, 100, 0);
-	    word.setMnemonic(KeyEvent.VK_N);
-	    msg = "Search for the expression as a separate word";
-	    word.setToolTipText(msg);
-			
-	    // wrap search through start of text if necessary
-	    add(wrap = new JCheckBox("Wrap"), constraints, 2, 2, 1, 1, 100, 0);
-	    wrap.setMnemonic(KeyEvent.VK_A);
-	    msg = "Start searching from the cursor and wrap back to it";
-	    wrap.setToolTipText(msg);
-			
-	    // replace all instances within highlighted section
-	    add(selection = new JCheckBox("Replace within selection"), 
-		constraints, 1, 2, 1, 1, 100, 0);
-	    selection.setMnemonic(KeyEvent.VK_S);
-	    msg = "Search and replace text within the entire "
-		+ "highlighted section";
-	    selection.setToolTipText(msg);
-			
-	    // replace all instances from cursor to end of text unless 
-	    // combined with wrap, where replace all instances in whole text
-	    add(replaceAll = new JCheckBox("Replace all"), 
-		constraints, 0, 3, 1, 1, 100, 0);
-	    replaceAll.setMnemonic(KeyEvent.VK_L);
-	    msg = "Replace all instances of the expression";
-	    replaceAll.setToolTipText(msg);
-			
-	    // ignore upper/lower case while searching
-	    add(ignoreCase = new JCheckBox("Ignore case"), 
-		constraints, 1, 3, 1, 1, 100, 0);
-	    ignoreCase.setMnemonic(KeyEvent.VK_I);
-	    msg = "Search for both lower and upper case versions "
-		+ "of the expression";
-	    ignoreCase.setToolTipText(msg);
-
-	    // find action, using the appropriate options above
-	    Action findAction = new AbstractAction("Find", null) {
-		    public void actionPerformed(ActionEvent e) {
-			find();
-		    }
-		};
-	    setAcceleratedAction(findAction, "Find", 'F', 
-				 KeyStroke.getKeyStroke("alt F"));
-	    add(new JButton(findAction), constraints, 0, 4, 1, 1, 100, 0);
-
-	    // find and replace action, using appropriate options above
-	    Action findReplaceAction 
-		= new AbstractAction("Find and Replace", null) {
-		    public void actionPerformed(ActionEvent e) {
-			findReplace();
-		    }
-		};
-	    setAcceleratedAction(findReplaceAction, "Find and replace", 'R', 
-				 KeyStroke.getKeyStroke("alt R"));
-	    add(new JButton(findReplaceAction), 
-		constraints, 1, 4, 1, 1, 100, 0);
-	}
-
-		
-	/**Adds a new component to the <code>GridBagLayout</code> manager.
-	 * @param c component to add
-	 * @param constraints layout constraints object
-	 * @param x column number
-	 * @param y row number
-	 * @param w number of columns to span
-	 * @param h number of rows to span
-	 * @param wx column weight
-	 * @param wy row weight
-	 * */
-	public void add(Component c, GridBagConstraints constraints,
-			int x, int y, int w, int h, 
-			int wx, int wy) {
-	    constraints.gridx = x;
-	    constraints.gridy = y;
-	    constraints.gridwidth = w;
-	    constraints.gridheight = h;
-	    constraints.weightx = wx;
-	    constraints.weighty = wy;
-	    getContentPane().add(c, constraints);
-	}
-		
-	/**Finds the give search pattern.
-	 */
-	public void find() {
-	    TextPad t = getSelectedTextPad();
-	    if (t != null) {
-		String findText = find.getText();
-		// search from the current carat position
-		int n = t.getCaretPosition();
-		//		Document doc = t.getDocument();
-		//		String text = doc.getText(
-		n = Tools.find(t.getText(), findText, n, 
-			       word.isSelected(), ignoreCase.isSelected());
-		// wrap if wrap-enabled
-		if (n == -1 && wrap.isSelected()) {
-		    n = Tools.find(t.getText(), findText, 0, 
-				   word.isSelected(), ignoreCase.isSelected());
-		}
-		// highlight the quarry if found
-		if (n != -1) {
-		    t.setCaretPosition(n);
-		    t.moveCaretPosition(n + findText.length());
-		    // to ensure selection visibility
-		    t.getCaret().setSelectionVisible(true); 
-		}
-	    }
-	}
-		
-	/**Finds and replaces the given search pattern.
-	 * Allows the replacements to be undone.
-	 */
-	public void findReplace() {
-	    TextPad t = getSelectedTextPad();
-	    if (t != null) {
-		String findText = find.getText();
-		String replaceText = replace.getText();
-		Document doc = t.getDocument();
-		String text = null;
-		int start = t.getSelectionStart();
-		int end = t.getSelectionEnd();
-		// works within the selected range
-		try {
-		    if (selection.isSelected()) {
-			int len = end - start;
-			text = doc.getText(start, len);
-			text = Tools.findReplace(text, findText, replaceText,
-						 word.isSelected(), 
-						 true, 
-						 false,
-						 ignoreCase.isSelected());
-			doc.remove(start, len);
-			doc.insertString(start, text, null);
-			// if no range is chosen, works within the whole text
-		    } else {
-			text = doc.getText(0, doc.getLength());
-			text = Tools.findReplace(text, findText, replaceText,
-						 t.getCaretPosition(),
-						 text.length(),
-						 word.isSelected(),
-						 replaceAll.isSelected(),
-						 wrap.isSelected(),
-						 ignoreCase.isSelected());
-			doc.remove(0, doc.getLength());
-			doc.insertString(0, text, null);
-			// approximates the original caret position
-			if (start > doc.getLength()) {
-			    t.setCaretPosition(doc.getLength());
-			} else {
-			    t.setCaretPosition(start);
-			}
-		    }
-		} catch (BadLocationException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
-    }
-	
     /**Responds to changes in the <code>TextPad</code> text areas.
      * Updates the titles to reflect text alterations.
      */

@@ -67,30 +67,3 @@ public interface PlugInListener extends EventListener {
 
 
 
-/** The event that <code>PlugIn</code>s create to notify their calling
-    class that they await invocation.
-*/
-class PlugInEvent extends AWTEvent {
-    /** An event ID number greater than any of AWT's own events */
-    public static final int PLUG_IN_EVENT = AWTEvent.RESERVED_ID_MAX + 5000;
-
-    /** Creates the event and gives it an ID number.
-	@param p the <code>PlugIn</code> object creating the event
-     */
-    public PlugInEvent(PlugIn p) {
-	super(p, PLUG_IN_EVENT);
-    }
-}
-
-
-
-
-/** Abstract listener that responds to <code>PlugIn</code> action events.
-    Defines a function from the <code>PlugInListener</code> interface 
-    to override.
-*/
-abstract class PlugInAction implements PlugInListener {
-    /** Runs the plug in.
-     */
-    public abstract void runPlugIn(PlugInEvent event);
-}

@@ -37,6 +37,8 @@ package com.textflex.texttrix;
 import java.lang.reflect.*;
 import java.io.*;
 import java.net.*;
+import javax.swing.*;
+
 
 public class LibTTx {
 
@@ -198,6 +200,91 @@ public class LibTTx {
 	    exception.printStackTrace();
 	}
 	return text;
+    }
+
+
+
+
+
+
+    /**Enable button rollover icon change.
+     * @param button <code>JButton</code> to display icon rollover change
+     * @param iconPath location of icon to change to
+     */
+    public static void setRollover(JButton button, String iconPath) {
+	button.setRolloverIcon(makeIcon(iconPath));
+	button.setRolloverEnabled(true);
+    }
+		
+    /**Enable button rollover icon change.
+     * @param button <code>JButton</code> to display icon rollover change
+     * @param icon location of icon to change to
+     */
+    public static void setRollover(JButton button, ImageIcon icon) {
+	button.setRolloverIcon(icon);
+	button.setRolloverEnabled(true);
+    }
+
+    /**Set an action's properties.
+     * @param action action to set
+     * @param description tool tip
+     * @param mnemonic menu shortcut
+     * @param keyStroke accelerator key shortcut
+     */
+    public static void setAcceleratedAction(Action action, String description, 
+			  char mnemonic, KeyStroke keyStroke) {
+	action.putValue(Action.SHORT_DESCRIPTION, description);
+	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+	action.putValue(Action.ACCELERATOR_KEY, keyStroke);
+    }
+	
+    /**Sets an action's properties.
+     * @param action action to set
+     * @param description tool tip
+     * @param mnemonic menu shortcut
+     */
+    public static void setAction(Action action, String description, char mnemonic) {
+	action.putValue(Action.SHORT_DESCRIPTION, description);
+	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+    }
+
+    /** Sets an action's properties.
+	Assumes that the action has a name, and that the name is used
+	in the menu that will house the action.
+	@param action action to set
+	@param name the action's name, from which to get the mnemonic
+	@param description tool tip
+	@param charsUnavailable a string of characters unavailable to use
+	as mnemonics, as in those already in the menu where the action
+	will be placed
+     */
+    public static String setAction(Action action, String name, String description,
+			  String charsUnavailable) {
+	char mnemonic = 0;
+	int i = 0;
+	// tries to get a mnemonic that has not been taken
+	for (i = 0; i < name.length()
+		 && charsUnavailable
+		 .indexOf((mnemonic = name.charAt(i)))
+		 != -1;
+	     i++);
+	// otherwise haven't found a suitable char
+	if (i < name.length()) { 
+	    action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+	    charsUnavailable += mnemonic;
+	}
+	// adds the description
+	action.putValue(Action.SHORT_DESCRIPTION, description);
+	return charsUnavailable;
+    }
+
+    /** Creates an image icon.
+	@param path image file location relative to TextTrix.class
+	@return icon from archive; null if the file cannot be retrieved
+     */
+    public static ImageIcon makeIcon(String path) {
+	URL iconURL = LibTTx.class.getResource(path);
+	return (iconURL != null) ? new ImageIcon(iconURL) : null;
     }
 
 
