@@ -399,7 +399,9 @@ public class TextTrix extends JFrame {
 	/* Help menu items */
 
 	// about Text Trix, incl copyright notice and version number
-	Action aboutAction = new AbstractAction("About...") {
+	Action aboutAction 
+	    = new AbstractAction("About...",
+				 makeIcon("images/minicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    String text = "";
 		    text = readText("about.txt");
