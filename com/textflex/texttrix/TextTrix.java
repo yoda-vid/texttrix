@@ -83,8 +83,6 @@ public class TextTrix extends JFrame {
 		ImageIcon im = makeIcon("images/minicon.png");
 		if (im !=null) 
 			setIconImage(im.getImage());
-//		setIconImage(Toolkit.getDefaultToolkit().getImage("images/minicon1.jpg"));
-//		setIconImage(new ImageIcon("images/minicon.jpg").getImage());
 		
 		// make first tab and text area
 		addTextArea(textAreas, tabbedPane, makeNewFile());
@@ -169,8 +167,14 @@ public class TextTrix extends JFrame {
 		webFilter.addExtension("htm");
 		webFilter.addExtension("xhtml");
 		webFilter.addExtension("shtml");
-		webFilter.setDescription("Web files (*.html, *.htm, *.xhtml, *.shtml)");
+		webFilter.addExtension("css");
+		webFilter.setDescription("Web files (*.html, *.htm, *.xhtml, *.shtml, *.css)");
 		chooser.setFileFilter(webFilter);
+		
+		final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
+		rtfFilter.addExtension("rtf");
+		rtfFilter.setDescription("RTF files (*.rtf)");
+		chooser.setFileFilter(rtfFilter);
 
 		final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
 		txtFilter.addExtension("txt");
@@ -1097,11 +1101,12 @@ public class TextTrix extends JFrame {
 				// last saved to
 				chooser.setCurrentDirectory(new File(saveDir));
 			}
-    			int result = chooser.showSaveDialog(owner);
-    			if (result == JFileChooser.APPROVE_OPTION) {
+    		int result = chooser.showSaveDialog(owner);
+    		if (result == JFileChooser.APPROVE_OPTION) {
 				String path = chooser.getSelectedFile().getPath();
 				saveFile(path);
 				setSaveDir(chooser.getSelectedFile().getParent());
+				tabbedPane.setToolTipTextAt(tabIndex, path);
 				return true;
 			} else {
 				return false;
