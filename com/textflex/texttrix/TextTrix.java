@@ -401,7 +401,7 @@ public class TextTrix extends JFrame {
 		    viewPlain();
 		}
 	    };
-	setAction(togglePlainViewAction, "View as plain text", 'P');
+	setAction(togglePlainViewAction, "View as plain text", 'A');
 	viewMenu.add(togglePlainViewAction);
 
 	// view as HTML formatted text

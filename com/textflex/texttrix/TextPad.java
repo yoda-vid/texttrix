@@ -147,7 +147,8 @@ public class TextPad extends JTextPane implements StateEditable{
 	    });
 		
 	// Next apply own action
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 
+					Event.CTRL_MASK),
 		 "deleteWord");
 	amap.put("deleteWord", new AbstractAction() {
 		public void actionPerformed(ActionEvent evt) {
@@ -158,25 +159,55 @@ public class TextPad extends JTextPane implements StateEditable{
 		    // serialized objects of this class won't be compatible w/
 		    // future releases
 		    try {
-			// call getDocument() each time since document may change
+			// call getDocument() each time since doc may change
 			// with call to viewPlain, viewHTML, or viewRTF
-			getDocument().remove(wordPos, getCaretPosition() - wordPos);
+			getDocument().remove(wordPos, 
+					     getCaretPosition() - wordPos);
 			setCaretPosition(wordPos);
 		    } catch(BadLocationException b) {
 			System.out.println("Deletion out of range.");
 		    }
 		    /*
 		    // alternate method, essentially same as document except
-		    // using the AccessibleJTextComponent class, whose serializable
+		    // using the AccessibleJTextComponent class, 
+		    // whose serializable
 		    // objects may not be compatible w/ future releases
 		    // access the text component itself to tell it to perform
-		    // the deletions rather than building string manually, a slow task
+		    // the deletions rather than building string manually, 
+		    // a slow task
 		    (new JTextComponent.AccessibleJTextComponent())
 		    .delete(wordPos, getCaretPosition());
 		    */
 		}
 	    });
 
+       	setDefaultTabs(4);
+	//	System.out.println(getFont().getFontName());
+
+
+    }
+
+    public boolean setDefaultTabs(int tabChars) {
+	//	setFont(new Font("Dialog", Font.PLAIN, 12));
+	//String[] fontFams = 
+	//	for (j = 0; 
+	//	System.out.println(getFont().getFontName());
+	int charWidth = getFontMetrics(getFont()).charWidth(' ');
+	int tabWidth = charWidth * tabChars;
+
+	TabStop[] tabs = new TabStop[10];
+	for (int i = 0; i < tabs.length; i++) 
+	    tabs[i] = new TabStop((i + 1) * tabWidth);
+	TabSet tabSet = new TabSet(tabs);
+	SimpleAttributeSet attribs = new SimpleAttributeSet();
+	StyleConstants.setTabSet(attribs, tabSet);
+	getStyledDocument()
+	    .setParagraphAttributes(0,
+				    getDocument().getLength() + 1,
+				    attribs,
+				    false); // false to preserve default font
+	//	setFont(new Font("Dialog", Font.PLAIN, 12));
+	return true;
     }
 
     /**Gets the value showing whether the text in the text area
@@ -335,6 +366,7 @@ public class TextPad extends JTextPane implements StateEditable{
 	setText(text);
 	stateEdit.end();
 	undoManager.addEdit((UndoableEdit)stateEdit);
+       	setDefaultTabs(4);
     }
 
     /**Converts the pad to an HTML text view.
@@ -349,6 +381,7 @@ public class TextPad extends JTextPane implements StateEditable{
 	setText(text);
 	stateEdit.end();
 	undoManager.addEdit((UndoableEdit)stateEdit);
+       	setDefaultTabs(4);
     }
 
     /**Converts the pad to an RTF tex view, if possible.
@@ -365,6 +398,10 @@ public class TextPad extends JTextPane implements StateEditable{
 	undoManager.addEdit((UndoableEdit)stateEdit);
 	if (getText() == null) {
 	    undo();
+	} else {
+	    // if placed before the undo, it would undo this command and 
+	    // not restore the text w/o another undo
+	    setDefaultTabs(4);
 	}
     }
 	
