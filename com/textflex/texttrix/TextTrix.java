@@ -62,7 +62,11 @@ public class TextTrix extends JFrame {
 	// most recently path saved to
 	private static String savePath = "";
 	// for giving each TextPad a unique name
-	private int fileIndex = 0;
+	private static int fileIndex = 0;
+
+	
+	private static int currentTabIndex = 0;
+	private static int prevTabIndex = 0;
 
 	/**Constructs a new <code>TextTrix</code> frame and
 	 * <code>TextPad</code> to begin with.
@@ -74,6 +78,8 @@ public class TextTrix extends JFrame {
 
 	// make first tab and text area
 	addTextArea(textAreas, tabbedPane, makeNewFile());
+
+//	tabbedPane.addChangeListener(new TabSwitchListener());
 
 	// make menu bar and menus
 	JMenuBar menuBar = new JMenuBar();
@@ -136,6 +142,7 @@ public class TextTrix extends JFrame {
 	// (ctrl-s) save file; no dialog if file already created
 	Action saveAction = new AbstractAction("Save", makeIcon("saveicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
+			// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
 			// save directly to file if already created one
@@ -348,7 +355,7 @@ public class TextTrix extends JFrame {
 	constraints.fill = GridBagConstraints.BOTH;
 	constraints.anchor = GridBagConstraints.CENTER;
 	add(tabbedPane, constraints, 0, 1, 1, 1, 100, 100);
-
+	
     }
 
     /**Publically executable starter method.
@@ -366,8 +373,17 @@ public class TextTrix extends JFrame {
 			public void windowClosing(WindowEvent e) {
 				exitTextTrix();
 			}
+			/*
+			public void windowGainedFocus(WindowEvent e) {
+				TextPad t;
+				if ((t = getSelectedTextPad()) != null) {
+					t.requestFocusInWindow();
+				}
+			}
+			*/
 		});
 		textTrix.show();
+		textTrix.getSelectedTextPad().requestFocusInWindow();
     }
 
 	/**Gets the last path for opening a file.
@@ -384,6 +400,23 @@ public class TextTrix extends JFrame {
 		return savePath;
 	}
 
+	public static TextPad getSelectedTextPad() {
+		int i = tabbedPane.getSelectedIndex();
+		if (i != -1) {
+			return (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+		} else {
+			return null;
+		}
+	}
+
+	public static int getCurrentTabIndex() {
+		return currentTabIndex;
+	}
+
+	public static int getPrevTabIndex() {
+		return prevTabIndex;
+	}
+
 	/**Sets the given path as the most recently one used
 	 * to open a file.
 	 * @param anOpenPath path to set as last opened location
@@ -398,6 +431,14 @@ public class TextTrix extends JFrame {
 	 */
 	public static void setSavePath(String aSavePath) {
 		savePath = aSavePath;
+	}
+
+	public static void setCurrentTabIndex(int i) {
+		currentTabIndex = i;
+	}
+
+	public static void setPrevTabIndex(int i) {
+		prevTabIndex = i;
 	}
 
 	/**Enable button rollover icon change.
@@ -824,6 +865,21 @@ public class TextTrix extends JFrame {
 		public void changedUpdate(DocumentEvent e) {
 		}
 	}
+
+	/**Responds to tab changes in the JTabbedPane.
+	 * Not presently working.
+	 *
+	private class TabSwitchListener implements ChangeListener {
+		public void stateChanged(ChangeEvent e) {
+			if (tabbedPane.getTabCount() > 0) {
+				getSelectedTextPad().requestFocusInWindow();
+				setPrevTabIndex(getCurrentTabIndex());
+				setCurrentTabIndex(tabbedPane.getSelectedIndex());
+			}
+		}
+	}
+	*/
+	
 }
 
 /**Filters for files with specific extensions.
