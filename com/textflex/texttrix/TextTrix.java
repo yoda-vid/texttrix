@@ -79,6 +79,8 @@ public class TextTrix extends JFrame {
 	JMenuBar menuBar = new JMenuBar();
 	JMenu fileMenu = new JMenu("File");
 	JMenu editMenu = new JMenu("Edit");
+	JMenu mistakerMenu = new JMenu("Mistaker");
+	JMenu toolsMenu = new JMenu("Tools");
 	JMenu helpMenu = new JMenu("Help");
 
 	// make tool bar
@@ -270,6 +272,7 @@ public class TextTrix extends JFrame {
 		}
 	};
 	setAction(shortcutsAction, "Shortcuts", 'S', null);
+	helpMenu.add(shortcutsAction);
 
 	// license; opens new tab
 	Action licenseAction = new AbstractAction("License") {
@@ -293,7 +296,8 @@ public class TextTrix extends JFrame {
 		    t.setText(Practical.removeExtraHardReturns(t.getText()));
 		}
 	};
-	setAction(removeReturnsAction, "Remove extra hard returns", null);
+	setAction(removeReturnsAction, "Remove extra hard returns", 'R', null);
+	toolsMenu.add(removeReturnsAction);
 	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
 	removeReturnsButton.setBorderPainted(false);
 	
@@ -303,6 +307,8 @@ public class TextTrix extends JFrame {
 	setJMenuBar(menuBar);
 	menuBar.add(fileMenu);
 	menuBar.add(editMenu);
+	menuBar.add(mistakerMenu);
+	menuBar.add(toolsMenu);
 	menuBar.add(helpMenu);
 
 	// add components to frame; "add" function to set GridBag parameters
