@@ -3,10 +3,15 @@
  * a goofy gui editor
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
-
+ * 
+ * The Java-Runtime-Environment-independent version of Txtrx uses 
+ * libgcj, a library under the GNU General Public License and the
+ * libgcc exception.  See gpl.txt and LIBGCJ_LICENSE in the
+ * version's packages for a copy of the license and exception.
+ * 
  * Copyright (c) 2002, David Young
  * All rights reserved.
-
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions 
  * are met:

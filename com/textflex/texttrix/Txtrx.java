@@ -1,12 +1,18 @@
 /* Txtrx.java - standalone command-line version of Text Trix
+ * 
  * Text Trix
- * a goofy gui editor
+ * Meaningful Mistakes
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
-
+ *
+ * The Java-Runtime-Environment independent version of Txtrx uses 
+ * libgcj, a library under the GNU General Public License and the
+ * libgcc exception.  See gpl.txt and LIBGCJ_LICENSE for a copy
+ * of the license and exception.
+ * 
  * Copyright (c) 2002, David Young
  * All rights reserved.
-
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions 
  * are met:
@@ -55,7 +61,9 @@ public class Txtrx {
 	 */
 	public static void main(String[] args) {
 		// more than 1 argument or a single, non-command argument
-		if (args.length > 1 || (args.length == 1 && !args[0].startsWith("-"))) {
+		if (args.length > 1 || 
+				(args.length == 1 
+				 && (!args[0].startsWith("-") || args[0].startsWith("--")))) {
 			applyCmds(args);
 		// only argument is the commands
 		} else if (args.length == 1) {
@@ -71,7 +79,7 @@ public class Txtrx {
 	 * Specifying no commands defaults to the "v" command, "verbose" operation.
 	 * @param args array of commands and files.  Commands are optional
 	 * and come before the filenames.  Assumes that args specifies at least
-	 * one file.
+	 * one file.  Also takes care of all full-word, "--"-preceded commands.
 	 */
 	public static void applyCmds(String[] args) {
 		String cmds = args[0];
@@ -84,6 +92,22 @@ public class Txtrx {
 			verbose = true;
 			cmd = "v";
 			fileIndex = 0;
+		// show help for the list of commands.
+		// Not in a separate file so can combine Txtrx into 1 file total
+		} else if (cmds.indexOf("h") != -1 || cmds.equals("--help")) {
+			ShowText.showHelp();
+			fileIndex = args.length;
+		// show license info
+		} else if (cmds.equals("--license")) {
+			ShowText.showLicense();
+			fileIndex = args.length;
+		// show version info
+		} else if (cmds.equals("--version")) {
+			ShowText.showVersion();
+			fileIndex = args.length;
+		// unrecognized full-word command
+		} else if (cmds.startsWith("--")) {
+			System.out.println("I'm sorry, " + cmds + " was not recognized.");
 		// one or more args: commands that include "v", files
 		} else if (cmds.indexOf("v") != -1) {
 			verbose = true;
@@ -96,13 +120,6 @@ public class Txtrx {
 		for (int i = fileIndex; i < args.length; i++) {
 			String path = args[i];
 			String text;
-			/** prob not necessary since prob does automatically
-			if (path.charAt(0) == "/") {
-				path = args[i];
-			} else {
-				path = "./" + args[i];
-			}
-			*/
 			
 			try {
 				File file = new File(path);
@@ -126,10 +143,15 @@ public class Txtrx {
 						}
 						
 						if (file.canWrite()) {
-							file.renameTo(new File(path + "~"));
+							String bakPath = path + "~";
+							file.renameTo(new File(bakPath));
 							writeFile(text, path);
-							if (verbose) 
+							if (verbose) {
 								System.out.println(text);
+								System.out.println(path
+										+ "has been backed up to " 
+										+ bakPath);
+							}
 						} else {
 							System.out.println(path + " cannot be modified");
 						}
@@ -143,6 +165,28 @@ public class Txtrx {
 		}
 	}
 
+	/* moved to ShowText.java
+	public static void showText(String path) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			String line = "";
+
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+		} catch(IOException e) {
+			System.out.println("Please see the Txtrx package for this documentation");
+		}
+	}
+	*/
+
+	/**Removes a given string from another string.
+	 * For example, removes each command from the command list
+	 * after the command's execution.
+	 * @param aString string from which to remove a substring
+	 * @param aSubstrint the substring to remove
+	 * @return the substring-removed string
+	 */
 	public static String removeSubstring(String aString, String aSubstring) {
 		String string = aString;
 		int l = aSubstring.length();
@@ -172,12 +216,16 @@ public class Txtrx {
 	 */
 	public static String applyCmd(String cmd, String aText) {
 		String text = aText;
-	
+
+		// extra hard Return remover
 		if (cmd.equals("r")) {
 			return Practical.removeExtraHardReturns(text);
+		// Html replacer
 		} else if (cmd.equals("h")) {
 			return Practical.replaceHTMLTags(text);
+		// unrecognized command
 		} else {
+			System.out.println("I'm sorry, -" + cmd + " was not recognized.");
 			return text;
 		}
 	}

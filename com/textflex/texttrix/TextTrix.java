@@ -593,7 +593,8 @@ public class TextTrix extends JFrame {
 		    out.close();
 			t.setChanged(false);
 			t.setFile(path);
-			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), t.getName());
+			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+					t.getName() + "  ");
 		} catch(IOException exception) {
 			exception.printStackTrace();
 		}
@@ -614,8 +615,8 @@ public class TextTrix extends JFrame {
 			String path = chooser.getSelectedFile().getPath();
 			saveFile(path);
 			setSavePath(path);
-			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-					chooser.getSelectedFile().getName());
+			//tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+			//		chooser.getSelectedFile().getName());
 	    }
 	}
 
