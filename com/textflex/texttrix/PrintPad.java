@@ -53,7 +53,7 @@ import java.awt.geom.*;
  */
 public class PrintPad implements Printable {
 	
-	private String[] printText = null; // line-by-line array of text to print
+	private PrintPadText[] printText = null; // line-by-line array of text to print
 	private int linesPerPage = 0; // max number of lines that fit on current page size
 	private Font font = null; // font to print in
 	
@@ -69,7 +69,7 @@ public class PrintPad implements Printable {
 	 * the array refers to a separate line
 	 * @param aFont the font in which to print
 	 */
-	public PrintPad(String[] aPrintText, Font aFont) {
+	public PrintPad(PrintPadText[] aPrintText, Font aFont) {
 		printText = aPrintText;
 		font = aFont;
 	}
@@ -130,15 +130,18 @@ public class PrintPad implements Printable {
 		// writes text line-by-line, advancing the pen position between
 		// each line
 		float penY = 0;
+		float penX = 0;
 		for (int i = page * linesPerPage; i < page * linesPerPage + linesPerPage 
 				&& i < printText.length; i++) {
 			// creates a new TextLayout object for each line
-			txtLayout = new TextLayout(printText[i], font, fontContext);
+			txtLayout = new TextLayout(printText[i].getText(), font, fontContext);
 			// advance the pen;
 			// move the pen before even the first writing to ensure that the first
-			// line doesn't get cut off 
+			// line doesn't get cut off
+			penX = printText[i].getIndent();
+			//System.out.println("penX: " + penX);
 			penY += txtLayout.getAscent() + txtLayout.getDescent() + txtLayout.getLeading();
-			txtLayout.draw(g2D, 0, penY);
+			txtLayout.draw(g2D, penX, penY);
 		}
 		
 	}
@@ -160,8 +163,10 @@ public class PrintPad implements Printable {
 		// TODO: check whether to advance pen based on this line height
 		// rather than ascent + descent + leading from TextLayout for
 		// current line
+		String[] lines = new String[printText.length];
+		for (int i = 0; i < printText.length; i++) lines[i] = printText[i].getText();
 		double lineHeight 
-			= font.getLineMetrics(LibTTx.createStringFromArray(printText, 
+			= font.getLineMetrics(LibTTx.createStringFromArray(lines, 
 			false), context).getHeight();
 		// determines the maximum number of lines that will fit onto
 		// the current paper size 
@@ -183,7 +188,7 @@ public class PrintPad implements Printable {
 	/**Gets the current text to print.
 	 * @return the text as a line-by-line array
 	 */
-	public String[] getPrintText() {
+	public PrintPadText[] getPrintText() {
 		return printText;
 	}
 	
@@ -198,7 +203,7 @@ public class PrintPad implements Printable {
 	 * @param s an array of the text to print, where each element is
 	 * a line of the text
 	 */
-	public void setPrintText(String[] s) {
+	public void setPrintText(PrintPadText[] s) {
 		printText = s;
 	}
 

@@ -90,24 +90,26 @@ public class TextPad extends JTextPane implements StateEditable {
 	public TextPad(File aFile, Prefs prefs) {
 		// TODO: decide whether to check JVM within each TextPad or only once,
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
+		
 		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
 		applyDocumentSettings();
+		
 		// to allow multiple undos and listen for events
-
 		// for new key-bindings
 		imap = getInputMap(JComponent.WHEN_FOCUSED);
 		amap = getActionMap();
 		createActionTable(this);
+		
 
 		// (ctrl-backspace) delete from caret to current word start
 		// First discard JTextComponent's usual dealing with ctrl-backspace.
 		// (enter) Auto-indent if Text Trix's option selected.
 		addKeyListener(new KeyAdapter() {
-			/**Responds to whatever the current key combination maps to.
+			
+			/** Responds to whatever the current key combination maps to.
 			 * Backspaces have already been processed in JVM >= v.1.5.
-			 * 
-			 */
+			*/
 			public void keyTyped(KeyEvent event) {
 				char keyChar = event.getKeyChar();
 				if (event.isControlDown()
@@ -122,20 +124,7 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& isLeadingTab()) {
 					// performs the action after adding the tab
 					indentCurrentParagraph(getTabSize());
-				} /*else if (keyChar == KeyEvent.VK_DELETE) {
-					event.consume();
-			//		deleteNextChar();
-				}*/
-				/* else if (
-					autoIndent
-						&& keyChar == KeyEvent.VK_BACK_SPACE
-						&& isLeadingTab(JVM_15)) {
-					System.out.println("right here, baby");
-					// performs the action before deleting the char, the
-					// opposite of the assumption in indentCurrentParagraph
-					indentCurrentParagraph(getTabSize(), !JVM_15);
 				}
-				*/
 			}
 			
 			/**Responds to key events right after the key is pressed.
@@ -179,11 +168,6 @@ public class TextPad extends JTextPane implements StateEditable {
 					evt.consume();
 					try {
 						tabRegion();
-						/*
-						int end = getSelectionEnd();
-						if (getDocument().getLength() > end) end++;
-						setIndentTabs(getTabSize(), getSelectionStart(), end);
-						*/
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
@@ -194,7 +178,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		});
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
-
+		
 	}
 
 	/** Sets the keybindings to the preferred value.
@@ -1379,7 +1363,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public PrintPad createPrintPad() {
 		return new PrintPad(
-			LibTTx.getVisibleLines(this),
+			//LibTTx.getVisibleLines(this),
+			LibTTx.getPrintableLines(this),
 			new Font(getFont().getAttributes()));
 	}
 

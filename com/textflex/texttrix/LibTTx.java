@@ -590,6 +590,45 @@ public class LibTTx {
 		return (String[]) truncateArray(lines, linesIdx);
 	}
 	
+	public static PrintPadText[] getPrintableLines(JTextPane c) {
+		
+		PrintPadText[] lines = new PrintPadText[100]; // defaults to 100 lines
+		int linesIdx = 0;
+		StyledDocument doc = c.getStyledDocument();
+		int len = doc.getLength();
+		int offset = 0;
+		int end = 0;
+		PrintPadText line = null;
+		Element paragraph = null;
+		try {
+			while (offset < len) {
+				paragraph = doc.getParagraphElement(offset);
+				int paragraphEnd = paragraph.getEndOffset();
+				AttributeSet paragraphAttr = paragraph.getAttributes();
+				boolean firstLine = true;
+				//System.out.println("offset: " + offset + ", paraEnd: " + paragraphEnd);
+				//System.out.println("left indent: " + StyleConstants.getLeftIndent(paragraphAttr));
+				while (offset < paragraphEnd) {
+					end = Utilities.getRowEnd(c, offset) + 1;
+					float indent = StyleConstants.getLeftIndent(paragraphAttr);
+					line = new PrintPadText(
+						doc.getText(offset, end - offset),
+						indent);
+				
+					// grows the array if full
+					if (linesIdx >= lines.length) {
+						lines = (PrintPadText[]) growArray(lines);
+					}
+					// adds the line
+					lines[linesIdx++] = line;
+					offset = end;
+				}
+			}
+		} catch (BadLocationException e) {
+		}
+		return (PrintPadText[]) truncateArray(lines, linesIdx);
+	}
+	
 
 	/** Gets the next whole word from a given position, assuming that the position
 	 * is not in the middle of a word.

@@ -103,6 +103,7 @@ v.0.3.6
 -forward and back to previous edit positions
 -function to go directly to a line number
 -check file menu history
+-fix printer indentation loss; FIXED: store indent information from the paragraph attributes in a new PrintPadText object for each line
 
 ----Past Releases----
 

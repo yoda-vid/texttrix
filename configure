@@ -182,6 +182,8 @@ then
 fi
 
 # Source directories
+# Note that currently requires the user to remain case-sensitive with the name
+# of the base dir, even if Cygwin navigates w/o regard to case
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
 	if [ `expr index "$0" "/"` -eq 1 ]
