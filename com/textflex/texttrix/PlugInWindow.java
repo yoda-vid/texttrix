@@ -69,8 +69,9 @@ import java.awt.*;
 public abstract class PlugInWindow extends PlugIn {
 
 	private WindowAdapter winAdapter = null; // window listener
-	private JFrame window = null; // window
+	//private JFrame window = null; // window
 	private ComponentListener winCompListener = null; // window's component listener
+	private JPanel window = null;
 	
 	/**Constructs a plug-in adapted for window control.
 	 * After creating the window, <code>setWindow(JFrame)</code> must be called
@@ -100,16 +101,25 @@ public abstract class PlugInWindow extends PlugIn {
 	 * as well as a button to run the plug-in.
 	 */
 	public void startPlugIn() {
+		/*
 		setTmpActivated(true);
-		window.setVisible(true);
+		*
+		if (window != null) {
+			window.setVisible(true);
+			System.out.println("right here");
+		}/* else if (panel != null){
+			System.out.println("showing dialog");
+			//panel.setVisible(true);
+		}
+		*/
 	}
 
 	/**Attaches a window listener to the window.
 	 * The listener must have been previously set with 
 	 * <code>setWindowAdapter(WindowAdapter)</code>.
-	 */
+	 *
 	public void addWindowAdapter() {
-		window.addWindowListener(winAdapter);//getWindowAdapter());
+		//window.addWindowListener(winAdapter);//getWindowAdapter());
 	}
 	
 	/**Attaches a component listener to the window for external responses
@@ -117,29 +127,30 @@ public abstract class PlugInWindow extends PlugIn {
 	 * For example, the main program could now store plug-in window size
 	 * and position information in the program's preferences file.
 	 * 
-	 */
+	 *
 	public void addWindowComponentListener() {
 		window.addComponentListener(winCompListener);
+		//panel.addComponentListener(winCompListener);
 	}
 	
 	/**Makes the window visible.
 	 * 
-	 */
+	 *
 	public void activateWindow() {
-		window.toFront();
+		//window.toFront();
 	}
 	
 	/**Checks whether the window is currently visible.
 	 * WARNING: Delays in windowing events might cause this function to
 	 * return false when the window is visible.
-	 */
+	 *
 	public boolean isWindowVisible() {
 		return window.isVisible();
 	}
 	
 	/**Makes the window invisible.
 	 * 
-	 */
+	 *
 	public void closeWindow(){
 		window.setVisible(false);
 	}
@@ -147,14 +158,14 @@ public abstract class PlugInWindow extends PlugIn {
 	/**Removes the window listener from the window.
 	 * The listener must have been previously set with 
 	 * <code>setWindowAdapter(WindowAdapter)</code>.
-	 */
+	 *
 	public void removeWindowAdapter() {
-		window.removeWindowListener(winAdapter);//getWindowAdapter());
+		//window.removeWindowListener(winAdapter);//getWindowAdapter());
 	}
 
 	/**Sets the window adapter.
 	 * This function must be called before adding or removing window adapters.
-	 */
+	 *
 	public void setWindowAdapter(WindowAdapter adapter) {
 		winAdapter = adapter;
 	}
@@ -162,10 +173,11 @@ public abstract class PlugInWindow extends PlugIn {
 	/**Sets the window's component listener.
 	 * 
 	 * @see #addWindowComponentListener()
-	 */
+	 *
 	public void setWindowComponentListener(ComponentListener aWinCompListener) {
 		winCompListener = aWinCompListener;
 	}
+	*/
 
 
 	/**Runs the plugin on all the given text.
@@ -181,11 +193,12 @@ public abstract class PlugInWindow extends PlugIn {
 	 * preferably within the constructor.
 	 * @param aWindow
 	 */
-	public void setWindow(JFrame aWindow) {
+	public void setWindow(JPanel aWindow) {//JFrame aWindow) {
 		window = aWindow;
 	}
 	
 	public void setWindowLocation(Point p) {
+		//window.setLocation(p);
 		window.setLocation(p);
 	}
 	
@@ -198,27 +211,42 @@ public abstract class PlugInWindow extends PlugIn {
 	public void setWindowSize(int width, int height) {
 		if (width != 0 && height != 0) {
 			window.setSize(width, height);
+			//panel.setSize(width, height);
 		} 
 	}
+	
+	/*
+	public void setPanel(JPanel p) {
+		panel = p;
+	}
+	*/
+	
+	
+	
+	
+	
+	
 	
 	/**Gets the window.
 	 * 
 	 * @return the window
 	 */
-	public JFrame getWindow() {
+	public JPanel getWindow() {//JFrame getWindow() {
 		return window;
 	}
 	
 	/**Gets the window listener.
 	 * @return the window listener
 	 * @see TextTrix#focusAllWindows(PlugIn)
-	 */
+	 *
 	public WindowAdapter getWindowAdapter() {
 		return winAdapter;
 	}
+	*/
 	
 	public Point getWindowLocation() {
 		return window.getLocation();
+		//return panel.getLocation();
 	}
 	
 	/**Gets the width of the plug-in's window.
@@ -227,6 +255,7 @@ public abstract class PlugInWindow extends PlugIn {
 	 */
 	public int getWindowWidth() {
 		return window.getWidth();
+		//return panel.getWidth();
 	}
 	
 	/**Getst the height of the plug-in's window.
@@ -235,7 +264,14 @@ public abstract class PlugInWindow extends PlugIn {
 	 */
 	public int getWindowHeight() {
 		return window.getHeight();
+		//return panel.getHeight();
 	}
+	
+	/*
+	public JPanel getPanel() {
+		return panel;
+	}
+	*/
 	
 	/** Mandates that the subclass calls another function to retrieve the default icon,
 	 * ensuring that the path is relative to the plug-in rather than to the class 

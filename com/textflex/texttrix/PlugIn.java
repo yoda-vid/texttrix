@@ -42,7 +42,7 @@ import java.util.jar.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.util.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 
 /** The abstract superclass for all plugins.
     Specifies the files and locations from which to load plugin resources
@@ -115,39 +115,39 @@ public abstract class PlugIn extends JComponent {
 	/**Stub method to add the window adapter that allows other classes to respond
 	 * to this plug in's windowing events.
 	 * @see PlugInWindow
-	 */
+	 *
 	public void addWindowAdapter() {
 	}
 	/**Stub method to add the component listener that allows other classes to respond
 	 * to this plug in's windowing events.
 	 * @see PlugInWindow
-	 */
+	 *
 	public void addWindowComponentListener() {
 	}
 	/**Stub method to activate the plug-in's window.
 	 * @see PlugInWindow
-	 */
+	 *
 	public void activateWindow() {
 	}
 	/**Stub method to check if the plug-in's window is visible.
 	 * @see PlugInWindow
-	 */
+	 *
 	public boolean isWindowVisible() {
 		return false;
 	}
 	/**Stub method to close the plug-in's window.
 	 * @see PlugInWindow
-	 */
+	 *
 	public void closeWindow() {
 	}
 	/**Stub method to remove the plug-in's window adapter.
 	 * @see PlugInWindow
-	 */
+	 *
 	public void removeWindowAdapter() {
 	}
 	/**Stub method to set the plug-in's window adapter.
 	 * @see PlugInWindow
-	 */
+	 *
 	public void setWindowAdapter(WindowAdapter adapter) {
 	}
 
@@ -156,7 +156,7 @@ public abstract class PlugIn extends JComponent {
 	 * 
 	 * @return <code>true</code> if the plug-in has just been flagged as 
 	 * activated
-	 */
+	 *
 	public boolean isTmpActivated() {
 		return tmpActivated;
 	}
@@ -167,7 +167,7 @@ public abstract class PlugIn extends JComponent {
 	 * @param b <code>true</code> indicates that the plug-in has just
 	 * been activated
 	 * @see TextTrix#focusAllWindows(PlugIn)
-	 */
+	 *
 	public void setTmpActivated(boolean b) {
 		if (tmpActivated = b) {
 			Thread runner = new Thread() {
@@ -184,6 +184,7 @@ public abstract class PlugIn extends JComponent {
 			runner.start();
 		}
 	}
+	*/
 
 	/** Runs the plugin on a given section of the text.
 	 * To use, must override or else the function will simply call <code>run(s)</code>.
@@ -255,6 +256,10 @@ public abstract class PlugIn extends JComponent {
 	*/
 	public void startPlugIn() {
 		runPlugIn();
+	}
+	
+	public void stopPlugIn() {
+		
 	}
 
 	/** Sets the plugin's path.
@@ -484,10 +489,11 @@ public abstract class PlugIn extends JComponent {
 	 * 
 	 * @return <code>null</code>
 	 * @see PlugInWindow
-	 */
+	 *
 	public WindowAdapter getWindowAdapter() {
 		return null;
 	}
+	*/
 
 	/**Stub method to set the plug-in's window size.
 	 * 
@@ -532,8 +538,12 @@ public abstract class PlugIn extends JComponent {
 	 * 
 	 * @param compListener the listener to keep track of window movements
 	 * @see PlugInWindow
-	 */
+	 *
 	public void setWindowComponentListener(ComponentListener compListener) {
+	}
+	*/
+	public JPanel getWindow() {
+		return null;
 	}
 
 }

@@ -46,6 +46,7 @@ Note: "./" is the "check-mark" symbol
 	-check for breakage of single thread rule
 -update JarAjar to allow for MacOS X integration
 -bookmarks, including bookmark groups
+-convert player "starter" field into numerical ranking system for depth charts
 
 ----Current Work----
 
@@ -55,13 +56,20 @@ v.0.3.6
 -fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
 -fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
 -fix search to not exceed the selection boundaries
+-fix search to re-highlight replaced word after "Find and Replace" operation
 -fix HTMLReplacer tool tip now that no longer need double undos
--have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure
+-streamline integrated windowing design
+	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
+	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
+	-check whether should remove plugInDiags dialog if remove plug-in; may need to remove in reloadPlugIns() since user may remove the plug-in jar file and add back, but the dialog would no longer correspond to reloaded plug-in; CHECKED: if plug-in dialog with same name already exists in the dialog array, the newly created dialog replaces the old one
+	-removed windows-together pref
 -tab entire regions
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -remember prefs panel position
 -adjust wrap-indent when user presses delete key or any of its shortcuts
+
+----Past Releases----
 
 v.0.3.5
 -auto-save
