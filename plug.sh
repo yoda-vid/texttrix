@@ -130,14 +130,7 @@ PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" #
 #####################
 # Build operations
 #####################
-# change to work directory and compile Text Trix classes
-cd "$BASE_DIR"
-if [ "$CYGWIN" = "true" ]
-then
-	"$JAVA"javac -source 1.4 "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
-else
-	"$JAVA"javac -source 1.4 "$TTX_DIR/$DIR/"*.java
-fi
+
 # change to plugins directory and compile and package each plugin;
 # list the directory names and their corresponding classes in the "for" line;
 # the jars must have the same name and caps as their classes
@@ -152,9 +145,9 @@ do
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
 	if [ "$CYGWIN" = "true" ]
 	then
-		"$JAVA"javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
+		"$JAVA"javac -source 1.4 -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
 	else
-		"$JAVA"javac -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
+		"$JAVA"javac -source 1.4 -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
 	fi
 	cd "$plugin_dir"
 	"$JAVA"jar -0cvf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
