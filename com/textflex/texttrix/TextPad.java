@@ -50,15 +50,15 @@ import java.io.*;
  * as well as trix for true text fun.
  */
 public class TextPad extends JTextPane implements StateEditable {
-	private File file;
-	private boolean changed = false;
-	private String path;
-	private UndoManager undoManager = new UndoManager();
-	private Hashtable actions;
-	private boolean autoIndent = false;
-	private int tabSize = 4; // default tab size
-	private InputMap imap = null;
-	private ActionMap amap = null;
+	private File file; // the file that the pad displays
+	private boolean changed = false; // flag that text changed
+	private String path; // file's path
+	private UndoManager undoManager = new UndoManager(); // undos
+	private Hashtable actions; // table of shortcut actions
+	private InputMap imap = null; // map of keyboard inputs
+	private ActionMap amap = null; // map of actions
+	private boolean autoIndent = false; // flag to auto-indent the text
+	private int tabSize = 4; // default tab display size
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -103,9 +103,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 		});
 		
-		//universalShortcuts();
-		//partialEmacsShortcuts();
-		//hybridKeybindings();
 		applyKeybindings(prefs);
 
 	}

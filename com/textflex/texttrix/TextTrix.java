@@ -58,7 +58,7 @@ public class TextTrix extends JFrame {
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
-	private static FileFilter allFilter = null;
+	private static FileFilter allFilter = null; // TODO: may be unnecessary
 	private static JCheckBoxMenuItem autoIndent = null;
 	private static String openDir = ""; // most recently path opened to
 	private static String saveDir = ""; // most recently path saved to
@@ -73,15 +73,15 @@ public class TextTrix extends JFrame {
 	private int[] tabIndexHistory = new int[10]; // records for back/forward
 	private int tabIndexHistoryIndex = 0; // index of next record
 	private boolean updateTabIndexHistory = true; // flag to update the record
-	private static Prefs prefs = null;
-	private static Action prefsOkayAction = null;
-	private static Action prefsApplyAction = null;
-	private static Action prefsCancelAction = null;
-	private static boolean updateFileHist = false;
-	private static JMenu fileMenu = new JMenu("File");
-	private static int fileHistStart = -1;
-	private MenuBarCreator menuBarCreator = null;
-	private FileHist fileHist = null;
+	private static Prefs prefs = null; // preferences
+	private static Action prefsOkayAction = null; // prefs action signaling to accept
+	private static Action prefsApplyAction = null; // prefs action signaling to immediately accept
+	private static Action prefsCancelAction = null; // prefs action to reject
+	private static boolean updateFileHist = false; // flag to update file history menu entries
+	private static JMenu fileMenu = new JMenu("File"); // file menu, which incl file history
+	private static int fileHistStart = -1; // starting position of file history in file menu
+	private MenuBarCreator menuBarCreator = null; // menu and tool bar worker thread
+	private FileHist fileHist = null; // file history
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least

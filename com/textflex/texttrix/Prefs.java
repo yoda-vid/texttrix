@@ -42,27 +42,47 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 
+/** Stores the user-preferences for Text Trix.
+ * Presents a display panel for users to pick from various options to customize
+ * their Text Trix experience.  The goal is to make the text tricky, but the text-making easy.
+ * 
+ * <p>The preferences utilize the Java preference scheme to store settings in a
+ * centralized, systematic location for each platform.  The settings can also be exported to 
+ * other systems for perpetual Text Trix fun.
+ * @author davit
+ */
 public class Prefs extends JFrame {
-	private JTabbedPane tabbedPane = new JTabbedPane();
+	
 	// houses and categorizes options
-	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class);
+	private JTabbedPane tabbedPane = new JTabbedPane();
 	// main prefs
+	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class);
+
+
+
+
+
 
 	/* Panel-specific prefs */
-	private Preferences internalPrefs = prefs.node("Internal");
+	private Preferences internalPrefs = prefs.node("Internal"); // panel-specific prefs holder
 	private static final String PREFS_WIDTH = "prefsWidth"; // panel width
 	private static final String PREFS_HEIGHT = "prefsHeight"; // panel height
 	private static final String PRGM_WIDTH = "prgmWidth"; // program width
 	private static final String PRGM_HEIGHT = "prgmHeight"; // program height
-	private static final String PRGM_X_LOC = "prgmXLoc";
 	// program horizontal location
-	private static final String PRGM_Y_LOC = "prgmYLoc";
+	private static final String PRGM_X_LOC = "prgmXLoc";
 	// program vertical location
-
+	private static final String PRGM_Y_LOC = "prgmYLoc";
+	
+	
+	
+	
+	
+	
+	
 	/* General preferences */
-	private Preferences generalPrefs = prefs.node("General");
-	//private JPanel generalPanel = null;
-	private static final int GENERAL_PANEL_INDEX = 0;
+	private Preferences generalPrefs = prefs.node("General"); // general prefs holder
+	private static final int GENERAL_PANEL_INDEX = 0; // tab position
 	private CreateGeneralPanel createGeneralPanel = new CreateGeneralPanel();
 
 	//	open tabs left last session
@@ -73,9 +93,10 @@ public class Prefs extends JFrame {
 
 	// file history
 	private static final String FILE_HIST_COUNT = "fileHistCount";
-	private JSpinner fileHistCountSpinner = null;
 	// input max num of files to remember
+	private JSpinner fileHistCountSpinner = null;
 	private SpinnerNumberModel fileHistCountMdl; // numerical input
+	// comma-delimited list of paths
 	private static final String FILE_HIST = "fileHist";
 
 	// auto-auto-indent
@@ -84,30 +105,49 @@ public class Prefs extends JFrame {
 	// comma-or-space-delimited, period-independent list of file extensions
 	private static final String AUTO_INDENT_EXT = "autoIndentExt";
 	private JTextField autoIndentExtFld = null; // input list
-
-	private Preferences shortsPrefs = prefs.node("Shorts");
-	private static final int SHORTS_PANEL_INDEX = 1;
+	
+	
+	
+	
+	
+	/* Shorts preferences--shortcuts */
+	private Preferences shortsPrefs = prefs.node("Shorts"); // shorts-specific prefs holder
+	private static final int SHORTS_PANEL_INDEX = 1; // tab index
 	private CreateShortsPanel createShortsPanel = new CreateShortsPanel();
-	private static final String KEYBINDINGS = "keybindings";
-	private static final String STD_KEYBINDINGS_MDL = "Standard";
+	
+	// keybinding models
+	private static final String KEYBINDINGS = "keybindings"; // model
+	private static final String STD_KEYBINDINGS_MDL = "Standard"; // standard style
+	// mix of standard and single line and character Emacs
 	private static final String HYBRID_KEYBINDINGS_MDL = "Hybrid";
+	// typical single key Emacs shortcuts
 	private static final String EMACS_KEYBINDINGS_MDL = "Emacs";
+	// array of models
 	private static final String[] KEYBINDINGS_MDLS =
 		{ STD_KEYBINDINGS_MDL, HYBRID_KEYBINDINGS_MDL, EMACS_KEYBINDINGS_MDL };
-	private JComboBox keybindingsCombo = null;
-
-	private Preferences plugInsPrefs = prefs.node("PlugIns");
-	private static final int PLUG_INS_PANEL_INDEX = 2;
+	private JComboBox keybindingsCombo = null; // combo box to select the model
+	
+	
+	
+	
+	
+	/* Plug-ins preferences */
+	private Preferences plugInsPrefs = prefs.node("PlugIns"); // plug-ins-specific prefs holder
+	private static final int PLUG_INS_PANEL_INDEX = 2; // tab index
 	private CreatePlugInsPanel createPlugInsPanel = new CreatePlugInsPanel();
+	
+	// include all plug-ins
 	private static final String ALL_PLUG_INS = "allPlugIns";
 	private JCheckBox allPlugInsChk = null;
-	private JList includePlugInsList = null;
-	private JList ignorePlugInsList = null;
-	private String[] plugInsList = null;
-	private String[] includes = null;
-	private String[] ignores = null;
-	private static final String INCLUDE_PLUG_INS = "includePlugIns";
-	private static final String IGNORE_PLUG_INS = "ignorePlugIns";
+	
+	// include only specific plug-ins
+	private JList includePlugInsList = null; // lists plug-ins to include...
+	private JList ignorePlugInsList = null; // ...to exclude
+	private String[] plugInsList = null; // master list of all plug-ins; must be updated externally
+	private String[] includes = null; // list of the plug-ins to include...
+	private String[] ignores = null; // ...to exclude
+	private static final String INCLUDE_PLUG_INS = "includePlugIns"; // includes
+	private static final String IGNORE_PLUG_INS = "ignorePlugIns"; // excludes
 
 	/** Constructs a preferences interface.
 	 * Loads its previous size settings.  Relies on the calling function to
@@ -214,28 +254,40 @@ public class Prefs extends JFrame {
 			0,
 			contentPane);
 	}
-
+	
+	/** Updates the plug-ins panel with the new list of plug-ins.
+	 * Re-creates the panel.  This list must be updated or else the panel will
+	 * have no idea which plug-ins are loaded.
+	 * @param list list of all loaded plug-ins, regardless of whether included
+	 * or ignored
+	 */
 	public void updatePlugInsPanel(String[] list) {
 		setPlugInsList(list);
 		updatePlugInsList(list);
 		createPlugInsPanel.start();
 	}
-
+	
+	/** Updates the list of plug-ins.
+	 * 
+	 * @param list list of all loaded plug-ins, regardless of whether included
+	 * or ignored
+	 */
 	private void updatePlugInsList(String[] list) {
-
 		includes = LibTTx.createArrayFromString(getIncludePlugIns());
 		ignores = LibTTx.createArrayFromString(getIgnorePlugIns());
 		String[] updatedIncludes = new String[list.length];
 		int updatedInclInd = 0;
 		String[] updatedIgnores = new String[list.length];
 		int updatedIgnInd = 0;
+		// runs through the list of loaded plug-ins and adds those previously
+		// ignored to the "ignores" list and adding all the rest to the "includes"
+		// list; any plug-ins previously in the lists but no longer loaded are not
+		// included in either list
 		for (int i = 0; i < list.length; i++) {
-			//System.out.print("list[" + i + "]: " + list[i] + "...");
 			if (LibTTx.inUnsortedList(list[i], ignores)) {
 				updatedIgnores[updatedIgnInd++] = list[i];
 			} else {
 				updatedIncludes[updatedInclInd++] = list[i];
-				//System.out.println("included");
 			}
 		}
 		includes = updatedIncludes;
@@ -254,7 +306,8 @@ public class Prefs extends JFrame {
 	}
 
 	/** Stores the program's internal preferences.
-	 * Does not store program size or location information.
+	 * Does not store program size or location information, but does store
+	 * the panel's size.
 	 *
 	 */
 	public void storeInternalPrefs() {
@@ -263,7 +316,7 @@ public class Prefs extends JFrame {
 	}
 
 	/** Stores the General preferences.
-	 * 
+	 * General preferences include settings that affect Text Trix as a whole.
 	 *
 	 */
 	public void storeGeneralPrefs() {
@@ -272,24 +325,38 @@ public class Prefs extends JFrame {
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
 	}
-
+	
+	/** Stores the Shorts preferences.
+	 * Shorts preferences are those referring to shortcuts settings.
+	 *
+	 */
 	public void storeShortsPrefs() {
 		shortsPrefs.put(
 			KEYBINDINGS,
 			(String) keybindingsCombo.getSelectedItem());
 	}
-
+	
+	/** Stores the PlugIns preferences.
+	 * Plug-ins preferences manage which plug-ins are loaded.
+	 *
+	 */
 	public void storePlugInsPrefs() {
 		plugInsPrefs.putBoolean(ALL_PLUG_INS, allPlugInsChk.isSelected());
 		plugInsPrefs.put(INCLUDE_PLUG_INS, getListAsString(includePlugInsList));
 		plugInsPrefs.put(IGNORE_PLUG_INS, getListAsString(ignorePlugInsList));
 	}
-
+	
+	/** Gets the contents of a <code>JList</code> as a comma-delimited string.
+	 * Many Text Trix preferences for multiple but an unknown number of settings.
+	 * @param list list with contents to be recorded as a <code>String</code>
+	 * @return the string
+	 */
 	public String getListAsString(JList list) {
 		String s = "";
 		DefaultListModel mdl = (DefaultListModel) list.getModel();
 		Object[] elts = mdl.toArray();
 		for (int i = 0; i < elts.length; i++) {
+			// add a comma only internally in the list
 			if (i == 0) {
 				s = (String) elts[i];
 			} else {
