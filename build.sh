@@ -127,13 +127,13 @@ do
 		echo "Set to compile and create plug-in packages"
 	fi
 done
+echo ""
 
+# Appends a file separator to end of Java compiler path if none there
 if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
 then
 	JAVA="$JAVA"/
 fi
-echo "Using the Java binary directory at [defaults to PATH]:"
-echo "$JAVA"
 
 # Source directories
 if [ "x$BASE_DIR" = "x" ] # empty string
@@ -157,6 +157,9 @@ DIR="com/textflex/texttrix" # src package structure
 #############
 # Compile Text Trix classes
 cd "$BASE_DIR" # change to work directory
+echo "Compiling the Text Trix program..."
+echo "Using the Java binary directory at [defaults to PATH]:"
+echo "$JAVA"
 if [ "$CYGWIN" = "true" ]
 then
 	"$JAVA"javac -source 1.4 "`cygpath -p -w $TTX_DIR/$DIR`"/*.java

@@ -156,12 +156,17 @@ echo "Packaging the files..."
 rm -rf $ALL
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
-cp -rf $TTX_DIR/com $TTX_DIR/readme.txt $TTX_DIR/readme-src.txt \
-	$TTX_DIR/todo.txt $TTX_DIR/changelog.txt \
-	$TTX_DIR/$DIR/license.txt $TTX_DIR/logo.ico $PKGDIR
+if [ -e "$TTX_DIR/readme.txt" ]
+then
+	cd "$TTX_DIR"
+else
+	cd "$BASE_DIR"
+fi
+cp -rf "$TTX_DIR"/com readme.txt readme-src.txt todo.txt changelog.txt \
+	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico "$BLD_DIR/$PKGDIR"
 
 # create the master package, which will eventually become the binary package
-cd $PKGDIR
+cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
 rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~
 # make files readable in all sorts of systems
@@ -173,10 +178,11 @@ cd $BLD_DIR
 cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
 mv texttrix $SRCPKGDIR # copy to source package
-cp $TTX_DIR/build.sh $TTX_DIR/plug.sh $TTX_DIR/pkg.sh \
-	$TTX_DIR/manifest-additions.mf \
-	$SRCPKGDIR/texttrix # copy scripts to source pkg
-cp $TTX_DIR/plugins/*.jar $PKGDIR/plugins # only want jars in binary package
+cd "$TTX_DIR"
+cp build.sh plug.sh pkg.sh manifest-additions.mf \
+	"$BLD_DIR/$SRCPKGDIR"/texttrix
+cp plugins/*.jar "$BLD_DIR/$PKGDIR"/plugins # only want jars in binary package
+cd "$BLD_DIR"
 cp -rf $PLGS_DIR $SRCPKGDIR/plugins
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 
