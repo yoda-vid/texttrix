@@ -259,7 +259,8 @@ public class TextPad extends JEditorPane {
 	}
 
 	public boolean isEmpty() {
-		return ((new StringTokenizer(getText())).hasMoreTokens()) ? false : true;
+		String text = getText();
+		return ((text == null) || !(new StringTokenizer(text)).hasMoreTokens()) ? true : false;
 	}
 	
 	/**Gets the index of the current word's first character.

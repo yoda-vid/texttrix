@@ -304,7 +304,81 @@ public class TextTrix extends JFrame {
 		setAction(nextTabAction, "Next tab", 'N', KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET,
 					InputEvent.CTRL_MASK));
 		viewMenu.add(nextTabAction);
+
+		viewMenu.addSeparator();
+
+		Action togglePlainViewAction = new AbstractAction("Toggle plain text view") {
+			public void actionPerformed(ActionEvent evt) {
+				int tab = tabbedPane.getSelectedIndex();
+				if (tab != -1) {
+					TextPad t = (TextPad)textAreas.get(tab);
+//					System.out.println(t.getText());
+					String text = t.getText();
+					t.setDocument(t.getEditorKit().createDefaultDocument());
+					t.setContentType("text/plain");
+					t.setText(text);
+					/*
+					if (t.isEmpty()) {
+						t.setContentType("text/plain");
+						t.setText(text);
+					}
+					/*
+					if (type.equals("text/plain")) {
+						try {
+							URL url = new URL("file:///home/the4th/test01.html"); //+ t.getPath());
+							System.out.println(url.toString());
+							System.out.println(t.getPath());
+							t.setPage(url);
+						} catch(IOException e) {
+							e.printStackTrace();
+						}
+					} else {
+						readText(t.getPath());
+					}
+					*/
+				}
+			}
+		};
+		viewMenu.add(togglePlainViewAction);
+
+		Action toggleHTMLViewAction = new AbstractAction("Toggle HTML view") {
+			public void actionPerformed(ActionEvent evt) {
+				int tab = tabbedPane.getSelectedIndex();
+				if (tab != -1) {
+					TextPad t = (TextPad)textAreas.get(tab);
+					String text = t.getText();
+					t.setDocument(t.getEditorKit().createDefaultDocument());
+					t.setContentType("text/html");
+					t.setText(text);
+					/*
+					if (t.isEmpty()) {
+						t.setContentType("text/plain");
+						t.setText(text);
+					}
+					*/
+				}
+			}
+		};
+		viewMenu.add(toggleHTMLViewAction);
 	
+		Action toggleRTFViewAction = new AbstractAction("Toggle RTF view") {
+			public void actionPerformed(ActionEvent evt) {
+				int tab = tabbedPane.getSelectedIndex();
+				if (tab != -1) {
+					TextPad t = (TextPad)textAreas.get(tab);
+					String text = t.getText();
+					t.setDocument(t.getEditorKit().createDefaultDocument());
+					t.setContentType("text/rtf");
+					t.setText(text);
+					if (t.isEmpty()) {
+						t.setDocument(t.getEditorKit().createDefaultDocument());
+						t.setContentType("text/plain");
+						t.setText(text);
+					}
+				}
+			}
+		};
+		viewMenu.add(toggleRTFViewAction);
 		/* Help menu items */
 
 		// about Text Trix, incl copyright notice and version number
