@@ -1,0 +1,134 @@
+changelog.txt
+
+Text Trix
+the text tinker
+Copyright (c) 2002-3, Text Flex
+http://textflex.com/texttrix
+
+(See todo.txt for a more detailed log of improvements and
+plans for future ones.)
+
+------------------------------
+v.0.3 Series: FEATure Series (FEATS)
+------------------------------
+
+---------------
+v.0.3.2 (2/28/03)
+Text Trix, the text tinkering editor, now has a plugin architecture to easily add new tools or trix.  Not everyone wants the same text manipulators; now they can pick and choose.  What's left is to build a repertoire of plugins.
+
+Text tinkering development had taken a break during the major football season to work on tXtFL (http://textflex.com/txtfl), a text-based football game.  The main impediment to Text Trix development had been getting over the plugin hump.
+
+Some big bugs in Text Trix on various platforms motivated developers to start making the big changes.  v.0.3.2 implements those changes and awaits feedback and inspiration for more.  In the meantime, the plugin architecture awaits contibutions for new tools and trix!
+
+New features include:
+-Plugin architecture to allow users to selet the particular tools and trix they want
+-Open multiple files at once
+-Open files from the command-line at startup
+-Carets now return approximately to their original location after using text tools or trix
+-Dialog windows with options when opening or saving to unpermitted files
+
+Bug fixes include:
+-Text tools now work consistently and in all tested platforms (691520)
+-The function to find whole words now finds them (699860)
+-Popup menus work, and do so consistently across tested platforms (696328)
+-Tabbed pane tool tips update to show the new file name after saving a file for the first time (699865)
+
+---------------
+v.0.3.1 (8/26/02)
+One might miss out on many trix if Text Trix lacked support for 
+colored text, different fonts, and images.  Let the situation remain 
+hypothetical, for Text Trix now offers HTML and RTF formatted 
+text viewing.  Now the editor just needs some trix.  As for tools, 
+Text Trix can tinker with the whole text or only selected text now, 
+and the auto-indent feature makes coding in Text Trix--such as 
+programming trix, for example?--more feasible.
+
+-HTML and RTF viewing, including conversion of plain text to 
+HTML-tagged text
+-Auto-indent, selectable for each text pad
+-Open/save as dialogs return to the current tab's working directory 
+or the last opened/saved as directory
+-Tab-cycling shortcut keys that work within text pads
+-HTML replacer additions: removes extraneous spaces and 
+replaces some common character entities, such as "&nbsp;"
+-Text pad popup menu, including copy/paste menu items
+-Various bug fixes
+
+---------------
+v.0.3.0 (7/23/02)
+The feature craze has begun!  With the beginnings of an HTML tag 
+replacer, a non-printing-character display, and a fully featured 
+find/replace tool, the "Trix" in Text Trix is bearing fruit.  A few 
+interface improvements round out the Basic User Graphics Series 
+(BUGS) and make way for the Feature Future of futuristic features.
+
+-rudimentary HTML tag replacer, removing all HTML-style tags 
+and replacing them with text representations where appropriate
+-find/replace function, including options to search for expressions 
+as separate words, ignore case, replace first/all, selection search, 
+and wrapped search
+-non-printing-character display, adding the displays into the text 
+explicitly
+-focuses on Text Pad immediately after start-up
+-cancelled save during window frame closure and in exiting save 
+dialogs prevent the exit
+-open/save boxes now attached to main Text Trix window
+-equivalency string tables in preparation for preferences feature
+
+------------------------------------
+v.0.1 Series: Basic User Graphics Series (BUGS)
+------------------------------------
+
+---------------
+v.0.1.5 (6/26/02)
+The basic user interface portion of Text Trix is nearing completion.
+This release focuses on large structural changes and text 
+tools.  Structural work prepares for the Txtrx command-
+line version of Text Trix and makes the code more extensible.  
+Features work centers on making the Extra Hard Return 
+Remover more efficient and less buggy while conferring the
+ability to remove " > "'s common in email replies.  Additionally, 
+word deletion is in place.
+
+-Extra Hard Return Remover additions and updates, including 
+inline message reply sign (eg " > ") and "<pre>" tag removal, 
+as well as more efficient processing
+-tool bar, icons, and extra menus, including their shortcuts
+-word delete, including Emacs keybindings for it and word
+movement
+-file-changed indicator update: no delay
+
+---------------
+v.0.1.4 (4/27/01)
+-modified-yet-unsaved files show a " *"
+-basic Emacs shortcut keys
+-can use tabs in hard return list
+-more reasonable tab size
+-checks whether all files are saved before exiting
+-Undo/Redo, including multiple ones
+-remembers last "Save" and "Open" paths
+-"Save" function in addition to "Save as..."
+-caret moves to beginning of document after opening it
+-bug fix: syncs tab index with arraylist index
+-added About and License menu items
+-switched file input to getResourceAsStream for possible
+applet use in future
+
+---------------
+v.0.1.3 (3/24/02)
+-file open and save as options
+-check for file modification when closing
+-enhanced superfluous hard return checK: now ignores spaces
+before dashes or asterisks when checking to allow listed
+items to have their own line
+
+---------------
+v.0.1.2 (3/16/02)
+-switched open source license from GPL to BSD
+-multiple text areas
+-tabbed pane for each new text area
+-menu bar, including accelerators
+
+------
+v.0.1.1
+-everthing's new!

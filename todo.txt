@@ -1,0 +1,174 @@
+todo.txt
+
+Text Trix
+the text tinker
+Copyright (c) 2002-3, Text Flex
+http://textflex.com/texttrix
+
+Note: "./" is the "check-mark" symbol
+
+;----Schedule----
+v.0.5 series: advanced interface
+-list last-opened files
+-automatically open files that were open during the last exit
+-re-consider whether save mechanism should check for re-naming new files by seeing if the file exists, as does now
+-move key bindings to separate fn so can call separately (?)
+-use Preferences API (?)
+-Java Web Start enabled
+-emacs key bindings option
+-printing
+-drag selected text
+-text area focus w/ each JTabbedPane switch
+-shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order
+-check on line-down and changed-file breaks
+-more sophisticated find/replace search
+-status bar, incl line count
+-set tab display size
+-check on lost I-bar after switching to HTML view
+-check on lack of shortcuts in MacOS X
+-feature to insert hard returns after a given number of characters
+-elim multiple spaces via Extra Returns Remover
+-allow shortcuts to work when the toolbar is in focus
+-check on shortcuts in HTML/RTF views
+
+v.0.3.2
+-update tab tooltip when rename ./
+-longer tool tip times; ADDED: used shared instance of ToolTipManager to extend delay time ./
+-check on HTML-view-induced freezing (eg use desc area from http://freshmeat.net/projects/texttrix); PROBABLE FIX: might be JRE display bug on test platform or platform OS bug ./
+-added rtf file filter in open/save dialog ./
+-broken selected text paragraph remover; PROBABLE FIX: Document functions seems to relieve the problem (see below) ./
+-check auto-indent when hard return from end of indented line; PROBABLE FIX: Document functions seems to relieve the problem (see below) ./
+-plug-in architecture for features; ADDED: JAR-based plugin model ./
+-word-determiner failure (see myweb/txtfl/downloads.html); FIX: index bugs in Tools.findWord ./
+-tools don't work in Windows systems; FIX: ever since the switch to JTextPane from JText Area, the setText() function seems to work on only a given line--using Document functions instead seems to relieve the problem ./
+-open multiple files at once ./
+-deleteNextChar keybinding ./
+-fix tabbed pane title updater to lessen size change when change Save asterisk symbol ./
+-check on inabilit to save by htting enter in save-as dialog box for new filenames; check on updating the tab title during such saves and also opening the first file; often have to save-as twice before actually save; check on getting "open" tab instead of "save" in Save As dialog sometimes; FIX: setMultiSelectionEnabled to false for save dialog ./
+-check restoring cursor when return to window--add window adapter feature to explicity bring back to original position; FIX: return to original cursor position or start of selected region ./
+-broken find/replace; FIX: word search bug ./
+-check on having to leave jar plugins uncompressed (-0 option); FIX: bug in JRE v.1.4 prevents PNG/GIF loading from compressed JARS; workaround by loading data into array and sending array to PNG constructor ./
+-allow popups to display in Windows systems; FIX: use mouseReleased() in addition to mousePressed() with isPopupTrigger() ./
+-check on non-functional shortcut keys after HTML view; NO LONGER REPRODUCIBLE ./
+-self-extractor to avoid launching from unextracted zip packages, which do not read the plugins; ADDED: Jar Ajar self-extractor now packages Text Trix ./
+-specify on command-line extra files to open at start (eventually want to have option to load files from last exit, too) ./
+-check before overwriting file; ADDED: file overwrite warning dialog ./
+-check file permissions before saving; ADDED: unpermitted-path dialog, with option to save to new path ./
+-close streams in catch statements
+
+v.0.3.1
+-convert HTML character entities and convert multiple spaces to single spaces in the HTML Replacer tool
+-auto-indent ./
+-open/save dialogs return to last opened/saved path for current tab ./
+-tab-switch shortcut keys; bug fix for closing tab when none exist; added View menu ./
+-option to only apply features to selected areas ./
+-enter key while in find dialog's pattern box starts search; while in replace box, start find and replace ./
+-fix findWord() to work for word at very end of text ./
+-wrap in findReplace() when at end of text ./
+-check find/replace repainting of text area; use getHighlighter().setVisible(true) ./
+-stricter rules for numbered list in extra hard return remover ./
+-plain/html/rtf viewer; switch to JTextPane (JEditorPane doesn't support word wrapping well) ./
+-look into StateEdit for viewer undo functionality (see "SwingBk," 11.2.7) ./
+-no longer have to invoke undo mutiple times with tools ./
+-use getSelectedPane() more ./
+-text pad popup menu ./
+-program icon ./
+
+v.0.3 series: features, features, features
+-rename file open in current session
+-improve program and toolbar icons
+
+v.0.1.6, aka v.0.3.0
+-rudimentary html replacer ./
+-find/replace, incl separate word, word-wrap, selected text, replace first, replace all, and ignore case ./
+-see if can add parent component to save and open dialogs ./
+-non-printing character display ./
+-prevent closure after clicking to close the window frame and selecting cancel ./
+-text area focus on start ./
+-equivalency string table loading for preferences suite (implement preferences in v.0.5 series) ./
+-change cancelled save on exit to also cancel the exit--try having fileSaveDialog return whether canceled ./
+-separate "Features descriptions" page in "Help" section ./
+-backup text before hard return removal in Txtrx ./
+
+v.0.1.5
+-create command-line version, including all appropriate text-goofing function ./
+-change email address refs to davit@users.sourceforge.net ./
+-eliminate the <pre> tags ./
+-split features into separate classes to make the features more portable ./
+-rename stripExtraHardReturns() to removeExtraHardReturns; somehow currently works w/ merely hardReturns call ./
+-word deletion--add as new action for portability ./
+-emacs word forward and backward keybindings ./
+-menu mnemonics ./
+-toolbar ./
+-toolbar icons (tmp), incl rollover change ./
+-allow people to use indents as lists ./
+-only append space while combining lines if line lacks one at end ./
+-check about expanding tabs when increase title size via " *"--always add 2-3 spaces to each title when showing w/o the " *" ./
+-check one character delay before showing change in title--prob TextPad flags change after TextTrix checks; try checking if editable and then assuming that key press changed text; shifted document listener to TextTrix; altered UpdateText() to shift title back to text-unchanged display and undo listener's changes for the DisplayFile() call ./
+-use canRead() and canWrite() in Txtrx ./
+-have Txtrx make backup files ./
+-check javax.swing.text.DefaultEditorKit source code about deleting text: look for more efficient way that TextPad uses for word deletion; use StringBuffer ./
+-squash spaces-indent hard return remover bug ./
+-fix tool bar movement gridbag bug ./
+-check button borders: create separate button, add action w/o border to it, and add button to tool bar containter?: initialized JButton w/ tool bar add and modified the button ./
+-strip out ">" from beginning of lines and check for paragraphs w/i them ./
+-add numbered-list preserver ./
+-check addExtension(String extension) (TextTrix.java) to see if fixes redundant file types file dialog display; add fileFilter only in TextTrix's constructor rather than each time call open/save dialog ./
+
+v.0.1.4
+-move variable declarations into constructor ./
+-add file save exit check: close each tab individually when exiting ./
+-add "Save" option: menu entry and option when closing changed TextPad ./
+-include tabs in ante-dash/asterisk check ./
+-adjust tab size ./
+-Bug: unsynchornized tab/TextPad association; created new tab but loads file into previous one and saves incorrect TextPad; occurred when maybe had blank tab that had been modified ./
+-about and license menu entries ./
+-remember file paths: add to tab title and recall for save options ./
+-cause the "about..." and "license" menu fns to call the openFile fn ./
+-correct license typos [./]
+-most recently saved/opened path entries ./
+-some emacs key bindings ./
+-remove "Select All" and "New" shortcuts ./
+-save option when close unsaved TextPad ./
+-changes-not-yet-saved indicator ./
+-add window adaptor to catch window frame close exits ./
+-switch TextPad path to file ./
+-new name holders for each new TextPad ./
+-fix Hard Return Remover String out-of-bounds exception ./
+
+---------------
+Current ideas
+See http://sourceforge.net/projects/texttrix
+
+;----Goofy features----
+-compl*i*metary spell-checker
+-Great Authors: faulkner, jd salinger
+-emoticon sprinkler
+-random word remover
+-opposite word replacer
+-description tagger: add a description to any given title
+-typing where cursor keeps changing position periodically
+-plays appropriate midi tunes on certain typed words
+-spring line: from given cursor click point, delete whatever text drag over--only to restore it if drag back to click point
+-"as you like it as you type it" (convert text while typing)
+
+;----Practical features
+-extra hard return remover ./
+-de-HTML: remove HTML tags
+-find and replace for multiple files
+-command-line for all practical functions
+-display escape codes in-text for all given ASCII/Unicode characters
+-editing in a single format
+-non-printing character display ./
+-select all shouldn't move display position
+
+;----Extension
+-Text Trixster-m: the txtrx command-line version; takes in files and a argument specifying which practical or goofy feature to use and spits out the modified file (and bak); compile w/ gcj for extra light-ness
+	-go file by file, applying all commands to each before moving to next--open files fewer times
+
+;----Coding possibilities
+-rename dispalyFile to readDocumentation
+-window size and position based on user's screen resolution
+-go back to original caret position after removing hard returns
+-switch to BorderLayout so can use moveable tool bar
+-check if should have parameters for class-level objects; may need to add to some methods

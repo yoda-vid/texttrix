@@ -968,16 +968,18 @@ public class TextTrix extends JFrame {
 	consistency with <code>readText</code>.
 	@param path read-only text file's path.  Can also display
 	non-read-only text files, but can't edit them.
+	@return true if the file displays, false if otherwise
      */
-    public void displayFile(String path) {
+    public boolean displayFile(String path) {
+	InputStream in = null;
+	BufferedReader reader = null;
 	try {
 	    // uses getResourceAsStream to ensure future usability as an applet
-	    InputStreamReader in 
-		= new InputStreamReader(TextTrix.class.
-					getResourceAsStream(path));
-	    BufferedReader reader = new BufferedReader(in);
+	    in = TextTrix.class.getResourceAsStream(path);
+	    // TODO: notify user if file doesn't exist
+	    if (in == null) return false;
+	    reader = new BufferedReader(new InputStreamReader(in));
 	    String text = readText(reader); // retrieve the text
-	    reader.close();
 	    addTextArea(textAreas, tabbedPane, new File(path));
 	    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 	    t.setEditable(false); // so appropriate for read-only
@@ -985,8 +987,14 @@ public class TextTrix extends JFrame {
 	    t.setChanged(false);
 	    updateTitle(textAreas, tabbedPane);
 	    t.setCaretPosition(0);
-	} catch(IOException exception) {
-	    exception.printStackTrace();
+	    return true;
+	} finally {
+	    try {
+		if (reader != null) reader.close();
+		if (in != null) in.close();
+	    } catch (IOException e) {
+		return false;
+	    }
 	}
     }
 	
@@ -1087,15 +1095,27 @@ public class TextTrix extends JFrame {
      */
     public String readText(String path) {
 	String text = "";
+	InputStream in = null;
+	BufferedReader reader = null;
 	try {
-	    InputStream in = TextTrix.class.getResourceAsStream(path);
-	    BufferedReader reader 
-		= new BufferedReader(new InputStreamReader(in));
+	    in = TextTrix.class.getResourceAsStream(path);
+	    // TODO: notify user if file doesn't exist
+	    if (in == null) return "";
+	    reader = new BufferedReader(new InputStreamReader(in));
 	    String line;
 	    while ((line = reader.readLine()) != null)
 		text = text + line + "\n";
 	} catch(IOException exception) {
-	    exception.printStackTrace();
+	    //	    exception.printStackTrace();
+	    return "";
+	} finally {
+	    try {
+		if (reader != null) reader.close();
+		if (in != null) in.close();
+	    } catch(IOException exception) {
+		//	    exception.printStackTrace();
+		return "";
+	    }
 	}
 	return text;
     }
