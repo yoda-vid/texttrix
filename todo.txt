@@ -50,6 +50,7 @@ v.0.3.6
 -auto-wrap-indent additions and fixes
 	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with SHIFT+TAB
 	-adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
+	-fix tab delete in Linux
 	-fix loss of auto-wrap-indent when applying search plug-in
 	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
 	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
@@ -72,6 +73,7 @@ v.0.3.6
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -stop auto-save thread when close file; FIXED: removing tab stops the timer
 -refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
+-drag-n-drop files to open them in Text Trix
 
 ----Past Releases----
 

@@ -1,0 +1,369 @@
+#!/bin/sh
+# ***** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
+#
+# The contents of this file are subject to the Mozilla Public License Version
+# 1.1 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+# http://www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an "AS IS" basis,
+# WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+# for the specific language governing rights and limitations under the
+# License.
+#
+# The Original Code is Text Trix code.
+#
+# The Initial Developer of the Original Code is
+# Text Flex.
+# Portions created by the Initial Developer are Copyright (C) 2003-4
+# the Initial Developer. All Rights Reserved.
+#
+# Contributor(s): David Young <dvd@textflex.com>
+#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the "GPL"), or
+# the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+#
+# ***** END LICENSE BLOCK *****
+
+##################
+# Overview Variables
+##################
+
+TTX_VER=0.3.6
+HELP="
+Builds the tXtFL football simulator, compiling according to the 
+specified graphical environment.  
+
+Syntax:
+      configure [--gui=motif|win] [--java=java-compiler-path] 
+		[--gcj=gcj-compiler-path] [--help] 
+(The command may need to be invoked with \"sh configure\", if
+the file \"configure\" does not have executable permissions.)
+
+Assumptions:
+	The compilation takes place in a Bash shell within a Un*x-based
+environment, even if the resulting executables will run in the Windows
+envrionemnt.
+
+Parameters:
+	--gcj=gcj-compiler-binaries-path: Specifies the path to gcj for 
+	compilation.  From here, strip and other tools can be found.
+	Alternatively, the GCJ_BIN_DIR variable in pkg.sh can be 
+	hand-edited to specify the path, which would override any 
+	command-line specification.  Note that some of these
+	variables are hard-coded deep within the script for specific
+	environments.
+	
+	--gui=win|motif: Specifies the graphical user interface.
+	If this script is run on Cygwin systems, this parameter is 
+	unnecessary.
+		
+		\"win\" for Linux-based cross-compilations windows-
+		based versions.
+		
+		\"motif\" for motif-based versions that will run on 
+		Linux and other Un*x systems.
+	
+	--help: Lends a hand by displaying yours truly.
+		
+	--java=java-compiler-binaries-path: Specifies the path to javac, 
+	jar, and other Java tools necessary for compilation.  
+	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	to specify the path, which would override any command-line 
+	specification.
+
+Copyright:
+	Copyright (c) 2003-4 Text Flex
+
+Last updated:
+	2004-07-27
+"
+
+
+echo "Greetings from your personal build configurator for the Text Trix "
+echo "text tinkerer.  Let's start configuring your build environment."
+
+##################
+# Prep the Makefile
+##################
+
+###############
+# User argument variables
+
+PAR_JAVA="--java"
+JAVA=""
+READ_JAVA=0
+
+PAR_PREFIX="--prefix"
+PREFIX=""
+READ_PREFIX=0
+
+################
+# Automatically detect the Cygwin environment
+
+echo -n "Detecting environment..."
+SYSTEM=`uname -s`
+CYGWIN="false"
+LINUX="false"
+if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
+then
+	CYGWIN="true"
+elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
+then
+	LINUX="true"
+fi
+echo "found $SYSTEM"
+
+##############
+# Respond to user arguments
+
+echo "Parsing user arguments..."
+READ_PARAMETER=0
+for arg in "$@"
+do
+	n=`expr index $arg "="`
+	n=`expr $n - 1`
+	
+	# reads arguments
+	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
+	then
+		echo "$HELP" | more
+		exit 0
+	elif [ `expr substr $arg 1 ${#PAR_JAVA}` \
+			= $PAR_JAVA \
+		-a ${#PAR_JAVA} -eq $n ] # Java path
+	then
+		READ_JAVA=1
+		READ_PARAMETER=1
+	elif [ `expr substr $arg 1 ${#PAR_PREFIX}` \
+			= $PAR_PREFIX \
+		-a ${#PAR_PREFIX} -eq $n ] # specify the graphical environment
+	then
+		READ_PREFIX=1
+		READ_PARAMETER=1
+	fi
+	
+	
+	n=`expr $n + 2`
+	# checks whether to read the option following an argument
+	if [ $READ_PARAMETER -eq 1 ]
+	then
+		if [ $READ_JAVA -eq 1 ]
+		then
+			JAVA=`expr substr $arg $n ${#arg}`
+			READ_JAVA=0
+			echo "...set to use $JAVA as the Java compiler path..."
+		elif [ $READ_PREFIX -eq 1 ]
+		then
+			PREFIX=`expr substr $arg $n ${#arg}`
+			echo "...set to use the $PREFIX prefix..."
+			READ_PREFIX=0
+		fi
+		READ_PARAMETER=0
+	fi
+done
+echo "...done"
+
+# Appends a file separator to end of Java compiler path if not empty
+# and no separator there
+if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+then
+	JAVA="$JAVA"/
+fi
+
+# Source directories
+if [ "x$BASE_DIR" = "x" ] # empty string
+then
+	if [ `expr index "$0" "/"` -eq 1 ]
+	then
+		BASE_DIR="$0"
+	else
+		BASE_DIR="$PWD/$0"
+	fi
+	BASE_DIR="${BASE_DIR%/texttrix/configure}" # assumes the script's name is plug.sh
+	BASE_DIR="${BASE_DIR%/.}"
+fi
+MAKEFILE="$PWD/Makefile"
+
+
+
+
+#############
+# Setup links
+cd "$BASE_DIR"
+
+#############
+# Create $MAKEFILE
+#############
+
+echo -n "Removing old Makefile..."
+rm -f $MAKEFILE
+echo "done"
+
+#############
+# Header documentation
+
+LICENSE="
+# ***** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
+#
+# The contents of this file are subject to the Mozilla Public License Version
+# 1.1 (the \"License\"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+# http://www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an \"AS IS\" basis,
+# WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+# for the specific language governing rights and limitations under the
+# License.
+#
+# The Original Code is Text Trix code.
+#
+# The Initial Developer of the Original Code is
+# Text Flex.
+# Portions created by the Initial Developer are Copyright (C) 2003-4
+# the Initial Developer. All Rights Reserved.
+#
+# Contributor(s): David Young <dvd@textflex.com>
+#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the \"GP\"), or
+# the GNU Lesser General Public License Version 2.1 or later (the \"LGPL\"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+#
+# ***** END LICENSE BLOCK *****
+
+"
+
+###########
+# Setup macros
+
+
+
+echo -n "Setting the Java compiler path to..."
+if [ -n "$JAVA" ]
+then
+	echo "$JAVA"
+else
+	echo '$PATH'
+fi
+
+
+# Common macros
+
+PKG_DIR="com/textflex/texttrix"
+srcFiles='SRC_FILES=$(wildcard $(BASE_DIR)/texttrix/$(PKG_DIR)/*.java)'
+targetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SRC_FILES))'
+
+ttxRule='texttrix: $(TARGET_FILES)'
+ttxClassRule='texttrix/$(PKG_DIR)/%.class: $(BASE_DIR)/texttrix/$(PKG_DIR)/%.java'
+ttxClassRule="$ttxClassRule""\n\t"'if [ ! -e texttrix/$(PKG_DIR) ]; then mkdir -p texttrix/$(PKG_DIR); fi'
+if [ $CYGWIN = true ]
+then
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.3 -sourcepath $(shell cygpath -wp $(BASE_DIR)/texttrix) -classpath $(shell cygpath -wp texttrix) $(shell cygpath -wp $?) -d $(shell cygpath -wp texttrix)'
+else
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.3 -sourcepath $(BASE_DIR)/texttrix -classpath texttrix $? -d texttrix'
+fi
+
+PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
+plgSrcFiles=""
+plgTargetFiles=""
+plgRules=""
+plgClassRules=""
+for plg in $PLGS
+do
+	plgDir=`echo "$plg" | tr "[:upper:]" "[:lower:]"`
+	plgVar=`echo "$plg" | tr "[:lower:]" "[:upper:]"`
+	
+	plgSrcFilesVar="$plgVar"_SRC_FILES
+	plgSrcFiles="$plgSrcFiles""\n$plgSrcFilesVar"'=$(wildcard $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/*.java)'
+	
+	plgTargetFilesVar="$plgVar"_TARGET_FILES
+	plgTargetFiles="$plgTargetFiles""\n$plgTargetFilesVar"'=$(patsubst $(BASE_DIR)/%.java,%.class,$('"$plgSrcFilesVar"'))'
+	
+	plgSrcpath='$(BASE_DIR)/texttrix:$(BASE_DIR)/plugins/'"$plgDir"
+	plgClasspath=texttrix:plugins/"$plgDir"
+	
+	plgRules="$plgRules""\n$plgDir"': texttrix $('"$plgTargetFilesVar"')'"\n"
+	
+	plgClassRules="$plgClassRules""\nplugins/$plgDir"'/$(PKG_DIR)/%.class: $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/%.java'
+	plgClassRules="$plgClassRules""\n\tif [ ! -e plugins/$plgDir/"'$(PKG_DIR) ]; then mkdir -p plugins/'"$plgDir"'/$(PKG_DIR); fi'
+	if [ $CYGWIN = true ]
+	then
+		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -wp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -wp '"$plgClasspath)'"' $(shell cygpath -wp $?) -d $(shell cygpath -wp plugins/'"$plgDir"')'
+	else
+		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath"' -classpath '"$plgSrcpath"' $? -d plugins/'"$plgDir"
+	fi
+	plgClassRules="$plgClassRules""\n"
+done
+# common macros collections
+COMMON_VARS="TTX_VER=$TTX_VER
+BASE_DIR=$BASE_DIR
+JAVAC="$JAVA"javac
+PKG_DIR=$PKG_DIR
+$srcFiles
+$targetFiles
+$plgSrcFiles
+$plgTargetFiles
+"
+
+# Clean-up rule
+
+clean_up='rm -f $(TARGET_FILES) $(APP_BIN) $(APP_DRAFT_BIN) $(APP_AR) $(APP_OBJ)'
+
+# Installation rules
+
+if [ x"$PREFIX" = x ]
+then
+	PREFIX='/usr/local/texttrix-$(TTX_VER)'
+fi
+install='if [ -d $(PREFIX) ]; then mkdir $(PREFIX)'
+install_java='mkdir $(PREFIX)/texttrix/$(PKG) $(PREFIX)/plugin; cp -f $(TARGET_FILES) $(PREFIX)/$(PKG)'
+install_java="$install_java""\n\t"'cp -f about.txt gpl.txt players savedGames teams com $(PREFIX)'
+
+# rules collection
+RULES=".PHONY: all
+
+install: instal_java
+
+$ttxRule
+
+$ttxClassRule
+
+$plgRules
+$plgClassRules
+
+all: texttrix $PLGS
+
+clean: 
+	$clean_up
+"
+
+echo -n "Creating Makefile..."
+echo -e "$LICENSE" >> $MAKEFILE
+echo -e "$COMMON_VARS" >> $MAKEFILE
+echo -e "$RULES" >> $MAKEFILE
+echo "done"
+echo ""
+echo "We're ready to create the Text Trix text tinkerer, compiled specially for
+your program!  To start the build, type \"make [target]\", where target is
+\"texttrix\" for the main writer, a plugin for each individual plugin, \"all\"
+to build everything, or other rules specified in Makefile."
+exit 0
