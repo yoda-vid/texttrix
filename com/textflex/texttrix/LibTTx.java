@@ -95,8 +95,9 @@ public class LibTTx {
 		    path = plugInDir.toString() 
 			+ sep + plugInList[i];
 		    String urlPath = "file://" + path;
-		    URL url = new URL(urlPath);
-		    //		    System.out.println(url.toString());
+		    //		    URL url = new URL(urlPath);
+		    URL url = new File(path).toURL();
+		    System.out.println(url.toString());
 		    loader = new URLClassLoader(new URL[] { url } );
 		    //		    System.out.println(url.toString());
 		} catch (MalformedURLException e) {}
@@ -114,6 +115,7 @@ public class LibTTx {
 	Object obj = null;
 	try {
 	    //	    Class cl = Class.forName(name);
+	    //	    System.out.println("name: " + name);
 	    Class cl = loader.loadClass(name);
 	    obj = cl.newInstance();
 	} catch (InstantiationException e) {
