@@ -108,20 +108,26 @@ public abstract class PlugIn extends JComponent {
 	}
 
 	/** Runs the plugin on a given section of the text.
-	@param s text to manipulate
-	@param selectionStart index of the first highlighted character
-	@param selectionEnd first index of the first unhighlighted character
-	*/
-	public abstract PlugInOutcome run(
-		String s,
-		int selectionStart,
-		int selectionEnd);
+	 * To use, must override or else the function will simply call <code>run(s)</code>.
+	 * @param s
+	 * @param selectionStart
+	 * @param selectionEnd
+	 * @return
+	 */
+	public PlugInOutcome run(String s, int selectionStart, int selectionEnd) {
+		return run(s);
+	}
+		
+	public abstract PlugInOutcome run(String s);
 
 	/** Runs the plugin over all the given text.
-	@param s text to manipulate
-	@param caretPosition caret position
+	 * To use, must override or else the function will simply call <code>run(s)</code>.
+	 * @param s text to manipulate
+	 * @param caretPosition caret position
 	*/
-	public abstract PlugInOutcome run(String s, int caretPosition);
+	public PlugInOutcome run(String s, int caretPosition) {
+		return run(s);
+	}
 
 	/** Invokes the primary action of the plug in.
 	Creates an event to notify listeners that the plug has now
@@ -344,5 +350,5 @@ public abstract class PlugIn extends JComponent {
 	public String getDetailedDescriptionPath() {
 		return detailedDescriptionPath;
 	}
-
+	
 }

@@ -59,6 +59,7 @@ v.0.3.4
 -programming src code file filter; ADDED: filter to accept java, cpp, and c files
 -fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts
 -close files from left to right; RFE: allows tab restoration to easily open files in the same order that they were at closing
+-clear default name when saving new file
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./

@@ -580,10 +580,12 @@ public class TextTrix extends JFrame {
 					// when "alwaysEntireText" b/c want to both get all of 
 					// the text and show its highlighted portion,
 					// rather than only getting that part of the text
+					System.out.println("I'm here");
 					outcome =
 						pl.getAlwaysEntireText()
 							? pl.run(text, start, end)
 							: pl.run(text, end);
+					System.out.println("I'm there");
 
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
@@ -604,7 +606,9 @@ public class TextTrix extends JFrame {
 				} else {
 					int len = end - start; // length of selected region
 					text = doc.getText(start, len); // only get the region
-					outcome = pl.run(text, start, end); // invoke the plugin
+					
+					// start and end only 
+					outcome = pl.run(text);//, start, end); // invoke the plugin
 
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
@@ -1952,7 +1956,7 @@ public class TextTrix extends JFrame {
 					}
 
 					if (menuBar != null) {
-						contentPane.remove(menuBar);
+						//contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");
 						//fileHistCount = 0;
 					}
@@ -2142,7 +2146,7 @@ public class TextTrix extends JFrame {
 						redoAction,
 						"Redo",
 						'R',
-						KeyStroke.getKeyStroke("ctrl R"));
+						KeyStroke.getKeyStroke("ctrl Y"));
 					editMenu.add(redoAction);
 
 					// Start Cut, Copy, Paste actions
@@ -2475,6 +2479,9 @@ public class TextTrix extends JFrame {
 					setupPlugins();
 
 					/* Place menus and other UI components */
+					// must add tool bar before set menu bar lest tool bar shortcuts 
+					// take precedence
+					contentPane.add(toolBar, BorderLayout.NORTH);
 
 					// add menu bar and menus
 					setJMenuBar(menuBar);
@@ -2485,7 +2492,6 @@ public class TextTrix extends JFrame {
 					menuBar.add(toolsMenu);
 					menuBar.add(helpMenu);
 
-					contentPane.add(toolBar, BorderLayout.NORTH);
 					//contentPane.invalidate();
 					//contentPane.validate();
 					//contentPane.repaint();
