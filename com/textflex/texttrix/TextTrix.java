@@ -611,7 +611,7 @@ public class TextTrix extends JFrame {
 						Thread runner = new Thread() {
 							public void run() {
 								try {
-									System.out.println("or here");
+//									System.out.println("or here");
 									Thread.sleep(100);
 									pl.setTmpActivated(false);
 								} catch(InterruptedException e) {
@@ -620,7 +620,7 @@ public class TextTrix extends JFrame {
 						};
 						runner.start();
 					} else {
-						System.out.println("here");
+//						System.out.println("here");
 						focusAllWindows(pl);
 					}
 				}
