@@ -105,27 +105,38 @@ public class Txtrx {
 			*/
 			
 			try {
-				BufferedReader reader =
-					new BufferedReader(new FileReader(path));
-				text = readFile(reader, path);
-				reader.close();
-				if (cmd == "v") {
-					System.out.println(text);
-				} else {
-					while (cmds != null) {
-						if (cmds.length() > 1) {
-							cmd = cmds.substring(0, 1);
-							text = applyCmd(cmd, text);
-							cmds = cmds.substring(1);
+				File file = new File(path);
+				if (file.canRead()) {
+					BufferedReader reader =
+						new BufferedReader(new FileReader(path));
+					text = readFile(reader, path);
+					reader.close();
+					if (cmd == "v") {
+						System.out.println(text);
+					} else {
+						while (cmds != null) {
+							if (cmds.length() > 1) {
+								cmd = cmds.substring(0, 1);
+								text = applyCmd(cmd, text);
+								cmds = cmds.substring(1);
+							} else {
+								text = applyCmd(cmds, text);
+								cmds = null;
+							}
+						}
+						
+						if (file.canWrite()) {
+							file.renameTo(new File(path + "~"));
+							writeFile(text, path);
+							if (verbose) 
+								System.out.println(text);
 						} else {
-							text = applyCmd(cmds, text);
-							cmds = null;
+							System.out.println(path + " cannot be modified");
 						}
 					}
-					writeFile(text, path);
-					if (verbose)
-						System.out.println(text);
-				}			
+				} else {
+					System.out.println(path + " is not readable");
+				}
 			} catch(IOException e) {
 				System.out.println(path + " is not a file");
 			}	

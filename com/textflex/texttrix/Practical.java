@@ -71,10 +71,10 @@ public class Practical {
 	
 		    // only catch dashes and asterisks after newline
 	    	while (dash != -1 && dash < singleReturn) {
-			dash = s.indexOf("-", dash + 1);
+				dash = s.indexOf("-", dash + 1);
 		    }
 	    	while (asterisk != -1 && asterisk < singleReturn) {
-			asterisk = s.indexOf("*", asterisk + 1);
+				asterisk = s.indexOf("*", asterisk + 1);
 		    }
 	
 		    // find all leading spaces
@@ -86,19 +86,24 @@ public class Practical {
 			    spaces++;
 			}
 
-			// skip "pre"-delimited sections
-		    if (startPre != -1 && startPre < singleReturn) {
+			// skip <pre>-delimited sections, removing only the <pre> tags
+		    if (startPre != -1 && 
+					(startPre < s.length() || startPre < singleReturn)) {
 				// go to the end of the "pre" section
 				if (endPre != -1) {
 		    		stripped = stripped 
-						+ s.substring(0, endPre + 6);
+						+ s.substring(0, startPre) 
+						+ s.substring(startPre + 5, endPre);
 			    	s = s.substring(endPre + 6);
 			    // if user forgets closing "pre" tag, goes to end
 				} else {
-		    		stripped = stripped + s;
+		    		stripped = stripped 
+						+ s.substring(0, startPre) 
+						+ s.substring(startPre + 5);
 		    		s = "";
 				}
-			// join singly-returned lines
+			// add the rest of the text if no more single returns exist.
+			// Also catches null strings
 	    	} else if (singleReturn == -1) {
 				stripped = stripped + s;
 				s = "";
@@ -121,8 +126,14 @@ public class Practical {
 				s = s.substring(singleReturn + 1);
 			// join the tail-end of the text
 		    } else {
-				stripped = stripped 
-		    		+ s.substring(0, singleReturn) + " ";
+				// don't add space if single return is at beginning of line
+				// or a space exists right before the single return.
+				if (singleReturn == 0 || s.charAt(singleReturn - 1) == ' ') {
+					stripped = stripped + s.substring(0, singleReturn);
+				// add space if none exists right before the single return
+				} else {
+					stripped = stripped + s.substring(0, singleReturn) + " ";
+				}
 				s = s.substring(singleReturn + 1);
 		    }
 		}	

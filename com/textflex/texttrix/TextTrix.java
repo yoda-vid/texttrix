@@ -538,9 +538,8 @@ public class TextTrix extends JFrame {
 					if (textPad.getChanged()) {
 						String title = tabbedPane.getTitleAt(i);
 						// convert to filename; -2 b/c added 2 spaces
-						title = title.substring(0, title.length() - 2);
 						if (!title.endsWith(" *"))
-							tabbedPane.setTitleAt(i, title + " *");
+							tabbedPane.setTitleAt(i, textPad.getName() + " *");
 					}
 				}
 			});
@@ -594,8 +593,7 @@ public class TextTrix extends JFrame {
 		    out.close();
 			t.setChanged(false);
 			t.setFile(path);
-			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-					t.getName());
+			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), t.getName());
 		} catch(IOException exception) {
 			exception.printStackTrace();
 		}
