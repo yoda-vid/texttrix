@@ -211,7 +211,7 @@ public abstract class PlugInWindow extends PlugIn {
 	
 	/**Gets the window listener.
 	 * @return the window listener
-	 * @see #TextTrix.focusAllWindows(PlugIn)
+	 * @see TextTrix#focusAllWindows(PlugIn)
 	 */
 	public WindowAdapter getWindowAdapter() {
 		return winAdapter;

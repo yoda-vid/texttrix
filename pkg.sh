@@ -166,7 +166,7 @@ cd $BLD_DIR
 cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
 mv texttrix $SRCPKGDIR # copy to source package
-cp $TTX_DIR/plug.sh $TTX_DIR/pkg.sh $TTX_DIR/pkg-jaj.sh \
+cp $TTX_DIR/plug.sh $TTX_DIR/pkg.sh \
 	$TTX_DIR/manifest-additions.mf \
 	$SRCPKGDIR/texttrix # copy scripts to source pkg
 cp $TTX_DIR/plugins/*.jar $PKGDIR/plugins # only want jars in binary package
@@ -204,6 +204,7 @@ cd $BLD_DIR
 cp $PKGDIR/$JAR $TTX_DIR
 zip -r $PKG $PKGDIR
 zip -r $SRCPKG $SRCPKGDIR
+echo ""
 if [ -d "$DEST" ]
 then
 	rm -rf $DEST/$PKGDIR*

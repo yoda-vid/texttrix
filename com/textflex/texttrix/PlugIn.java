@@ -166,7 +166,7 @@ public abstract class PlugIn extends JComponent {
 	 * 
 	 * @param b <code>true</code> indicates that the plug-in has just
 	 * been activated
-	 * @see #TextTrix.setTmpActivated(boolean)
+	 * @see TextTrix#focusAllWindows(PlugIn)
 	 */
 	public void setTmpActivated(boolean b) {
 		if (tmpActivated = b) {

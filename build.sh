@@ -35,7 +35,7 @@
 #
 # ***** END LICENSE BLOCK *****
 
-# Text Trix Plug-In Packager
+# Text Trix Builder
 
 HELP="
 Builds the Text Trix program and its packages.
@@ -151,8 +151,10 @@ DIR="com/textflex/texttrix" # src package structure
 #####################
 # Build operations
 #####################
-# change to work directory and compile Text Trix classes
-cd "$BASE_DIR"
+
+#############
+# Compile Text Trix classes
+cd "$BASE_DIR" # change to work directory
 if [ "$CYGWIN" = "true" ]
 then
 	"$JAVA"javac "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
@@ -164,7 +166,7 @@ fi
 # Plug-in building
 if [ "$PLUG" = "true" ]
 then
-	echo "Compiling the Text Trix program and its plug-ins..."
+	echo "Compiling and packaging plug-ins..."
 	sh $TTX_DIR/plug.sh -java "$JAVA" # build the plugins
 fi
 
@@ -172,8 +174,8 @@ fi
 # Packaging
 if [ "$PKG" = "true" ]
 then
-	echo "Compiling the Text Trix program and its plug-ins..."
-	sh $TTX_DIR/pkg.sh -java "$JAVA" # build the plugins
+	echo "Creating the Text Trix binary and source packages..."
+	sh $TTX_DIR/pkg.sh -java "$JAVA" # build the packages
 fi
 
 exit 0
