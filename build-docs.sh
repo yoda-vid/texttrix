@@ -42,15 +42,19 @@
 # User-defined variables
 # Check them!
 ######################
-JAVA="/usr/java/j2sdk1.4.2/bin"
-if [ "$OSTYPE" = "cygwin" ]
+JAVA="/usr/java/j2sdk1.5.0/bin"
+SYSTEM=`uname -a`
+CYGWIN="false"
+if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	JAVA="/cygdrive/c/j2sdk1.4.2/bin"
+	#JAVA="/cygdrive/c/j2sdk1.5.0/bin"
+	JAVA="/cygdrive/c/Program Files/Java/j2sdk1.5.0/bin"
+	CYGWIN="true"
 fi
 BASE_DIR=""
 if [ "x$BASE_DIR" = "x" ]
 then
-	if [ "${0:0:1}" = "/" ]
+	if [ `expr index "$0" "/"` -eq 1 ]
 	then
 		BASE_DIR="$0"
 	else
@@ -73,5 +77,12 @@ then
 	echo "in $0 to a different location."
 	exit 1
 fi
-cd $TTX_DIR
-$JAVA/javadoc -d $API_DIR -link "http://java.sun.com/j2se/1.4.2/docs/api" -overview "overview.html" "com.textflex.texttrix"
+cd "$TTX_DIR"
+if [ "$CYGWIN" = "true" ]
+then	
+	"$JAVA/javadoc" -d "`cygpath -p -w $API_DIR`" -link "http://java.sun.com/j2se/1.5.0/docs/api" -overview "overview.html" "com.textflex.texttrix"
+else
+	"$JAVA/javadoc" -d $API_DIR -link "http://java.sun.com/j2se/1.5.0/docs/api" -overview "overview.html" "com.textflex.texttrix"
+fi
+
+exit 0
