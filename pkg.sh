@@ -38,19 +38,38 @@
 # Text Trix packager
 
 ##############################
-# Variables to change for your particular setup
+# User-defined variables
+# Check them!
 ##############################
+
+# Compiler
+JAVA="/usr/java/j2sdk1.4.2/bin" # assuming compiler from J2SDK 1.4.2
+if [ "$OSTYPE" = "cygwin" ]
+then
+	JAVA="/cygdrive/c/j2sdk1.4.2/bin" # assuming comipler in C drive
+fi
+
+# Source directories
+BASE_DIR=""
+# Determine the base dir if not specified above
+if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
+then
+	if [ "${0:0:1}" = "/" ] # use script path if absolute
+	then
+		BASE_DIR="$0"
+	else # assume that script path is relative to current dir
+		BASE_DIR="$PWD/$0"
+	fi
+	BASE_DIR="${BASE_DIR%/texttrix/pkg.sh}" # set base dir to main Text Trix dir
+fi
+BLD_DIR="$BASE_DIR/build" # initial output directory
+TTX_DIR="$BASE_DIR/texttrix" # root directory of main Text Trix source files
+PLGS_DIR="$BASE_DIR/plugins" # root directory of Text Trix plug-in source files
 VER="0.3.4" # version info
-BASE_DIR="$HOME/src/TextTrix" # work directory; do NOT set to the folder containing texttrix-x.y.z-src!
-BLD_DIR="$BASE_DIR/build"
-TTX_DIR="$BASE_DIR/texttrix"
-PLGS_DIR="$BASE_DIR/plugins"
 DEST="/home/share" # final destination
-WIN_MOUNT="$BASE_DIR/pkg-winmount.sh" # script to copy files to a Windows partition
-JAVA="/usr/java/j2sdk1.4.2/bin"
 
 ##############################
-# Only change for tweaking
+# Build operations
 ##############################
 NAME="texttrix" # UNIX program name
 DIR="com/textflex/$NAME" # Java package directory structure
@@ -115,9 +134,13 @@ cd $BLD_DIR
 cp $PKGDIR/$JAR $TTX_DIR
 zip -r $PKG $PKGDIR
 zip -r $SRCPKG $SRCPKGDIR
-rm -rf $DEST/$PKGDIR*
-mv $ALL $DEST
-cd $DEST && ls -l $ALL
+if [ -d "$DEST" ]
+then
+	rm -rf $DEST/$PKGDIR*
+	mv $ALL $DEST
+	cd $DEST
+fi
+ls -l $ALL
 #sh $WIN_MOUNT
 
 exit 0

@@ -78,6 +78,7 @@ v.0.3.4
 -re-highlight selected text in Search plug-in; ADDED: if "Selected Area Only" option chosen in stats mode, will rehighlight; otherwise, removes highlighting to avoid giving the false impression that the stats are for the selected area only ./
 -tab history doesn't always follow most recent path; FIXED: when in middle of history and switch to tab not next in history, erases the history forward from that point to conform to browsers' behavior ./
 -when undo after auto-indent, have to undo all the indents; FIXED: subclassed UndoManager so can flag to ignore style changes, such as auto-indents ./
+-generalize the build scripts; ADDED: generalized plug.sh, pkg.sh, and build-docs.sh to work out-of-the-box except for possibly altering the compiler directory ./
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./

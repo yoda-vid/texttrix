@@ -38,11 +38,35 @@
 # Text Trix document builder
 # Copyright (c) 2003, Text Flex
 
-BASE_DIR="$HOME/src/TextTrix"
-TTX_DIR="$BASE_DIR/texttrix"
+######################
+# User-defined variables
+# Check them!
+######################
 JAVA="/usr/java/j2sdk1.4.2/bin"
+if [ "$OSTYPE" = "cygwin" ]
+then
+	JAVA="/cygdrive/c/j2sdk1.4.2/bin"
+fi
+BASE_DIR=""
+if [ "x$BASE_DIR" = "x" ]
+then
+	if [ "${0:0:1}" = "/" ]
+	then
+		BASE_DIR="$0"
+	else
+		BASE_DIR="$PWD/$0"
+	fi
+	BASE_DIR="${BASE_DIR%/texttrix/build-docs.sh}"
+fi
+TTX_DIR="$BASE_DIR/texttrix"
 API_DIR="$BASE_DIR/docs/api"
 
+
+
+
+###################
+# Build operations
+###################
 if [ ! -d "$API_DIR" ]
 then
 	echo "$API_DIR does not exist.  Please create it or set \"API_DIR\""

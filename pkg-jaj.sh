@@ -36,9 +36,9 @@
 # ***** END LICENSE BLOCK *****
 
 # Text Trix release packager
+
 # Uses the Jar Ajar packager to package Text Trix into a self-extracting
 # package.
-# Copyright (c) 2003, Text Flex
 
 ####################
 # Change for your particular setup
