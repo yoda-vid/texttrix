@@ -42,6 +42,7 @@ v.0.3.3
 	-plugin types to specify how to implement them; eg "run", "dialog", "listener"
 	-dialog types create a dialog object that TextTrix invokes on its text; ADDED: PlugIn now has two separate methods that TextTrix invokes: startPlugIn and runPlugIn; TextTrix calls startPlugIn when the user first presses the plug-in's button, which can in turn either immediately notify TextTrix to call runPlugIn or allow the plug-in to create its own dialog box to set options and a button to make the notification
 	-listener types create listeners that TextTrix attaches to given TextPad
+	-check whether to make PlugInEvent and similar classes public
 -plugin adaptor class to permit unimplemented methods
 -shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order; ADDED: "Back" and "Forward" buttons with an unlimited history
 

@@ -68,8 +68,8 @@ public class TextTrix extends JFrame {
     private JMenu toolsMenu = null; // tools plugins
     private JToolBar toolBar = null; // icons
     private int[] tabIndexHistory = new int[10]; // records for back/forward
-    private int tabIndexHistoryIndex = -1; // index of next record
-    private int currTabIndex = 0; // index of the current tab
+    private int tabIndexHistoryIndex = 0; // index of next record
+    //    private int currTabIndex = 0; // index of the current tab
     private boolean updateTabIndexHistory = true; // flag to update the record
 
     /** Constructs a new <code>TextTrix</code> frame and with
@@ -96,13 +96,17 @@ public class TextTrix extends JFrame {
 		    TextPad t = getSelectedTextPad();
 		    if (t != null) {
 			setAutoIndent(t.getAutoIndent());
-			// update the tab index record
+			// update the tab index record;
+			// addTabIndexHistory increments the record index;
+			// add the current tab selection now to ensure that
+			// all selections are recorded
 			if (updateTabIndexHistory) {
-			    addTabIndexHistory(currTabIndex);
+			    addTabIndexHistory(tabbedPane.getSelectedIndex());
+			    //			    addTabIndexHistory(currTabIndex);
 			}
 			// record the current tab to update the record
 			// after switching to a new one
-			currTabIndex = tabbedPane.getSelectedIndex();
+			//			currTabIndex = tabbedPane.getSelectedIndex();
 		    }
 		}
 	    });
@@ -390,8 +394,13 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 		    // switch back only up through the first record;
 		    // keep from recording the past selected tabs
-		    // as newly selected ones
-		    if (--tabIndexHistoryIndex >= 0) {
+		    // as newly selected one;
+		    // the current index always refers to the next
+		    // available position to add selections, while
+		    // the previous index refers to the current selection;
+		    // to go back, the value at two positions back must be 
+		    // checked
+		    if (--tabIndexHistoryIndex >= 1) {
 			//			&& tabIndexHistoryIndex < tabIndexHistory.length) {
 			// uncouple the tab index history while switching
 			// to the past tabs -- leave the tabs as a
@@ -399,7 +408,7 @@ public class TextTrix extends JFrame {
 			updateTabIndexHistory = false;
 			//			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + tabIndexHistory[tabIndexHistoryIndex]);
 			tabbedPane.setSelectedIndex(tabIndexHistory
-						    [tabIndexHistoryIndex]);
+						    [tabIndexHistoryIndex - 1]);
 			updateTabIndexHistory = true;
 		    } else { // reset the index to its orig val, -1
 			++tabIndexHistoryIndex;
@@ -419,7 +428,7 @@ public class TextTrix extends JFrame {
 		    // for that index;
 		    // keep from updating the history with past selections
 		    if (++tabIndexHistoryIndex < tabIndexHistory.length
-			&& (i = tabIndexHistory[tabIndexHistoryIndex]) != -1) {
+			&& (i = tabIndexHistory[tabIndexHistoryIndex - 1]) != -1) {
 			// uncouple the history, preserving it as a 
 			// trail of selections past and future from 
 			// the current position
@@ -1012,6 +1021,17 @@ public class TextTrix extends JFrame {
 	@see #removeTabIndexHistory(int)
     */
     public void addTabIndexHistory(int mostRecent) {
+	/* The current tabIndexHistoryIndex value refers to the next
+	   available element in the tabIndexHistory array in which to add
+	   tab selections.  Adding a tab selection places the tab index
+	   value into this element and increments tabIndexHistoryIndex so 
+	   that it continues to point to the next availabe position.
+	   "tabIndexHistoryIndex - 1" now refers to the current tab,
+	   while "tabIndexHistoryIndex - 2" refers to the last tab, the 
+	   one to return to while going "Back".  The "Back" method must
+	   therefore not only decrement tabIndexHistoryIndex, but also
+	   refer to the position preceding the new index.
+	*/
 	boolean repeat = true;
 	boolean shift = false;
 	/*
@@ -1020,7 +1040,7 @@ public class TextTrix extends JFrame {
 	    && tabIndexHistory[tabIndexHistoryIndex] != -1)
 	    ++tabIndexHistoryIndex;
 	*/
-	//	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
+	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
 	for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
 	    // shift the records as necessary to move a potential
 	    // duplicate to the front of the history
@@ -1048,6 +1068,9 @@ public class TextTrix extends JFrame {
 	    // increase the array size if necessary
 	    tabIndexHistory = (int[])LibTTx.growArray(tabIndexHistory);
 	    tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
+	    for (int i = tabIndexHistoryIndex + 1; 
+		 i < tabIndexHistory.length; i++)
+		tabIndexHistory[i] = -1;
 	    /*
 	    --tabIndexHistoryIndex;
 	    if (repeat) {
@@ -1061,17 +1084,14 @@ public class TextTrix extends JFrame {
 	    // otherwise, the 0 tab selection index duplicates
 	    tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
 	    /*
-	    for (int i = tabIndexHistoryIndex + 1; 
-		 i < tabIndexHistory.length; i++)
-		tabIndexHistory[i] = -1;
 	    */
 	}
-	/*
+
 	for (int i = 0; i < tabIndexHistory.length; i++) {
 	    System.out.print("tabIndexHistory[" + i + "]: " + tabIndexHistory[i] + "; ");
 	    System.out.println();
 	}
-	*/
+
 	tabIndexHistoryIndex++;
     }
 
