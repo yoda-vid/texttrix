@@ -930,8 +930,8 @@ public class TextTrix extends JFrame {
 					// positions when "alwaysEntireText" b/c want to both get
 					// all of the text and reshow its highlighted portion,
 					// rather than only getting the highlighted part
-					outcome = pl.getAlwaysEntireText() ? pl.run(text, start,
-							end) : pl.run(text, end);
+					outcome = pl.getAlwaysEntireText() 
+						? pl.run(text, start, end) : pl.run(text, end);
 
 					// if the plug-in flags that it has not changed the text,
 					// don't even try to do so

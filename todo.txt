@@ -71,13 +71,16 @@ v.0.3.6
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
 		-add summary field; ADDED: "Results: " label summarizes the find/replace findings
 		-option to search backward
+		-fix replace when Ignore Case unchecked; FIXED: stores selected text before exiting "if" b/c of false ignoreCase
 	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED (#1007490): removed obsolete advice
 	-ExtraReturnsRemover
 		-dialog interface; ADDED: similar layout as in Search plug-in
-		-make email markers optional; ADDED: check box option (pending testing)
+		-make email markers optional; ADDED: check box option
 		-configurable list markers; ADDED: comma-delimited list of markers that indicate a list item, such as "-", "*", or "[outline])" for outline-formatted lists, eg "IV)" or "a)"
-		-line length threshold; ADDED: configurable threshold to preserve short lines, as in some poetry (pending testing)
+		-line length threshold; ADDED: configurable threshold to preserve short lines, as in some poetry
+		-selected text; ADDED: an option in the dialog window rather than an assumption based on text selection
+		-results section to summarize removals; ADDED: results displays num chars removed, minus those added b/c of email markes
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
@@ -102,7 +105,7 @@ v.0.3.6
 -fix tab history from failing under certain extreme cases
 -bookmarks groups
 	-open all files in a group
-	-create separate dialog window listing all the files, where files can be added be dragging their tab into the box
+	-create separate dialog window listing all the files, where files can be added by dragging their tab into the box
 	-move to each tab by clicking on a file in the group dialog window
 -add forward and back icons
 -forward and back to previous edit positions

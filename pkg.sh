@@ -121,10 +121,13 @@ then
 	then
 		BASE_DIR="$0"
 	else # assume that script path is relative to current dir
-		BASE_DIR="$PWD/$0"
+		script="${0#./}"
+		BASE_DIR="$PWD/$script"
+	echo $BASE_DIR
 	fi
 	BASE_DIR="${BASE_DIR%/texttrix/pkg.sh}" # set base dir to main Text Trix dir
-	BASE_DIR="${BASE_DIR%/.}"
+	# BASE_DIR="${BASE_DIR%/.}"
+	echo $BASE_DIR
 fi
 BLD_DIR="$BASE_DIR/build" # initial output directory
 TTX_DIR="$BASE_DIR/texttrix" # root directory of main Text Trix source files
