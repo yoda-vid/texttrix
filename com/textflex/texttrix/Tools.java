@@ -314,10 +314,16 @@ public class Tools {
 				// unicode characters
 				} else if (c == '&' && n < len -1) {
 					n++;
-					if (startsWithAny(lowerCase, new String[] {"nbsp;"}, n)) {
+					if (startsWithAny(lowerCase, new String[] {"nbsp;", "#161;"}, n)) {
 						s.append(" ");
 					} else if (startsWithAny(lowerCase, new String[] {"#151;"}, n)) {
 						s.append("--");
+					} else if (startsWithAny(lowerCase, new String[] {"copy;", "#169;"}, n)) {
+						s.append("(c)");
+					} else if (startsWithAny(lowerCase, new String[] {"reg;", "#174;"}, n)) {
+						s.append("(R)");
+					} else if (startsWithAny(lowerCase, new String[] {"#153;"}, n)) {
+						s.append("TM");
 					}
 					int nToBe = -1;
 					// end - 1 so that n won't ever exceed end; n++ later

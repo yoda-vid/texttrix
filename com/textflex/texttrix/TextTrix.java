@@ -80,7 +80,11 @@ public class TextTrix extends JFrame {
 		tabSize = 4;
 */
 		// set minimized icon
-		setIconImage(Toolkit.getDefaultToolkit().getImage("images/minicon.png"));
+		ImageIcon im = makeIcon("images/minicon.png");
+		if (im !=null) 
+			setIconImage(im.getImage());
+//		setIconImage(Toolkit.getDefaultToolkit().getImage("images/minicon1.jpg"));
+//		setIconImage(new ImageIcon("images/minicon.jpg").getImage());
 		
 		// make first tab and text area
 		addTextArea(textAreas, tabbedPane, makeNewFile());
