@@ -215,6 +215,11 @@ public class TextPad extends JTextArea {
 		return file.getName();
 	}
 
+	public String getDir() {
+		String dir = "";
+		return ((dir = file.getParent()) != null) ? dir : "";
+	}
+
 	/**Sets the file to a file object.
 	 * @param aFile file to hold the text area's contents.
 	 */

@@ -63,7 +63,7 @@ public class TextTrix extends JFrame {
 	// most recently path opened to
 	private static String openPath = "";
 	// most recently path saved to
-	private static String savePath = "";
+//	private static String savePath = "";
 	// for giving each TextPad a unique name
 	private static int fileIndex = 0;
 	// find dialog
@@ -438,10 +438,11 @@ public class TextTrix extends JFrame {
 
 	/**Gets the last path for saving a file.
 	 * @return most recent path for saving a file
-	 */
+	 *
 	public static String getSavePath() {
 		return savePath;
 	}
+	*/
 
 	/**Gets the currently selected <code>TextPad</code>
 	 * @return <code>TextPad</code> whose tab is currently selected
@@ -470,10 +471,11 @@ public class TextTrix extends JFrame {
 	/**Sets the given path as the most recently one used
 	 * to save a file.
 	 * @param aSavePath path to set as last saved location.
-	 */
-	public static void setSavePath(String aSavePath) {
+	 *
+	public static void g(String aSavePath) {
 		savePath = aSavePath;
 	}
+	*/
 
 	public static void setAutoIndent(boolean b) {
 		autoIndent.setSelected(b);
@@ -793,13 +795,20 @@ public class TextTrix extends JFrame {
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public static boolean fileSaveDialog(JFrame owner) {
-		chooser.setCurrentDirectory(new File(savePath));
+		TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+		if (t.fileExists()) {
+//		chooser.setCurrentDirectory(new File(t.getDir()));
+			// save to file's current location
+			chooser.setSelectedFile(new File(t.getPath()));
+		} else {
+			chooser.setCurrentDirectory(new File(""));
+		}
 
     	int result = chooser.showSaveDialog(owner);
     	if (result == JFileChooser.APPROVE_OPTION) {
 			String path = chooser.getSelectedFile().getPath();
 			saveFile(path);
-			setSavePath(path);
+//			setSavePath(path);
 			return true;
 	    } else {
 			return false;
@@ -821,6 +830,8 @@ public class TextTrix extends JFrame {
 		}
 		
 		public void actionPerformed(ActionEvent evt) {
+			// File("") evidently brings file dialog to last path, 
+			// whether last saved or opened path
 	    	chooser.setCurrentDirectory(new File(openPath));
 
 	    	int result = chooser.showOpenDialog(owner);
