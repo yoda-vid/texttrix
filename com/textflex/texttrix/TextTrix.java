@@ -1271,8 +1271,17 @@ public class TextTrix extends JFrame {
     public static boolean saveFile(String path) {
 	//	System.out.println("printing");
 	TextPad t = getSelectedTextPad();
-	if (t != null) {
-	    try {
+	/*
+	File f = new File(path);
+	    if (!f.canWrite()) {
+		//		f.createNewFile();
+
+		System.out.println("path: " + path);
+	    }
+		//		return false;
+		*/
+	try {
+	    if (t != null) {
 		// open the stream to write to
 		PrintWriter out = new 
 		    PrintWriter(new FileWriter(path), true);
@@ -1284,11 +1293,11 @@ public class TextTrix extends JFrame {
 		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 				      t.getName() + "  ");
 		return true;
-	    } catch(IOException exception) {
-		exception.printStackTrace();
+	    } else {
 		return false;
 	    }
-	} else {
+	} catch(IOException exception) {
+	    //	    exception.printStackTrace();
 	    return false;
 	}
     }
@@ -1424,18 +1433,43 @@ public class TextTrix extends JFrame {
 		} else if (choice == 2) { // don't overwrite.
 		    return false;
 		} else { // write, even if overwriting
-		    saveFile(path);
-		    setSaveDir(chooser.getSelectedFile().getParent());
-		    tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
-						path);
-		    repeat = false;
+		    if (saveFile(path)) {
+			setSaveDir(chooser.getSelectedFile().getParent());
+			tabbedPane.setToolTipTextAt(tabbedPane
+						    .getSelectedIndex(), 
+						    path);
+			return true;
+		    } else {
+			String msg = path + " couldn't be written to "
+			    + "that location.\nWould you like to try "
+			    + "another directory or filename?";
+			String title = "Couldn't save";
+			repeat = yesNoDialog(owner, msg, title);
+		    }
 		}
 	    } else {
 		return false;
 	    }
 	} while (repeat);
-	return true;
+	return false;
     }
+
+    private static boolean yesNoDialog(JFrame owner, String msg, 
+				String title) {
+	int choice = JOptionPane
+	    .showConfirmDialog(owner,
+			       msg,
+			       title,
+			       JOptionPane.YES_NO_OPTION,
+			       JOptionPane.
+			       QUESTION_MESSAGE);
+	if (choice == JOptionPane.YES_OPTION) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
 
     /**Evokes a open file dialog, from which the user can
      * select a file to display in the currently selected tab's
@@ -1466,6 +1500,37 @@ public class TextTrix extends JFrame {
 	    TextPad t = getSelectedTextPad();
 	    // File("") evidently brings file dialog to last path, 
 	    // whether last saved or opened path
+
+	    /* getSelectedFiles() returns an array of length 0
+	       with the following sequence:
+	       -file opened
+	       -file saved via save chooser
+	       -same file opened by double-clicking
+
+	       In other words, a file just saved cannot be
+	       reopened.
+		   
+	       The problem does not appear when the chooser accept 
+	       button is chosen, a directory is changed before the file
+	       is chosen, or the name in the text input area is altered
+	       in any way.
+
+	       UPDATED: Workaround by calling 
+	       setMultiSelectionEnabled with 
+	       "true", "false", and "true" arguments in succession. 
+		       
+	       OLD: The workaround is to use getSelectedFile()
+	       if the array has length 0; 
+	       getSelectedFile() for some reason
+	       works though its multi-partner does not.
+	       The file-not-found dialogs refrain from specifying
+	       the chosen file name since it cannot be retrieved
+	       from chooser.getSelectedFile() in the situation
+	       where the array has length 0.
+	    */
+
+	    chooser.setMultiSelectionEnabled(true); 
+	    chooser.setMultiSelectionEnabled(false); 
 	    chooser.setMultiSelectionEnabled(true); 
 	    String dir = openDir;
 	    //	    System.out.println("Here");
@@ -1479,34 +1544,41 @@ public class TextTrix extends JFrame {
 	    // displays the dialog and opens all files selected
 	    boolean repeat = false;
 	    do {
+		//		System.out.println("multi: " + chooser.isMultiSelectionEnabled());
 		int result = chooser.showOpenDialog(owner);
 		if (result == JFileChooser.APPROVE_OPTION) {
-		    /* getSelectedFiles() returns an array of length 0
-		       with the following sequence:
-		       -file opened
-		       -file saved via save chooser
-		       -same file opened by double-clicking
-
-		       In other words, a file just saved cannot be
-		       reopened.
-		   
-		       The problem does not appear when the chooser accept 
-		       button is chosen, a directory is changed before the file
-		       is chosen, or the name in the text input area is altered
-		       in any way.
-		       
-		       The workaround is to use getSelectedFile()
-		       if the array has length 0; 
-		       getSelectedFile() for some reason
-		       works though its multi-partner does not.
-		       The file-not-found dialogs refrain from specifying
-		       the chosen file name since it cannot be retrieved
-		       from chooser.getSelectedFile() in the situation
-		       where the array has length 0.
-		    */
-		    String msg = "At least one chosen file wasn't "
-			+ "found.\nWould you like to try again?";
+		    //		    String msg = "At least one chosen file 
+		    String msg = "";
+		    String title = "Couldn't open";
 		    File[] files = chooser.getSelectedFiles();
+		    boolean allFound = true;
+		    //		    String[] unopenables = new String[files.length];
+		    //		    int unopenablesIndx = 0;
+		    for (int i = 0; i < files.length; i++) {
+			if (!openFile(files[i]))
+			    //			    unopenables[unopenablesIndex++] = files[i].getPath();
+			    //			    System.out.println(files[i].getPath());
+			//			    allFound = false;
+			    msg = msg + files[i] + "\n";
+		    }
+		    if (msg.equals("")) {
+			repeat = false;
+		    } else {
+			msg = "The following files couldn't be opened:\n"
+			    + msg + "Would you like to try again?";
+			/*
+			String msg = "";
+			for (int j = 0; j < unopenables.length; j++) {
+			    if (j == unopenables - 1) {
+				msg = msg + unopenables[j];
+			    } else {
+
+			String msg = unopenables + "wasn't
+			+ "found.\nWould you like to try again?";
+			*/
+			repeat = yesNoDialog(owner, msg, title);
+		    }
+		    /*
 		    if (files.length == 0) {
 			File f1 = chooser.getSelectedFile();
 			System.out.println(f1.getPath());
@@ -1515,7 +1587,7 @@ public class TextTrix extends JFrame {
 			    openFile(f1);
 			    repeat = false;
 			} else {
-			    repeat = fileNotFoundDialog(owner, msg);
+			    repeat = yesNoDialog(owner, msg, title);
 			}
 		    } else {
 			//		System.out.println("files: " + files.length + ", file: ");// + f1.exists());
@@ -1527,29 +1599,16 @@ public class TextTrix extends JFrame {
 			if (allFound) {
 			    repeat = false;
 			} else {
-			    repeat = fileNotFoundDialog(owner, msg);
+			    repeat = yesNoDialog(owner, msg, title);
 			}
 		    }
+		    */
 		} else {
 		    repeat = false;
 		}
 	    } while (repeat);
 	}
 
-	private boolean fileNotFoundDialog(JFrame owner, String msg) {
-	    int choice = JOptionPane
-		.showConfirmDialog(owner,
-				   msg,
-				   "File not found",
-				   JOptionPane.YES_NO_OPTION,
-				   JOptionPane.
-				   QUESTION_MESSAGE);
-	    if (choice == JOptionPane.YES_OPTION) {
-		return true;
-	    } else {
-		return false;
-	    }
-	}
     }
 	
     /**Responds to user input calling for a save dialog.
