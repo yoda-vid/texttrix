@@ -195,7 +195,7 @@ public class TextPad extends JTextPane implements StateEditable{
 	int charWidth = getFontMetrics(getFont()).charWidth(' ');
 	int tabWidth = charWidth * tabChars;
 
-	TabStop[] tabs = new TabStop[10];
+	TabStop[] tabs = new TabStop[30]; // just enough to fit default frame
 	for (int i = 0; i < tabs.length; i++) 
 	    tabs[i] = new TabStop((i + 1) * tabWidth);
 	TabSet tabSet = new TabSet(tabs);
