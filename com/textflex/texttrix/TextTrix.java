@@ -1271,17 +1271,13 @@ public class TextTrix extends JFrame {
     public static boolean saveFile(String path) {
 	//	System.out.println("printing");
 	TextPad t = getSelectedTextPad();
-	/*
-	File f = new File(path);
-	    if (!f.canWrite()) {
-		//		f.createNewFile();
-
-		System.out.println("path: " + path);
-	    }
-		//		return false;
-		*/
-	try {
-	    if (t != null) {
+	if (t != null) {
+	    try {
+		File f = new File(path);
+		if (f.canWrite())
+		    System.out.println("can write");
+		else 
+		    System.out.println("can't write");
 		// open the stream to write to
 		PrintWriter out = new 
 		    PrintWriter(new FileWriter(path), true);
