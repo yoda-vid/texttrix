@@ -266,7 +266,7 @@ public class TextTrix extends JFrame {
 	setAction(aboutAction, "About...", 'A');
 	helpMenu.add(aboutAction);
 
-	// shortcuts and goofy features description; opens new tab
+	// shortcuts description; opens new tab
 	Action shortcutsAction = new AbstractAction("Shortcuts") {
 		public void actionPerformed(ActionEvent evt) {
 			// reads from "shortcuts.txt" in same directory as this class
@@ -276,6 +276,17 @@ public class TextTrix extends JFrame {
 	};
 	setAction(shortcutsAction, "Shortcuts", 'S');
 	helpMenu.add(shortcutsAction);
+
+	// features descriptions; opens new tab
+	Action featuresAction = new AbstractAction("Features descriptions") {
+		public void actionPerformed(ActionEvent evt) {
+			// reads from "features.txt" in same directory as this class
+			String path = "features.txt";
+			displayFile(path);
+		}
+	};
+	setAction(featuresAction, "Features descriptions", 'F');
+	helpMenu.add(featuresAction);
 
 	// license; opens new tab
 	Action licenseAction = new AbstractAction("License") {

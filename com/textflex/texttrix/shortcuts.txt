@@ -26,19 +26,3 @@ Up line		Ctrl-p		-Emacs-style, but includes wrapped lines
 Down line	Ctrl-n		-Emacs-style, but includes wrapped lines
 Beg of line	Ctrl-a		-Emacs-sytle
 End of line	Ctrl-e		-Emacs-style
-
-
-Mistakers and Tools Notes
-------------------
-Extra Hard Return Remover:
--this is our first feature! (a practical one)
--removes all hard returns, except between multiply-spaced lines or in lists
--to write a list without losing its hard returns, keep all the
-elements in a given block single-spaced, and use dashes or asterisks
-at the start of each line after the first; note that indents with tabs are a-ok
--text enclosed in <pre></pre> tags will be preserved; each tag should 
-be placed on its own line and will be removed
--lines beginning with ">", such as those in email replies, will be 
-removed along with any spaces surrounding them; "---Original Message----"
-will be added before the region, and "-------------" will come afterward
--if necessary, undo the change through two Undo commands (Edit > Undo)
