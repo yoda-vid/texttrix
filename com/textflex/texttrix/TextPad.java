@@ -1,6 +1,6 @@
 /* TextPad.java
  * Text Trix
- * a goofy gui editor
+ * the text tinker
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
 
@@ -47,8 +47,8 @@ import javax.swing.Action.*;
 import java.io.*;
 
 /**The writing pad and text manipulator.
-   Consists of standard text editing methods
-   as well as special, silly ones for true text fun.
+ * Consists of practical text editing tools
+ * as well as trix for true text fun.
 */
 public class TextPad extends JTextPane implements StateEditable{
 	private File file;
@@ -56,24 +56,18 @@ public class TextPad extends JTextPane implements StateEditable{
 	private String path;
 	private UndoManager undoManager = new UndoManager();
 	private Hashtable actions;
-//	private Hashtable state;
-	private int tabSize = 0;
+//	private int tabSize = 0;
+	private boolean autoIndent = false;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
-	 * @param w width in text columns; only approximate
-	 * @param h height in text rows; only approximate
 	 * @param aFile file to which the <code>TextPad</code> will
 	 * save its text area contents
 	 */
-	public TextPad(int w, int h, File aFile) {
-//		super(w, h);
+	public TextPad(File aFile) {
 		file = aFile;
-		// to listen for keypad events
-		// to allow multiple undos
-		tabSize = 4;
-		applyDocumentSettings();
-//		setTabSize(4); // probably add to preferences later
+//		tabSize = 4; // set the displayed tab size; add to preferences in the future
+		applyDocumentSettings(); // to allow multiple undos and listen for events
 
 		// for new key-bindings
 		createActionTable(this);
@@ -143,8 +137,7 @@ public class TextPad extends JTextPane implements StateEditable{
 				if (event.isControlDown() && keyChar 
 					== KeyEvent.VK_BACK_SPACE) {
 					event.consume();
-				} else if (TextTrix.getAutoIndent() 
-					&& keyChar == KeyEvent.VK_ENTER) {
+				} else if (autoIndent && keyChar == KeyEvent.VK_ENTER) {
 					autoIndent();
 				}
 			}
@@ -162,6 +155,8 @@ public class TextPad extends JTextPane implements StateEditable{
 				// serialized objects of this class won't be compatible w/
 				// future releases
 				try {
+					// call getDocument() each time since document may change
+					// with call to viewPlain, viewHTML, or viewRTF
 					getDocument().remove(wordPos, getCaretPosition() - wordPos);
 					setCaretPosition(wordPos);
 				} catch(BadLocationException b) {
@@ -218,13 +213,26 @@ public class TextPad extends JTextPane implements StateEditable{
 		return file.getName();
 	}
 
+	/**Gets the path to the file's directory.
+	 * @return path to directory
+	 */
 	public String getDir() {
 		String dir = "";
 		return ((dir = file.getParent()) != null) ? dir : "";
 	}
 
+	/**Gets the current tab display size.
+	 * @return tab dispaly size
+	 *
 	public int getTabSize() {
 		return tabSize;
+	}
+*/
+	/**Gets the auto-indent selection.
+	 * @return <code>true</code> if auto-indent is selected.
+	 */
+	public boolean getAutoIndent() {
+		return autoIndent;
 	}
 
 	/**Sets the file to a file object.
@@ -241,6 +249,10 @@ public class TextPad extends JTextPane implements StateEditable{
 		file = new File(path);
 	}
 
+	/**Execute an edit, capture the state changes, and make the changes
+	 * undoable.
+	 * @param text text to edit
+	 */
 	public void setUndoableText(String text) {
 		StateEdit stateEdit = new StateEdit(this);
 		setText(text);
@@ -248,8 +260,18 @@ public class TextPad extends JTextPane implements StateEditable{
 		undoManager.addEdit((UndoableEdit)stateEdit);
 	}
 	
+	/**Set the tab display size.
+	 * @param size tab display size, in average character spaces
+	 *
 	public void setTabSize(int size) {
 		tabSize = size;
+	}
+*/
+	/**Sets the auto-indent selection.
+	 * @param b <code>true</code> to auto-indent
+	 */
+	public void setAutoIndent(boolean b) {
+		autoIndent = b;
 	}
 
 	/**Check whether the file has been created.
@@ -276,33 +298,45 @@ public class TextPad extends JTextPane implements StateEditable{
 			undoManager.redo();
 	}
 
+	/**Applies the current <code>UndoManager</code> as well as the tab size, 
+	 * if appropriate.
+	 */
 	public void applyDocumentSettings() {
 		Document doc = getDocument();
 		doc.addUndoableEditListener(undoManager);
+		/* no plain docs in JTextPane
 		if (doc.getClass() == PlainDocument.class) {
 			doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(tabSize));
-//			System.out.println("That's me");
 		}
+		*/
 	}
 
+	/**Tells whether the pad has any characters in it.
+	 * @return boolean <code>true</code> if the pad is empty
+	 */
 	public boolean isEmpty() {
 		String text = getText();
 		return ((text == null) || !(new StringTokenizer(text)).hasMoreTokens()) ? true : false;
 	}
 
+	/**Converts the pad to a plain text view.
+	 * Undoable.
+	 */
 	public void viewPlain() {
 		String text = getText();
 		StateEdit stateEdit = new StateEdit(this);
-		setEditorKit(createDefaultEditorKit());
+		setEditorKit(createDefaultEditorKit()); // revert to default editor kit
+		// use the default editor kit's <code>DefaultStyledDocument</code>
 		setDocument(getEditorKit().createDefaultDocument());
-//		setContentType("text/plain");
 		applyDocumentSettings();
 		setText(text);
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit)stateEdit);
-//		System.out.println(getContentType());
 	}
 
+	/**Converts the pad to an HTML text view.
+	 * The underlying text may have HTML tags added.
+	 */
 	public void viewHTML() {
 		String text = getText();
 		StateEdit stateEdit = new StateEdit(this);
@@ -314,6 +348,9 @@ public class TextPad extends JTextPane implements StateEditable{
 		undoManager.addEdit((UndoableEdit)stateEdit);
 	}
 
+	/**Converts the pad to an RTF tex view, if possible.
+	 * If the document is not in RTF format, the pad reverts to its original setting.
+	 */
 	public void viewRTF() {
 		String text = getText();
 		StateEdit stateEdit = new StateEdit(this);
@@ -325,12 +362,6 @@ public class TextPad extends JTextPane implements StateEditable{
 		undoManager.addEdit((UndoableEdit)stateEdit);
 		if (getText() == null) {
 			undo();
-			/*
-:			setDocument(getEditorKit().createDefaultDocument());
-			setContentType("text/plain");
-			applyDocumentSettings();
-			setText(text);
-			*/
 		}
 	}
 	
@@ -393,16 +424,18 @@ public class TextPad extends JTextPane implements StateEditable{
 		int tabs = 0;
 		String text = getText();
 		char c;
-		for (int n = getCaretPosition() - 2; 
-				n >= 0 && (c = text.charAt(n)) != '\n'; n--) {
+		// go back 2: one for the hard return, one to check the previous character
+		for (int n = getCaretPosition() - 2; n >= 0 && (c = text.charAt(n)) != '\n'; n--) {
 			if (c == '\t') {
 				tabs++;
 			}
 		}
+		// construct a string of all the tabs
 		StringBuffer tabStr = new StringBuffer(tabs);
 		for (int i = 0; i < tabs; i++) {
 			tabStr.append('\t');
 		}
+		// add the tabs
 		try {
 			getDocument().insertString(getCaretPosition(), tabStr.toString(), null);
 		} catch(BadLocationException e) {
@@ -430,54 +463,26 @@ public class TextPad extends JTextPane implements StateEditable{
 		return (Action)(actions.get(name));
 	}
 
+	/**Stores the editor kit and document during a state change.
+	 * Called at both the start and end of the state change for separate hashtables.
+	 * @param state table storing the object's current state
+	 */
 	public void storeState(Hashtable state) {
 		state.put("editorkit", getEditorKit());
-//		System.out.println("Stored:" + (String)state.get("contenttype"));
-/*
-		String text = getText();
-		if (text == null) 
-			text = "";
-		state.put("text", text);
-*/
-		// store the current document so can reapply undos later
-//		StyledDocument d = getStyledDocument();
-//		if (d != null) {
 		state.put("doc", getStyledDocument());
-//			System.out.println("doc init");
-//		}
-/*		Document d = (Document)state.get("doc");
-		String s = "";
-		try { s = d.getText(0, d.getLength()); } catch(BadLocationException e) {}
-		System.out.println("Stored:" + s);
-*/
 	}
 
+	/**Restores the editor kit and document from the table's stored settings.
+	 * Called from an undo event.
+	 * @param state tabled of stored settings
+	 */
 	public void restoreState(Hashtable state) {
 		EditorKit editorKit= (EditorKit)state.get("editorkit");
 		StyledDocument doc = (StyledDocument)state.get("doc");
-//		String text = (String)state.get("text");
-//		setDocument(getEditorKit().createDefaultDocument());
-		if (editorKit != null) {
+		if (editorKit != null) 
 			setEditorKit(editorKit);
-//			System.out.println("editor restor");
-		}
 		// set document after setting the editor kit so can apply the doc's settings
-		if (doc !=null) {
-//			System.out.println("doc restor");
+		if (doc !=null) 
 			setDocument(doc);
-		}
-		/*
-		if (text != null) 
-			setText(text);
-			*/
-//		applyDocumentSettings();
-/*			String s = "";
-			try { s = doc.getText(0, doc.getLength()); } catch(BadLocationException e) {}
-			System.out.println("Stored:" + s);
-		}
-		System.out.println("Restored:" + contentType);
-		if (doc == null) 
-			System.out.println("The doc's not with us");
-*/
 	}
 }

@@ -1,6 +1,6 @@
 Text Trix
-Meaningful Mistakes
-version 0.3.0
+the text tinker
+version 0.3.1
 Copyright (c) 2002, David Young
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix

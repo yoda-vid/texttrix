@@ -1,6 +1,6 @@
 /* Tools.java - the tool functions for Text Trix
  * Text Trix
- * Meaningful Mistakes
+ * the text tinker
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
  * 
@@ -139,7 +139,6 @@ public class Tools {
 					isNumber = ((potentialListPos != afterInlineReply) 
 						&& listDelimiters.indexOf(s.charAt(potentialListPos)) != -1) 
 						? true : false;
-//					System.out.println("potentialListPos: " + potentialListPos);
 					isLetterList = (Character.isLetter(s.charAt(afterInlineReply)) 
 						&& (potentialListPos = afterInlineReply + 1) < s.length()
 						&& listDelimiters.indexOf(s.charAt(potentialListPos)) != -1) 
@@ -154,7 +153,6 @@ public class Tools {
 			// skip <pre>-delimited sections, removing only the <pre> tags
 			// The <pre> tags should each be at the start of its own line.
 		    if (startPre == n && !ignorePre) {
-//					&& (startPre < s.length() || startPre < singleReturn)) {
 				// go to the end of the "pre" section
 				if (endPre != -1) {
 		    		stripped.append(s.substring(n + 6, endPre));
@@ -259,21 +257,19 @@ public class Tools {
 		int len = text.length();
 		StringBuffer s = new StringBuffer(len);
 		int n = start;
+		int orderedListIndex = -1;
 		char c = '\0';
-//		boolean textRegion = false;
 
 		// append text preceding the selection
-//		s.append(text.substring(0, n));
-		// add to the stringbuffer char by char, deleting and replacing 
+		// Add to the stringbuffer char by char, deleting and replacing 
 		// tags as appropriate
 		while (n < end) {
-//			System.out.println("n: " + n);
+			// eliminate each line's leading spaces
 			while (n < end && ((c = text.charAt(n)) == ' ' || c == '\t')) 
 				n++;
 			while (n < end && (c = text.charAt(n)) != '\n') {
 			// tags
 				if (c == '<' && n < len - 1) {
-//					textRegion = true;
 					n++;
 					// <p> tags
 					if (startsWithAny(lowerCase, new String[] {"p>", "p "}, n)) {
@@ -294,19 +290,28 @@ public class Tools {
 					} else if (startsWithAny(lowerCase, 
 								new String[] {"u>", "u ", "/u>", "/u >"}, n)) {
 						s.append("_");
+					// <ul> tages: set the list index to -1 for "false"
+					} else if (startsWithAny(lowerCase,
+								new String[] {"ul>", "ul "}, n)) {
+						orderedListIndex = -1;
+					// <ol> tags: reset the list index to 1
+					} else if (startsWithAny(lowerCase,
+								new String[] {"ol>", "ol "}, n)) {
+						orderedListIndex = 1;
+					// <li> tags: add "-" for unordered lists, the current index for ordered lists
+					} else if (startsWithAny(lowerCase,
+								new String[] {"li>", "li "}, n)) {
+						if (orderedListIndex == -1) {
+							s.append("\n\t-");
+						} else {
+							s.append("\n\t" + orderedListIndex++ + ". ");
+						}
 					// any other closing tag
 					} else if (startsWithAny(lowerCase, new String[] {"/"}, n)) {
 					}
 					int nToBe = -1;
-					n = ((nToBe = lowerCase.indexOf('>', n)) != -1) ? nToBe : end;
-				/*
-				} else if (c == ' ') {
-					s.append(c);
-					while (++n < len && (c = text.charAt(n)) == ' ')
-						;
-					if (n < len) 
-						s.append(c);
-				*/
+					n = ((nToBe = lowerCase.indexOf('>', n)) != -1) ? nToBe : end - 1;
+				// unicode characters
 				} else if (c == '&' && n < len -1) {
 					n++;
 					if (startsWithAny(lowerCase, new String[] {"nbsp;"}, n)) {
@@ -316,7 +321,7 @@ public class Tools {
 					}
 					int nToBe = -1;
 					// end - 1 so that n won't ever exceed end; n++ later
-					n = ((nToBe = lowerCase.indexOf(';', n)) != -1) ? nToBe : end;
+					n = ((nToBe = lowerCase.indexOf(';', n)) != -1) ? nToBe : end -1 ;
 				// skip over hard returns and tabs
 				} else if (c == '\n' || c == '\t') {
 				// add non-tag, non hard return/tab chars
@@ -324,8 +329,8 @@ public class Tools {
 					s.append(c);
 				}
 				n++;
-//				System.out.println("n: " + n + ", text so far: " + s.toString());
 			}
+			// ensures that end on next character
 			if (n < end)
 				n++;
 		}
@@ -337,7 +342,6 @@ public class Tools {
 		for (int i = 0; i < taglessLen; i++) {
 			s.append(c = taglessText.charAt(i));
 			if (c == ' ') {
-//				System.out.println(taglessLen + "," + i);
 				while (i < taglessLen - 1 && (c = taglessText.charAt(i + 1)) == ' ')
 					i++;
 			}
@@ -623,7 +627,6 @@ public class Tools {
 			return text;
 		// replace first occurrence only
 		} else {
-//			System.out.println("I'm here");
 			int quarryLoc = -1;
 			// stay within given boundary
 			if (n < end) {
@@ -637,8 +640,6 @@ public class Tools {
 			// if not found and wrap is enabled, continue from beginning of text
 			if (quarryLoc == -1 && wrap) {
 				text = findReplace(text, quarry, replacement, 0, start - 1, word, all, false, ignoreCase);
-				
-//				System.out.println("didn't find; now wrapping");
 			}
 			return text;
 		}

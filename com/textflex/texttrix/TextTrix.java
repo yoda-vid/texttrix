@@ -1,6 +1,6 @@
 /* TextTrix.java
  * Text Trix
- * Meaningful Mistakes
+ * the text tinker
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
 
@@ -58,6 +58,7 @@ public class TextTrix extends JFrame {
 */
 	private static JTabbedPane tabbedPane
 		= new JTabbedPane(JTabbedPane.TOP); // tabbed window for multiple TextPads
+	private static JPopupMenu popup = new JPopupMenu(); // make popup menu
 	private static JFileChooser chooser = new JFileChooser(); // file open/save dialog
 	private static JCheckBoxMenuItem autoIndent 
 		= new JCheckBoxMenuItem("Auto-indent"); // auto-indent
@@ -65,9 +66,7 @@ public class TextTrix extends JFrame {
 	private static String saveDir = ""; // most recently path saved to
 	private static int fileIndex = 0; // for giving each TextPad a unique name
 	private static FindDialog findDialog; // find dialog
-//	private static JComboBox urlBox;
-//	private static int historySize = 0;
-	private static int tabSize = 0; // user-defined tab display size
+//	private static int tabSize = 0; // user-defined tab display size
 
 	/**Constructs a new <code>TextTrix</code> frame and starting 
 	 * <code>TextPad</code>.
@@ -77,11 +76,24 @@ public class TextTrix extends JFrame {
 		// pre-set window size; may change to adjust to user's screen size
 		setSize(500, 600);
 
-		// set default tab size
+/*		// set default tab size
 		tabSize = 4;
-
+*/
+		// set minimized icon
+		setIconImage(Toolkit.getDefaultToolkit().getImage("images/minicon.png"));
+		
 		// make first tab and text area
 		addTextArea(textAreas, tabbedPane, makeNewFile());
+
+		// adds a change listener to listen for tab switches and display
+		// the options of the tab's TextPad
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				TextPad t = getSelectedTextPad();
+				if (t != null) 
+					setAutoIndent(t.getAutoIndent());
+			}
+		});
 		
 /* working to focus on the text pane after switching tabs and creating new ones
 		tabbedPane.addChangeListener(new ChangeListener() {
@@ -116,6 +128,8 @@ public class TextTrix extends JFrame {
 
 		// make tool bar
 		JToolBar toolBar = new JToolBar("Functions and features");
+		toolBar.addMouseListener(new PopupListener());
+
 
 		/* File menu items */
 
@@ -250,6 +264,7 @@ public class TextTrix extends JFrame {
 		setAction(cutAction, "Cut", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_X,
 							      InputEvent.CTRL_MASK));
 		editMenu.add(cutAction);
+		popup.add(cutAction);
 
 		// (ctrl-c) copy
 		Action copyAction = new AbstractAction("Copy") {
@@ -260,6 +275,7 @@ public class TextTrix extends JFrame {
 		setAction(copyAction, "Copy", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_C,
 							       InputEvent.CTRL_MASK));
 		editMenu.add(copyAction);
+		popup.add(copyAction);
 
 		// (ctrl-v) paste
 		Action pasteAction = new AbstractAction("Paste") {
@@ -270,6 +286,7 @@ public class TextTrix extends JFrame {
 		setAction(pasteAction, "Paste", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_V,
 								InputEvent.CTRL_MASK));
 		editMenu.add(pasteAction);
+		popup.add(pasteAction);
 
 		// Start selection items
 		editMenu.addSeparator();
@@ -283,6 +300,7 @@ public class TextTrix extends JFrame {
 		setAction(selectAllAction, "Select all", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_L,
 					InputEvent.CTRL_MASK));
 		editMenu.add(selectAllAction);
+		popup.add(selectAllAction);
 
 		// edit menu preferences separator
 		editMenu.addSeparator();
@@ -292,11 +310,20 @@ public class TextTrix extends JFrame {
 		editMenu.add(optionsMenu);
 
 		// auto-indent
+		// apply the selection to the current TextPad
+		autoIndent.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent evt) {
+				TextPad t = getSelectedTextPad();
+				if (t != null) 
+					t.setAutoIndent(autoIndent.isSelected());
+			}
+		});
 		optionsMenu.add(autoIndent);
 		
 		/* View menu items */
-		
-		Action prevTabAction = new AbstractAction("Previous tab") {
+	
+		// (ctrl-[) switch to the preceding tab
+		Action prevTabAction = new AbstractAction("Preceeding tab") {
 			public void actionPerformed(ActionEvent evt) {
 				int tab = tabbedPane.getSelectedIndex();
 				if (tab > 0) {
@@ -306,10 +333,11 @@ public class TextTrix extends JFrame {
 				}
 			}
 		};
-		setAction(prevTabAction, "Previous tab", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET,
-					InputEvent.CTRL_MASK));
+		setAction(prevTabAction, "Preeceding tab", 'P', 
+				KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, InputEvent.CTRL_MASK));
 		viewMenu.add(prevTabAction);
 
+		// (ctrl-]) switch to the next tab
 		Action nextTabAction = new AbstractAction("Next tab") {
 			public void actionPerformed(ActionEvent evt) {
 				int tab = tabbedPane.getSelectedIndex();
@@ -320,8 +348,8 @@ public class TextTrix extends JFrame {
 				}
 			}
 		};
-		setAction(nextTabAction, "Next tab", 'N', KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET,
-					InputEvent.CTRL_MASK));
+		setAction(nextTabAction, "Next tab", 'N', 
+				KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, InputEvent.CTRL_MASK));
 		viewMenu.add(nextTabAction);
 
 		viewMenu.addSeparator();
@@ -330,26 +358,6 @@ public class TextTrix extends JFrame {
 		Action togglePlainViewAction = new AbstractAction("Toggle plain text view") {
 			public void actionPerformed(ActionEvent evt) {
 				viewPlain();
-					/*
-					if (t.isEmpty()) {
-						t.setContentType("text/plain");
-						t.setText(text);
-					}
-					/*
-					if (type.equals("text/plain")) {
-						try {
-							URL url = new URL("file:///home/the4th/test01.html"); //+ t.getPath());
-							System.out.println(url.toString());
-							System.out.println(t.getPath());
-							t.setPage(url);
-						} catch(IOException e) {
-							e.printStackTrace();
-						}
-					} else {
-						readText(t.getPath());
-					}
-					*/
-				
 			}
 		};
 		viewMenu.add(togglePlainViewAction);
@@ -357,21 +365,7 @@ public class TextTrix extends JFrame {
 		// view as HTML formatted text
 		Action toggleHTMLViewAction = new AbstractAction("Toggle HTML view") {
 			public void actionPerformed(ActionEvent evt) {
-				int tab = tabbedPane.getSelectedIndex();
-				if (tab != -1) {
-					viewHTML();
-					/*
-					TextPad t = (TextPad)textAreas.get(tab);
-					if (!t.getContentType().equals("text/html")) {
-						t.viewHTML();
-						reinitializeTextPadDocumentSettings();
-					}
-					if (t.isEmpty()) {
-						t.setContentType("text/plain");
-						t.setText(text);
-					}
-					*/
-				}
+				viewHTML();
 			}
 		};
 		viewMenu.add(toggleHTMLViewAction);
@@ -379,18 +373,7 @@ public class TextTrix extends JFrame {
 		// view as RTF formatted text
 		Action toggleRTFViewAction = new AbstractAction("Toggle RTF view") {
 			public void actionPerformed(ActionEvent evt) {
-				int tab = tabbedPane.getSelectedIndex();
-				if (tab != -1) {
-					viewRTF();
-					/*
-					TextPad t = (TextPad)textAreas.get(tab);
-					if (!t.getContentType().equals("text/rtf")) {
-						t.viewRTF();
-						reinitializeTextPadDocumentSettings();
-					}
-				
-					*/
-				}
+				viewRTF();
 			}
 		};
 		viewMenu.add(toggleRTFViewAction);
@@ -444,7 +427,8 @@ public class TextTrix extends JFrame {
 		helpMenu.add(licenseAction);
 	
 		// (ctrl-shift-F) find and replace Tools feature
-		Action findAction = new AbstractAction("Find and replace", makeIcon("images/find-16x16.png")) {
+		Action findAction = new AbstractAction("Find and replace", 
+				makeIcon("images/find-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				if (findDialog == null) 
 					findDialog = new FindDialog(TextTrix.this);
@@ -476,13 +460,11 @@ public class TextTrix extends JFrame {
 					int end = 0;
 					if ((start = t.getSelectionStart()) 
 							== (end = t.getSelectionEnd())) {
-//					System.out.println(start + "," + end);
 						// may need to add original text to history buffer
 						// before making the change
 						t.setUndoableText(Tools.
 								removeExtraHardReturns(text, 0, text.length()));
 					} else {
-//					System.out.println(start + "," + end);
 						t.setUndoableText(Tools.removeExtraHardReturns(text, start, end));
 					}
 				}
@@ -510,13 +492,11 @@ public class TextTrix extends JFrame {
 					int end = 0;
 					if ((start = t.getSelectionStart()) 
 							== (end = t.getSelectionEnd())) {
-//					System.out.println(start + "," + end);
 						// may need to add original text to history buffer
 						// before making the change
 						t.setUndoableText(Tools.
 								showNonPrintingChars(text, 0, text.length()));
 					} else {
-//					System.out.println(start + "," + end);
 						t.setUndoableText(Tools.showNonPrintingChars(text, start, end));
 					}
 				}
@@ -544,12 +524,10 @@ public class TextTrix extends JFrame {
 					int end = 0;
 					if ((start = t.getSelectionStart()) 
 							== (end = t.getSelectionEnd())) {
-//					System.out.println(start + "," + end);
 						// may need to add original text to history buffer
 						// before making the change
 						t.setUndoableText(Tools.htmlReplacer(text, 0, text.length()));
 					} else {
-//					System.out.println(start + "," + end);
 						t.setUndoableText(Tools.htmlReplacer(text, start, end));
 					}
 				}
@@ -620,7 +598,7 @@ public class TextTrix extends JFrame {
 		constraints.anchor = GridBagConstraints.CENTER;
 		add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
 	
-		/*
+		/* add url box
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.CENTER;
 		add(urlBox, constraints, 0, 1, 1, 1, 0, 0);
@@ -687,6 +665,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/**Gets whether the auto-indent function is selected.
+	 * @return <code>true</code> if auto-indent is selected
+	 */
 	public static boolean getAutoIndent() {
 		return autoIndent.isSelected();
 	}
@@ -926,7 +907,7 @@ public class TextTrix extends JFrame {
 	 * where <code>n</code> is the tab number.
 	 */
 	public void addTextArea(ArrayList arrayList, JTabbedPane tabbedPane, File file) {
-		TextPad textPad = new TextPad(30, 20, file);
+		TextPad textPad = new TextPad(file);
 		// final variables so can use in inner class;
 			
 		JScrollPane scrollPane = new JScrollPane(textPad, 
@@ -940,6 +921,7 @@ public class TextTrix extends JFrame {
 //		textPad.setLineWrap(true);
 //		textPad.setWrapStyleWord(true);
 		textPad.getDocument().addDocumentListener(listener);
+		textPad.addMouseListener(new PopupListener());
 		// show " *" in tab title when text changed
 		arrayList.add(textPad);
 		tabbedPane.setSelectedIndex(i);
@@ -965,20 +947,25 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/**Adds additional listeners and other settings to a <code>TextPad</code>.
+	 * Useful to apply on top of the <code>TextPad</code>'s 
+	 * <code>applyDocumentSettings</code> function.
+	 * @param TextPad <code>TextPad</code> requiring applied settings
+	 */
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
-//		int tabIndex = tabbedPane.getSelectedIndex();
-//		if (tabIndex != -1) {
-//			TextPad t = (TextPad)textAreas.get(tabIndex);
 		textPad.getDocument().addDocumentListener(new TextPadDocListener());
 		textPad.setChanged(true);
 		updateTitle(textAreas, tabbedPane);
-//		}
 	}
 
+	/**Displays the given <code>TextPad</code> in plain text format.
+	 * Calls the <code>TextPad</code>'s <code>viewPlain</code> function
+	 * before adding <code>TextTrix</code>-specific settings, such as 
+	 * a <code>TextPadDocListener</code>.
+	 */
 	public void viewPlain() {
-		int tab = tabbedPane.getSelectedIndex();
-		if (tab != -1) {
-			TextPad t = (TextPad)textAreas.get(tab);
+		TextPad t = getSelectedTextPad();
+		if (t != null) {
 			if (!t.getContentType().equals("text/plain")) {
 				t.viewPlain();
 				addExtraTextPadDocumentSettings(t);
@@ -986,10 +973,14 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/**Displays the given <code>TextPad</code> in html text format.
+	 * Calls the <code>TextPad</code>'s <code>viewHTML</code> function
+	 * before adding <code>TextTrix</code>-specific settings, such as 
+	 * a <code>TextPadDocListener</code>.
+	 */
 	public void viewHTML() {
-		int tab = tabbedPane.getSelectedIndex();
-		if (tab != -1) {
-			TextPad t = (TextPad)textAreas.get(tab);
+		TextPad t = getSelectedTextPad();
+		if (t != null) {
 			if (!t.getContentType().equals("text/html")) {
 				t.viewHTML();
 				addExtraTextPadDocumentSettings(t);
@@ -997,22 +988,33 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/**Displays the given <code>TextPad</code> in RTF text format.
+	 * Calls the <code>TextPad</code>'s <code>viewRTF</code> function
+	 * before adding <code>TextTrix</code>-specific settings, such as 
+	 * a <code>TextPadDocListener</code>.
+	 */
 	public void viewRTF() {
-		int tab = tabbedPane.getSelectedIndex();
-		if (tab != -1) {
-			TextPad t = (TextPad)textAreas.get(tab);
+		TextPad t = getSelectedTextPad();
+		if (t != null) {
 			if (!t.getContentType().equals("text/rtf")) {
 				t.viewRTF();
 				addExtraTextPadDocumentSettings(t);
 			}
 		}
 	}
-	
+
+	/**Front-end to the <code>TextPad</code>'s <code>read</code> method from 
+	 * <code>JTextPane</code>.
+	 * Reads in a file, applies <code>TextPad</code>'s settings, and
+	 * finally adds <code>TextTrix</code>-specific settings.
+	 * @param TextPad <code>TextPad</code> to read a file into
+	 * @param in file reader
+	 * @param desc reader stream description
+	 */
 	public void read(TextPad textPad, Reader in, Object desc) throws IOException {
 		textPad.read(in, desc);
 		textPad.applyDocumentSettings();
 		addExtraTextPadDocumentSettings(textPad);
-//		textPad.getDocument().addDocumentListener(new TextPadDocListener());
 	}
 
 	/**Removes a tab containing a text area.
@@ -1053,11 +1055,9 @@ public class TextTrix extends JFrame {
 	 * @return true for a successful save, false if otherwise
 	 */
 	public static boolean saveFile(String path) {
-		TextPad t = null;
-		int tabIndex = tabbedPane.getSelectedIndex();
-		if (tabIndex != -1) {
+		TextPad t = getSelectedTextPad();
+		if (t != null) {
 			try {
-				t = (TextPad)textAreas.get(tabIndex);
 				PrintWriter out = new 
 				PrintWriter(new FileWriter(path), true);
 				out.print(t.getText());
@@ -1089,10 +1089,10 @@ public class TextTrix extends JFrame {
 				// save to file's current location
 				chooser.setSelectedFile(new File(t.getPath()));
 			} else {
+				// if the file hasn't been created, default to the directory
+				// last saved to
 				chooser.setCurrentDirectory(new File(saveDir));
-//				chooser.setSelectedFile(new File(saveDir));
 			}
-
     			int result = chooser.showSaveDialog(owner);
     			if (result == JFileChooser.APPROVE_OPTION) {
 				String path = chooser.getSelectedFile().getPath();
@@ -1132,17 +1132,14 @@ public class TextTrix extends JFrame {
 			if (t != null && (dir = t.getDir()) == "") 
 				dir = openDir;
 	    	chooser.setCurrentDirectory(new File(dir));
-//			chooser.setSelectedFile(new File(""));
 
-		    	int result = chooser.showOpenDialog(owner);
-
-		    	if (result == JFileChooser.APPROVE_OPTION) {
-					String path = chooser.getSelectedFile().getPath();
-
+		    int result = chooser.showOpenDialog(owner);
+		    if (result == JFileChooser.APPROVE_OPTION) {
+				String path = chooser.getSelectedFile().getPath();
 				try {
-		    		BufferedReader reader = 
+					BufferedReader reader = 
 						new BufferedReader(new FileReader(path));
-//					String text = readText(reader);
+//						String text = readText(reader);
 					
 					// check if tabs exist; get TextPad if true
 					/* t.getText() != null, even if have typed nothing in it.
@@ -1153,7 +1150,7 @@ public class TextTrix extends JFrame {
 						t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 						read(t, reader, path);
 //						t.setText(text);
-		    		} else {
+					} else {
 //						t.setPage(url);
 						read(t, reader, path);
 //						t.setText(text);
@@ -1163,7 +1160,6 @@ public class TextTrix extends JFrame {
 					t.setFile(path);
 					tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 							chooser.getSelectedFile().getName());
-	
 					reader.close();
 					setOpenDir(chooser.getSelectedFile().getParent());
 				} catch(IOException exception) {
@@ -1311,37 +1307,45 @@ public class TextTrix extends JFrame {
 			getContentPane().add(c, constraints);
 		}
 		
+		/**Finds the give search pattern.
+		 */
 		public void find() {
-			TextPad t = null;
-			if ((t = getSelectedTextPad()) != null) {
+			TextPad t = getSelectedTextPad();
+			if (t != null) {
 				String findText = find.getText();
+				// search from the current carat position
 				int n = t.getCaretPosition();
-//			System.out.println(n + "");
 				n = Tools.find(t.getText(), findText, n, 
 						word.isSelected(), ignoreCase.isSelected());
+				// wrap if wrap-enabled
 				if (n == -1 && wrap.isSelected()) {
 					n = Tools.find(t.getText(), findText, 0, 
 							word.isSelected(), ignoreCase.isSelected());
 				}
+				// highlight the quarry if found
 				if (n != -1) {
 					t.setCaretPosition(n);
 					t.moveCaretPosition(n + findText.length());
 					t.getCaret().setSelectionVisible(true); // to ensure selection visibility
-//				System.out.println("I'm here");
 				}
 			}
 		}
 		
+		/**Finds and replaces the given search pattern.
+		 * Allows the replacements to be undone.
+		 */
 		public void findReplace() {
-			TextPad t = null;
-			if ((t = getSelectedTextPad()) != null) {
+			TextPad t = getSelectedTextPad();
+			if (t != null) {
 				String text = t.getText();
 				String findText = find.getText();
 				String replaceText = replace.getText();
+				// works within the selected range
 				if (selection.isSelected()) {
 					t.setUndoableText(Tools.findReplace(text, findText, replaceText,
 							t.getSelectionStart(), t.getSelectionEnd(), word.isSelected(), true,
 							false, ignoreCase.isSelected()));
+				// if no range is chosen, works within the whole text
 				} else {
 					t.setUndoableText(Tools.findReplace(text, findText, replaceText,
 							t.getCaretPosition(), text.length(), 
@@ -1377,6 +1381,14 @@ public class TextTrix extends JFrame {
 		 * @param e any text change event
 		 */
 		public void changedUpdate(DocumentEvent e) {
+		}
+	}
+
+	private class PopupListener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
 		}
 	}
 
@@ -1466,4 +1478,3 @@ class ExtensionFileFilter extends FileFilter {
 	}
 }
 
-		

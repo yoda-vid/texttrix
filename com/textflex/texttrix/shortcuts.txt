@@ -6,14 +6,14 @@ Copyright (c) 2002, David Young
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix
 
-Function	Shortcut	Notes
+Function		Shortcut		Notes
 -----------------------------------------------------------
-New tab	Ctrl-t		-brings up a new tab, Mozilla-style
-Close tab	Ctrl-w		-closes current tab, Mozilla-style
-Previous tab	Ctrl-[		-hit the tab key to get back to the text
-Next tab	Ctrl-]		-hit the tab key to get back to the text
-Open file	Ctrl-o		-as usual
-Save file	Ctrl-s		-brings up "Save as..." dialog for new files
+New tab		Ctrl-t		-brings up a new tab, Mozilla-style
+Close tab		Ctrl-w		-closes current tab, Mozilla-style
+Previous tab		Ctrl-[		-hit the tab key to get back to the text
+Next tab		Ctrl-]		-hit the tab key to get back to the text
+Open file		Ctrl-o		-as usual
+Save file		Ctrl-s		-brings up "Save as..." dialog for new files
 Exit		Ctrl-q		-checks for unsaved files
 Undo		Ctrl-z		-multiple undos by pressing repeatedly
 Redo		Ctrl-r		-multiple redos by pressing repeatedly
@@ -23,9 +23,9 @@ Paste		Ctrl-v		-as usual
 Forward char	Ctrl-f		-Emacs-style
 Backward char	Ctrl-b		-Emacs-style
 Forward word	Alt-f		-Emacs-style
-Back word	Alt-b		-Emacs-style
-Delete word	Ctrl-bkspace	-as usual
+Back word		Alt-b		-Emacs-style
+Delete word		Ctrl-bkspace	-as usual
 Up line		Ctrl-p		-Emacs-style, but includes wrapped lines
-Down line	Ctrl-n		-Emacs-style, but includes wrapped lines
-Beg of line	Ctrl-a		-Emacs-sytle
-End of line	Ctrl-e		-Emacs-style
+Down line		Ctrl-n		-Emacs-style, but includes wrapped lines
+Beg of line		Ctrl-a		-Emacs-sytle
+End of line		Ctrl-e		-Emacs-style
