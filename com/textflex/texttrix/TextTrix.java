@@ -70,6 +70,9 @@ public class TextTrix extends JFrame {
 	private int[] tabIndexHistory = new int[10]; // records for back/forward
 	private int tabIndexHistoryIndex = 0; // index of next record
 	private boolean updateTabIndexHistory = true; // flag to update the record
+	private static Prefs prefs = null;
+	private static JMenu fileMenu = new JMenu("File");
+	private static int fileHistCount = 0;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -77,6 +80,12 @@ public class TextTrix extends JFrame {
 	 */
 	public TextTrix(String[] paths) {
 		setTitle("Text Trix");
+		
+		prefs = new Prefs();
+		
+		
+		
+		
 		// pre-set window size
 		setSize(500, 600); // TODO: adjust to user's screen size
 		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
@@ -129,7 +138,6 @@ public class TextTrix extends JFrame {
 
 		// make menu bar and menus
 		JMenuBar menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu("File");
 		fileMenu.setMnemonic('I'); // not 'F' since Alt-f for word-forward
 		JMenu editMenu = new JMenu("Edit");
 		editMenu.setMnemonic('E');
@@ -287,6 +295,19 @@ public class TextTrix extends JFrame {
 			'Q',
 			KeyStroke.getKeyStroke("ctrl Q"));
 		fileMenu.add(quitAction);
+		
+		fileMenu.addSeparator();
+		
+		createFileHist(fileMenu);
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		/* Edit menu items */
 
@@ -748,6 +769,53 @@ public class TextTrix extends JFrame {
 	public void updateTitle(String filename) {
 		String titleSuffix = " - Text Trix";
 		setTitle(filename + titleSuffix);
+	}
+	
+	public void createFileHist(JMenu menu) {
+		// assumes that the file history entries are at the entries in the menu
+		String[] files = prefs.retrieveFileHist();
+		//for (int i = files.length - 1; i >= 0; i--) {
+		for (int i = 0; i < files.length; i++) {
+			String file = files[i];
+			//System.out.println("file[" + i + "]: " + file);
+			Action fileAction = createFileHistAction(file);
+			//LibTTx.setAction(fileAction, file, (char)i);
+			menu.add(fileAction);
+		}
+		fileHistCount = files.length;
+	}
+	
+	public Action createFileHistAction(final String file) {
+		Action act = new AbstractAction(file) {
+			public void actionPerformed(ActionEvent evt) {
+				openFile(new File(file));
+			}
+		};
+		return act;
+	}
+	
+	/*
+	public void updateFileHist(JMenu menu, String file) {
+		//int fileHistCount = prefs.getFileHistCount();
+		Action fileAction = createFileHistAction(file);
+		menu.insert(fileAction, menu.getItemCount() - fileHistCount);
+		// "fileHistCount" refers to the current number of file history entries
+		// in the File menu, while files.length at maximum the number
+		// of stored file history items
+		String[] files = prefs.retrieveFileHist();
+		int entriesAvail = files.length - fileHistCount;
+		for (int i = 0; i < entriesAvail; i++) {
+			menu.remove(menu.getItemCount() - 1);
+		}
+	}
+	*/
+
+	public void updateFileHist(JMenu menu) {
+		// assumes that the file history entries are at the entries in the menu
+		for (int i = 0; i < fileHistCount; i++) {
+			menu.remove(menu.getItemCount() - 1);
+		}
+		createFileHist(menu);
 	}
 
 	/** Creates a plugin action.
@@ -1312,11 +1380,11 @@ public class TextTrix extends JFrame {
 				case 0 :
 					// bring up "Save as..." dialog if never saved file before
 					if (t.fileExists()) {
-						successfulClose = saveFile(t.getPath());
+						successfulClose = saveFileOnExit(t.getPath());
 					} else {
 						// still closes tab if cancel "Save as..." dialog
 						// may need to change in future releases
-						successfulClose = fileSaveDialog(null);
+						successfulClose = fileSaveDialogOnExit(null);
 					}
 					if (successfulClose) {
 						removeTextArea(tabIndex, textAreas, tabbedPane);
@@ -1538,7 +1606,7 @@ public class TextTrix extends JFrame {
 	 * @param path file path in which to save
 	 * @return true for a successful save, false if otherwise
 	 */
-	public static boolean saveFile(String path) {
+	public boolean saveFile(String path) {
 		//	System.out.println("printing");
 		TextPad t = getSelectedTextPad();
 		PrintWriter out = null;
@@ -1556,6 +1624,7 @@ public class TextTrix extends JFrame {
 				t.setChanged(false);
 				t.setFile(path);
 				updateTabTitle(textAreas, tabbedPane);
+				prefs.storeFileHist(path);
 				return true;
 			}
 		} catch (IOException e) {
@@ -1567,6 +1636,37 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
+	
+	
+	
+	public static boolean saveFileOnExit(String path) {
+		//	System.out.println("printing");
+		TextPad t = getSelectedTextPad();
+		PrintWriter out = null;
+		try {
+			if (t != null) {
+				File f = new File(path);
+				/* if don't use canWrite(), work instead by 
+				   catching exception and either handling it there
+				   or returning signal of the failure
+				 */
+				// open the stream to write to
+				out = new PrintWriter(new FileWriter(path), true);
+				// write to it
+				out.print(t.getText());
+				//updateFileHist(fileMenu, path);
+				return true;
+			}
+		} catch (IOException e) {
+			//	    e.printStackTrace();
+			return false;
+		} finally { // release system resources from stream
+			if (out != null)
+				out.close();
+		}
+		return false;
+	}
+
 
 	/** Opens a file into a text pad.
 	Calls the file open dialog.
@@ -1609,8 +1709,11 @@ public class TextTrix extends JFrame {
 				setOpenDir(file.getParent());
 				// file.getParent() returns null when opening file
 				// from the command-line and passing in a relative path
-				if (getOpenDir() == null)
+				if (getOpenDir() == null) {
 					setOpenDir(System.getProperty("user.dir"));
+				}
+				prefs.storeFileHist(path);
+				updateFileHist(fileMenu);
 				return true;
 			} catch (IOException exception) {
 				//		exception.printStackTrace();
@@ -1627,13 +1730,29 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
+	
+	/** Evokes a save dialog, with a filter for text files.
+	Sets the tabbed pane tab to the saved file name.
+	@param owner parent frame; can be null
+	@return true if the approve button is chosen, false if otherwise
+	 */
+	public static boolean fileSaveDialogOnExit(JFrame owner) {
+		if (!prepFileSaveDialog()) return false;
+		return getSavePathOnExit(owner);
+	}
+	
 
 	/** Evokes a save dialog, with a filter for text files.
 	Sets the tabbed pane tab to the saved file name.
 	@param owner parent frame; can be null
 	@return true if the approve button is chosen, false if otherwise
 	 */
-	public static boolean fileSaveDialog(JFrame owner) {
+	public boolean fileSaveDialog(JFrame owner) {
+		if (!prepFileSaveDialog()) return false;		
+		return getSavePath(owner);
+	}
+	
+	public static boolean prepFileSaveDialog() {
 		//	int tabIndex = tabbedPane.getSelectedIndex();
 		TextPad t = getSelectedTextPad();
 		//	if (tabIndex != -1) {
@@ -1652,10 +1771,77 @@ public class TextTrix extends JFrame {
 			// if set to true, probably have to use double-quotes
 			// when typing names
 			chooser.setMultiSelectionEnabled(false);
-			return getSavePath(owner);
+			return true;
 		}
 		return false;
 	}
+	
+	/** Helper function to <code>fileSaveDialog</code>.
+	Opens the file save dialog to retrieve the file's new name.
+	If the file will overwrite another file, prompts the user
+	with a dialog box to determine whether to continue with the 
+	overwrite, get another name, or cancel the whole operation.
+	@param owner the frame to which the dialog will serve; can be null
+	@return true if the file is saved successfully
+	*/
+	private static boolean getSavePathOnExit(JFrame owner) {
+		boolean repeat = false;
+		File f = null;
+		// repeat the retrieval until gets an unused file name, 
+		// overwrites a used one, or the user cancels the save
+		do {
+			// display the file save dialog
+			int result = chooser.showSaveDialog(owner);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				// save button chosen
+				String path = chooser.getSelectedFile().getPath();
+				f = new File(path);
+				int choice = 0;
+				// check whether a file by the chosen name already exists
+				if (f.exists()) {
+					String overwrite =
+						path + "\nalready exists.  Should I overwrite it?";
+					String[] options =
+						{ "But of course", "Please, no!", "Cancel" };
+					// dialog warning of a possible overwrite
+					choice =
+						JOptionPane.showOptionDialog(
+							owner,
+							overwrite,
+							"Overwrite?",
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.WARNING_MESSAGE,
+							null,
+							options,
+							options[1]);
+				}
+				if (choice == 1) {
+					// don't overwrite, but choose another name
+					repeat = true;
+				} else if (choice == 2) { // don't overwrite.
+					return false;
+				} else { // write, even if overwriting
+					// try to save the file and check if successful
+					if (saveFileOnExit(path)) { // success
+						setSaveDir(chooser.getSelectedFile().getParent());
+						return true;
+					} else { // fail; request another try at saving
+						String msg =
+							path
+								+ " couldn't be written to "
+								+ "that location.\nWould you like to try "
+								+ "another directory or filename?";
+						String title = "Couldn't save";
+						repeat = yesNoDialog(owner, msg, title);
+					}
+				}
+			} else { // cancel button chosen
+				return false;
+			}
+		} while (repeat); // repeat if retrying save after failure
+		return false;
+	}
+
 
 	/** Helper function to <code>fileSaveDialog</code>.
 	Opens the file save dialog to retrieve the file's new name.
@@ -1665,7 +1851,7 @@ public class TextTrix extends JFrame {
 	@param owner the frame to which the dialog will serve; can be null
 	@return true if the file is saved successfully
 	*/
-	private static boolean getSavePath(JFrame owner) {
+	private boolean getSavePath(JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name, 
@@ -1709,6 +1895,9 @@ public class TextTrix extends JFrame {
 							tabbedPane.getSelectedIndex(),
 							path);
 						updateTitle(owner, f.getName());
+						prefs.storeFileHist(path);
+						updateFileHist(fileMenu);
+						
 						return true;
 					} else { // fail; request another try at saving
 						String msg =

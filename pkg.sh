@@ -40,7 +40,7 @@
 ##############################
 # Variables to change for your particular setup
 ##############################
-VER="0.3.3" # version info
+VER="0.3.4" # version info
 BASE_DIR="/home/davit/myworkspace/TextTrix" # work directory
 BLD_DIR="$BASE_DIR/build"
 TTX_DIR="$BASE_DIR/texttrix"

@@ -358,6 +358,7 @@ public class LibTTx {
 		constraints.weighty = wy;
 		pane.add(c, constraints);
 	}
+	
 }
 
 /** Filters filenames to select only files with particular endings.

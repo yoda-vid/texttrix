@@ -39,8 +39,17 @@ v.0.5 series: advanced interface
 	-add stop button
 -check on Forward/Back when opening multiple tabs
 -Forward/Back icon?
+-new, unsaved(?) files don't register in the tab history
 
 ----Current Work----
+
+v.0.3.4
+-preferences:
+	-file history:
+		-store file paths of last opened or saved files; ADDED: using java.util.prefs (reqs JRE 1.4) to store paths, w/o duplicates
+		-File menu with menu items for each file; ADDED: descending menu items
+		-dynamically update menu items
+		-truncate long paths
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./

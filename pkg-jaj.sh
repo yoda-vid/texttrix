@@ -46,7 +46,7 @@
 WKDIR="$HOME/src/jarajar" # Jar Ajar build script directory
 TTXDIR="$HOME/myworkspace/TextTrix/texttrix" # Text Trix build script directory
 DEST="/home/share" # Text Trix build destination
-PKGNAME="texttrix-0.3.3" # Text Trix build name, where x.y.z refer to ver num
+PKGNAME="texttrix-0.3.4" # Text Trix build name, where x.y.z refer to ver num
 ZIP="$PKGNAME.zip" # name of zipped package
 VFATDIR="/mnt/vfat/tmp" # alternate location; repeat for more sites
 
