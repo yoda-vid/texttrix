@@ -528,7 +528,12 @@ public class TextTrix extends JFrame {
 	// load files specified at start from command-line
 	if (paths != null) {
 	    for (int i = 0; i < paths.length; i++) {
-		openFile(new File(paths[i]));
+		if (!openFile(new File(paths[i]))) {
+		    String msg = "Sorry, but " + paths[i] + " can't be read.\n"
+			+ "Is it a directory?  Does it have the right "
+			+ "permsissions for reading?";
+		    System.out.println(msg);
+		}
 	    }
 	}
 
@@ -1300,7 +1305,7 @@ public class TextTrix extends JFrame {
     public boolean openFile(File file) {
 	String path = file.getPath();
 	// ensures that the file exists and is not a directory
-	if (file.isFile()) { // file rather than directory
+	if (file.canRead()) { // readable file
 	    TextPad t = getSelectedTextPad();
 	    try {
 		BufferedReader reader = 
@@ -1318,10 +1323,10 @@ public class TextTrix extends JFrame {
 		    t = (TextPad)textAreas.get(tabbedPane
 					       .getSelectedIndex());
 		    read(t, reader, path);
-		    System.out.println("I'm here");
+		    //		    System.out.println("I'm here");
 		} else {
 		    read(t, reader, path);
-		    System.out.println("Oh, but I'm here");
+		    //		    System.out.println("Oh, but I'm here");
 		}
 		t.setCaretPosition(0);
 		t.setChanged(false);
@@ -1336,10 +1341,12 @@ public class TextTrix extends JFrame {
 	    } catch(IOException exception) {
 		exception.printStackTrace();
 	    }
+	    /*
 	} else if (file.isDirectory()) { // directory: can't open
 	    System.out.println(path + " is a directory");
 	} else if (!file.exists()) { // non-existent
 	    System.out.println(path + " does not exist");
+	    */
 	}
 	return false;
     }
@@ -1459,25 +1466,85 @@ public class TextTrix extends JFrame {
 	    TextPad t = getSelectedTextPad();
 	    // File("") evidently brings file dialog to last path, 
 	    // whether last saved or opened path
+	    chooser.setMultiSelectionEnabled(true); 
 	    String dir = openDir;
 	    //	    System.out.println("Here");
 	    if (t != null && (dir = t.getDir()).equals("")) 
 		dir = openDir;
-	    System.out.println("dir: " + dir);
+	    //	    System.out.println("dir: " + dir);
 	    chooser.setCurrentDirectory(new File(dir));
 	    // allows one to open multiple files;
 	    // must disable for save dialog
-	    chooser.setMultiSelectionEnabled(true); 
 	    
 	    // displays the dialog and opens all files selected
-	    int result = chooser.showOpenDialog(owner);
-	    if (result == JFileChooser.APPROVE_OPTION) {
-		File f1 = chooser.getSelectedFile();
-		File[] files = chooser.getSelectedFiles();
-		System.out.println("files: " + files.length + ", file: " + f1.getPath());
-		for (int i = 0; i < files.length; i++) {
-		    openFile(files[i]);
+	    boolean repeat = false;
+	    do {
+		int result = chooser.showOpenDialog(owner);
+		if (result == JFileChooser.APPROVE_OPTION) {
+		    /* getSelectedFiles() returns an array of length 0
+		       with the following sequence:
+		       -file opened
+		       -file saved via save chooser
+		       -same file opened by double-clicking
+		   
+		       The problem does not appear when the chooser accept 
+		       button is chosen, a directory is changed before the file
+		       is chosen, or the name in the text input area is altered
+		       in any way.
+		       
+		       The workaround is to use getSelectedFile()
+		       if the array has length 0; 
+		       getSelectedFile() for some reason
+		       works though its multi-partner does not.
+		       The file-not-found dialogs refrain from specifying
+		       the chosen file name since it cannot be retrieved
+		       from chooser.getSelectedFile() in the situation
+		       where the array has length 0.
+		    */
+		    String msg = "At least one chosen file wasn't "
+			+ "found.\nWould you like to try again?";
+		    File[] files = chooser.getSelectedFiles();
+		    if (files.length == 0) {
+			File f1 = chooser.getSelectedFile();
+			System.out.println(f1.getPath());
+			// TODO: dialog informing that the file doesn't exist
+			if (f1 != null) {
+			    openFile(f1);
+			    repeat = false;
+			} else {
+			    repeat = fileNotFoundDialog(owner, msg);
+			}
+		    } else {
+			//		System.out.println("files: " + files.length + ", file: ");// + f1.exists());
+			boolean allFound = true;
+			for (int i = 0; i < files.length; i++) {
+			    if (!openFile(files[i]))
+				allFound = false;
+			}
+			if (allFound) {
+			    repeat = false;
+			} else {
+			    repeat = fileNotFoundDialog(owner, msg);
+			}
+		    }
+		} else {
+		    repeat = false;
 		}
+	    } while (repeat);
+	}
+
+	private boolean fileNotFoundDialog(JFrame owner, String msg) {
+	    int choice = JOptionPane
+		.showConfirmDialog(owner,
+				   msg,
+				   "File not found",
+				   JOptionPane.YES_NO_OPTION,
+				   JOptionPane.
+				   QUESTION_MESSAGE);
+	    if (choice == JOptionPane.YES_OPTION) {
+		return true;
+	    } else {
+		return false;
 	    }
 	}
     }
