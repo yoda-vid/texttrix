@@ -47,6 +47,8 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+import java.awt.print.*;
+import javax.print.attribute.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -85,6 +87,7 @@ public class TextTrix extends JFrame {
 	private MenuBarCreator menuBarCreator = null; // menu and tool bar worker thread
 	private FileHist fileHist = null; // file history
 	private boolean tmpActivated = false;
+	private HashPrintRequestAttributeSet printAttributes = null;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -98,22 +101,26 @@ public class TextTrix extends JFrame {
 				if (!getPrefs().getActivateWindowsTogether()) {
 				} else if (isTmpActivated()) {
 //					setTmpActivated(false);
+/*
 					Thread runner = new Thread() {
 						public void run() {
 							try {
-//								System.out.println("in here");
 								Thread.sleep(100);
 								setTmpActivated(false);
-//								System.out.println("outta here");
 							} catch(InterruptedException e) {
 							}
 						}
 					};
 					runner.start();
+*/
 				} else {
 //					System.out.println("focusing");
 					focusAllWindows();
 				}
+			}
+			
+			public void windowDeactivated(WindowEvent e) {
+				setTmpActivated(true);
 			}
 		});
 
@@ -255,8 +262,9 @@ public class TextTrix extends JFrame {
 		webFilter.addExtension("xhtml");
 		webFilter.addExtension("shtml");
 		webFilter.addExtension("css");
+		webFilter.addExtension("js");
 		webFilter.setDescription(
-			"Web files (*.html, *.htm, " + "*.xhtml, *.shtml, *.css)");
+			"Web files (*.html, *.htm, " + "*.xhtml, *.shtml, *.css, *.js)");
 		chooser.setFileFilter(webFilter);
 
 		// RTF file filters
@@ -606,7 +614,7 @@ public class TextTrix extends JFrame {
 				public void windowActivated(WindowEvent e) {
 					if (!prefs.getActivateWindowsTogether()) {
 					} else if (pl.isTmpActivated()) {
-//						System.out.println("or here");
+/*
 //						pl.setTmpActivated(false);
 						Thread runner = new Thread() {
 							public void run() {
@@ -619,6 +627,7 @@ public class TextTrix extends JFrame {
 							}
 						};
 						runner.start();
+*/
 					} else {
 //						System.out.println("here");
 						focusAllWindows(pl);
@@ -788,7 +797,7 @@ public class TextTrix extends JFrame {
 	public void focusAllWindows(PlugIn pl) {
 //		if (pl.isActivated()) return;
 		for (int i = 0; i < plugIns.length; i++) {
-			if (plugIns[i] != pl) {
+			if (plugIns[i] != pl && plugIns[i] instanceof PlugInWindow) {
 				plugIns[i].setTmpActivated(true);
 //				activatePlugInWindow(pl);
 				plugIns[i].activateWindow();
@@ -807,7 +816,8 @@ public class TextTrix extends JFrame {
 //		System.out.println("plugIns.length = " + plugIns.length);
 		for (int i = 0; i < plugIns.length; i++) {
 //			System.out.println("plugIn[" + i + "]");
-			plugIns[i].setTmpActivated(true);
+			if (plugIns[i] instanceof PlugInWindow) {
+				plugIns[i].setTmpActivated(true);
 			/*
 			try {
 				System.out.println("sleeping...");
@@ -815,7 +825,8 @@ public class TextTrix extends JFrame {
 			} catch (Exception e) {
 			}
 			*/
-			plugIns[i].activateWindow();
+				plugIns[i].activateWindow();
+			}
 		}
 		setTmpActivated(true);
 		toFront();
@@ -823,7 +834,19 @@ public class TextTrix extends JFrame {
 	}
 	
 	public void setTmpActivated(boolean b) {
-		tmpActivated = b;
+		if (tmpActivated = b) {
+			Thread runner = new Thread() {
+				public void run() {
+					try {
+//						System.out.println("main waiting");
+						Thread.sleep(500);
+						tmpActivated = false;
+					} catch(InterruptedException e) {
+					}
+				}
+			};
+			runner.start();
+		}
 	}
 	
 	public boolean isTmpActivated() {
@@ -2012,6 +2035,20 @@ public class TextTrix extends JFrame {
 			return false;
 		}
 	}
+	
+	public void printTextPad() {
+		try {
+			TextPad pad = getSelectedTextPad();
+			if (pad == null) return;
+			PrinterJob job = PrinterJob.getPrinterJob();
+			job.setPrintable(pad);
+			if (job.printDialog(printAttributes)) {
+				job.print(printAttributes);
+			}
+		} catch (PrinterException e) {
+			JOptionPane.showMessageDialog(this, e);
+		}
+	}
 
 	/**Evokes a open file dialog, from which the user can
 	 * select a file to display in the currently selected tab's
@@ -2931,7 +2968,7 @@ public class TextTrix extends JFrame {
 					validate();
 					/*
 					for (int i = 0; i < plugIns.length; i++) {
-						System.out.println("I'm here: " + i);
+						System.out.println(": " + i);
 						final PlugIn pl = plugIns[i];
 						try {
 						EventQueue.invokeAndWait(new Runnable() {

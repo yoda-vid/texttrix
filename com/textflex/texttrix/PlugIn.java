@@ -136,7 +136,20 @@ public abstract class PlugIn extends JComponent {
 	}
 	
 	public void setTmpActivated(boolean b) {
-		tmpActivated = b;
+		if (tmpActivated = b) {
+			Thread runner = new Thread() {
+				public void run() {
+					try {
+//						System.out.println(name + "waiting...");
+						Thread.sleep(500);
+						tmpActivated = false;
+					} catch(InterruptedException e) {
+					}
+				}
+			};
+			runner.start();
+		}
+//		tmpActivated = b;
 	}
 	
 	/** Runs the plugin on a given section of the text.

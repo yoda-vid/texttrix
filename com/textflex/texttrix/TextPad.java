@@ -44,12 +44,13 @@ import javax.swing.undo.*;
 import javax.swing.text.*;
 import java.io.*;
 import javax.swing.event.*;
+import java.awt.print.*;
 
 /**The writing pad and text manipulator.
  * Consists of practical text editing tools
  * as well as trix for true text fun.
  */
-public class TextPad extends JTextPane implements StateEditable {
+public class TextPad extends JTextPane implements StateEditable, Printable {
 	private File file; // the file that the pad displays
 	private boolean changed = false; // flag that text changed
 	private String path; // file's path
@@ -851,6 +852,17 @@ public class TextPad extends JTextPane implements StateEditable {
 		// set document after setting the editor kit so can apply the doc's settings
 		if (doc != null)
 			setDocument(doc);
+	}
+	
+	public int print(Graphics g, PageFormat pf, int page) {
+		if (page >= 1) return Printable.NO_SUCH_PAGE;
+		Graphics2D g2D = (Graphics2D)g;
+		g2D.translate(pf.getImageableX(), pf.getImageableY());
+		g2D.setFont(getFont());
+		g2D.drawString(getAllText(), 
+			(float)pf.getImageableWidth(), 
+			(float)pf.getImageableHeight());
+		return Printable.PAGE_EXISTS;
 	}
 
 	/** Sets the number of characters that each tab represents.

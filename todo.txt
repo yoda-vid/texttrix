@@ -18,10 +18,9 @@ Note: "./" is the "check-mark" symbol
 	-about dialog box
 -feature to insert hard returns after a given number of characters
 -elim multiple spaces via Extra Returns Remover
--allow shortcuts to work when the toolbar is in focus
+-allow shortcuts to work when the toolbar is in focus; FIXED: seemed to solve itself w/ a JVM upgrade
 -check on shortcuts in HTML/RTF views
 -plug-ins: listener types create listeners that TextTrix attaches to given TextPad
--Search plug-in: count words directly by checking for non-word character
 -pop-up dialog when null pointers for hard-coded documentation names
 -move word-search functions to LibTTX to make accessible to all plug-ins
 -"Letter Pulse" plug-in
@@ -37,13 +36,11 @@ Note: "./" is the "check-mark" symbol
 -truncate filenames on tabs
 -automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
 -when saving an already existing file, match the file filter with the file's extension
--tab history doesn't always follow new tab route; FIXED: when add a new entry in the middle of the history, erase the forward history, just as browsers do
 -compound edits during plug-in edits
 -plug-ins' pref list fields sizes
 -build scripts pass paths to one another
 -plug-in: spell checker
 -plug-in: spell-check any given text in system clipborad, displaying corrected text in Text Trix pad
--add *.js files to Web file type
 
 ----Current Work----
 
@@ -52,17 +49,19 @@ v.0.3.5
 -auto-save
 -preferences panel to choose default paths
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront
-	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected
+	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected; to prevent automatic reactivation while shifting to other windows, flag renders window inactivatable until timer unsets flag; window deactivation listener also sets the flag to prevent Text Trix from automatically requesting activation immediately after switching activation to another program
 	-option to turn off; ADDED: Prefs option to turn off the activateWindowsTogether feature
 	-close open plug-in windows, or else they will no longer respond to activation requests; ADDED: dialog warning that plug-in windows will be closed when saving preferences while any of the windows are open
 	-try putting windowing events in separate thread so can still capture function from click on first window clicked
 	-check toFront() failures with one Fedora Core 1 installation
+	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
 -pass main Text Trix window position parameters to plug-in dialogs
 -Java Web Start compatibility
 -printing
 -fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
 -PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application
 -button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
+-add *.js files to Web file type; ADDED: as "Web file"; should also add to programming?
 
 v.0.3.4
 -preferences:
