@@ -78,10 +78,15 @@ public class TextTrix extends JFrame {
 	// make menu bar and menus
 	JMenuBar menuBar = new JMenuBar();
 	JMenu fileMenu = new JMenu("File");
+	fileMenu.setMnemonic('F');
 	JMenu editMenu = new JMenu("Edit");
+	editMenu.setMnemonic('E');
 	JMenu mistakerMenu = new JMenu("Mistaker");
+	mistakerMenu.setMnemonic('M');
 	JMenu toolsMenu = new JMenu("Tools");
+	toolsMenu.setMnemonic('T');
 	JMenu helpMenu = new JMenu("Help");
+	helpMenu.setMnemonic('H');
 
 	// make tool bar
 	JToolBar toolBar = new JToolBar("Functions and features");
@@ -112,6 +117,7 @@ public class TextTrix extends JFrame {
 	fileMenu.add(openAction);
 	JButton openButton = toolBar.add(openAction);
 	openButton.setBorderPainted(false);
+	setRollover(openButton, "openicon-roll-16x16.png");
 //	fileMenu.add(openItem);
 //	openItem.addActionListener(new FileOpenListener());
 //	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
@@ -126,7 +132,7 @@ public class TextTrix extends JFrame {
 			closeTextArea(i, textAreas, tabbedPane);
 		}
 	};
-	setAction(closeAction, "Close", 'C', null);
+	setAction(closeAction, "Close", 'C');
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
@@ -149,6 +155,7 @@ public class TextTrix extends JFrame {
 	fileMenu.add(saveAction);
 	JButton saveButton = toolBar.add(saveAction);
 	saveButton.setBorderPainted(false);
+	setRollover(saveButton, "saveicon-roll-16x16.png");
 //	saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 //				InputEvent.CTRL_MASK));
 
@@ -156,7 +163,7 @@ public class TextTrix extends JFrame {
 	url = TextTrix.class.getResource("saveasicon-16x16.png");
 	icon = new ImageIcon(url);
 	Action saveAsAction = new FileSaveAction("Save as...", icon);
-	setAction(saveAsAction, "Save as...", '.', null);
+	setAction(saveAsAction, "Save as...", '.');
 	fileMenu.add(saveAsAction);
 
 	// Start exit functions
@@ -260,7 +267,7 @@ public class TextTrix extends JFrame {
 			}
 		}
 	};
-	setAction(aboutAction, "About...", 'A', null);
+	setAction(aboutAction, "About...", 'A');
 	helpMenu.add(aboutAction);
 
 	// shortcuts and goofy features description; opens new tab
@@ -271,7 +278,7 @@ public class TextTrix extends JFrame {
 			displayFile(path);
 		}
 	};
-	setAction(shortcutsAction, "Shortcuts", 'S', null);
+	setAction(shortcutsAction, "Shortcuts", 'S');
 	helpMenu.add(shortcutsAction);
 
 	// license; opens new tab
@@ -282,7 +289,7 @@ public class TextTrix extends JFrame {
 			displayFile(path);
 		}
 	};
-	setAction(licenseAction, "License", 'L', null);
+	setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
@@ -296,10 +303,11 @@ public class TextTrix extends JFrame {
 		    t.setText(Practical.removeExtraHardReturns(t.getText()));
 		}
 	};
-	setAction(removeReturnsAction, "Remove extra hard returns", 'R', null);
+	setAction(removeReturnsAction, "Remove extra hard returns", 'R');
 	toolsMenu.add(removeReturnsAction);
 	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
 	removeReturnsButton.setBorderPainted(false);
+	setRollover(removeReturnsButton, "returnicon-roll-16x16.png");
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
@@ -376,6 +384,16 @@ public class TextTrix extends JFrame {
 		savePath = aSavePath;
 	}
 
+	/**Enable button rollover icon change.
+	 * @param button <code>JButton</code> to display icon rollover change
+	 * @param iconPath location of icon to change to
+	 */
+	public void setRollover(JButton button, String iconPath) {
+		button.setRolloverIcon(new ImageIcon(TextTrix.class.getResource(iconPath)));
+		button.setRolloverEnabled(true);
+	}
+		
+
 	/**Set an action's properties.
 	 * @param action action to set
 	 * @param description tool tip
@@ -392,12 +410,11 @@ public class TextTrix extends JFrame {
 	/**Set an action's properties.
 	 * @param action action to set
 	 * @param description tool tip
-	 * @param keyStroke accelerator key shortcut
+	 * @param mnemonic menu shortcut
 	 */
-	public void setAction(Action action, String description,
-			KeyStroke keyStroke) {
+	public void setAction(Action action, String description, char mnemonic) {
 		action.putValue(Action.SHORT_DESCRIPTION, description);
-		action.putValue(Action.ACCELERATOR_KEY, keyStroke);
+		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
 	}
 
 	/**Makes new file with next non-existent file of name format,
