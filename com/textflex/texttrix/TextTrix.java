@@ -777,7 +777,7 @@ public class TextTrix extends JFrame {
 		.getParentFile().getParentFile();
 	}
 	/* convert "%20", the escape character for a space, into " ";
-	   required for starting with JRE v.1.4.0
+	   conversion necessary starting with JRE v.1.4.0
 	   (see http://developer.java.sun.com/developer/ //
 	   bugParade/bugs/4466485.html)
 	*/
@@ -809,7 +809,7 @@ public class TextTrix extends JFrame {
 	String protocol = "file:";
 	int pathStart = pluginsPath.indexOf(protocol);
 	// check if indeed given as URL;
-	// if so, delete protocal and any preceding info
+	// if so, delete protocol and any preceding info
 	if (pathStart != -1)
 	    pluginsPath = pluginsPath.substring(pathStart + protocol.length());
 	// pluginsPath now in normal syntax

@@ -43,64 +43,48 @@ public class LibTTx {
     public LibTTx() {
     }
 
-    /*
-    public static void main(String[] args) {
-	
-	PlugIn[] plugIns = loadPlugIns("plugins");
-	//      	System.out.println(NonPrintingChars.print("I do not\nknow", 0, 13));
-	for (int i = 0; i < plugIns.length; i++) {
-	    System.out.println("plug-in " + i + ": " + plugIns[i].getName());
-	    plugIns[i].getIcon();
-	    plugIns[i].getRollIcon();
-	    System.out.println(readText(plugIns[i].getDetailedDescription()));
-	}
-	
-	//      	System.out.println(NonPrintingChars.print("I do not\nknow", 0, 13));
-    }
+    /** Loads all the plugins from a given directory.
+	Assumes that all files ending in "<code>.jar</code>" are plugins.
+	Creates an array of plugin objects from the files.
+	@param plugInDir directory containing the plugin JAR files
+	@return array of plugins
     */
-
     public static PlugIn[] loadPlugIns(File plugInDir) {
-	//	String plugInDirName = path;//"plugins";
-	//	File plugInDir = new File(plugInDirName);
+	// get a list of files ending with ".jar"
 	String endsWith = ".jar"; // only list files ending w/ team.txt
 	EndsWithFileFilter filter = new EndsWithFileFilter();
 	filter.add(endsWith);
 	String[] plugInList = plugInDir.list(filter);
-	//       	System.out.println(LibTTx.class.getClassLoader().getResource("com").toString());
-	//	System.out.println((new File(LibTTx.class.getResource("com").getFile())).getParentFile().getAbsoluteFile().toString());
-	//	System.out.println(LibTTx.class.getResource("LibTTx.class").getFile());
-	//	System.out.println(ClassLoader.getSystemResource("texttrix.jar").toString());
-	//	String dr = System.getProperty("user.dir");
-	//	String sp = System.getProperty("file.separator");
-	//	try { System.out.println(new URL("file://" + dr + sp 
-	//					 + "plugins"));
-	//	} catch (MalformedURLException e) {}
-	PlugIn[] plugIns = null;
+
+	// create objects from each plugin in the list
+	PlugIn[] plugIns = null; // array of PlugIn's to return
 	// traverse /teams dir, listing names w/o the ending
 	if (plugInList != null) {
 	    plugIns = new PlugIn[plugInList.length];
 	    for (int i = 0; i < plugInList.length; i++) {
-		//		URL = 
+		// loader corresponding to the given plugin's location
 		ClassLoader loader = null;
 		String path = null;
+		/* Beginning with JRE v.1.4.2, the URL must be created
+		   by first making a File object from the path and then
+		   converting it to a URL.  Manually parsing "file://"
+		   to the head of the path and converting the resulting
+		   String into a URL no longer works.
+		*/
 		try {
-		    /*
-		    String dir = System.getProperty("user.dir");
-		    String sep = System.getProperty("file.separator");
-		    URL url = new URL("file://" + dir + sep 
-				      + "plugins" + sep + plugInList[i]);
-		    */
 		    //		    System.out.println(plugInDir.toString());
 		    String sep = System.getProperty("file.separator");
 		    path = plugInDir.toString() 
 			+ sep + plugInList[i];
-		    String urlPath = "file://" + path;
+		    //		    System.out.println("path: " + path);
+		    //		    String urlPath = "file://" + path;
 		    //		    URL url = new URL(urlPath);
 		    URL url = new File(path).toURL();
 		    //		    System.out.println(url.toString());
 		    loader = new URLClassLoader(new URL[] { url } );
 		    //		    System.out.println(url.toString());
 		} catch (MalformedURLException e) {}
+		// all plugins are in the package, com.textflex.texttrix
 		String name = "com.textflex.texttrix." 
 		    + plugInList[i]
 		    .substring(0, plugInList[i].indexOf(".jar"));
@@ -111,10 +95,15 @@ public class LibTTx {
 	return plugIns;
     }
 
-    static Object createObject(String name, ClassLoader loader) {
-	Object obj = null;
+    /** Create the object of the given name in the class loader's location.
+	@param name name of object to load
+	@param loader class loader referencing a location containing
+	the named class
+    */
+    public static Object createObject(String name, ClassLoader loader) {
+	Object obj = null; // the object to return
+	// load the class
 	try {
-	    //	    Class cl = Class.forName(name);
 	    //	    System.out.println("name: " + name);
 	    Class cl = loader.loadClass(name);
 	    obj = cl.newInstance();
@@ -171,14 +160,25 @@ public class LibTTx {
      */
     public static String readText(String path) {
 	String text = "";
+	InputStream in = null;
+	BufferedReader reader = null;
 	try {
-	    InputStream in = TextTrix.class.getResourceAsStream(path);
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+	    in = TextTrix.class.getResourceAsStream(path);
+	    reader = new BufferedReader(new InputStreamReader(in));
 	    String line;
 	    while ((line = reader.readLine()) != null)
 		text = text + line + "\n";
 	} catch(IOException exception) {
 	    exception.printStackTrace();
+	    return "";
+	} finally {
+	    try {
+		if (reader != null) reader.close();
+		if (in != null) in.close();
+	    } catch(IOException exception) {
+		//	    exception.printStackTrace();
+		return "";
+	    }
 	}
 	return text;
     }
