@@ -181,7 +181,7 @@ public class TextPad extends JTextPane implements StateEditable{
 		}
 	    });
 
-       	setDefaultTabs(4);
+	//       	setDefaultTabs(4);
 	//	System.out.println(getFont().getFontName());
 
 
@@ -338,6 +338,7 @@ public class TextPad extends JTextPane implements StateEditable{
     public void applyDocumentSettings() {
 	Document doc = getDocument();
 	doc.addUndoableEditListener(undoManager);
+	setDefaultTabs(4);
 	/* no plain docs in JTextPane
 	   if (doc.getClass() == PlainDocument.class) {
 	   doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(tabSize));
@@ -353,55 +354,81 @@ public class TextPad extends JTextPane implements StateEditable{
 	return ((text == null) || !(new StringTokenizer(text)).hasMoreTokens()) ? true : false;
     }
 
+    public String getAllText() {
+	try {
+	    Document doc = getDocument();
+	    int len = doc.getLength();
+	    return doc.getText(0, len);
+	} catch (BadLocationException e) {
+	    System.out.println("Couldn't get it all.");
+	    return "";
+	}
+    }
+
+    public void replaceAllText(String s) {
+	try {
+	    //	    System.out.println(s);
+	    Document doc = getDocument();
+	    int len = doc.getLength();
+	    doc.remove(0, len);
+	    doc.insertString(0, s, null);
+	} catch (BadLocationException e) {
+	    System.out.println("Couldn't replace it all.");
+	}
+    }
+
     /**Converts the pad to a plain text view.
      * Undoable.
      */
     public void viewPlain() {
-	String text = getText();
 	StateEdit stateEdit = new StateEdit(this);
+	//	String text = getAllText();
+	String text = getText();
 	setEditorKit(createDefaultEditorKit()); // revert to default editor kit
 	// use the default editor kit's <code>DefaultStyledDocument</code>
 	setDocument(getEditorKit().createDefaultDocument());
-	applyDocumentSettings();
+	//	replaceAllText(text);
 	setText(text);
+	applyDocumentSettings();
 	stateEdit.end();
 	undoManager.addEdit((UndoableEdit)stateEdit);
-       	setDefaultTabs(4);
+	//       	setDefaultTabs(4);
     }
 
     /**Converts the pad to an HTML text view.
      * The underlying text may have HTML tags added.
      */
     public void viewHTML() {
-	String text = getText();
 	StateEdit stateEdit = new StateEdit(this);
+	String text = getText();
 	setDocument(getEditorKit().createDefaultDocument());
 	setContentType("text/html");
-	applyDocumentSettings();
 	setText(text);
+	applyDocumentSettings();
+	//	replaceAllText(text);
 	stateEdit.end();
 	undoManager.addEdit((UndoableEdit)stateEdit);
-       	setDefaultTabs(4);
+	//       	setDefaultTabs(4);
     }
 
-    /**Converts the pad to an RTF tex view, if possible.
+     /**Converts the pad to an RTF tex view, if possible.
      * If the document is not in RTF format, the pad reverts to its original setting.
      */
     public void viewRTF() {
-	String text = getText();
 	StateEdit stateEdit = new StateEdit(this);
+	String text = getText();
 	setDocument(getEditorKit().createDefaultDocument());
 	setContentType("text/rtf");
-	applyDocumentSettings();
 	setText(text);
+	applyDocumentSettings();
 	stateEdit.end();
 	undoManager.addEdit((UndoableEdit)stateEdit);
 	if (getText() == null) {
 	    undo();
-	} else {
+	    //	} else {
 	    // if placed before the undo, it would undo this command and 
 	    // not restore the text w/o another undo
-	    setDefaultTabs(4);
+	    //	    setDefaultTabs(4);
 	}
     }
 	

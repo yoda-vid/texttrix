@@ -1257,6 +1257,7 @@ public class TextTrix extends JFrame {
      */
     public void read(TextPad textPad, Reader in, Object desc) throws IOException {
 	textPad.read(in, desc);
+	//	textPad.setDefaultTabs(4);
 	textPad.applyDocumentSettings();
 	addExtraTextPadDocumentSettings(textPad);
     }
