@@ -34,7 +34,8 @@ rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~
 # make files readable in all sorts of systems
 unix2dos *.txt
 chmod 664 *.txt # prevent execution of files
-mv about.txt shortcuts.txt features.txt $DIR
+cp about.txt shortcuts.txt features.txt $WKDIR/$DIR # copy to master folder
+mv about.txt shortcuts.txt features.txt $DIR # move to pkg folder
 cp license.txt $DIR
 cd $WKDIR
 cp -rf $PKGDIR $SRCPKGDIR # copy to source package

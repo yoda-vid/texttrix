@@ -30,6 +30,8 @@ v.0.5 series: advanced interface
 -elim multiple spaces via Extra Returns Remover
 -allow shortcuts to work when the toolbar is in focus
 -check on shortcuts in HTML/RTF views
+-plugin adaptor class to permit leaving some methods unimplemented
+-plugin methods allowing dialog boxes, listeners, etc
 
 v.0.3.2
 -update tab tooltip when rename ./

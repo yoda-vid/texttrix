@@ -2,59 +2,34 @@ features.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002, David Young
-http://texttrix.sourceforge.net
-http://sourceforge.net/projects/texttrix
+Copyright (c) 2002-3, Text Flex
+http://textflex.com/texttrix
 
---------------
-Find and Replace: Find a given text and replace it with another text
+----Find and Replace: Find a given text and replace it with another text----
 
--Search for a sequence of characters a specific word
+-Search for a sequence of characters or a specific word
 -Replace with another sequence if desired
 -Optionally replace all or just the first instance of the given text
 -Can choose to search within highlighted text only
 
------------------------
-Extra Hard Return Remover: removes all hard returns, except between multiply-spaced lines or in lists (this was our first feature!)
+----Extra Returns Remover: removes all hard returns, except between multi-spaced lines or in lists (this was our first feature!)----
 
--To write a list without losing its hard returns, keep all the elements in a given block single-spaced, and use dashes or asterisks at the start of each line after the first; note that indents with tabs are a-ok
--Text enclosed in <pre></pre> tags will be preserved; each tag should be placed on its own line and will be removed
--Lines beginning with ">", such as those in email replies, will be removed along with any spaces surrounding them; "---Original Message----" will be added before the region, and "-------------" will come afterward
--Select the text to modify, or leave it completely unhighlighted to work on the whole text
--If necessary, undo the change through as many Undo commands as necessary (Edit > Undo, or Ctrl-z)
+-To write a list without losing its hard returns, leave the first line of a block unmarked and use dashes, asterisks, numbers, or tabs at the start of each line after the first. Add an empty line between blocks.
+-Text enclosed in <pre></pre> tags will be preserved. Each tag should be placed on its own line to ensure the tags' removal.
+-Lines beginning with ">", such as " > > " in email replies, will be removed along with any spaces surrounding them; "---Original Message----" will be added before the region, and "-------------" will come afterward
+-Select the text to modify, or leave it unhighlighted to work on the whole text
+-If necessary, undo changes by selecting Undo [Edit > Undo (2x), or Ctrl-z (2x)]
 
-------------
-HTML Replacer: Replace HTML tags with their plain-text equivalent
+----HTML Replacer: replace HTML tags with their plain-text equivalent----
 
--All HTML tags get removed.  Where appropriate, their plain-text equivalents are substituted
--E.g., "&#060;b&#062;" becomes "*"
--Select the text to modify, or leave it completely unhighlighted to work on the whole text
+-All HTML tags get removed. Where appropriate, their plain-text equivalents are substituted
+-E.g., "<b>" becomes "*"
+-Select the text to modify, or leave it unhighlighted to work on the whole text
+-If necessary, undo changes by selecting Undo [Edit > Undo (2x), or Ctrl-z (2x)]
 
---------------------------
-Non-Printing-Character Viewer: Add visual identification of non-printing characters
+----Non-Printing-Character Viewer: make visible characters for non-printing ones----
 
--In the current text, the viewer writes "\n" before every hard return, and "\t" before every tab
--Select the text to modify, or leave it completely unhighlighted to work on the whole text
--To remove the characters, Undo (ctrl-z) at least twice
-
-----------
-Auto-Indent: Automatically indent as far as the previous line's indentation
-
--For any tab that could use auto-indentation, select the option in the Edit menu (Edit > Options > Auto-indent)
--Text Trix will add as many tabs to a given line as that on the previous line; note that spaces are not counted as indents
--Unselect the option at any time, for as many tabs as desired
-
----------
-View HTML: Converts the current text into HTML format and displays it as a web browser would
-
--Choose the option from the View menu (View > Toggle HTML view)
--Note that the viewing alters the underlying plain text.  View the alteration by choosing the plain text view (View > Toggle plain text view).  Changes can be undone as usual (Edit > Undo, or Ctrl-z, as many times as necessary)
--Text can be edited directly in the HTML view, but styles can only be changed by first switching to the plain text view and applying HTML tags by hand
--Note that the HTML viewer has some limitations, such as only HTML v.3.2 support and the requirement of a basename tag for images
-
----------
-View RTF: View RTF-formatted text as formatted text
-
--Choose the option from the View manu (View > Toggle RTF view)
--The text must already be in RTF format; the viewing does not alter the underlying plain text
--Text can be edited directly in the RTF view, but styles can only be changed by first switching to the plain text view and applying RTF formats by hand
+-Writes "\n" before every hard return, and "\t" before every tab
+-Select the text to modify, or leave it unhighlighted to work on the whole text
+-To remove the characters, Undo (ctrl-z) as many times as necessary
+-If necessary, undo changes by selecting Undo [Edit > Undo (2x), or Ctrl-z (2x)]

@@ -18,7 +18,7 @@ Text Trix, the text tinkering tool, now has a plugin architecture to easily add 
 
 The main impediment to recent Text Trix development had been getting over the plugin hump.  The idea of adding tiny, self-sufficient packages for each new tinkerer proved attractive, but methods to load and use them proved quite the opposite.  Also, with the major football season rolling around, work on another text project (tXtFL (http://textflex.com/txtfl) became increasingly enticing.
 
-But the football season is over for now; it's time for school and work again.  Discovery of bugs that stopped the tinkerers from working on one popular operating system gave extra motivation to get going with the plugins.  Text Trix v.0.3.2 has come, and its new plugin architecture awaits contibutions for new tools and trix!
+But the football season is over for now; it's time for school and work again, where text tools would likely have more practical use than text football would.  Extra motivation to get going with the plugins came from an unexpected source: bugs that stopped the tinkerers from working on one popular operating system.  With the new archicture and bug fixes emerges the new version, Text Trix v.0.3.2.  Its plugin architecture awaits contibutions for new tools and trix!
 
 New features include:
 -Plugin architecture to allow users to selet the particular tools and trix they want
