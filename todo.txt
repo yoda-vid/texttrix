@@ -56,6 +56,7 @@ v.0.3.6
 	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
 	-adjust isLeadingTab() or the backspace unindenter to check if the text is selected, since selecting text backward and culminating at a leading tab causes a graphical unindent after a backspace
 	-update indents when paste over selected area
+	-wrap indent to the first line in the paragraph, rather than indenting the first line a little more with each tab; ADDED: negative, hanging indent for each tab, along with array of negative tab stops to fill up the space from the hanging indent
 -plug-in updates
 	-plug-in model
 		-option for plug-in to specify the region to replace; ADDED: when the plug-in wants to replace only a section of the text it has received, the plug-in can specify this region along with the text to replace it; TextTrix uses Document and indentRegion controls for speedy, specific updates

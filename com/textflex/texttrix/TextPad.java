@@ -486,11 +486,24 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Useful when representing tabs through other means, such as styled indents.
 	 * @see #setDefaultTabs(int)
 	 * @see #setIndentTabs(int)
+	 * @see #indent(int, int, int, int)
 	 */
 	public void setNoTabs() { //int offset, int length) {
 		//	System.out.println("set no tabs at position " + offset + " for " + length + " chars");
-		TabStop[] tabs = new TabStop[1];
-		tabs[0] = new TabStop(0);
+		TabStop[] tabs = new TabStop[30];
+		//tabs[0] = new TabStop(0, TabStop.ALIGN_RIGHT, TabStop.LEAD_NONE);
+		
+		/* Provide a whole array of TabStops for positions many tabs deep;
+		 * now setFirstLineIndent, set to a neg number, can provide the neg
+		 * region into which these tabs can pull the first line of text in a paragraph
+		 * (see indent(int, int, int, int).
+		*/
+		int charWidth = getFontMetrics(getFont()).charWidth(' ');
+		int tabWidth = charWidth * getTabSize();
+		for (int i = 0; i < 30; i++) {
+			tabs[i] = new TabStop(i * tabWidth * -1);
+		}
+		
 		TabSet tabSet = new TabSet(tabs);
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
@@ -574,6 +587,19 @@ public class TextPad extends JTextPane implements StateEditable {
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
+		
+		// waiting until fix (Java Bug ID#5073988 )?  But first line does indent,
+		// though the first tab merely increases in size to fill up the firstLineIndent
+		//System.out.println("firstLineIndent: " + tabs * charWidth * -1);
+		
+		/* By itself, the following command merely extends the negative 
+		 * indentation area for the first line--which the first tab expands
+		 * to occupy, voiding the entire effort to shift the first line back.
+		 * Coupled with an array of negatively posititioned tabs, however,
+		 * the command provides an area into which these tabs can drag
+		 * the text from the first line.
+		*/
+		StyleConstants.setFirstLineIndent(attribs, tabs * charWidth * -1.7f);
 		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument().setParagraphAttributes(offset, length, // next char
 		attribs, false); // false to preserve default font
