@@ -675,9 +675,9 @@ public class Prefs extends JFrame {
 
 					JLabel keybindingsLbl = new JLabel("Keybindings model");
 					String keybindingsTipTxt =
-						"\'Standard\' shortcuts are the ones found on most desktops."
-							+ "\n\'Hybrid\' refers to Emacs shortcuts for all single line and character navigation."
-							+ "\n\'Emacs\'is for hard-core Emacs fans.";
+						"<html>\'Standard\' shortcuts are the ones found on most desktops."
+							+ "<br>\'Hybrid\' refers to Emacs shortcuts for all single line and character navigation."
+							+ "<br>\'Emacs\' adds more single-key Emacs shortcuts for hard-core Emacs fans.</html>";
 					keybindingsLbl.setToolTipText(keybindingsTipTxt);
 					keybindingsCombo = new JComboBox(KEYBINDINGS_MDLS);
 					keybindingsCombo.setSelectedItem(getKeybindings());

@@ -138,7 +138,10 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	public void emacsKeybindings() {
 		// TODO: create more keybindings; defaults to hybrid keybindings for now
-		hybridKeybindings();
+		createActionTable(this);
+		universalShortcuts();
+		partialEmacsShortcuts();
+		emacsShortcuts();
 	}
 	
 	private void universalShortcuts() {
@@ -249,6 +252,22 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 		});
 
+	}
+	
+	private void emacsShortcuts() {
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK),
+			"pageDown");
+		amap.put(
+			"pageDown",
+			getActionByName(DefaultEditorKit.pageDownAction));
+
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.ALT_MASK),
+			"pageUp");
+		amap.put(
+			"pageUp",
+			getActionByName(DefaultEditorKit.pageUpAction));
 	}
 	
 	/** Sets the default displayed tab sizes.

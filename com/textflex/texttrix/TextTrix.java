@@ -580,8 +580,7 @@ public class TextTrix extends JFrame {
 			// the action undoable
 			int start = t.getSelectionStart();
 			int end = t.getSelectionEnd(); // at the first unselected character
-			System.out.println(
-				"selectionStart: " + start + ", selectionEnd: " + end);
+			//System.out.println("selectionStart: " + start + ", selectionEnd: " + end);
 			PlugInOutcome outcome = null;
 			try {
 				// determines whether a region is selected or not;
@@ -621,8 +620,7 @@ public class TextTrix extends JFrame {
 					text = doc.getText(start, len); // only get the region
 
 					// start and end only 
-					outcome = pl.run(text);
-					//, start, end); // invoke the plugin
+					outcome = pl.run(text);// invoke the plugin
 
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
@@ -661,18 +659,27 @@ public class TextTrix extends JFrame {
 			t.setCaretPosition(baseline + start);
 		}
 	}
-
+	
+	/** Reloads all the plug-ins in the current <code>plugins</code> folder.
+	 * Prepares the preferences panel to offer all available plug-ins.
+	 * @see #getPlugInsFile();
+	 *
+	 */
 	public void reloadPlugIns() {
+		// determine the available plug-ins
 		File file = getPlugInsFile();
 		String[] list = LibTTx.getPlugInPaths(file);
 		if (list == null)
 			return;
+			
+		// determine the currently loaded plug-ins
 		String[] paths = getPlugInPaths();
 		PlugIn[] extraPlugs = null;
 		int extraPlugsInd = 0;
-		//System.out.println("paths[0]: " + paths[0]);
+		
+		// load unloaded plug-ins; drop plug-ins no longer available
 		if (plugIns == null || plugIns.length == 0) {
-			setupPlugins();
+			setupPlugIns();
 		} else if (paths != null) {
 			extraPlugs = new PlugIn[list.length + plugIns.length];
 			// check for extant but unloaded plug-ins files
@@ -709,7 +716,7 @@ public class TextTrix extends JFrame {
 	 * miss the highlighting while others are fast enough to
 	 * still see it.
 	 */
-
+	/*
 	public void refreshPlugIns() {
 		reloadPlugIns();
 		if (plugIns != null) {
@@ -718,7 +725,13 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
-
+	*/
+	
+	/** Gets the names of the currently loaded plug-ins.
+	 * Each plug-in has a descriptive name, usually different from the filename.
+	 * @return array of all the loaded plug-ins' descriptive name; the array's length
+	 * is equal to the number off names
+	 */
 	public String[] getPlugInNames() {
 		if (plugIns == null)
 			return null;
@@ -729,6 +742,11 @@ public class TextTrix extends JFrame {
 		return names;
 	}
 
+	/** Gets the paths of all currently loaded plug-ins.
+	 * 
+	 * @return array of all the loaded plug-in's paths and length equal to the number
+	 * of these paths
+	 */
 	public String[] getPlugInPaths() {
 		if (plugIns == null)
 			return null;
@@ -747,7 +765,7 @@ public class TextTrix extends JFrame {
 	TODO: also search the user's home directory or user determined
 	locations, such as ones a user specifies via a preferences panel.
 	*/
-	public void setupPlugins() {
+	public void setupPlugIns() {
 		File plugInsFile = getPlugInsFile(); //refreshPlugIns();
 
 		// load the plugins and create actions for them
@@ -761,7 +779,13 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
-
+	
+	/** Gets the <code>plugins</code> folder file.
+	 * TODO: Add preferences mechanism to specify alternative or additional
+	 * <code>plugins</code> folder location, such as a permanent storage place
+	 * to reuse plug-ins after installing a new version of Text Trix.
+	 * @return <code>plugins</code> folder
+	 */
 	private File getPlugInsFile() {
 		/* The code has a relatively elaborate mechanism to locate
 		   the plugins folder and its JAR files.  Why not use
@@ -791,12 +815,6 @@ public class TextTrix extends JFrame {
 		   crash after a NoSuchMethodError.  The replacement must be done 
 		   manually.
 		*/
-
-		// TODO: add additional plugins on the fly
-		// -when scanning already-filled plugIn array, simply ensure that it conforms to 
-		// the user-defined plug-in load list
-		// -move plugin-folder-location code to separate fn to also run when creating
-		// the list from which users select plug-ins to ignore or employ
 
 		// this class's location
 		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
@@ -914,7 +932,13 @@ public class TextTrix extends JFrame {
 			return null;
 		}
 	}
-
+	
+	/** Gets the <code>TextPad</code> at a given index in the tabbed pane.
+	 * 
+	 * @param i index of <code>TextPad</code>
+	 * @return the given Text Pad; <code>null</code> if the tabbed pane
+	 * lacks the index value
+	 */
 	public static TextPad getTextPadAt(int i) {
 		if (i < -1 || i >= tabbedPane.getTabCount())
 			return null;
@@ -1038,15 +1062,13 @@ public class TextTrix extends JFrame {
 	public static void setSaveDir(String aSaveDir) {
 		saveDir = aSaveDir;
 	}
-
+	
+	/** Flags the menu check box to indicate whether the current
+	 * Text Pad is in auto-indent mode.
+	 *
+	 */
 	public static void setAutoIndent() {
-
 		TextPad t = getSelectedTextPad();
-		/*
-		if (t != null) {
-			setAutoIndent(t.getAutoIndent());
-		}
-		*/
 		if (autoIndent != null && t != null) {
 			autoIndent.setSelected(t.getAutoIndent());
 		}
@@ -1097,7 +1119,7 @@ public class TextTrix extends JFrame {
 			updateTabTitle(textAreas, tabbedPane);
 			t.setCaretPosition(0);
 			return true;
-		} finally {
+		} finally { // stream closure operations
 			try {
 				if (reader != null)
 					reader.close();
@@ -1123,6 +1145,9 @@ public class TextTrix extends JFrame {
 		//int i = 0;
 		boolean b = true;
 		int totTabs = tabbedPane.getTabCount();
+		
+		// close the files and prepare to store their paths in the list
+		// of files left open at the end of the session
 		while (totTabs > 0 && b) {
 			if (reopenTabs) {
 				TextPad t = getTextPadAt(0);
@@ -1133,13 +1158,18 @@ public class TextTrix extends JFrame {
 						openedPaths = t.getPath();
 					}
 				}
-				getPrefs().storeReopenTabsList(openedPaths);
 			}
 			b = closeTextArea(0, textAreas, tabbedPane);
 			totTabs = tabbedPane.getTabCount();
 		}
-		if (b == true)
+		
+		// store the file list and exit Text Trix all the files closed successfully
+		if (b == true) {
+			if (reopenTabs) {
+				getPrefs().storeReopenTabsList(openedPaths);
+			}
 			System.exit(0);
+		}
 		return b;
 	}
 
@@ -1239,7 +1269,7 @@ public class TextTrix extends JFrame {
 		} catch (IOException exception) {
 			//	    exception.printStackTrace();
 			return "";
-		} finally {
+		} finally { // stream closure operations
 			try {
 				if (reader != null)
 					reader.close();
@@ -1254,7 +1284,7 @@ public class TextTrix extends JFrame {
 	}
 
 	/**Read in text from a file and return the text as a string.
-	 * Differs from <code>displayFile(String path)</code> because
+	 * Differs from <code>displayFile(String)</code> because
 	 * allows editing.
 	 * @param reader text file stream
 	 * @return text from file
@@ -1268,6 +1298,7 @@ public class TextTrix extends JFrame {
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
+		// no stream closure operations b/c assume calling function takes care of them
 		return text;
 	}
 
@@ -1535,13 +1566,24 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
+	/** Automatically auto-indents the given Text Pad.
+	 * Determines whether the Text Pad's filename extension matches the 
+	 * user-defined list of files to automatically auto-indent.
+	 * @param t Text Pad whose file is to be checked
+	 */
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
 		if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
 			t.setAutoIndent(true);
 		}
 	}
-
+	
+	/** Checks if the given file extension is in the user-defined list of files
+	 * to automatically auto-indent.
+	 * @param path file to check
+	 * @return <code>true</code> if the file's extension is in the list
+	 * @see #autoAutoIndent(TextPad)
+	 */
 	public boolean isAutoIndentExt(String path) {
 		int extIndex = LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
 		if (extIndex < 0 || extIndex >= path.length())
@@ -1580,6 +1622,12 @@ public class TextTrix extends JFrame {
 		return getSavePath(owner);
 	}
 
+	/** Prepares the file save dialog.
+	 * Finds the current directory if the file and selects it, if the file has already 
+	 * been saved.  If not, returns to the most recent directory in the current session
+	 * and selects no file.
+	 * @return <code>true</code> if a Text Pad is selected, necessary to save a file 
+	 */
 	public static boolean prepFileSaveDialog() {
 		//	int tabIndex = tabbedPane.getSelectedIndex();
 		TextPad t = getSelectedTextPad();
@@ -1587,13 +1635,14 @@ public class TextTrix extends JFrame {
 		if (t != null) {
 			//	    TextPad t = (TextPad)textAreas.get(tabIndex);
 			if (t.fileExists()) {
-				chooser.setCurrentDirectory(new File(t.getDir()));
+				//chooser.setCurrentDirectory(new File(t.getDir()));
 				// save to file's current location
 				chooser.setSelectedFile(new File(t.getPath()));
 			} else {
 				// if the file hasn't been created, default to the directory
 				// last saved to
 				chooser.setCurrentDirectory(new File(saveDir));
+				chooser.setSelectedFile(new File(""));
 			}
 			// can't save to multiple files;
 			// if set to true, probably have to use double-quotes
@@ -1604,14 +1653,18 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
-	/** Helper function to <code>fileSaveDialog</code>.
+	/** Helper function to <code>fileSaveDialog</code> when exiting Text Trix.
+	 * Unlike <code>getSavePath(JFrame)</code>, this method does not
+	 * attempt to update the graphical components, currently in
+	 * the process of closing.
 	Opens the file save dialog to retrieve the file's new name.
 	If the file will overwrite another file, prompts the user
 	with a dialog box to determine whether to continue with the 
 	overwrite, get another name, or cancel the whole operation.
 	@param owner the frame to which the dialog will serve; can be null
 	@return true if the file is saved successfully
-	*/
+	@see #getSavePath(JFrame)
+	 */
 	private static boolean getSavePathOnExit(JFrame owner) {
 		boolean repeat = false;
 		File f = null;
@@ -1671,12 +1724,15 @@ public class TextTrix extends JFrame {
 	}
 
 	/** Helper function to <code>fileSaveDialog</code>.
+	Unlike <code>getSavePathOnExit(JFrame)</code>, this method
+	attempts to update the graphical components.
 	Opens the file save dialog to retrieve the file's new name.
 	If the file will overwrite another file, prompts the user
 	with a dialog box to determine whether to continue with the 
 	overwrite, get another name, or cancel the whole operation.
 	@param owner the frame to which the dialog will serve; can be null
 	@return true if the file is saved successfully
+	@see #getSavePathOnExit(JFrame)
 	*/
 	private boolean getSavePath(JFrame owner) {
 		boolean repeat = false;
@@ -1718,12 +1774,12 @@ public class TextTrix extends JFrame {
 					// try to save the file and check if successful
 					if (saveFile(path)) { // success
 						setSaveDir(chooser.getSelectedFile().getParent());
+						// update graphical components
 						tabbedPane.setToolTipTextAt(
 							tabbedPane.getSelectedIndex(),
 							path);
 						updateTitle(owner, f.getName());
 						getPrefs().storeFileHist(path);
-						//updateFileHist(fileMenu);
 						fileHist.start(fileMenu);
 
 						return true;
@@ -1834,7 +1890,6 @@ public class TextTrix extends JFrame {
 			chooser.setMultiSelectionEnabled(false);
 			chooser.setMultiSelectionEnabled(true);
 			String dir = openDir;
-			//	    System.out.println("Here");
 			if (t != null && (dir = t.getDir()).equals(""))
 				dir = openDir;
 			//	    System.out.println("dir: " + dir);
@@ -1882,7 +1937,7 @@ public class TextTrix extends JFrame {
 					if (files.length == 0) {
 						File f1 = chooser.getSelectedFile();
 						System.out.println(f1.getPath());
-						// TODO: dialog informing that the file doesn't exist
+						// OLDDO: dialog informing that the file doesn't exist
 						if (f1 != null) {
 					    openFile(f1);
 					    	repeat = false;
@@ -1991,23 +2046,6 @@ public class TextTrix extends JFrame {
 		}
 	}
 
-	/*
-	private class PrefsListener implements PreferenceChangeListener {
-		public void preferenceChange(PreferenceChangeEvent evt) {
-			//if (respondToPrefsListener) {
-			System.out.println("Responding to prefs change...");
-			if (prefs.isGeneralPrefs(evt.getNode())) {
-				System.out.println(
-					"Updating the general prefs: " + evt.getKey());
-				applyGeneralPrefs();
-			} else if (prefs.isShortsPrefs(evt.getNode())) {
-				applyShortsPrefs();
-			}
-			//}
-		}
-	}
-	*/
-
 	private class MenuBarCreator extends Thread {
 		public void start() {
 			(new Thread(this, "thread")).start();
@@ -2020,14 +2058,23 @@ public class TextTrix extends JFrame {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					System.out.println("Creating the menu bar...");
-					char fileMenuMnemonic = '0';
-					char newActionMnemonic = '0';
-					KeyStroke newActionShortcut = null;
-					String exitActionTxt = "";
-					char exitActionMnemonic = '0';
-					KeyStroke exitActionShortcut = null;
-					char selectAllActionMnemonic = '0';
-					KeyStroke selectAllActionShortcut = null;
+					char fileMenuMnemonic = 'F';
+					char newActionMnemonic = 'N';
+					KeyStroke newActionShortcut = KeyStroke.getKeyStroke("ctrl N");
+					char closeActionMnemonic = 'C';
+					KeyStroke closeActionShortcut = KeyStroke.getKeyStroke("ctrl W");
+					String exitActionTxt = "Exit";
+					char exitActionMnemonic = 'X';
+					KeyStroke exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
+					char cutActionMnemonic = 'T';
+					KeyStroke cutActionShortcut = KeyStroke.getKeyStroke("ctrl X");
+					KeyStroke redoActionShortcut = KeyStroke.getKeyStroke("ctrl Y");
+					char copyActionMnemonic = 'C';
+					KeyStroke copyActionShortcut = KeyStroke.getKeyStroke("ctrl C");
+					char pasteActionMnemonic = 'P';
+					KeyStroke pasteActionShortcut = KeyStroke.getKeyStroke("ctrl V");
+					char selectAllActionMnemonic = 'A';
+					KeyStroke selectAllActionShortcut = KeyStroke.getKeyStroke("ctrl A");
 
 					if (prefs.isHybridKeybindings()) {
 						fileMenuMnemonic = 'I';
@@ -2040,16 +2087,22 @@ public class TextTrix extends JFrame {
 						selectAllActionShortcut =
 							KeyStroke.getKeyStroke("ctrl L");
 						//} else if (prefs.isEmacsKeybindings()) { // TODO: implement Emacs-keybindings
-					} else {
-						fileMenuMnemonic = 'F';
-						newActionMnemonic = 'N';
-						newActionShortcut = KeyStroke.getKeyStroke("ctrl N");
+					} else if (prefs.isEmacsKeybindings()) {
+						fileMenuMnemonic = 'I';
+						newActionMnemonic = 'T';
+						newActionShortcut = KeyStroke.getKeyStroke("ctrl T");
+						closeActionMnemonic = 'K';
+						closeActionShortcut = KeyStroke.getKeyStroke("ctrl K");
 						exitActionTxt = "Exit";
 						exitActionMnemonic = 'X';
+						redoActionShortcut = KeyStroke.getKeyStroke("ctrl R");
+						cutActionShortcut = KeyStroke.getKeyStroke("ctrl W");
+						copyActionShortcut = KeyStroke.getKeyStroke("alt W");
+						pasteActionShortcut = KeyStroke.getKeyStroke("ctrl Y");
 						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
-						selectAllActionMnemonic = 'A';
+						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
-							KeyStroke.getKeyStroke("ctrl A");
+							KeyStroke.getKeyStroke("ctrl L");							
 					}
 
 					if (menuBar != null) {
@@ -2139,8 +2192,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(
 						closeAction,
 						"Close",
-						'C',
-						KeyStroke.getKeyStroke("ctrl W"));
+						closeActionMnemonic,
+						closeActionShortcut);
 					fileMenu.add(closeAction);
 
 					// (ctrl-s) save file; no dialog if file already created
@@ -2196,7 +2249,7 @@ public class TextTrix extends JFrame {
 					fileMenu.addSeparator();
 
 					// (ctrl-q) exit file; close each tab separately, checking for saves
-					Action quitAction = new AbstractAction("Quit") {
+					Action exitAction = new AbstractAction(exitActionTxt) {
 						public void actionPerformed(ActionEvent evt) {
 							exitTextTrix();
 						}
@@ -2204,11 +2257,11 @@ public class TextTrix extends JFrame {
 					// Doesn't work if close all tabs unless click ensure window focused, 
 					// such as clicking on menu
 					LibTTx.setAcceleratedAction(
-						quitAction,
-						"Quit",
-						'Q',
-						KeyStroke.getKeyStroke("ctrl Q"));
-					fileMenu.add(quitAction);
+						exitAction,
+						exitActionTxt,
+						exitActionMnemonic,
+						exitActionShortcut);
+					fileMenu.add(exitAction);
 
 					fileMenu.addSeparator();
 					System.out.println("About to create the menu entries");
@@ -2244,7 +2297,7 @@ public class TextTrix extends JFrame {
 						redoAction,
 						"Redo",
 						'R',
-						KeyStroke.getKeyStroke("ctrl Y"));
+						redoActionShortcut);
 					editMenu.add(redoAction);
 
 					// Start Cut, Copy, Paste actions
@@ -2261,8 +2314,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(
 						cutAction,
 						"Cut",
-						'C',
-						KeyStroke.getKeyStroke("ctrl X"));
+						cutActionMnemonic,
+						cutActionShortcut);
 					editMenu.add(cutAction);
 					popup.add(cutAction);
 
@@ -2277,8 +2330,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(
 						copyAction,
 						"Copy",
-						'O',
-						KeyStroke.getKeyStroke("ctrl C"));
+						copyActionMnemonic,
+						copyActionShortcut);
 					editMenu.add(copyAction);
 					popup.add(copyAction);
 
@@ -2293,8 +2346,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(
 						pasteAction,
 						"Paste",
-						'P',
-						KeyStroke.getKeyStroke("ctrl V"));
+						pasteActionMnemonic,
+						pasteActionShortcut);
 					editMenu.add(pasteAction);
 					popup.add(pasteAction);
 
@@ -2583,7 +2636,7 @@ public class TextTrix extends JFrame {
 						refreshPlugIns();
 					}
 					*/
-					setupPlugins();
+					setupPlugIns();
 
 					/* Place menus and other UI components */
 					// must add tool bar before set menu bar lest tool bar shortcuts 
