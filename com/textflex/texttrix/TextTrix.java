@@ -69,8 +69,9 @@ public class TextTrix extends JFrame {
     private JMenu toolsMenu = new JMenu("Tools"); // tools plugins
     private JToolBar toolBar = new JToolBar("Trix and Tools"); // icons
 
-    /**Constructs a new <code>TextTrix</code> frame and starting 
-     * <code>TextPad</code>.
+    /** Constructs a new <code>TextTrix</code> frame and with
+	<code>TextPad</code>s for each of the specified paths or at least
+	one <code>TextPad</code>.
      */
     public TextTrix(String[] paths) {
 	setTitle("Text Trix");
@@ -345,6 +346,8 @@ public class TextTrix extends JFrame {
 
 
 
+
+
 	/* View menu items */
 	
 	// (ctrl-[) switch to the preceding tab
@@ -415,8 +418,7 @@ public class TextTrix extends JFrame {
 	    = new AbstractAction("About...",
 				 makeIcon("images/minicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
-		    String text = "";
-		    text = readText("about.txt");
+		    String text = readText("about.txt");
 		    String iconPath = "images/texttrixsignature.png";
 		    JOptionPane
 			.showMessageDialog(null, 
@@ -576,63 +578,31 @@ public class TextTrix extends JFrame {
 
 
 
+    /** Creates a plugin action.
+	Allows the plugin to be invoked from a button or other action-capable
+	interface.
+	@param pl plugin from which to make an action
+    */
     public void makePlugInAction(final PlugIn pl) {
-	String name = pl.getName();
-	//	System.out.println("action name: " + name);
-	String category = pl.getCategory();
-	String description = pl.getDescription();
+	String name = pl.getName(); // plugin name
+	String category = pl.getCategory(); // plugin category, for menu adding
+	String description = pl.getDescription(); // brief description
+	// reader for extended description
 	BufferedReader detailedDescriptionBuf = pl.getDetailedDescription();
-	ImageIcon icon = pl.getIcon();
-	ImageIcon rollIcon = pl.getRollIcon();
+	ImageIcon icon = pl.getIcon(); // icon
+	ImageIcon rollIcon = pl.getRollIcon(); // icon for mouse-rollover
+
+	// create the action
 	Action action = 
 	    new AbstractAction(name, icon) {
 		public void actionPerformed(ActionEvent evt) {
-		    int tabIndex = tabbedPane.getSelectedIndex();
-		    if (tabIndex != -1) {
-			// may want to automatically apply HTML replacer 
-			// after converting to plain
-			viewPlain();
-			TextPad t = (TextPad)textAreas
-			    .get(tabbedPane.getSelectedIndex());
-			Document doc = t.getDocument();
-			//			String text = t.getText();
-			String text = null;
-
-			// only modify the selected text, and make 
-			// the action undoable
-			int start = t.getSelectionStart();
-			int end = t.getSelectionEnd();
-			try {
-			    if (start == end) {
-				// may need to add original text to history buffer
-				// before making the change
-				//			    t.setUndoableText(pl.run(text, 0, text.length()));
-				text = doc.getText(0, doc.getLength());
-				text = pl.run(text);
-				doc.remove(0, doc.getLength());
-				doc.insertString(0, text, null);
-				// approximates the original caret position
-				if (start > doc.getLength()) {
-				    t.setCaretPosition(doc.getLength());
-				} else {
-				    t.setCaretPosition(start);
-				}
-			    } else {
-				//				t.setUndoableText(pl.run(text, start, end));
-				int len = end - start;
-				text = doc.getText(start, len);
-				text = pl.run(text);
-				doc.remove(start, len);
-				doc.insertString(start, text, null);
-			    }
-			    
-			    
-			} catch (BadLocationException e) {
-			    e.printStackTrace();
-			}
-		    }
+		    // invoke the plugin's text manipulation on the current
+		    // TextPad's text
+		    textTinker(pl); 
 		}
 	    };
+	
+	// add the action to the appropriate menu
 	if (category.equalsIgnoreCase("tools")) {
 	    setAction(action, name, description, toolsCharsUnavailable);
 	    toolsMenu.add(action);
@@ -640,11 +610,56 @@ public class TextTrix extends JFrame {
 	    setAction(action, name, description, trixCharsUnavailable);
 	    trixMenu.add(action);
 	}
+
+	// add the action to a tool bar menu
 	JButton button = toolBar.add(action);
 	button.setBorderPainted(false);
 	setRollover(button, rollIcon);
 	if (detailedDescriptionBuf != null)
 	button.setToolTipText(LibTTx.readText(detailedDescriptionBuf));
+    }
+
+    public void textTinker(PlugIn pl) {
+	TextPad t = getSelectedTextPad();
+	if (t != null) {
+	    viewPlain();
+	    Document doc = t.getDocument();
+	    //			String text = t.getText();
+	    String text = null;
+
+	    // only modify the selected text, and make 
+	    // the action undoable
+	    int start = t.getSelectionStart();
+	    int end = t.getSelectionEnd();
+	    try {
+		if (start == end) {
+		    // may need to add original text to history buffer
+		    // before making the change
+		    //			    t.setUndoableText(pl.run(text, 0, text.length()));
+		    text = doc.getText(0, doc.getLength());
+		    text = pl.run(text);
+		    doc.remove(0, doc.getLength());
+		    doc.insertString(0, text, null);
+		    // approximates the original caret position
+		    if (start > doc.getLength()) {
+			t.setCaretPosition(doc.getLength());
+		    } else {
+			t.setCaretPosition(start);
+		    }
+		} else {
+		    //				t.setUndoableText(pl.run(text, start, end));
+		    int len = end - start;
+		    text = doc.getText(start, len);
+		    text = pl.run(text);
+		    doc.remove(start, len);
+		    doc.insertString(start, text, null);
+		}
+			    
+			    
+	    } catch (BadLocationException e) {
+		e.printStackTrace();
+	    }
+	}
     }
 
     public void setupPlugins() {
@@ -1247,9 +1262,9 @@ public class TextTrix extends JFrame {
     }
 
     public boolean openFile(File file) {
-	if (file.exists()) {
+	String path = file.getPath();
+	if (file.isFile()) {
 	    TextPad t = getSelectedTextPad();
-	    String path = file.getPath();
 	    try {
 		BufferedReader reader = 
 		    new BufferedReader(new FileReader(path));
@@ -1285,6 +1300,10 @@ public class TextTrix extends JFrame {
 	    } catch(IOException exception) {
 		exception.printStackTrace();
 	    }
+	} else if (file.isDirectory()) {
+	    System.out.println(path + " is a directory");
+	} else if (!file.exists()) {
+	    System.out.println(path + " does not exist");
 	}
 	return false;
     }
@@ -1295,9 +1314,11 @@ public class TextTrix extends JFrame {
      * @return true if the approve button is chosen, false if otherwise
      */
     public static boolean fileSaveDialog(JFrame owner) {
-	int tabIndex = tabbedPane.getSelectedIndex();
-	if (tabIndex != -1) {
-	    TextPad t = (TextPad)textAreas.get(tabIndex);
+	//	int tabIndex = tabbedPane.getSelectedIndex();
+	TextPad t = getSelectedTextPad();
+	//	if (tabIndex != -1) {
+	if (t != null) {
+	    //	    TextPad t = (TextPad)textAreas.get(tabIndex);
 	    if (t.fileExists()) {
 		chooser.setCurrentDirectory(new File(t.getDir()));
 		// save to file's current location
@@ -1311,19 +1332,55 @@ public class TextTrix extends JFrame {
 	    // if set to true, probably have to use double-quotes
 	    // when typing names
 	    chooser.setMultiSelectionEnabled(false); 
+	    return getSavePath(owner);
+	}
+	return false;
+    }
+
+    private static boolean getSavePath(JFrame owner) {
+	boolean repeat = false;
+	do {
 	    int result = chooser.showSaveDialog(owner);
 	    if (result == JFileChooser.APPROVE_OPTION) {
 		String path = chooser.getSelectedFile().getPath();
-		saveFile(path);
-		setSaveDir(chooser.getSelectedFile().getParent());
-		tabbedPane.setToolTipTextAt(tabIndex, path);
-		return true;
+		//		System.out.println("path: " + path);
+		File f = new File(path);
+		int choice = 0;
+		if (f.exists()) {
+		    String overwrite = path 
+			+ "\nalready exists.  Should I overwrite it?";
+		    String[] options = { "But of course",
+					 "Please, no!",
+					 "Cancel" };
+		    choice 
+			= JOptionPane
+			.showOptionDialog(owner,
+					  overwrite,
+					  "Overwrite?",
+					  JOptionPane
+					  .YES_NO_CANCEL_OPTION,
+					  JOptionPane
+					  .WARNING_MESSAGE,
+					  null,
+					  options,
+					  options[1]);
+		}
+		if (choice == 1) {
+		    repeat = true;
+		} else if (choice == 2) {
+		    return false;
+		} else {
+		    saveFile(path);
+		    setSaveDir(chooser.getSelectedFile().getParent());
+		    tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
+						path);
+		    repeat = false;
+		}
 	    } else {
 		return false;
 	    }
-	} else {
-	    return false;
-	}
+	} while (repeat);
+	return true;
     }
 
     /**Evokes a open file dialog, from which the user can
