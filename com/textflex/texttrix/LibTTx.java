@@ -1,36 +1,39 @@
-/* LibTTx.java    
-   Text Trix
-   the text tinker
-   http://textflex.com/texttrix
-   
-   Copyright (c) 2002-3, Text Flex
-   All rights reserved.
-   
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions 
-   are met:
-   
-   * Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-   * Neither the name of the Text Trix nor the names of its
-   contributors may be used to endorse or promote products derived
-   from this software without specific prior written permission.
-   
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-   IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-   PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-   OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
-*/
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is the Text Trix code.
+ *
+ * The Initial Developer of the Original Code is
+ * Text Flex.
+ * Portions created by the Initial Developer are Copyright (C) 2003
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s): David Young <dvd@textflex.com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 
 package com.textflex.texttrix;
 
@@ -38,217 +41,222 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
-
+import java.awt.*;
 
 public class LibTTx {
 
-    public LibTTx() {
-    }
+	public LibTTx() {
+	}
 
-    /** Loads all the plugins from a given directory.
+	/** Loads all the plugins from a given directory.
 	Assumes that all files ending in "<code>.jar</code>" are plugins.
 	Creates an array of plugin objects from the files.
 	@param plugInDir directory containing the plugin JAR files
 	@return array of plugins
-    */
-    public static PlugIn[] loadPlugIns(File plugInDir) {
-	// get a list of files ending with ".jar"
-	String endsWith = ".jar"; // only list files ending w/ team.txt
-	EndsWithFileFilter filter = new EndsWithFileFilter();
-	filter.add(endsWith);
-	String[] plugInList = plugInDir.list(filter);
+	*/
+	public static PlugIn[] loadPlugIns(File plugInDir) {
+		// get a list of files ending with ".jar"
+		String endsWith = ".jar"; // only list files ending w/ team.txt
+		EndsWithFileFilter filter = new EndsWithFileFilter();
+		filter.add(endsWith);
+		String[] plugInList = plugInDir.list(filter);
 
-	// create objects from each plugin in the list
-	PlugIn[] plugIns = null; // array of PlugIn's to return
-	// traverse /teams dir, listing names w/o the ending
-	if (plugInList != null) {
-	    plugIns = new PlugIn[plugInList.length];
-	    for (int i = 0; i < plugInList.length; i++) {
-		// loader corresponding to the given plugin's location
-		ClassLoader loader = null;
-		String path = null;
-		/* Beginning with JRE v.1.4.2, the URL must be created
-		   by first making a File object from the path and then
-		   converting it to a URL.  Manually parsing "file://"
-		   to the head of the path and converting the resulting
-		   String into a URL no longer works.
-		*/
-		try {
-		    //		    System.out.println(plugInDir.toString());
-		    path = plugInDir.toString() 
-			+ File.separator + plugInList[i];
-		    //		    System.out.println("path: " + path);
-		    //		    String urlPath = "file://" + path;
-		    //		    URL url = new URL(urlPath);
-		    URL url = new File(path).toURL();
-		    //		    System.out.println(url.toString());
-		    loader = new URLClassLoader(new URL[] { url } );
-		    //		    System.out.println(url.toString());
-		} catch (MalformedURLException e) {}
-		// all plugins are in the package, com.textflex.texttrix
-		String name = "com.textflex.texttrix." 
-		    + plugInList[i]
-		    .substring(0, plugInList[i].indexOf(".jar"));
-		plugIns[i] = (PlugIn) createObject(name, loader);
-		plugIns[i].setPath(path);
-	    }
+		// create objects from each plugin in the list
+		PlugIn[] plugIns = null; // array of PlugIn's to return
+		// traverse /teams dir, listing names w/o the ending
+		if (plugInList != null) {
+			plugIns = new PlugIn[plugInList.length];
+			for (int i = 0; i < plugInList.length; i++) {
+				// loader corresponding to the given plugin's location
+				ClassLoader loader = null;
+				String path = null;
+				/* Beginning with JRE v.1.4.2, the URL must be created
+				   by first making a File object from the path and then
+				   converting it to a URL.  Manually parsing "file://"
+				   to the head of the path and converting the resulting
+				   String into a URL no longer works.
+				*/
+				try {
+					//		    System.out.println(plugInDir.toString());
+					path =
+						plugInDir.toString() + File.separator + plugInList[i];
+					//		    System.out.println("path: " + path);
+					//		    String urlPath = "file://" + path;
+					//		    URL url = new URL(urlPath);
+					URL url = new File(path).toURL();
+					//		    System.out.println(url.toString());
+					loader = new URLClassLoader(new URL[] { url });
+					//		    System.out.println(url.toString());
+				} catch (MalformedURLException e) {
+				}
+				// all plugins are in the package, com.textflex.texttrix
+				String name =
+					"com.textflex.texttrix."
+						+ plugInList[i].substring(
+							0,
+							plugInList[i].indexOf(".jar"));
+				plugIns[i] = (PlugIn) createObject(name, loader);
+				plugIns[i].setPath(path);
+			}
+		}
+		return plugIns;
 	}
-	return plugIns;
-    }
 
-    /** Create the object of the given name in the class loader's location.
+	/** Create the object of the given name in the class loader's location.
 	@param name name of object to load
 	@param loader class loader referencing a location containing
 	the named class
-    */
-    public static Object createObject(String name, ClassLoader loader) {
-	Object obj = null; // the object to return
-	// load the class
-	try {
-	    //	    System.out.println("name: " + name);
-	    Class cl = loader.loadClass(name);
-	    obj = cl.newInstance();
-	} catch (InstantiationException e) {
-	    e.printStackTrace();
-	} catch (IllegalAccessException e) {
-	    e.printStackTrace();
-	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
+	*/
+	public static Object createObject(String name, ClassLoader loader) {
+		Object obj = null; // the object to return
+		// load the class
+		try {
+			//	    System.out.println("name: " + name);
+			Class cl = loader.loadClass(name);
+			obj = cl.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return obj;
 	}
-	return obj;
-    }
 
-
-    /** Increases arrays to accomodate 10% + 10 more elements.
+	/** Increases arrays to accomodate 10% + 10 more elements.
 	Allows an unlimited number of elements in a given array.
 	@param array to increase in size
 	@return larger array
-    */
-    public static Object growArray(Object array) {
-	Class arrayClass = array.getClass();
-	if (!arrayClass.isArray()) return null; // exit immediately
-	Class componentType = arrayClass.getComponentType();
-	int len = Array.getLength(array);
-	// increase array length by 10% + 10 elements
-	Object newArray =  Array.newInstance(componentType, 
-					     len * 11 / 10 + 10);
-	System.arraycopy(array, 0, newArray, 0, len);
-	return newArray;
-    }
+	*/
+	public static Object growArray(Object array) {
+		Class arrayClass = array.getClass();
+		if (!arrayClass.isArray())
+			return null; // exit immediately
+		Class componentType = arrayClass.getComponentType();
+		int len = Array.getLength(array);
+		// increase array length by 10% + 10 elements
+		Object newArray = Array.newInstance(componentType, len * 11 / 10 + 10);
+		System.arraycopy(array, 0, newArray, 0, len);
+		return newArray;
+	}
 
-    /** Shortens arrays to the minimum number of elements.
+	/** Shortens arrays to the minimum number of elements.
 	Allows checking for number of filled elements by simply 
 	calling <code><i>array</i>.length.
 	@param array array to truncate
 	@param length number of elements to truncate to
 	@return array as a single object, not an array of objects
-    */
-    public static Object truncateArray(Object array, int length) {
-	Class arrayClass = array.getClass();
-       	if (!arrayClass.isArray()) return null; // exit immediately
-	Class componentType = arrayClass.getComponentType();
-	Object newArray = Array.newInstance(componentType, length);
-	System.arraycopy(array, 0, newArray, 0, length);
-	return newArray;
-    }
-
-
-    /**Read in text from a file and return the text as a string.
-     * Differs from <code>displayFile(String path)</code> because
-     * allows editing.
-     * @param path text file stream
-     * @return text from file
-     */
-    public static String readText(String path) {
-	String text = "";
-	InputStream in = null;
-	BufferedReader reader = null;
-	try {
-	    in = TextTrix.class.getResourceAsStream(path);
-	    reader = new BufferedReader(new InputStreamReader(in));
-	    String line;
-	    while ((line = reader.readLine()) != null)
-		text = text + line + "\n";
-	} catch(IOException exception) {
-	    exception.printStackTrace();
-	    return "";
-	} finally {
-	    try {
-		if (reader != null) reader.close();
-		if (in != null) in.close();
-	    } catch(IOException exception) {
-		//	    exception.printStackTrace();
-		return "";
-	    }
+	*/
+	public static Object truncateArray(Object array, int length) {
+		Class arrayClass = array.getClass();
+		if (!arrayClass.isArray())
+			return null; // exit immediately
+		Class componentType = arrayClass.getComponentType();
+		Object newArray = Array.newInstance(componentType, length);
+		System.arraycopy(array, 0, newArray, 0, length);
+		return newArray;
 	}
-	return text;
-    }
-	
-    /**Read in text from a file and return the text as a string.
-     * Differs from <code>displayFile(String path)</code> because
-     * allows editing.
-     * @param reader text file stream
-     * @return text from file
-     */
-    public static String readText(BufferedReader reader) {
-	String text = "";
-	String line;
-	try {
-	    while ((line = reader.readLine()) != null)
-		text = text + line + "\n";
-	} catch(IOException exception) {
-	    exception.printStackTrace();
+
+	/**Read in text from a file and return the text as a string.
+	 * Differs from <code>displayFile(String path)</code> because
+	 * allows editing.
+	 * @param path text file stream
+	 * @return text from file
+	 */
+	public static String readText(String path) {
+		String text = "";
+		InputStream in = null;
+		BufferedReader reader = null;
+		try {
+			in = TextTrix.class.getResourceAsStream(path);
+			reader = new BufferedReader(new InputStreamReader(in));
+			String line;
+			while ((line = reader.readLine()) != null)
+				text = text + line + "\n";
+		} catch (IOException exception) {
+			exception.printStackTrace();
+			return "";
+		} finally {
+			try {
+				if (reader != null)
+					reader.close();
+				if (in != null)
+					in.close();
+			} catch (IOException exception) {
+				//	    exception.printStackTrace();
+				return "";
+			}
+		}
+		return text;
 	}
-	return text;
-    }
 
+	/**Read in text from a file and return the text as a string.
+	 * Differs from <code>displayFile(String path)</code> because
+	 * allows editing.
+	 * @param reader text file stream
+	 * @return text from file
+	 */
+	public static String readText(BufferedReader reader) {
+		String text = "";
+		String line;
+		try {
+			while ((line = reader.readLine()) != null)
+				text = text + line + "\n";
+		} catch (IOException exception) {
+			exception.printStackTrace();
+		}
+		return text;
+	}
 
+	/**Enable button rollover icon change.
+	 * @param button <code>JButton</code> to display icon rollover change
+	 * @param iconPath location of icon to change to
+	 */
+	public static void setRollover(JButton button, String iconPath) {
+		button.setRolloverIcon(makeIcon(iconPath));
+		button.setRolloverEnabled(true);
+	}
 
+	/**Enable button rollover icon change.
+	 * @param button <code>JButton</code> to display icon rollover change
+	 * @param icon location of icon to change to
+	 */
+	public static void setRollover(JButton button, ImageIcon icon) {
+		button.setRolloverIcon(icon);
+		button.setRolloverEnabled(true);
+	}
 
+	/**Set an action's properties.
+	 * @param action action to set
+	 * @param description tool tip
+	 * @param mnemonic menu shortcut
+	 * @param keyStroke accelerator key shortcut
+	 */
+	public static void setAcceleratedAction(
+		Action action,
+		String description,
+		char mnemonic,
+		KeyStroke keyStroke) {
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+		action.putValue(Action.ACCELERATOR_KEY, keyStroke);
+	}
 
+	/**Sets an action's properties.
+	 * @param action action to set
+	 * @param description tool tip
+	 * @param mnemonic menu shortcut
+	 */
+	public static void setAction(
+		Action action,
+		String description,
+		char mnemonic) {
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+	}
 
-    /**Enable button rollover icon change.
-     * @param button <code>JButton</code> to display icon rollover change
-     * @param iconPath location of icon to change to
-     */
-    public static void setRollover(JButton button, String iconPath) {
-	button.setRolloverIcon(makeIcon(iconPath));
-	button.setRolloverEnabled(true);
-    }
-		
-    /**Enable button rollover icon change.
-     * @param button <code>JButton</code> to display icon rollover change
-     * @param icon location of icon to change to
-     */
-    public static void setRollover(JButton button, ImageIcon icon) {
-	button.setRolloverIcon(icon);
-	button.setRolloverEnabled(true);
-    }
-
-    /**Set an action's properties.
-     * @param action action to set
-     * @param description tool tip
-     * @param mnemonic menu shortcut
-     * @param keyStroke accelerator key shortcut
-     */
-    public static void setAcceleratedAction(Action action, String description, 
-			  char mnemonic, KeyStroke keyStroke) {
-	action.putValue(Action.SHORT_DESCRIPTION, description);
-	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
-	action.putValue(Action.ACCELERATOR_KEY, keyStroke);
-    }
-	
-    /**Sets an action's properties.
-     * @param action action to set
-     * @param description tool tip
-     * @param mnemonic menu shortcut
-     */
-    public static void setAction(Action action, String description, char mnemonic) {
-	action.putValue(Action.SHORT_DESCRIPTION, description);
-	action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
-    }
-
-    /** Sets an action's properties.
+	/** Sets an action's properties.
 	Assumes that the action has a name, and that the name is used
 	in the menu that will house the action.
 	@param action action to set
@@ -257,59 +265,86 @@ public class LibTTx {
 	@param charsUnavailable a string of characters unavailable to use
 	as mnemonics, as in those already in the menu where the action
 	will be placed
-     */
-    public static String setAction(Action action, String name, String description,
-			  String charsUnavailable) {
-	char mnemonic = 0;
-	int i = 0;
-	// tries to get a mnemonic that has not been taken
-	for (i = 0; i < name.length()
-		 && charsUnavailable
-		 .indexOf((mnemonic = name.charAt(i)))
-		 != -1;
-	     i++);
-	// otherwise haven't found a suitable char
-	if (i < name.length()) { 
-	    action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
-	    charsUnavailable += mnemonic;
+	 */
+	public static String setAction(
+		Action action,
+		String name,
+		String description,
+		String charsUnavailable) {
+		char mnemonic = 0;
+		int i = 0;
+		// tries to get a mnemonic that has not been taken
+		for (i = 0;
+			i < name.length()
+				&& charsUnavailable.indexOf((mnemonic = name.charAt(i))) != -1;
+			i++);
+		// otherwise haven't found a suitable char
+		if (i < name.length()) {
+			action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+			charsUnavailable += mnemonic;
+		}
+		// adds the description
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		return charsUnavailable;
 	}
-	// adds the description
-	action.putValue(Action.SHORT_DESCRIPTION, description);
-	return charsUnavailable;
-    }
 
-    /** Creates an image icon.
+	/** Creates an image icon.
 	@param path image file location relative to TextTrix.class
 	@return icon from archive; null if the file cannot be retrieved
-     */
-    public static ImageIcon makeIcon(String path) {
-	URL iconURL = LibTTx.class.getResource(path);
-	return (iconURL != null) ? new ImageIcon(iconURL) : null;
-    }
+	 */
+	public static ImageIcon makeIcon(String path) {
+		URL iconURL = LibTTx.class.getResource(path);
+		return (iconURL != null) ? new ImageIcon(iconURL) : null;
+	}
 
-
-
+	/**Adds a new component to the <code>GridBagLayout</code> manager.
+	   @param c component to add
+	   @param constraints layout constraints object
+	   @param x column number
+	   @param y row number
+	   @param w number of columns to span
+	   @param h number of rows to span
+	   @param wx column weight
+	   @param wy row weight
+	*/
+	public static void addGridBagComponent(
+		Component c,
+		GridBagConstraints constraints,
+		int x,
+		int y,
+		int w,
+		int h,
+		int wx,
+		int wy,
+		Container pane) {
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = w;
+		constraints.gridheight = h;
+		constraints.weightx = wx;
+		constraints.weighty = wy;
+		pane.add(c, constraints);
+	}
 }
-
 
 /** Filters filenames to select only files with particular endings.
  */
 class EndsWithFileFilter implements FilenameFilter {
-    private String endsWith = ""; // required ending
+	private String endsWith = ""; // required ending
 
-    /** Sets the required ending.
+	/** Sets the required ending.
 	@param String string that filename must end with to pass the filter
-    */
-    public void add(String aEndsWith) {
-	endsWith = aEndsWith;
-    }
+	*/
+	public void add(String aEndsWith) {
+		endsWith = aEndsWith;
+	}
 
-    /** Aceepts the file if its name ends withe specified string, 
+	/** Aceepts the file if its name ends withe specified string, 
 	<code>endsWith</code>.
 	@param file file to check
 	@param name name to check
-    */
-    public boolean accept(File file, String name) {
-	return (name.endsWith(endsWith)) ? true : false;
-    }
+	*/
+	public boolean accept(File file, String name) {
+		return (name.endsWith(endsWith)) ? true : false;
+	}
 }
