@@ -45,7 +45,7 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-import java.util.prefs.*;
+//import java.util.prefs.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -54,6 +54,8 @@ import java.util.prefs.*;
  */
 public class TextTrix extends JFrame {
 	private static ArrayList textAreas = new ArrayList(); // all the TextPads
+	private Container contentPane = getContentPane();
+	private JMenuBar menuBar = null;
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
@@ -75,23 +77,28 @@ public class TextTrix extends JFrame {
 	private static Action prefsOkayAction = null;
 	private static Action prefsApplyAction = null;
 	private static Action prefsCancelAction = null;
-	private static PrefsListener prefsListener = null;
-	private static boolean respondToPrefsListener = false;
+	//private static PrefsListener prefsListener = null;
+	private static boolean updateFileHist = false;
 	private static JMenu fileMenu = new JMenu("File");
-	private static int fileHistCount = 0;
+	//private static int fileHistCount = 0;
+	private static int fileHistStart = -1;
+	private MenuBarCreator menuBarCreator = null;
+	private FileHist fileHist = null;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
 	one <code>TextPad</code>.
 	 */
-	public TextTrix(String[] paths) {
+	public TextTrix(final String[] paths) {
 		setTitle("Text Trix");
 
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
-				respondToPrefsListener = true;
+					//respondToPrefsListener = true;
+	System.out.println("Storing the prefs...");
 				getPrefs().storePrefs();
-				respondToPrefsListener = false;
+				applyPrefs();
+				//respondToPrefsListener = false;
 				getPrefs().dispose();
 			}
 		};
@@ -100,7 +107,6 @@ public class TextTrix extends JFrame {
 			"Okay",
 			'O',
 			KeyStroke.getKeyStroke("alt O"));
-			
 
 		// creates an action that could store preferences without closing the window;
 		// the class, not the calling function, creates the action b/c no need to report
@@ -109,9 +115,10 @@ public class TextTrix extends JFrame {
 		// and destroy the object 
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
-				respondToPrefsListener = true;
+					//respondToPrefsListener = true;
+	System.out.println("Storing the prefs...");
 				getPrefs().storePrefs();
-				respondToPrefsListener = false;
+				//respondToPrefsListener = false;
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -132,7 +139,7 @@ public class TextTrix extends JFrame {
 			'N',
 			KeyStroke.getKeyStroke("alt C"));
 		//prefs = new Prefs(prefsOkayAction, prefsCancelAction);
-		prefsListener = new PrefsListener();
+		//prefsListener = new PrefsListener();
 		getPrefs();
 
 		// pre-set window size
@@ -178,7 +185,7 @@ public class TextTrix extends JFrame {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						if (t != null) {
-							setAutoIndent(t.getAutoIndent());
+							setAutoIndent();
 							// update the tab index record;
 							// addTabIndexHistory increments the record index;
 							// add the current tab selection now to ensure that
@@ -206,61 +213,8 @@ public class TextTrix extends JFrame {
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
 
-		// make menu bar and menus
-		JMenuBar menuBar = new JMenuBar();
-		fileMenu.setMnemonic('I'); // not 'F' since Alt-f for word-forward
-		JMenu editMenu = new JMenu("Edit");
-		editMenu.setMnemonic('E');
-		JMenu viewMenu = new JMenu("View");
-		viewMenu.setMnemonic('V');
-		trixMenu = new JMenu("Trix");
-		trixMenu.setMnemonic('T');
-		toolsMenu = new JMenu("Tools");
-		toolsMenu.setMnemonic('O');
-		JMenu helpMenu = new JMenu("Help");
-		helpMenu.setMnemonic('H');
-
-		// make tool bar
-		toolBar = new JToolBar("Trix and Tools");
-		toolBar.addMouseListener(new PopupListener());
-		toolBar.setBorderPainted(false);
-
-		popup = new JPopupMenu();
-		chooser = new JFileChooser();
-
-		/* File menu items */
-
-		// make new tab and text area
-		Action newAction = new AbstractAction("New") {
-			public void actionPerformed(ActionEvent evt) {
-				addTextArea(textAreas, tabbedPane, makeNewFile());
-			}
-		};
-		// per Mozilla keybinding
-		LibTTx.setAcceleratedAction(
-			newAction,
-			"New",
-			'T',
-			KeyStroke.getKeyStroke("ctrl T"));
-		fileMenu.add(newAction);
-
-		// (ctrl-o) open file; use selected tab if empty
-		Action openAction =
-			new FileOpenAction(
-				TextTrix.this,
-				"Open",
-				LibTTx.makeIcon("images/openicon-16x16.png"));
-		LibTTx.setAcceleratedAction(
-			openAction,
-			"Open",
-			'O',
-			KeyStroke.getKeyStroke("ctrl O"));
-		fileMenu.add(openAction);
-		JButton openButton = toolBar.add(openAction);
-		openButton.setBorderPainted(false);
-		LibTTx.setRollover(openButton, "images/openicon-roll-16x16.png");
-
 		// set text and web file filters for open/save dialog boxes
+		chooser = new JFileChooser();
 		final ExtensionFileFilter webFilter = new ExtensionFileFilter();
 		webFilter.addExtension("html");
 		webFilter.addExtension("htm");
@@ -276,468 +230,67 @@ public class TextTrix extends JFrame {
 		rtfFilter.setDescription("RTF files (*.rtf)");
 		chooser.setFileFilter(rtfFilter);
 
+		final ExtensionFileFilter prgmFilter = new ExtensionFileFilter();
+		prgmFilter.addExtension("java");
+		prgmFilter.addExtension("cpp");
+		prgmFilter.addExtension("c");
+		prgmFilter.setDescription(
+			"Programming source code (*.java, *.cpp, *.c)");
+		chooser.setFileFilter(prgmFilter);
+
 		final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
 		txtFilter.addExtension("txt");
 		txtFilter.setDescription("Text files (*.txt)");
 		chooser.setFileFilter(txtFilter);
 
-		// close file; check if saved
-		Action closeAction =
-			new AbstractAction(
-				"Close",
-				LibTTx.makeIcon("images/closeicon-16x16.png")) {
-			public void actionPerformed(ActionEvent evt) {
-				int i = tabbedPane.getSelectedIndex();
-				if (i >= 0) {
-					updateTabIndexHistory = false;
-					removeTabIndexHistory(i);
-					updateTabIndexHistory = true;
-					closeTextArea(i, textAreas, tabbedPane);
+		fileHist = new FileHist();
+		/*
+		try {
+			EventQueue.invokeAndWait(new Runnable() {
+				public void run() {
+					(menuBarCreator = new MenuBarCreator()).start();
 				}
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			closeAction,
-			"Close",
-			'C',
-			KeyStroke.getKeyStroke("ctrl W"));
-		fileMenu.add(closeAction);
+			});
+		} catch (InterruptedException e) {
+		} catch (java.lang.reflect.InvocationTargetException e) {
+		}
+		*/
 
-		// (ctrl-s) save file; no dialog if file already created
-		Action saveAction =
-			new AbstractAction(
-				"Save",
-				LibTTx.makeIcon("images/saveicon-16x16.png")) {
-			public void actionPerformed(ActionEvent evt) {
-				TextPad t = getSelectedTextPad(); //null;
-				// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
-				if (t != null) {
-					if (t.fileExists()) {
-						if (!saveFile(t.getPath())) {
-							String msg =
-								t.getPath()
-									+ " couldn't be written.\n"
-									+ "Would you like to try saving it somewhere else?";
-							String title = "Couldn't write";
-							if (yesNoDialog(TextTrix.this, msg, title))
-								fileSaveDialog(TextTrix.this);
-						}
-						// otherwise, request filename for new file
-					} else {
-						fileSaveDialog(TextTrix.this);
+		(menuBarCreator = new MenuBarCreator()).start();
+		//toolBarCreator.start();
+
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				contentPane.add(tabbedPane, BorderLayout.CENTER);
+				//	contentPane.add(new TextArea(10, 5), BorderLayout.SOUTH);
+
+				// make first tab and text area;
+				// can only create after making several other user interface
+				// components, such as the autoIndent check menu item
+				System.out.println("Starting to open files");
+				addTextArea(textAreas, tabbedPane, makeNewFile());
+
+				// load files specified at start from command-line
+				if (paths != null) {
+					for (int i = 0; i < paths.length; i++) {
+						openInitialFile(paths[i]);
 					}
 				}
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			saveAction,
-			"Save",
-			'S',
-			KeyStroke.getKeyStroke("ctrl S"));
-		fileMenu.add(saveAction);
-		JButton saveButton = toolBar.add(saveAction);
-		saveButton.setBorderPainted(false);
-		LibTTx.setRollover(saveButton, "images/saveicon-roll-16x16.png");
-
-		// save w/ file save dialog
-		Action saveAsAction =
-			new FileSaveAction(
-				TextTrix.this,
-				"Save as...",
-				LibTTx.makeIcon("images/saveasicon-16x16.png"));
-		LibTTx.setAction(saveAsAction, "Save as...", '.');
-		fileMenu.add(saveAsAction);
-
-		// Start exit functions
-		fileMenu.addSeparator();
-
-		// (ctrl-q) exit file; close each tab separately, checking for saves
-		Action quitAction = new AbstractAction("Quit") {
-			public void actionPerformed(ActionEvent evt) {
-				exitTextTrix();
-			}
-		};
-		// Doesn't work if close all tabs unless click ensure window focused, 
-		// such as clicking on menu
-		LibTTx.setAcceleratedAction(
-			quitAction,
-			"Quit",
-			'Q',
-			KeyStroke.getKeyStroke("ctrl Q"));
-		fileMenu.add(quitAction);
-
-		fileMenu.addSeparator();
-		System.out.println("About to create the menu entries");
-		createFileHist(fileMenu);
-
-		/* Edit menu items */
-
-		// (ctrl-z) undo; multiple undos available
-		Action undoAction = new AbstractAction("Undo") {
-			public void actionPerformed(ActionEvent evt) {
-				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			undoAction,
-			"Undo",
-			'U',
-			KeyStroke.getKeyStroke("ctrl Z"));
-		editMenu.add(undoAction);
-
-		// (ctrl-y) redo; multiple redos available
-		Action redoAction = new AbstractAction("Redo") {
-			public void actionPerformed(ActionEvent evt) {
-				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			redoAction,
-			"Redo",
-			'R',
-			KeyStroke.getKeyStroke("ctrl R"));
-		editMenu.add(redoAction);
-
-		// Start Cut, Copy, Paste actions
-		editMenu.addSeparator();
-
-		// (ctrl-x) cut
-		Action cutAction = new AbstractAction("Cut") {
-			public void actionPerformed(ActionEvent evt) {
-				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			cutAction,
-			"Cut",
-			'C',
-			KeyStroke.getKeyStroke("ctrl X"));
-		editMenu.add(cutAction);
-		popup.add(cutAction);
-
-		// (ctrl-c) copy
-		Action copyAction = new AbstractAction("Copy") {
-			public void actionPerformed(ActionEvent evt) {
-				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			copyAction,
-			"Copy",
-			'O',
-			KeyStroke.getKeyStroke("ctrl C"));
-		editMenu.add(copyAction);
-		popup.add(copyAction);
-
-		// (ctrl-v) paste
-		Action pasteAction = new AbstractAction("Paste") {
-			public void actionPerformed(ActionEvent evt) {
-				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			pasteAction,
-			"Paste",
-			'P',
-			KeyStroke.getKeyStroke("ctrl V"));
-		editMenu.add(pasteAction);
-		popup.add(pasteAction);
-
-		// Start selection items
-		editMenu.addSeparator();
-
-		// select all text in current text area
-		Action selectAllAction = new AbstractAction("Select all") {
-			public void actionPerformed(ActionEvent evt) {
-				((TextPad)textAreas.get(tabbedPane.getSelectedIndex()))
-					.selectAll();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			selectAllAction,
-			"Select all",
-			'S',
-			KeyStroke.getKeyStroke("ctrl L"));
-		editMenu.add(selectAllAction);
-		popup.add(selectAllAction);
-		
-
-		// edit menu preferences separator
-		editMenu.addSeparator();
-
-		// options sub-menu
-		/*
-		JMenu optionsMenu = new JMenu("Options");
-		optionsMenu.setMnemonic('O');
-		editMenu.add(optionsMenu);
-		*/
-
-		// auto-indent
-		// apply the selection to the current TextPad
-		Action autoIndentAction =
-			new AbstractAction("Auto indent the selected file") {
-			public void actionPerformed(ActionEvent evt) {
-				TextPad t = getSelectedTextPad();
-				if (t != null)
-					t.setAutoIndent(autoIndent.isSelected());
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			autoIndentAction,
-			"Automatically repeat tabs with the next line",
-			'I',
-			KeyStroke.getKeyStroke("alt shift I"));
-		//	autoIndent.addActionListener(autoIndentAction);
-		autoIndent = new JCheckBoxMenuItem(autoIndentAction);
-		// auto-indent
-		editMenu.add(autoIndent);
-
-		Action prefsAction = new AbstractAction("Change your preferences") {
-			public void actionPerformed(ActionEvent evt) {
-				getPrefs().show();
-			}
-		};
-		LibTTx.setAction(prefsAction, "It's your preference...", 'P');
-		editMenu.add(prefsAction);
-
-		/* View menu items */
-
-		/* Tab switching attempts to combine several elements of web
-		   browser behavior.  Users can cycle through the tabs in the order
-		   in which they were created by using the Ctrl-]/[ key combinations,
-		   similar to the tab cycling in the Mozilla browser.  Occasionally
-		   the user will open a group of files but want to switch among
-		   only a particular subset of them.  Web browsers' "Back" and
-		   "Forward" buttons become useful here.  By first clicking on the
-		   desired sequence of tabs, the order becomes stored in the
-		   Text Trix history.  To traverse up and down that history,
-		   the user can use the Ctrl-Shift-]\[ shortcut keys.
-		   
-		   The default Java key-bindings for tab switchin no longer apply since 
-		   the focus switches automatically to the newly selected tab.
-		*/
-
-		// (ctrl-shift-[) switch back in the tab history
-		Action backTabAction = new AbstractAction("Back") {
-			/* Switch back only up through the first record and  keep from recording
-			 * the past selected tabs as newly selected one.  The current index always 
-			 * refers to the next available position to add selections, while the previous 
-			 * index refers to the current selection.  To go back, the value at two 
-			 * positions back must be checked.
-			 */
-			public void actionPerformed(ActionEvent evt) {
-				if (--tabIndexHistoryIndex >= 1) {
-					// uncouple the tab index history while switching
-					// to the past tabs -- leave the tabs as a
-					// trail until a new tab is chosesn
-					updateTabIndexHistory = false;
-					//			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + tabIndexHistory[tabIndexHistoryIndex]);
-					tabbedPane.setSelectedIndex(
-						tabIndexHistory[tabIndexHistoryIndex - 1]);
-					updateTabIndexHistory = true;
-				} else { // reset the index to its orig val, -1
-					++tabIndexHistoryIndex;
+				if (getPrefs().getReopenTabs()) {
+					//System.out.println("Reopening tabs...");
+					StringTokenizer tokenizer =
+						new StringTokenizer(
+							getPrefs().getReopenTabsList(),
+							",");
+					while (tokenizer.hasMoreElements()) {
+						openInitialFile(tokenizer.nextToken());
+					}
 				}
+				System.out.println("Adding files just opened");
+				syncMenus();
 			}
-		};
-		LibTTx.setAcceleratedAction(
-			backTabAction,
-			"Back",
-			'B',
-			KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
-		viewMenu.add(backTabAction);
-
-		// (ctrl-shift-]) switch forwared in the tab history
-		Action forwardTabAction = new AbstractAction("Forward") {
-			public void actionPerformed(ActionEvent evt) {
-				int i = 0;
-				// switch only through the the last recorded selected tab;
-				// i == -1 signifies that no tab has been recorded
-				// for that index;
-				// keep from updating the history with past selections
-				if (++tabIndexHistoryIndex < tabIndexHistory.length
-					&& (i = tabIndexHistory[tabIndexHistoryIndex - 1]) != -1) {
-					// uncouple the history, preserving it as a 
-					// trail of selections past and future from 
-					// the current position
-					updateTabIndexHistory = false;
-					//			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + i);
-					tabbedPane.setSelectedIndex(i);
-					updateTabIndexHistory = true;
-				} else {
-					--tabIndexHistoryIndex;
-				}
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			forwardTabAction,
-			"Foreward",
-			'F',
-			KeyStroke.getKeyStroke("ctrl shift " + "CLOSE_BRACKET"));
-		viewMenu.add(forwardTabAction);
-
-		// (ctrl-[) switch to the preceding tab
-		Action prevTabAction = new AbstractAction("Preceeding tab") {
-			public void actionPerformed(ActionEvent evt) {
-				int tab = tabbedPane.getSelectedIndex();
-				if (tab > 0) {
-					tabbedPane.setSelectedIndex(tab - 1);
-				} else if (tab == 0) {
-					tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-				}
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			prevTabAction,
-			"Preeceding tab",
-			'P',
-			KeyStroke.getKeyStroke("ctrl OPEN_BRACKET"));
-		viewMenu.add(prevTabAction);
-
-		// (ctrl-]) switch to the next tab
-		Action nextTabAction = new AbstractAction("Next tab") {
-			public void actionPerformed(ActionEvent evt) {
-				int tab = tabbedPane.getSelectedIndex();
-				if ((tab != -1) && (tab == tabbedPane.getTabCount() - 1)) {
-					tabbedPane.setSelectedIndex(0);
-				} else if (tab >= 0) {
-					tabbedPane.setSelectedIndex(tab + 1);
-				}
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			nextTabAction,
-			"Next tab",
-			'N',
-			KeyStroke.getKeyStroke("ctrl CLOSE_BRACKET"));
-		viewMenu.add(nextTabAction);
-
-		viewMenu.addSeparator();
-
-		// view as plain text
-		Action togglePlainViewAction =
-			new AbstractAction("Toggle plain text view") {
-			public void actionPerformed(ActionEvent evt) {
-				viewPlain();
-			}
-		};
-		LibTTx.setAction(togglePlainViewAction, "View as plain text", 'A');
-		viewMenu.add(togglePlainViewAction);
-
-		// view as HTML formatted text
-		Action toggleHTMLViewAction = new AbstractAction("Toggle HTML view") {
-			public void actionPerformed(ActionEvent evt) {
-				viewHTML();
-			}
-		};
-		LibTTx.setAction(toggleHTMLViewAction, "View as HTML", 'H');
-		viewMenu.add(toggleHTMLViewAction);
-
-		// view as RTF formatted text
-		Action toggleRTFViewAction = new AbstractAction("Toggle RTF view") {
-			public void actionPerformed(ActionEvent evt) {
-				viewRTF();
-			}
-		};
-		LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'R');
-		viewMenu.add(toggleRTFViewAction);
-
-		/* Help menu items */
-
-		// about Text Trix, incl copyright notice and version number
-		Action aboutAction =
-			new AbstractAction(
-				"About...",
-				LibTTx.makeIcon("images/minicon-16x16.png")) {
-			public void actionPerformed(ActionEvent evt) {
-				String text = readText("about.txt");
-				String iconPath = "images/texttrixsignature.png";
-				JOptionPane.showMessageDialog(
-					null,
-					text,
-					"About Text Trix",
-					JOptionPane.PLAIN_MESSAGE,
-					LibTTx.makeIcon(iconPath));
-			}
-		};
-		LibTTx.setAction(aboutAction, "About...", 'A');
-		helpMenu.add(aboutAction);
-
-		// TODO: add dialog to point to web doc files if local ones missing
-
-		// shortcuts description; opens new tab;
-		// reads from "shortcuts.txt" in same dir as this class
-		Action shortcutsAction = new AbstractAction("Shortcuts") {
-			public void actionPerformed(ActionEvent evt) {
-				String path = "shortcuts.txt";
-				displayFile(path);
-			}
-		};
-		LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
-		helpMenu.add(shortcutsAction);
-
-		// features descriptions; opens new tab;
-		// reads from "features.txt" in same dir as this class
-		Action featuresAction = new AbstractAction("Features descriptions") {
-			public void actionPerformed(ActionEvent evt) {
-				String path = "features.txt";
-				displayFile(path);
-			}
-		};
-		LibTTx.setAction(featuresAction, "Features descriptions", 'F');
-		helpMenu.add(featuresAction);
-
-		// license; opens new tab;
-		// reads from "license.txt" in same directory as this class
-		Action licenseAction = new AbstractAction("License") {
-			public void actionPerformed(ActionEvent evt) {
-				String path = "license.txt";
-				displayFile(path);
-			}
-		};
-		LibTTx.setAction(licenseAction, "License", 'L');
-		helpMenu.add(licenseAction);
-
-		/* Trix and Tools menus */
-
-		// Load plugins; add to appropriate menu	 
-		setupPlugins();
-
-		/* Place menus and other UI components */
-
-		// add menu bar and menus
-		setJMenuBar(menuBar);
-		menuBar.add(fileMenu);
-		menuBar.add(editMenu);
-		menuBar.add(viewMenu);
-		menuBar.add(trixMenu);
-		menuBar.add(toolsMenu);
-		menuBar.add(helpMenu);
-
-		Container contentPane = getContentPane();
-		contentPane.add(toolBar, BorderLayout.NORTH);
-		contentPane.add(tabbedPane, BorderLayout.CENTER);
-		//	contentPane.add(new TextArea(10, 5), BorderLayout.SOUTH);
-
-		// make first tab and text area;
-		// can only create after making several other user interface
-		// components, such as the autoIndent check menu item
-		addTextArea(textAreas, tabbedPane, makeNewFile());
-
-		// load files specified at start from command-line
-		if (paths != null) {
-			for (int i = 0; i < paths.length; i++) {
-				openInitialFile(paths[i]);
-			}
-		}
-		if (getPrefs().getReopenTabs()) {
-			//System.out.println("Reopening tabs...");
-			StringTokenizer tokenizer =
-				new StringTokenizer(getPrefs().getReopenTabsList(), ",");
-			while (tokenizer.hasMoreElements()) {
-				openInitialFile(tokenizer.nextToken());
-			}
-		}
+		});
+		//fileHist.start(fileMenu, false);
 
 	}
 
@@ -749,16 +302,32 @@ public class TextTrix extends JFrame {
 	 */
 	public static void main(String[] args) {
 		// set the look and feel;
-		// TODO: allow dynamic switching in Preferences section
 		try {
 			//	    System.out.println("java ver num: " + System.getProperty("java.vm.version") + ", " + System.getProperty("os.name"));
+
+			/* JRE Bug 4275928, "RFE: Mnemonics for non-character keys are
+			 * displayed incorectly in the tooltip"
+			 * (http://developer.java.sun.com/developer/bugParade/bugs/435928.html)
+			 * notes that tool tips often append "Alt-" to the shortcut key, even if the
+			 * shortcut should be for "Ctrl-" or another modifier key.  In particular,
+			 * Actions in JMenus display the correct accelerator key in both the tool tip
+			 * and the on the right side of the menu item, but JToolBars show
+			 * the accelerator key as using "Alt-" instead of the true modifier.
+			 * To avoid confusing the user, the pseudo-workaround is to simply
+			 * prevent the tool tips from showing the accelerator keys.  More extensive
+			 * workarounds subclass several swing and java package classes.
+			 */
+			UIManager.getDefaults().put(
+				"ToolTipUI",
+				"javax.swing.plaf.basic.BasicToolTipUI");
+
 			/* GTK+ look and feel for Java v.1.4.2 running on Linux,
 			 * otherwise the default look and feel, such as the new XP 
 			 * interface for Microsoft Windows XP systems with Java v.1.4.2.
 			 * According to http://java.sun.com/j2se/1.4.2/docs/guide/swing/1.4/Post1.4.html, 
 			 * UIManager.getSystemLookAndFeelClassName() will return GTK+ by default
 			 * in Java v.1.5.
-			*/
+			 */
 			if (System.getProperty("os.name").equals("Linux")
 				&& System.getProperty("java.vm.version").indexOf("1.4.2") != -1) {
 				// GTK+ only for available systems
@@ -792,6 +361,19 @@ public class TextTrix extends JFrame {
 		textTrix.show();
 		focuser();
 	}
+	
+	public void syncMenus() {
+		if (fileHistStart != -1) {
+			fileHist.start(fileMenu);
+		}
+		setAutoIndent();
+	}
+		
+
+	/*
+	private void createToolBar() {
+	}
+	*/
 
 	private void openInitialFile(String path) {
 		if (!openFile(new File(path))) {
@@ -841,56 +423,49 @@ public class TextTrix extends JFrame {
 		setTitle(filename + titleSuffix);
 	}
 
-	public void createFileHist(JMenu menu) {
-		// assumes that the file history entries are at the entries in the menu
-		String[] files = getPrefs().retrieveFileHist();
-		//for (int i = files.length - 1; i >= 0; i--) {
-		for (int i = 0; i < files.length; i++) {
-			String file = files[i];
-			//System.out.println("file[" + i + "]: " + file);
-			Action fileAction = createFileHistAction(file);
-			//LibTTx.setAction(fileAction, file, (char)i);
-			menu.add(fileAction);
-		}
-		fileHistCount = files.length;
-	}
-
-	public Action createFileHistAction(final String file) {
-		Action act = new AbstractAction(file) {
-			public void actionPerformed(ActionEvent evt) {
-				openFile(new File(file));
-			}
-		};
-		return act;
-	}
-
 	public static Prefs getPrefs() {
 		return (prefs == null) ? prefs =
 			new Prefs(
 				prefsOkayAction,
 				prefsApplyAction,
-				prefsCancelAction,
-				prefsListener) : prefs;
+				prefsCancelAction) : prefs;
+	}
+
+	public void applyPrefs() {
+		applyGeneralPrefs();
+		applyShortsPrefs();
 	}
 
 	public void applyGeneralPrefs() {
-		updateFileHist(fileMenu);
+		//updateFileHist(fileMenu);
+		fileHist.start(fileMenu);
 	}
 
 	public void applyShortsPrefs() {
-		if (prefs.isStandardKeybindings()) {
+		System.out.println("Applying shorts...");
+		/*
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+			*/
+		if (prefs.isHybridKeybindings()) {
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				getTextPadAt(i).standardKeybindings();
-			}
-		} else if (prefs.isHybridKeybindings()) {
-			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-				getTextPadAt(i).hybridKeybindings();
 			}
 		} else if (prefs.isEmacsKeybindings()) {
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				getTextPadAt(i).emacsKeybindings();
 			}
+		} else {
+			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+				getTextPadAt(i).standardKeybindings();
+			}
 		}
+		//createToolBar();
+		menuBarCreator.start();
+		/*
+			}
+		});
+		*/
 	}
 
 	/*
@@ -908,14 +483,6 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
-
-	public void updateFileHist(JMenu menu) {
-		// assumes that the file history entries are at the entries in the menu
-		for (int i = 0; i < fileHistCount; i++) {
-			menu.remove(menu.getItemCount() - 1);
-		}
-		createFileHist(menu);
-	}
 
 	/** Creates a plugin action.
 	 * Allows the plugin to be invoked from a button or other action-capable
@@ -1240,10 +807,11 @@ public class TextTrix extends JFrame {
 			return null;
 		}
 	}
-	
+
 	public static TextPad getTextPadAt(int i) {
-		if (i < -1 || i >= tabbedPane.getTabCount()) return null;
-		return (TextPad)(textAreas.get(i));
+		if (i < -1 || i >= tabbedPane.getTabCount())
+			return null;
+		return (TextPad) (textAreas.get(i));
 	}
 
 	/**Gets whether the auto-indent function is selected.
@@ -1364,8 +932,17 @@ public class TextTrix extends JFrame {
 		saveDir = aSaveDir;
 	}
 
-	public static void setAutoIndent(boolean b) {
-		autoIndent.setSelected(b);
+	public static void setAutoIndent() {
+		
+		TextPad t = getSelectedTextPad();
+		/*
+		if (t != null) {
+			setAutoIndent(t.getAutoIndent());
+		}
+		*/
+		if (autoIndent != null && t != null) {
+			autoIndent.setSelected(t.getAutoIndent());
+		}
 	}
 
 	/**Makes new file with next non-existent file of name format,
@@ -1595,7 +1172,7 @@ public class TextTrix extends JFrame {
 		ArrayList arrayList,
 		JTabbedPane tabbedPane,
 		File file) {
-		TextPad textPad = new TextPad(file);
+		TextPad textPad = new TextPad(file, getPrefs());
 
 		JScrollPane scrollPane =
 			new JScrollPane(
@@ -1831,7 +1408,7 @@ public class TextTrix extends JFrame {
 					setOpenDir(System.getProperty("user.dir"));
 				}
 				getPrefs().storeFileHist(path);
-				updateFileHist(fileMenu);
+				//updateFileHist(fileMenu);
 				autoAutoIndent(t);
 				return true;
 			} catch (IOException exception) {
@@ -1853,7 +1430,6 @@ public class TextTrix extends JFrame {
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
 		if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
-			setAutoIndent(true);
 			t.setAutoIndent(true);
 		}
 	}
@@ -2039,7 +1615,8 @@ public class TextTrix extends JFrame {
 							path);
 						updateTitle(owner, f.getName());
 						getPrefs().storeFileHist(path);
-						updateFileHist(fileMenu);
+						//updateFileHist(fileMenu);
+						fileHist.start(fileMenu);
 
 						return true;
 					} else { // fail; request another try at saving
@@ -2186,6 +1763,8 @@ public class TextTrix extends JFrame {
 						// request another chance to open them or other files
 						repeat = yesNoDialog(owner, msg, title);
 					}
+					fileHist.start(fileMenu);
+						setAutoIndent();
 					/* Original workaround.
 					   Utilizes the fact that getSelectedFiles() returns an 
 					   array of length 0, which getSelectedFile() returns the
@@ -2304,18 +1883,731 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/*
 	private class PrefsListener implements PreferenceChangeListener {
 		public void preferenceChange(PreferenceChangeEvent evt) {
-			if (respondToPrefsListener) {
-				if (prefs.isGeneralPrefs(evt.getNode())) {
-					System.out.println(
-						"Updating the general prefs: " + evt.getKey());
-					applyGeneralPrefs();
-				} else if (prefs.isShortsPrefs(evt.getNode())) {
-					applyShortsPrefs();
+			//if (respondToPrefsListener) {
+			System.out.println("Responding to prefs change...");
+			if (prefs.isGeneralPrefs(evt.getNode())) {
+				System.out.println(
+					"Updating the general prefs: " + evt.getKey());
+				applyGeneralPrefs();
+			} else if (prefs.isShortsPrefs(evt.getNode())) {
+				applyShortsPrefs();
+			}
+			//}
+		}
+	}
+	*/
+
+	private class MenuBarCreator extends Thread {
+		public void start() {
+			(new Thread(this, "thread")).start();
+		}
+		
+		// probably shouldn't be a Thread since creates the objects that 
+		// many other methods depend on
+		public void run() {
+			//try {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					System.out.println("Creating the menu bar...");
+					char fileMenuMnemonic = '0';
+					char newActionMnemonic = '0';
+					KeyStroke newActionShortcut = null;
+					String exitActionTxt = "";
+					char exitActionMnemonic = '0';
+					KeyStroke exitActionShortcut = null;
+					char selectAllActionMnemonic = '0';
+					KeyStroke selectAllActionShortcut = null;
+
+					if (prefs.isHybridKeybindings()) {
+						fileMenuMnemonic = 'I';
+						newActionMnemonic = 'T';
+						newActionShortcut = KeyStroke.getKeyStroke("ctrl T");
+						exitActionTxt = "Exit";
+						exitActionMnemonic = 'X';
+						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
+						selectAllActionMnemonic = 'A';
+						selectAllActionShortcut =
+							KeyStroke.getKeyStroke("ctrl A");
+						//} else if (prefs.isEmacsKeybindings()) { // TODO: implement Emacs-keybindings
+					} else {
+						fileMenuMnemonic = 'F';
+						newActionMnemonic = 'N';
+						newActionShortcut = KeyStroke.getKeyStroke("ctrl N");
+						exitActionTxt = "Exit";
+						exitActionMnemonic = 'X';
+						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
+						selectAllActionMnemonic = 'L';
+						selectAllActionShortcut =
+							KeyStroke.getKeyStroke("ctrl L");
+					}
+
+					if (menuBar != null) {
+						contentPane.remove(menuBar);
+						fileMenu = new JMenu("File");
+						//fileHistCount = 0;
+					}
+					// make menu bar and menus
+					menuBar = new JMenuBar();
+					fileMenu.setMnemonic(fileMenuMnemonic);
+					// not 'F' since Alt-f for word-forward
+					JMenu editMenu = new JMenu("Edit");
+					editMenu.setMnemonic('E');
+					JMenu viewMenu = new JMenu("View");
+					viewMenu.setMnemonic('V');
+					trixMenu = new JMenu("Trix");
+					trixMenu.setMnemonic('T');
+					toolsMenu = new JMenu("Tools");
+					toolsMenu.setMnemonic('O');
+					JMenu helpMenu = new JMenu("Help");
+					helpMenu.setMnemonic('H');
+
+					// make tool bar
+					toolBar = new JToolBar("Trix and Tools");
+					toolBar.addMouseListener(new PopupListener());
+					toolBar.setBorderPainted(false);
+
+					popup = new JPopupMenu();
+
+					/* File menu items */
+
+					// make new tab and text area
+					Action newAction = new AbstractAction("New") {
+						public void actionPerformed(ActionEvent evt) {
+							addTextArea(textAreas, tabbedPane, makeNewFile());
+						}
+					};
+					// per Mozilla keybinding
+					LibTTx.setAcceleratedAction(
+						newAction,
+						"New",
+						newActionMnemonic,
+						newActionShortcut);
+					fileMenu.add(newAction);
+
+					// (ctrl-o) open file; use selected tab if empty
+					Action openAction =
+						new FileOpenAction(
+							TextTrix.this,
+							"Open",
+							LibTTx.makeIcon("images/openicon-roll-16x16.png"));
+					LibTTx.setAcceleratedAction(
+						openAction,
+						"Open",
+						'O',
+						KeyStroke.getKeyStroke("ctrl O"));
+					fileMenu.add(openAction);
+
+					Action openActionForBtn =
+						new FileOpenAction(
+							TextTrix.this,
+							"Open",
+							LibTTx.makeIcon("images/openicon-16x16.png"));
+					LibTTx.setAction(openActionForBtn, "Open file(s)", 'O');
+					JButton openButton = toolBar.add(openActionForBtn);
+					openButton.setBorderPainted(false);
+					LibTTx.setRollover(
+						openButton,
+						"images/openicon-roll-16x16.png");
+
+					// close file; check if saved
+					Action closeAction =
+						new AbstractAction(
+							"Close",
+							LibTTx.makeIcon("images/closeicon-16x16.png")) {
+						public void actionPerformed(ActionEvent evt) {
+							int i = tabbedPane.getSelectedIndex();
+							if (i >= 0) {
+								updateTabIndexHistory = false;
+								removeTabIndexHistory(i);
+								updateTabIndexHistory = true;
+								closeTextArea(i, textAreas, tabbedPane);
+							}
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						closeAction,
+						"Close",
+						'C',
+						KeyStroke.getKeyStroke("ctrl W"));
+					fileMenu.add(closeAction);
+
+					// (ctrl-s) save file; no dialog if file already created
+					Action saveAction =
+						new AbstractAction(
+							"Save",
+							LibTTx.makeIcon("images/saveicon-16x16.png")) {
+						public void actionPerformed(ActionEvent evt) {
+							TextPad t = getSelectedTextPad(); //null;
+							// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
+							if (t != null) {
+								if (t.fileExists()) {
+									if (!saveFile(t.getPath())) {
+										String msg =
+											t.getPath()
+												+ " couldn't be written.\n"
+												+ "Would you like to try saving it somewhere else?";
+										String title = "Couldn't write";
+										if (yesNoDialog(TextTrix.this,
+											msg,
+											title))
+											fileSaveDialog(TextTrix.this);
+									}
+									// otherwise, request filename for new file
+								} else {
+									fileSaveDialog(TextTrix.this);
+								}
+							}
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						saveAction,
+						"Save",
+						'S',
+						KeyStroke.getKeyStroke("ctrl S"));
+					fileMenu.add(saveAction);
+					JButton saveButton = toolBar.add(saveAction);
+					saveButton.setBorderPainted(false);
+					LibTTx.setRollover(
+						saveButton,
+						"images/saveicon-roll-16x16.png");
+
+					// save w/ file save dialog
+					Action saveAsAction =
+						new FileSaveAction(
+							TextTrix.this,
+							"Save as...",
+							LibTTx.makeIcon("images/saveasicon-16x16.png"));
+					LibTTx.setAction(saveAsAction, "Save as...", '.');
+					fileMenu.add(saveAsAction);
+
+					// Start exit functions
+					fileMenu.addSeparator();
+
+					// (ctrl-q) exit file; close each tab separately, checking for saves
+					Action quitAction = new AbstractAction("Quit") {
+						public void actionPerformed(ActionEvent evt) {
+							exitTextTrix();
+						}
+					};
+					// Doesn't work if close all tabs unless click ensure window focused, 
+					// such as clicking on menu
+					LibTTx.setAcceleratedAction(
+						quitAction,
+						"Quit",
+						'Q',
+						KeyStroke.getKeyStroke("ctrl Q"));
+					fileMenu.add(quitAction);
+
+					fileMenu.addSeparator();
+					System.out.println("About to create the menu entries");
+					//createFileHist(fileMenu);
+					//fileHist.start(fileMenu);
+
+					/* Edit menu items */
+
+					// (ctrl-z) undo; multiple undos available
+					Action undoAction = new AbstractAction("Undo") {
+						public void actionPerformed(ActionEvent evt) {
+							((TextPad)textAreas
+								.get(tabbedPane.getSelectedIndex()))
+								.undo();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						undoAction,
+						"Undo",
+						'U',
+						KeyStroke.getKeyStroke("ctrl Z"));
+					editMenu.add(undoAction);
+
+					// (ctrl-y) redo; multiple redos available
+					Action redoAction = new AbstractAction("Redo") {
+						public void actionPerformed(ActionEvent evt) {
+							((TextPad)textAreas
+								.get(tabbedPane.getSelectedIndex()))
+								.redo();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						redoAction,
+						"Redo",
+						'R',
+						KeyStroke.getKeyStroke("ctrl R"));
+					editMenu.add(redoAction);
+
+					// Start Cut, Copy, Paste actions
+					editMenu.addSeparator();
+
+					// (ctrl-x) cut
+					Action cutAction = new AbstractAction("Cut") {
+						public void actionPerformed(ActionEvent evt) {
+							((TextPad)textAreas
+								.get(tabbedPane.getSelectedIndex()))
+								.cut();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						cutAction,
+						"Cut",
+						'C',
+						KeyStroke.getKeyStroke("ctrl X"));
+					editMenu.add(cutAction);
+					popup.add(cutAction);
+
+					// (ctrl-c) copy
+					Action copyAction = new AbstractAction("Copy") {
+						public void actionPerformed(ActionEvent evt) {
+							((TextPad)textAreas
+								.get(tabbedPane.getSelectedIndex()))
+								.copy();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						copyAction,
+						"Copy",
+						'O',
+						KeyStroke.getKeyStroke("ctrl C"));
+					editMenu.add(copyAction);
+					popup.add(copyAction);
+
+					// (ctrl-v) paste
+					Action pasteAction = new AbstractAction("Paste") {
+						public void actionPerformed(ActionEvent evt) {
+							((TextPad)textAreas
+								.get(tabbedPane.getSelectedIndex()))
+								.paste();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						pasteAction,
+						"Paste",
+						'P',
+						KeyStroke.getKeyStroke("ctrl V"));
+					editMenu.add(pasteAction);
+					popup.add(pasteAction);
+
+					// Start selection items
+					editMenu.addSeparator();
+
+					// select all text in current text area
+					Action selectAllAction = new AbstractAction("Select all") {
+						public void actionPerformed(ActionEvent evt) {
+							((TextPad)textAreas
+								.get(tabbedPane.getSelectedIndex()))
+								.selectAll();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						selectAllAction,
+						"Select all",
+						selectAllActionMnemonic,
+						selectAllActionShortcut);
+					editMenu.add(selectAllAction);
+					popup.add(selectAllAction);
+
+					// edit menu preferences separator
+					editMenu.addSeparator();
+
+					// options sub-menu
+					/*
+					JMenu optionsMenu = new JMenu("Options");
+					optionsMenu.setMnemonic('O');
+					editMenu.add(optionsMenu);
+					*/
+
+					// auto-indent
+					// apply the selection to the current TextPad
+					Action autoIndentAction =
+						new AbstractAction("Auto indent the selected file") {
+						public void actionPerformed(ActionEvent evt) {
+							TextPad t = getSelectedTextPad();
+							if (t != null)
+								t.setAutoIndent(autoIndent.isSelected());
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						autoIndentAction,
+						"Automatically repeat tabs with the next line",
+						'I',
+						KeyStroke.getKeyStroke("alt shift I"));
+					//	autoIndent.addActionListener(autoIndentAction);
+					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
+					// auto-indent
+					editMenu.add(autoIndent);
+
+					Action prefsAction =
+						new AbstractAction("It's your preference...") {
+						public void actionPerformed(ActionEvent evt) {
+							getPrefs().show();
+						}
+					};
+					LibTTx.setAction(
+						prefsAction,
+						"It's your preference...",
+						'Y');
+					editMenu.add(prefsAction);
+
+					/* View menu items */
+
+					/* Tab switching attempts to combine several elements of web
+					   browser behavior.  Users can cycle through the tabs in the order
+					   in which they were created by using the Ctrl-]/[ key combinations,
+					   similar to the tab cycling in the Mozilla browser.  Occasionally
+					   the user will open a group of files but want to switch among
+					   only a particular subset of them.  Web browsers' "Back" and
+					   "Forward" buttons become useful here.  By first clicking on the
+					   desired sequence of tabs, the order becomes stored in the
+					   Text Trix history.  To traverse up and down that history,
+					   the user can use the Ctrl-Shift-]\[ shortcut keys.
+					
+					   The default Java key-bindings for tab switchin no longer apply since 
+					   the focus switches automatically to the newly selected tab.
+					*/
+
+					// (ctrl-shift-[) switch back in the tab history
+					Action backTabAction = new AbstractAction("Back") {
+						/* Switch back only up through the first record and  keep from recording
+						 * the past selected tabs as newly selected one.  The current index always 
+						 * refers to the next available position to add selections, while the previous 
+						 * index refers to the current selection.  To go back, the value at two 
+						 * positions back must be checked.
+						 */
+						public void actionPerformed(ActionEvent evt) {
+							if (--tabIndexHistoryIndex >= 1) {
+								// uncouple the tab index history while switching
+								// to the past tabs -- leave the tabs as a
+								// trail until a new tab is chosesn
+								updateTabIndexHistory = false;
+								//			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + tabIndexHistory[tabIndexHistoryIndex]);
+								tabbedPane.setSelectedIndex(
+									tabIndexHistory[tabIndexHistoryIndex - 1]);
+								updateTabIndexHistory = true;
+							} else { // reset the index to its orig val, -1
+								++tabIndexHistoryIndex;
+							}
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						backTabAction,
+						"Back",
+						'B',
+						KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
+					viewMenu.add(backTabAction);
+
+					// (ctrl-shift-]) switch forwared in the tab history
+					Action forwardTabAction = new AbstractAction("Forward") {
+						public void actionPerformed(ActionEvent evt) {
+							int i = 0;
+							// switch only through the the last recorded selected tab;
+							// i == -1 signifies that no tab has been recorded
+							// for that index;
+							// keep from updating the history with past selections
+							if (++tabIndexHistoryIndex < tabIndexHistory.length
+								&& (i = tabIndexHistory[tabIndexHistoryIndex - 1])
+									!= -1) {
+								// uncouple the history, preserving it as a 
+								// trail of selections past and future from 
+								// the current position
+								updateTabIndexHistory = false;
+								//			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + i);
+								tabbedPane.setSelectedIndex(i);
+								updateTabIndexHistory = true;
+							} else {
+								--tabIndexHistoryIndex;
+							}
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						forwardTabAction,
+						"Foreward",
+						'F',
+						KeyStroke.getKeyStroke(
+							"ctrl shift " + "CLOSE_BRACKET"));
+					viewMenu.add(forwardTabAction);
+
+					// (ctrl-[) switch to the preceding tab
+					Action prevTabAction =
+						new AbstractAction("Preceeding tab") {
+						public void actionPerformed(ActionEvent evt) {
+							int tab = tabbedPane.getSelectedIndex();
+							if (tab > 0) {
+								tabbedPane.setSelectedIndex(tab - 1);
+							} else if (tab == 0) {
+								tabbedPane.setSelectedIndex(
+									tabbedPane.getTabCount() - 1);
+							}
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						prevTabAction,
+						"Preeceding tab",
+						'P',
+						KeyStroke.getKeyStroke("ctrl OPEN_BRACKET"));
+					viewMenu.add(prevTabAction);
+
+					// (ctrl-]) switch to the next tab
+					Action nextTabAction = new AbstractAction("Next tab") {
+						public void actionPerformed(ActionEvent evt) {
+							int tab = tabbedPane.getSelectedIndex();
+							if ((tab != -1)
+								&& (tab == tabbedPane.getTabCount() - 1)) {
+								tabbedPane.setSelectedIndex(0);
+							} else if (tab >= 0) {
+								tabbedPane.setSelectedIndex(tab + 1);
+							}
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						nextTabAction,
+						"Next tab",
+						'N',
+						KeyStroke.getKeyStroke("ctrl CLOSE_BRACKET"));
+					viewMenu.add(nextTabAction);
+
+					viewMenu.addSeparator();
+
+					// view as plain text
+					Action togglePlainViewAction =
+						new AbstractAction("Toggle plain text view") {
+						public void actionPerformed(ActionEvent evt) {
+							viewPlain();
+						}
+					};
+					LibTTx.setAction(
+						togglePlainViewAction,
+						"View as plain text",
+						'A');
+					viewMenu.add(togglePlainViewAction);
+
+					// view as HTML formatted text
+					Action toggleHTMLViewAction =
+						new AbstractAction("Toggle HTML view") {
+						public void actionPerformed(ActionEvent evt) {
+							viewHTML();
+						}
+					};
+					LibTTx.setAction(toggleHTMLViewAction, "View as HTML", 'H');
+					viewMenu.add(toggleHTMLViewAction);
+
+					// view as RTF formatted text
+					Action toggleRTFViewAction =
+						new AbstractAction("Toggle RTF view") {
+						public void actionPerformed(ActionEvent evt) {
+							viewRTF();
+						}
+					};
+					LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'R');
+					viewMenu.add(toggleRTFViewAction);
+
+					/* Help menu items */
+
+					// about Text Trix, incl copyright notice and version number
+					Action aboutAction =
+						new AbstractAction(
+							"About...",
+							LibTTx.makeIcon("images/minicon-16x16.png")) {
+						public void actionPerformed(ActionEvent evt) {
+							String text = readText("about.txt");
+							String iconPath = "images/texttrixsignature.png";
+							JOptionPane.showMessageDialog(
+								null,
+								text,
+								"About Text Trix",
+								JOptionPane.PLAIN_MESSAGE,
+								LibTTx.makeIcon(iconPath));
+						}
+					};
+					LibTTx.setAction(aboutAction, "About...", 'A');
+					helpMenu.add(aboutAction);
+
+					// TODO: add dialog to point to web doc files if local ones missing
+
+					// shortcuts description; opens new tab;
+					// reads from "shortcuts.txt" in same dir as this class
+					Action shortcutsAction = new AbstractAction("Shortcuts") {
+						public void actionPerformed(ActionEvent evt) {
+							String path = "shortcuts.txt";
+							displayFile(path);
+						}
+					};
+					LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
+					helpMenu.add(shortcutsAction);
+
+					// features descriptions; opens new tab;
+					// reads from "features.txt" in same dir as this class
+					Action featuresAction =
+						new AbstractAction("Features descriptions") {
+						public void actionPerformed(ActionEvent evt) {
+							String path = "features.txt";
+							displayFile(path);
+						}
+					};
+					LibTTx.setAction(
+						featuresAction,
+						"Features descriptions",
+						'F');
+					helpMenu.add(featuresAction);
+
+					// license; opens new tab;
+					// reads from "license.txt" in same directory as this class
+					Action licenseAction = new AbstractAction("License") {
+						public void actionPerformed(ActionEvent evt) {
+							String path = "license.txt";
+							displayFile(path);
+						}
+					};
+					LibTTx.setAction(licenseAction, "License", 'L');
+					helpMenu.add(licenseAction);
+
+					/* Trix and Tools menus */
+
+					// Load plugins; add to appropriate menu	 
+					setupPlugins();
+
+					/* Place menus and other UI components */
+
+					// add menu bar and menus
+					setJMenuBar(menuBar);
+					menuBar.add(fileMenu);
+					menuBar.add(editMenu);
+					menuBar.add(viewMenu);
+					menuBar.add(trixMenu);
+					menuBar.add(toolsMenu);
+					menuBar.add(helpMenu);
+
+					contentPane.add(toolBar, BorderLayout.NORTH);
+					//contentPane.invalidate();
+					//contentPane.validate();
+					//contentPane.repaint();
+					//setAutoIndent();
+					fileHistStart = fileMenu.getItemCount();
+					syncMenus();
+					System.out.println("Validating the menu bar...");
+					validate();
+				}
+			});
+			/*
+			} catch (InterruptedException e) {
+			} catch (java.lang.reflect.InvocationTargetException e) {
+			}
+			*/
+
+		}
+	}
+
+	private class FileHist extends Thread {
+		//boolean update = false;
+		JMenu menu = null;
+
+		public void start(JMenu aMenu) {
+			menu = aMenu;
+			//update = aUpdate;
+			 (new Thread(this, "thread")).start();
+		}
+
+		public void run() {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					/*
+					if (update) {
+						updateFileHist();
+					} else {
+						createFileHist();
+					}
+					*/
+					updateFileHist();
+				}
+			});
+		}
+
+		public void createFileHist() {
+			// assumes that the file history entries are at the entries in the menu
+			String[] files = getPrefs().retrieveFileHist();
+			//for (int i = files.length - 1; i >= 0; i--) {
+			for (int i = 0; i < files.length; i++) {
+				String file = files[i];
+				//System.out.println("file[" + i + "]: " + file);
+				Action fileAction = createFileHistAction(file);
+				//LibTTx.setAction(fileAction, file, (char)i);
+				//fileAction.setAction();
+				menu.add(fileAction);
+			}
+			//fileHistCount = files.length;
+		}
+
+		public Action createFileHistAction(final String file) {
+			String fileDisp = file;
+			int pathLen = file.length();
+			if (pathLen > 30) {
+				fileDisp =
+					file.substring(0, 10)
+						+ "..."
+						+ file.substring(pathLen - 15);
+			}
+			Action act = new AbstractAction(fileDisp) {
+				public void actionPerformed(ActionEvent evt) {
+					openFile(new File(file));
+				}
+			};
+			return act;
+		}
+
+		public void updateFileHist() {
+			/*
+			String[] files = getPrefs().retrieveFileHist();
+			if (files.length == 0) {
+				fileHistCount = 0;
+				return;
+			}
+			String file = files[0];
+			System.out.println("Adding " + file + " to the menu");
+			JMenuItem item = null;
+			int countDiff = fileHistCount - files.length;
+			if (countDiff > 0) {
+				for (int i = 0; i < countDiff; i++) {
+					menu.remove(menu.getItemCount() - 1);
+				}
+			} else {
+				int i = 0;
+				int totItems = menu.getItemCount();
+				int newPos = totItems - fileHistCount;
+				if (fileHistCount != 0) {
+					while (++i <= fileHistCount 
+						&& !((item = menu.getItem(totItems - i)).getText().equals(file)));
+					if (i <= fileHistCount) {
+						menu.remove(totItems - i);
+						menu.insert(item, newPos);
+					} else if (countDiff == 0) {
+						menu.remove(totItems - 1);
+						menu.insert(createFileHistAction(file), newPos);
+					}
+				} else {
+					menu.insert(createFileHistAction(file), newPos);
 				}
 			}
+			fileHistCount = files.length;
+			*/
+
+			// assumes that the file history entries are at the entries in the menu
+			//int i = 0;
+			/*
+			for (int i = menu.getItemCount() - 1; i < fileHistCount; i++) {
+				menu.remove(menu.getItemCount() - 1);
+			}
+			createFileHist(menu);
+			*/
+			for (int i = menu.getItemCount() - 1; i >= fileHistStart; i--) {
+				menu.remove(i);
+			}
+			createFileHist();
+
+			menu.revalidate();
+
 		}
+
 	}
 }
 

@@ -65,7 +65,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param aFile file to which the <code>TextPad</code> will
 	 * save its text area contents
 	 */
-	public TextPad(File aFile) {
+	public TextPad(File aFile, Prefs prefs) {
 		file = aFile;
 		applyDocumentSettings(); // to allow multiple undos and listen for events
 
@@ -106,8 +106,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		//universalShortcuts();
 		//partialEmacsShortcuts();
-		hybridKeybindings();
+		//hybridKeybindings();
+		applyKeybindings(prefs);
 
+	}
+	
+	public void applyKeybindings(Prefs prefs) {
+		if (prefs.isHybridKeybindings()) {
+			hybridKeybindings();
+		} else if (prefs.isEmacsKeybindings()) {
+			emacsKeybindings();
+		} else {
+			standardKeybindings();
+		}
 	}
 		
 	public void standardKeybindings() {

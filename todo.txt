@@ -9,7 +9,6 @@ Note: "./" is the "check-mark" symbol
 
 ----Future Work----
 
-v.0.5 series: advanced interfacees by seeing if the file exists, as does now
 -move key bindings to separate fn so can call separately; standare, partial-emacs, and full-emacs key bindings option
 -Java Web Start enabled
 -printing
@@ -34,6 +33,10 @@ v.0.5 series: advanced interfacees by seeing if the file exists, as does now
 -check on Forward/Back when opening multiple tabs
 -Forward/Back icon?
 -new, unsaved(?) files don't register in the tab history(?)
+-use java.util.ResourceBundle for internationalization and further keybinding customization
+-auto-indent:
+	-refresh after paste
+	-adjust when single word spans multiple lines, including when hit enter in the middle
 
 ----Current Work----
 
@@ -43,7 +46,7 @@ v.0.3.4
 		-store file paths of last opened or saved files; ADDED: using java.util.prefs (reqs JRE 1.4) to store paths, w/o duplicates
 		-File menu with menu items for each file; ADDED: descending menu items
 		-dynamically update menu items; ADDED: regenerates menu entries after opening each file
-		-truncate long paths
+		-truncate long paths; ADDED: "..." substitutes for excessive middle path characters
 		-choose number of files to remember; ADDED: adjustable file history count
 	-panel:
 		-create preferences panel; ADDED: panel complete with tabs, okay/apply/cancel buttons
@@ -52,6 +55,9 @@ v.0.3.4
 	-auto-indent automatically for given extensions; ADDED: can turn on/off and customize extensions
 	-plug-ins:
 		-load all (default) or only specific plug-ins
+-GUI worker threads; ADDED: menu creation and updating in own threads
+-programming src code file filter; ADDED: filter to accept java, cpp, and c files
+-fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./

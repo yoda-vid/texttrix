@@ -100,13 +100,13 @@ public class Prefs extends JFrame {
 	 * @param cancelAction action that generally rejects the changes by
 	 * destroying the object
 	 */
-	public Prefs(Action okAction, Action applyAction, Action cancelAction, PreferenceChangeListener prefsListener) {
+	public Prefs(Action okAction, Action applyAction, Action cancelAction) {
 		int width = internalPrefs.getInt(PREFS_WIDTH, 500); // panel width
 		int height = internalPrefs.getInt(PREFS_HEIGHT, 300); // panel height
 		setSize(width, height);
 		setTitle("You've Got Options");
-		generalPrefs.addPreferenceChangeListener(prefsListener);
-		shortsPrefs.addPreferenceChangeListener(prefsListener);
+		//generalPrefs.addPreferenceChangeListener(prefsListener);
+		//shortsPrefs.addPreferenceChangeListener(prefsListener);
 		//		System.out.println("fileHistCount: " + fileHistCount);
 
 		// sets up the tabbed pane
@@ -379,7 +379,7 @@ public class Prefs extends JFrame {
 		int oldCount = generalPrefs.getInt(FILE_HIST_COUNT, newCount);
 		if (newCount < oldCount) {
 			for (int i = newCount; i < oldCount; i++) {
-				//System.out.println("Removing file history entry: " + generalPrefs.get(FILE_HIST + i, ""));
+				System.out.println("Removing file history entry: " + generalPrefs.get(FILE_HIST + i, ""));
 				generalPrefs.remove(FILE_HIST + i);
 			}
 		}
