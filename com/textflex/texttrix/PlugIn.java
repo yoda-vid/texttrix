@@ -162,7 +162,7 @@ public abstract class PlugIn extends JComponent {
 	}
 	/**Sets the flag that indicates that the plug-in has just been
 	 * activated.
-	 * After a pause of 500 ms, the flag will revert to <code>false</code>.
+	 * After a pause of 1 s (1000 ms), the flag will revert to <code>false</code>.
 	 * 
 	 * @param b <code>true</code> indicates that the plug-in has just
 	 * been activated
