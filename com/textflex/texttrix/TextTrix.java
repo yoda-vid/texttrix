@@ -568,8 +568,7 @@ public class TextTrix extends JFrame {
 	String name = pl.getName();
 	String category = pl.getCategory();
 	String description = pl.getDescription();
-	String detailedDescription 
-	    = LibTTx.readText(pl.getDetailedDescription());
+	BufferedReader detailedDescriptionBuf = pl.getDetailedDescription();
 	ImageIcon icon = pl.getIcon();
 	ImageIcon rollIcon = pl.getRollIcon();
 	Action action = 
@@ -630,7 +629,8 @@ public class TextTrix extends JFrame {
 	JButton button = toolBar.add(action);
 	button.setBorderPainted(false);
 	setRollover(button, rollIcon);
-	button.setToolTipText(detailedDescription);
+	if (detailedDescriptionBuf != null)
+	button.setToolTipText(LibTTx.readText(detailedDescriptionBuf));
     }
 
     public void setupPlugins() {

@@ -78,7 +78,7 @@ public abstract class PlugIn {
 
     public String getCategory() { return category; }
 
-    public ImageIcon getIcon(String descPath, Class cl) {
+    public ImageIcon getIcon(String descPath) {
 	/*
 	URL url = cl.getResource(path);
 	//	System.out.println(path);
@@ -102,6 +102,7 @@ public abstract class PlugIn {
 		jar = new JarFile(new File(path));
 	    JarEntry entry = jar.getJarEntry(descPath);
 	    //	    System.out.println(entry.getName());
+	    if (entry == null) return null;
 	    InputStream in = jar.getInputStream(entry);
 	    bytes = new byte[in.available()];
 	    in.read(bytes);
@@ -115,7 +116,7 @@ public abstract class PlugIn {
 
     public abstract ImageIcon getRollIcon();
 
-    public BufferedReader getDetailedDescription(String descPath, Class cl) {
+    public BufferedReader getDetailedDescription(String descPath) {
 	/*
 	URL url = cl.getResource(path);
 	//	URLConnection uc = url.openConnection();
@@ -136,6 +137,7 @@ public abstract class PlugIn {
 	    if (jar == null) 
 		jar = new JarFile(new File(path));
 	    JarEntry entry = jar.getJarEntry(descPath);
+	    if (entry == null) return null;
 	    //	    System.out.println(entry.getName());
 	    InputStreamReader in = new InputStreamReader(jar.getInputStream(entry));
 	    reader = new BufferedReader(in);
