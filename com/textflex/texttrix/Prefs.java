@@ -563,6 +563,7 @@ public class Prefs extends JFrame {
 					constraints.fill = GridBagConstraints.HORIZONTAL;
 					constraints.anchor = GridBagConstraints.NORTH;
 					JPanel panel = new JPanel();
+					panel.setLayout(new GridBagLayout());
 
 					// re-opens the tabs left open during the previous session
 					String reopenTabsTxt = "Reopen tabs from last session";
@@ -618,7 +619,7 @@ public class Prefs extends JFrame {
 						1,
 						1,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
@@ -628,7 +629,7 @@ public class Prefs extends JFrame {
 						1,
 						1,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
@@ -638,8 +639,8 @@ public class Prefs extends JFrame {
 						2,
 						1,
 						1,
-						100,
 						0,
+						100,
 						panel);
 					LibTTx.addGridBagComponent(
 						autoIndentExtFld,
@@ -648,7 +649,7 @@ public class Prefs extends JFrame {
 						2,
 						1,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					//generalPanel = panel;
@@ -670,6 +671,7 @@ public class Prefs extends JFrame {
 					constraints.fill = GridBagConstraints.HORIZONTAL;
 					constraints.anchor = GridBagConstraints.NORTH;
 					JPanel panel = new JPanel();
+					panel.setLayout(new GridBagLayout());
 
 					JLabel keybindingsLbl = new JLabel("Keybindings model");
 					String keybindingsTipTxt =
@@ -688,7 +690,7 @@ public class Prefs extends JFrame {
 						1,
 						1,
 						100,
-						0,
+						100,
 						panel);
 					LibTTx.addGridBagComponent(
 						keybindingsCombo,
@@ -726,6 +728,7 @@ public class Prefs extends JFrame {
 					GridBagConstraints constraints = new GridBagConstraints();
 					constraints.fill = GridBagConstraints.HORIZONTAL;
 					constraints.anchor = GridBagConstraints.NORTH;
+					panel.setLayout(new GridBagLayout());
 
 					String allPlugInsTxt = "Include all the plug-ins";
 					allPlugInsChk =
@@ -794,7 +797,7 @@ public class Prefs extends JFrame {
 						1,
 						2,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
@@ -804,9 +807,10 @@ public class Prefs extends JFrame {
 						2,
 						2,
 						1,
-						100,
+						0,
 						0,
 						panel);
+					//constraints.fill = GridBagConstraints.NONE;
 					LibTTx.addGridBagComponent(
 						moveToIgnoresBtn,
 						constraints,
@@ -814,7 +818,7 @@ public class Prefs extends JFrame {
 						3,
 						1,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
@@ -824,9 +828,10 @@ public class Prefs extends JFrame {
 						3,
 						1,
 						1,
-						100,
+						0,
 						0,
 						panel);
+					//constraints.fill = GridBagConstraints.HORIZONTAL;
 					LibTTx.addGridBagComponent(
 						ignoreListPane,
 						constraints,
@@ -834,8 +839,8 @@ public class Prefs extends JFrame {
 						4,
 						2,
 						1,
-						100,
 						0,
+						100,
 						panel);
 					tabbedPane.setComponentAt(PLUG_INS_PANEL_INDEX, panel);
 				}
