@@ -58,6 +58,11 @@ v.0.3.5
 -pass main Text Trix window position parameters to plug-in dialogs
 -Java Web Start compatibility
 -printing
+	-print text as viewed in Text Pad; ADDED: prints plain text with line breaks at the same location as the current Text Pad displays the text
+	-print preview; ADDED: preview screen to show each page before printing
+		-print directly from print preview dialog
+		-check paper spacing anomalies between preview, calculations, and actual prints
+	-print images and formatted text
 -fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
 -PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application
 -button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers

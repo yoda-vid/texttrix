@@ -2046,7 +2046,7 @@ public class TextTrix extends JFrame {
 			job.setPageable(bk);
 			if (job.printDialog(printAttributes)) {
 				job.print(printAttributes);
-				System.out.println("printed!");
+//				System.out.println("printed!");
 //				pad.setPrintText(null);
 			}
 		} catch (PrinterException e) {
@@ -2057,9 +2057,11 @@ public class TextTrix extends JFrame {
 	public Book createBook() {
 		TextPad textPad = getSelectedTextPad();
 		if (textPad == null) return null;
+/*
 		System.out.println("font fam: " + textPad.getFont().getFamily()
 			+ ", font name: " + textPad.getFont().getName()
 			+ ", font size: " + textPad.getFont().getSize());
+*/
 		if (pageFormat == null) {
 			PrinterJob job = PrinterJob.getPrinterJob();
 			pageFormat = job.defaultPage();

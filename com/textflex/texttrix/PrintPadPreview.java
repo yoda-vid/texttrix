@@ -33,6 +33,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+ 
 package com.textflex.texttrix;
 
 import javax.swing.*;
@@ -41,11 +42,11 @@ import java.awt.print.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-/**
- * @author davit
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+/**Preview dialog window for the <code>PrintPad</code> hard copy printer
+ * output.
+ * Prior to printing, the preview can be accessed to see if the visual
+ * display on the current <code>TextPad</code> is appropriate for printing
+ * on the given printer's paper size.
  */
 public class PrintPadPreview extends JDialog {
 	
