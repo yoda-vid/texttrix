@@ -65,7 +65,7 @@ public class TextPad extends JTextArea {
 	 * @param aFile file to which the <code>TextPad</code> will
 	 * save its text area contents
 	 */
-    public TextPad(int w, int h, File aFile) {
+	public TextPad(int w, int h, File aFile) {
 		super(w, h);
 		file = aFile;
 		// to listen for keypad events

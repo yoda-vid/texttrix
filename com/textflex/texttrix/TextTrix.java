@@ -87,6 +87,8 @@ public class TextTrix extends JFrame {
 		fileMenu.setMnemonic('F');
 		JMenu editMenu = new JMenu("Edit");
 		editMenu.setMnemonic('E');
+		JMenu viewMenu = new JMenu("View");
+		viewMenu.setMnemonic('V');
 		JMenu trixMenu = new JMenu("Trix");
 		trixMenu.setMnemonic('T');
 		JMenu toolsMenu = new JMenu("Tools");
@@ -105,14 +107,15 @@ public class TextTrix extends JFrame {
 		    	addTextArea(textAreas, tabbedPane, makeNewFile());
 			}
 	    	};
-		// Mozilla tabbed-pane key-binding
-		setAction(newAction, "New", 'N', 	KeyStroke.getKeyStroke(KeyEvent.VK_T,
+		// per Mozilla keybinding
+		setAction(newAction, "New", 'T', 	KeyStroke.getKeyStroke(KeyEvent.VK_T,
 							      InputEvent.CTRL_MASK));
 		fileMenu.add(newAction);
-		/* move to tabs using default Java key-bindings:
-		 * Ctrl-up to tabs
-		 * Lt, rt to switch tabs
-		 * Tab back down to TextPad */
+		/* tab shifts defined under View menu section;
+		 * alternatively, move to tabs using default Java key-bindings:
+		 * -Ctrl-up to tabs
+		 * -Lt, rt to switch tabs
+		 * -Tab back down to TextPad */
 
 		// (ctrl-o) open file; use selected tab if empty
 		Action openAction = new FileOpenAction(TextTrix.this, "Open", 
@@ -142,10 +145,12 @@ public class TextTrix extends JFrame {
 		Action closeAction = new AbstractAction("Close", makeIcon("images/closeicon-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				int i = tabbedPane.getSelectedIndex();
-				closeTextArea(i, textAreas, tabbedPane);
+				if (i >= 0) 
+					closeTextArea(i, textAreas, tabbedPane);
 			}
 		};
-		setAction(closeAction, "Close", 'C');
+		setAction(closeAction, "Close", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_W,
+					InputEvent.CTRL_MASK));
 		fileMenu.add(closeAction);
 
 		// (ctrl-s) save file; no dialog if file already created
@@ -264,6 +269,36 @@ public class TextTrix extends JFrame {
 
 		// auto-indent
 		optionsMenu.add(autoIndent);
+		
+		/* View menu items */
+		
+		Action prevTabAction = new AbstractAction("Previous tab") {
+			public void actionPerformed(ActionEvent evt) {
+				int tab = tabbedPane.getSelectedIndex();
+				if (tab > 0) {
+					tabbedPane.setSelectedIndex(tab - 1);
+				} else if (tab == 0) {
+					tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+				}
+			}
+		};
+		setAction(prevTabAction, "Previous tab", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET,
+					InputEvent.CTRL_MASK));
+		viewMenu.add(prevTabAction);
+
+		Action nextTabAction = new AbstractAction("Next tab") {
+			public void actionPerformed(ActionEvent evt) {
+				int tab = tabbedPane.getSelectedIndex();
+				if ((tab != -1) && (tab == tabbedPane.getTabCount() - 1)) {
+					tabbedPane.setSelectedIndex(0);
+				} else if (tab >= 0) {
+					tabbedPane.setSelectedIndex(tab + 1);
+				}
+			}
+		};
+		setAction(nextTabAction, "Next tab", 'N', KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET,
+					InputEvent.CTRL_MASK));
+		viewMenu.add(nextTabAction);
 	
 		/* Help menu items */
 
@@ -382,6 +417,7 @@ public class TextTrix extends JFrame {
 		setJMenuBar(menuBar);
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
+		menuBar.add(viewMenu);
 		menuBar.add(trixMenu);
 		menuBar.add(toolsMenu);
 		menuBar.add(helpMenu);
