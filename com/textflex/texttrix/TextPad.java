@@ -43,6 +43,7 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.undo.*;
 import javax.swing.text.*;
+import javax.swing.text.JTextComponent.*;
 import javax.swing.Action.*;
 import java.io.*;
 
@@ -147,10 +148,35 @@ public class TextPad extends JTextArea {
 		amap.put("deleteWord", new AbstractAction() {
 			public void actionPerformed(ActionEvent evt) {
 				int wordPos = getWordPosition();
+				// delete via the document methods rather than building
+				// string manually, a slow task.  Uses document rather than
+				// AccessibleJTextComponent in case used for serialization:
+				// serialized objects of this class won't be compatible w/
+				// future releases
+				try {
+					getDocument().remove(wordPos, getCaretPosition() - wordPos);
+					setCaretPosition(wordPos);
+				} catch(BadLocationException b) {
+					System.out.println("Deletion out of range.");
+				}
+				/*
+				// alternate method, essentially same as document except
+				// using the AccessibleJTextComponent class, whose serializable
+				// objects may not be compatible w/ future releases
+				// access the text component itself to tell it to perform
+				// the deletions rather than building string manually, a slow task
+				(new JTextComponent.AccessibleJTextComponent())
+					.delete(wordPos, getCaretPosition());
+				
+				// alternate method, using StringBuffer; essentially same as
+				// building string manually
+				setText((new StringBuffer(getText())).delete(wordPos, getCaretPosition()).toString());
+
+				// alternate method, building string manually
 				String text = getText();
 				setText(text.substring(0, wordPos)
 					+ text.substring(getCaretPosition()));
-				setCaretPosition(wordPos);
+					*/
 			}
 		});
 

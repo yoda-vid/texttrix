@@ -41,6 +41,8 @@
 
 package net.sourceforge.texttrix;
 
+import java.lang.*;
+
 public class Practical {
 
 	public Practical() {
@@ -61,6 +63,94 @@ public class Practical {
 	 * @return stripped text
 	 */
     public static String removeExtraHardReturns(String s) {
+		StringBuffer stripped = new StringBuffer(s.length());
+		int n = 0;
+//		System.out.println(s.length() + "");
+	
+		while (n < s.length()) {
+//			System.out.println(n + "");
+	    	int singleReturn = s.indexOf("\n", n);
+		    int doubleReturn = s.indexOf("\n\n", n);
+		    int dash = s.indexOf("-", n);
+	    	int asterisk = s.indexOf("*", n);
+			int tab = -1;
+	    	int spaces = 0;
+	 	    int startPre = s.indexOf("<pre>", n);
+		    int endPre = s.indexOf("</pre>", n);
+
+			if (singleReturn != -1) {
+				tab = s.indexOf("\t", n + singleReturn + 1);
+				int afterSingleReturn = singleReturn + 1;
+				// check whether will exceed length of text
+				// add one to spaces if next leading character has a space.
+				while (s.length() > afterSingleReturn && 
+						s.charAt(afterSingleReturn++) == ' ') {
+			    	spaces++;
+				}
+			}
+	
+		    // only catch dashes and asterisks after newline
+	    	while (dash != -1 && dash < singleReturn) {
+				dash = s.indexOf("-", n + dash + 1);
+		    }
+	    	while (asterisk != -1 && asterisk < singleReturn) {
+				asterisk = s.indexOf("*", n + asterisk + 1);
+		    }
+	
+		    // find all leading spaces after a single return
+
+//			System.out.println("Past dashes, asterisks, and leading spaces");
+			// skip <pre>-delimited sections, removing only the <pre> tags
+		    if (startPre != -1 && 
+					(startPre < s.length() || startPre < singleReturn)) {
+				// go to the end of the "pre" section
+				if (endPre != -1) {
+		    		stripped.append(s.substring(n, startPre));
+					stripped.append(s.substring(startPre + 5, endPre));
+			    	n = endPre + 6;
+			    // if user forgets closing "pre" tag, goes to end
+				} else {
+		    		stripped.append(s.substring(n, startPre));
+					stripped.append(s.substring(startPre + 5));
+		    		n = s.length();
+				}
+			// add the rest of the text if no more single returns exist.
+			// Also catches null strings
+	    	} else if (singleReturn == -1) {
+//				System.out.println("I'm here.");
+				stripped.append(s.substring(n));
+				n = s.length();
+			// preserve doubly-returned lines, as between paragraphs
+	    	} else if (singleReturn == doubleReturn) {
+				stripped.append(s.substring(n, doubleReturn + 2));
+				n = doubleReturn + 2;
+			// preserve separate lines for lines starting w/
+			// dashes or asterisks or spaces before them
+		    } else if (dash == singleReturn + 1 + spaces
+			    	   || asterisk == singleReturn + 1 + spaces) {
+				// + 2 to pick up the dash
+				stripped.append(s.substring(n, singleReturn + 2 + spaces));
+				n = singleReturn + 2 + spaces;
+			// preserve separate lines for ones starting with tabs
+			} else if (tab == singleReturn + 1) {
+				stripped.append(s.substring(n, singleReturn + 1));
+				n = singleReturn + 1;
+			// join the tail-end of the text
+		    } else {
+				// don't add space if single return is at beginning of line
+				// or a space exists right before the single return.
+				if (singleReturn == n || s.charAt(singleReturn - 1) == ' ') {
+					stripped.append(s.substring(n, singleReturn));
+				// add space if none exists right before the single return
+				} else {
+					stripped.append(s.substring(n, singleReturn));
+					stripped.append(" ");
+				}
+				n = singleReturn + 1;
+		    }
+		}	
+		/*
+		return stripped;
 		String stripped = "";
 	
 		while (!s.equals("")) {
@@ -141,8 +231,9 @@ public class Practical {
 				}
 				s = s.substring(singleReturn + 1);
 		    }
-		}	
-		return stripped;
+		}
+		*/
+		return stripped.toString();
     }
 
 	public static String replaceHTMLTags(String aText) {
