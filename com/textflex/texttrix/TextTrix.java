@@ -63,6 +63,8 @@ public class TextTrix extends JFrame {
 	private static String savePath = "";
 	// for giving each TextPad a unique name
 	private static int fileIndex = 0;
+	// find dialog
+	private static FindDialog findDialog;
 
 	
 	private static int currentTabIndex = 0;
@@ -283,6 +285,18 @@ public class TextTrix extends JFrame {
 	};
 	setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
+
+	Action findAction = new AbstractAction("Find", null) {
+		public void actionPerformed(ActionEvent evt) {
+			if (findDialog == null) 
+				findDialog = new FindDialog(TextTrix.this);
+			findDialog.show();
+		}
+	};
+	setAction(findAction, "Find", 'F');
+	toolsMenu.add(findAction);
+	JButton findButton = toolBar.add(findAction);
+	findButton.setBorderPainted(false);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
 	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
@@ -836,6 +850,94 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
     		fileSaveDialog();
 		}
+	}
+
+	private class FindDialog extends JDialog {
+		JTextField find;
+		JTextField replace;
+		JCheckBox word;
+		JCheckBox wrap;
+		JCheckBox selection;
+		JCheckBox replaceAll;
+		
+		public FindDialog(JFrame owner) {
+			super(owner, "Find and Replace", false);
+			setSize(350, 150);
+			Container contentPane = getContentPane();
+			contentPane.setLayout(new GridBagLayout());
+			GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			constraints.anchor = GridBagConstraints.CENTER;
+			add(new JLabel("Find:"), constraints, 0, 0, 1, 1, 100, 0);
+			add(find = new JTextField(20), constraints, 1, 0, 2, 1, 100, 0);
+			add(new JLabel("Replace:"), constraints, 0, 1, 1, 1, 100, 0);
+			add(replace = new JTextField(20), constraints, 1, 1, 2, 1, 100, 0);
+			add(word = new JCheckBox("Find Word"), constraints, 0, 2, 1, 1, 100, 0);
+			add(wrap = new JCheckBox("Wrap"), constraints, 2, 2, 1, 1, 100, 0);
+			add(selection = new JCheckBox("Replace within selection"), constraints, 1, 2, 1, 1, 100, 0);
+			add(replaceAll = new JCheckBox("Replace all"), constraints, 0, 3, 1, 1, 100, 0);
+
+			Action findAction = new AbstractAction("Find", null) {
+				public void actionPerformed(ActionEvent e) {
+					TextPad t = getSelectedTextPad();
+					String findText = find.getText();
+					int n = t.getCaretPosition();
+					n = Tools.find(t.getText(), findText, n, word.isSelected());
+					if (n != -1) {
+						if (wrap.isSelected()) {
+							n = Tools.find(t.getText(), findText, 0, word.isSelected());
+						}
+						t.setSelectionStart(n);
+						t.setSelectionEnd(n + findText.length());
+					}
+				}
+			};
+			add(new JButton(findAction), constraints, 0, 4, 1, 1, 100, 0);
+
+			Action findReplaceAction = new AbstractAction("Find and Replace", null) {
+				public void actionPerformed(ActionEvent e) {
+					TextPad t = getSelectedTextPad();
+					String text = t.getText();
+					String findText = find.getText();
+					String replaceText = replace.getText();
+					if (selection.isSelected()) {
+						t.setText(Tools.findReplace(text, findText, replaceText,
+								t.getSelectionStart(), 
+								t.getSelectionEnd(), word.isSelected(), true,
+								false));
+					} else {
+						t.setText(Tools.findReplace(text, findText, replaceText,
+								t.getCaretPosition(), text.length(), 
+								word.isSelected(), replaceAll.isSelected(), 
+								wrap.isSelected()));
+					}
+				}
+			};
+			add(new JButton(findReplaceAction), constraints, 1, 4, 1, 1, 100, 0);
+		}
+
+		
+    	/**Adds a new component to the <code>GridBagLayout</code> manager.
+		 * @param c component to add
+		 * @param constraints layout constraints object
+		 * @param x column number
+		 * @param y row number
+		 * @param w number of columns to span
+		 * @param h number of rows to span
+		 * @param wx column weight
+		 * @param wy row weight
+		 * */
+	    public void add(Component c, GridBagConstraints constraints,
+			     int x, int y, int w, int h, 
+			     int wx, int wy) {
+			constraints.gridx = x;
+			constraints.gridy = y;
+			constraints.gridwidth = w;
+			constraints.gridheight = h;
+			constraints.weightx = wx;
+			constraints.weighty = wy;
+			getContentPane().add(c, constraints);
+    	}
 	}
 	
 	/**Responds to changes in the <code>TextPad</code> text areas.

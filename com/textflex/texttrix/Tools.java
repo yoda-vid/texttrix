@@ -404,6 +404,80 @@ public class Tools {
 		}
 		return s;
 	}
-			
+
+	public static int find(String text, String quarry, int start) {
+		if (start < text.length())
+			return text.indexOf(quarry, start);
+		return -1;
+	}
+		
+	public static int find(String text, String quarry, int n, boolean word) {
+		return word ? findWord(text, quarry, n) : find(text, quarry, n);
+	}
+
+	public static int findWord(String text, String quarry, int start) {
+		int n = start;
+		int end = start + 1;
+		int len = text.length();
+		while (n < len) {
+			while (!Character.isLetterOrDigit(text.charAt(n)))
+				n++;
+			while (end < len && Character.isLetterOrDigit(text.charAt(end)))
+				end++;
+			if (end < len && text.substring(n, end).equals(quarry)) {
+				return n;
+			} else {
+				n = end;
+				end++;
+			}
+		}
+		return -1;
+	}
+	
+	public static String findReplace(String aText, String quarry, 
+			String replacement, int start, int end, boolean word, boolean all, boolean wrap) {
+		String text = aText;
+		StringBuffer s = new StringBuffer(text.length());
+		int n = start;
+		int prev;
+		if (all) {
+			s.append(text.substring(0, n));
+			while (n < end && n != -1) {
+				prev = n;
+				n = find(text, quarry, n, word);
+				if (n != -1) {
+					s.append(text.substring(prev, n) + replacement);
+					n += quarry.length();
+				} else {
+					s.append(text.substring(prev));
+					text = s.toString();
+				}
+			}
+			if (n != -1) {
+				s.append(text.substring(n));
+				text = s.toString();
+			}
+			if (wrap) {
+				text = findReplace(text, quarry, replacement, 0, start - 1,
+						word, all, false);
+			}
+			return text;
+				
+		} else {
+			if (n < end) {
+				n = find(text, quarry, n, word);
+				if (n != -1) {
+					text = (text.substring(0, n) + replacement
+						+ text.substring(n + quarry.length()));
+				} else {
+					if (wrap) {
+						text = findReplace(aText, quarry, replacement, 
+								0, start - 1, word, all, false);
+					}
+				}
+			}
+			return text;
+		}
+	}
 
 }
