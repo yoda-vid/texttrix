@@ -40,6 +40,7 @@ import javax.swing.*;
 import java.util.prefs.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.event.*;
 
 /** Stores the user-preferences for Text Trix.
@@ -51,7 +52,7 @@ import javax.swing.event.*;
  * other systems for perpetual Text Trix fun.
  * @author davit
  */
-public class Prefs extends JFrame {
+public class Prefs extends JDialog {//JFrame {
 	
 	// houses and categorizes options
 	private JTabbedPane tabbedPane = new JTabbedPane();
@@ -65,8 +66,14 @@ public class Prefs extends JFrame {
 
 	/* Panel-specific prefs */
 	private Preferences internalPrefs = prefs.node("Internal"); // panel-specific prefs holder
+	
+	// names the preferences panel as PREFS;
+	// the panel will be treated as a plug-in for internal orgnaization
+	private static final String PREFS = "prefs";
+	/*
 	private static final String PREFS_WIDTH = "prefsWidth"; // panel width
 	private static final String PREFS_HEIGHT = "prefsHeight"; // panel height
+	*/
 	private static final String PRGM_WIDTH = "prgmWidth"; // program width
 	private static final String PRGM_HEIGHT = "prgmHeight"; // program height
 	// program horizontal location
@@ -107,8 +114,10 @@ public class Prefs extends JFrame {
 	private JTextField autoIndentExtFld = null; // input list
 	
 	// group windows
+	/*
 	private static final String ACTIVATE_WINDOWS_TOGETHER = "activateWindowsTogether";
 	private JCheckBox activateWindowsTogetherChk = null;
+	*/
 	
 	// auto-save
 	private static final String AUTO_SAVE = "autoSave";
@@ -177,11 +186,31 @@ public class Prefs extends JFrame {
 	 * @param cancelAction action that generally rejects the changes by
 	 * destroying the object
 	 */
-	public Prefs(Action okAction, Action applyAction, Action cancelAction) {
-		int width = internalPrefs.getInt(PREFS_WIDTH, 500); // panel width
-		int height = internalPrefs.getInt(PREFS_HEIGHT, 300); // panel height
-		setSize(width, height);
-		setTitle("You've Got Options");
+	public Prefs(JFrame frame, Action okAction, Action applyAction, Action cancelAction) {
+		super(frame, "You've Got Options");
+		//int width = internalPrefs.getInt(PREFS_WIDTH, 500); // panel width
+		//int height = internalPrefs.getInt(PREFS_HEIGHT, 300); // panel height
+		//setSize(width, height);
+		setSize(getPlugInWidth(PREFS), getPlugInHeight(PREFS));
+		setLocation(getPlugInXLoc(PREFS), getPlugInYLoc(PREFS));
+		
+
+		addComponentListener(new ComponentListener() {
+			public void componentMoved(ComponentEvent evt) {
+				storePlugInLocation(PREFS, getLocation());
+			}
+
+			public void componentResized(ComponentEvent evt) {
+				storePlugInSize(PREFS, getWidth(), getHeight());
+			}
+
+			public void componentShown(ComponentEvent evt) {
+			}
+
+			public void componentHidden(ComponentEvent evt) {
+			}
+		});
+		//setTitle("You've Got Options");
 		//generalPrefs.addPreferenceChangeListener(prefsListener);
 		//shortsPrefs.addPreferenceChangeListener(prefsListener);
 		//		System.out.println("fileHistCount: " + fileHistCount);
@@ -316,7 +345,7 @@ public class Prefs extends JFrame {
 	 *
 	 */
 	public void storePrefs() {
-		storeInternalPrefs();
+		//storeInternalPrefs();
 		storeGeneralPrefs();
 		storeShortsPrefs();
 		storePlugInsPrefs();
@@ -326,11 +355,12 @@ public class Prefs extends JFrame {
 	 * Does not store program size or location information, but does store
 	 * the panel's size.
 	 *
-	 */
+	 *
 	public void storeInternalPrefs() {
 		internalPrefs.putInt(PREFS_WIDTH, getWidth());
 		internalPrefs.putInt(PREFS_HEIGHT, getHeight());
 	}
+	*/
 
 	/** Stores the General preferences.
 	 * General preferences include settings that affect Text Trix as a whole.
@@ -341,8 +371,10 @@ public class Prefs extends JFrame {
 		storeFileHistCount(fileHistCountMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
+		/*
 		generalPrefs.putBoolean(ACTIVATE_WINDOWS_TOGETHER, 
 			activateWindowsTogetherChk.isSelected());
+			*/
 		generalPrefs.putBoolean(AUTO_SAVE, autoSaveChk.isSelected());
 		generalPrefs.putInt(AUTO_SAVE_INTERVAL, 
 			autoSaveIntervalMdl.getNumber().intValue());
@@ -703,10 +735,12 @@ public class Prefs extends JFrame {
 	 * 
 	 * @return <code>true</code> if activating one window should bring
 	 * all the other Text Trix windows to the foreground
-	 */
+	 *
 	public boolean getActivateWindowsTogether() {
 		return generalPrefs.getBoolean(ACTIVATE_WINDOWS_TOGETHER, true);
 	}
+	*/
+	
 	/**Gets the stored flag for whether the program should automatically
 	 * save changed files.
 	 * 
@@ -828,15 +862,15 @@ public class Prefs extends JFrame {
 					autoIndentExtFld = new JTextField(autoIndentExt, 30);
 					
 
-
-					// re-opens the tabs left open during the previous session
+					/*
+					// activates windows together
 					String activateWindowsTogetherTxt = "Bring all windows to the front";
 					String activateWindowsTogetherTipTxt =
 						"<html>When activating one window, all other windows are"							+ "brought just below it.</html>";
 					activateWindowsTogetherChk =
 						new JCheckBox(activateWindowsTogetherTxt, getActivateWindowsTogether());
 					activateWindowsTogetherChk.setToolTipText(activateWindowsTogetherTipTxt);
-					
+					*/
 					
 					// auto-saves files
 					
@@ -876,7 +910,7 @@ public class Prefs extends JFrame {
 					// the prompt for confirmation from the user before automatically
 					// saving a file
 					String autoSavePromptTxt =
-						"Prompt before auto-saving files:";
+						"Prompt before auto-saving files";
 					String autoSavePromptTipTxt =
 						"<html>Asks the user whether to save any changes before"
 						+ "<br>automatically saving them.  Otherwise, the"						+ "<br>current file will be overwritten, and the original"
@@ -937,11 +971,12 @@ public class Prefs extends JFrame {
 						constraints,
 						1,
 						2,
-						1,
+						2,
 						1,
 						0,
 						0,
 						panel);
+					/*
 					LibTTx.addGridBagComponent(
 						activateWindowsTogetherChk,
 						constraints,
@@ -952,6 +987,7 @@ public class Prefs extends JFrame {
 						0,
 						0,
 						panel);
+						*/
 					LibTTx.addGridBagComponent(
 						autoSaveChk,
 						constraints,
@@ -985,9 +1021,9 @@ public class Prefs extends JFrame {
 					LibTTx.addGridBagComponent(
 						autoSavePromptChk,
 						constraints,
-						0,
-						6,
 						2,
+						5,
+						1,
 						1,
 						0,
 						100,

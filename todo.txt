@@ -39,14 +39,10 @@ Note: "./" is the "check-mark" symbol
 	-when have multiple files with same filename, add more of path to tab titles
 	-truncate filenames on tabs
 -print images and multi-formatted text
--integrated windowing design updates
-	-try putting windowing events in separate thread so can still capture function from click on first window clicked
-	-check toFront() failures with one Fedora Core 1 installation
-	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
-	-check for breakage of single thread rule
 -update JarAjar to allow for MacOS X integration
 -bookmarks, including bookmark groups
 -convert player "starter" field into numerical ranking system for depth charts
+-rename files in place
 
 ----Current Work----
 
@@ -63,6 +59,9 @@ v.0.3.6
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
 	-check whether should remove plugInDiags dialog if remove plug-in; may need to remove in reloadPlugIns() since user may remove the plug-in jar file and add back, but the dialog would no longer correspond to reloaded plug-in; CHECKED: if plug-in dialog with same name already exists in the dialog array, the newly created dialog replaces the old one
 	-removed windows-together pref
+-prefences panel
+	-prefs panel should also be fit into a JDialog, with TextTrix as the owner; ADDED: prefs panel conforms to new plug-in window model, except that Preferences itself extends JDialog since Preferences remains internalized in the program
+	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval
 -tab entire regions
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
@@ -217,10 +216,6 @@ v.0.3.1
 -use getSelectedPane() more ./
 -text pad popup menu ./
 -program icon ./
-
-v.0.3 series: features, features, features
--rename file open in current session
--improve program and toolbar icons
 
 v.0.1.6, aka v.0.3.0
 -rudimentary html replacer ./

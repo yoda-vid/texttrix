@@ -557,8 +557,8 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @return the preferences panel object
 	 */
-	public static Prefs getPrefs() {
-		return (prefs == null) ? prefs = new Prefs(prefsOkayAction,
+	public Prefs getPrefs() {
+		return (prefs == null) ? prefs = new Prefs(this, prefsOkayAction,
 				prefsApplyAction, prefsCancelAction) : prefs;
 	}
 
@@ -839,10 +839,10 @@ public class TextTrix extends JFrame {
 		// convert name and later the roster name to lower case in case
 		// user uses capital letters inconsistently
 		//       	name = name.toLowerCase();
-		System.out.println("plugInDiagsIdx: " + plugInDiagsIdx);
+//		System.out.println("plugInDiagsIdx: " + plugInDiagsIdx);
 		while (start <= end && found == -1) {
 			// cycle through the roster and pick by name
-			System.out.println("looking at: " + plugInDiags[mid].getName());
+//			System.out.println("looking at: " + plugInDiags[mid].getName());
 			if ((s = plugInDiags[mid].getName()).equalsIgnoreCase(name)) {
 				found = mid;
 			} else if (name.compareToIgnoreCase(s) < 0) {
@@ -1103,19 +1103,21 @@ public class TextTrix extends JFrame {
 				String[] includes = getPrefs().getIncludePlugInsList();
 				JDialog diag = null;
 				for (int i = 0; i < plugIns.length; i++) {
+/*					
 					System.out.println("checking if "
 							+ plugIns[i].getFilename()
 							+ " in includes: "
 							+ LibTTx.inUnsortedList(plugIns[i].getPath(),
 									includes));
+*/
 					if (plugIns[i] instanceof PlugInWindow
 							&& !LibTTx.inUnsortedList(plugIns[i].getPath(),
 									includes)) {
-						System.out.println("looking for "
-								+ plugIns[i].getFilename());
+//						System.out.println("looking for "
+//								+ plugIns[i].getFilename());
 						if ((diag = getPlugInDialog(plugIns[i].getFilename())) != null) {
-							System.out.println("setting "
-									+ plugIns[i].getFilename() + " invisible");
+//							System.out.println("setting "
+//									+ plugIns[i].getFilename() + " invisible");
 							diag.setVisible(false);//closeWindow();
 						}
 					}
