@@ -481,12 +481,41 @@ public class TextTrix extends JFrame {
 
 	// Load plugins; add to appropriate menu
 
+	/* The code has a relatively elaborate mechanism to locate
+	   the plugins folder and its JAR files.  Why not use
+	   the URL that the Text Trix class supplies?
+	   Text Trix needs to locate the specific, absolute path and name
+	   of each JAR plugin to load it.  Text Trix's URL must
+	   be truncated to its root directory's location and built
+	   back up through the plugins directory.  Using getParentFile()
+	   to the program's root and appending the path from there to
+	   the plugins allows one to use URLClassLoader directly with
+	   the resulting URL.
+
+	   Unfortunately, some systems do not
+	   locate local files with this method.  The following
+	   elaborate system works around this apparent JRE bug by
+	   further breaking the URL into a normal path and loading
+	   a file from it.
+
+	   Unfortunately again, a new feature from JRE v.1.4
+	   prevents the JRE causes spaces to be converted to "%20"
+	   turning URL's into strings.  The JRE cannot load files
+	   with "%20" in them, however; hus 
+	   "c:\Program Files\texttrix-x.y.z\plugins"
+	   never gets loaded.  The workaround is to replace all "%20"'s in
+	   the string with " ".  Along with v.1.4 comes new String regex
+	   tools to make the operation simple, but prior versions
+	   give crash after a NoSuchMethodError.  The replacement must be done 
+	   manually.
+	*/
+
 	// TODO: add additional plugins on the fly
 	// this class's location
 	String relClassLoc = "com/textflex/texttrix/TextTrix.class";
        	URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
 	String strClassDir = urlClassDir.getPath(); // to check whether JAR
-	//	System.out.println(urlClassDir.toString());
+	//	System.out.println(strClassDir);
 	File fileClassDir = new File(urlClassDir.getPath());
 	File baseDir = null;
 	// move into JAR's parent directory only if launched from a JAR
@@ -497,6 +526,26 @@ public class TextTrix extends JFrame {
 	    baseDir = fileClassDir.getParentFile().getParentFile()
 		.getParentFile().getParentFile();
 	}
+	// convert "%20", the escape character for a space, into " ";
+	// required for starting with JRE v.1.4.0
+	// (see http://developer.java.sun.com/developer/ //
+	// bugParade/bugs/4466485.html)
+	String strBaseDir = baseDir.toString();
+	int space = 0;
+	while ((space = strBaseDir.indexOf("%20")) != -1) {
+	    if (strBaseDir.length() > space + 3) {
+		strBaseDir = strBaseDir.substring(0, space) 
+		    + " " + strBaseDir.substring(space + 3);
+	    } else {
+		strBaseDir = strBaseDir.substring(0, space) + " ";
+	    }
+	}
+	/* Though simpler, this method crashes after a NoSuchMethodError
+	   under JRE <= 1.3.
+	baseDir = new File(baseDir.toString().replaceAll("%20", " "));
+	File pluginsFile = new File(baseDir, "plugins");
+	*/
+	//	System.out.println(strBaseDir);
 	//	File f = new File("/home/share");
 	//	System.out.println(baseDir.getPath());
 	//	String plugInsPath = "";
@@ -510,7 +559,7 @@ public class TextTrix extends JFrame {
 
 	// plugins directory;
 	// considered nonexistent since baseDir's path in URL syntax
-       	File pluginsFile = new File(baseDir, "plugins");
+       	File pluginsFile = new File(strBaseDir, "plugins");
 	String pluginsPath = pluginsFile.getPath();
 
 	// directory path given as URL; need to parse into normal syntax
@@ -520,9 +569,43 @@ public class TextTrix extends JFrame {
 	// if so, delete protocal and any preceding info
 	if (pathStart != -1)
 	    pluginsPath = pluginsPath.substring(pathStart + protocol.length());
-	//	System.out.println(path);
+	/*
+	try {
+	    pluginsPath = URLEncoder.encode(pluginsPath, "UTF-8");
+	} catch (UnsupportedEncodingException e) {
+	    e.printStackTrace();
+	}
+	*/
+	//	System.out.println(pluginsPath);
 	// pluginsPath now in normal syntax
 	pluginsFile = new File(pluginsPath); // the actual file
+
+
+
+	/* A possible workaround for an apparent JRE v.1.4 bug that
+	   fails to open files with spaces in their paths.
+	   This workaround convert any file or directory names
+	   with their "8.3" formatted equivalents.
+	   For example, "Program Files" is converted to 
+	   "PROGRA~1", which some systems might map to the intended file.
+	*/
+	/*
+	if (!pluginsFile.exists()) {
+	    String seg = "";
+	    StringTokenizer tok = new StringTokenizer(pluginsPath, "/\\");
+	    StringBuffer buf = new StringBuffer(pluginsPath.length());
+	    for (int i = 0; tok.hasMoreTokens(); i++) {
+		seg = tok.nextToken();
+		if (seg.length() > 8) 
+		    seg = seg.substring(0, 6).toUpperCase() + "~1";
+		buf.append(File.separator + seg);
+	    }
+	    pluginsPath = buf.toString();
+	    pluginsFile = new File(pluginsPath); // the actual file
+	    //	    System.out.println(pluginsPath);
+	}
+	*/
+
 	//	System.out.println(f.getPath());
 	//	try { f = new File(new URI(f.toString())); } catch (URISyntaxException e) {}
 	//	System.out.println(f.exists());
@@ -599,7 +682,7 @@ public class TextTrix extends JFrame {
 		*/
 	    });
 	textTrix.show();
-	textTrix.getSelectedTextPad().requestFocusInWindow();
+       	textTrix.getSelectedTextPad().requestFocusInWindow();
     }
 
 
