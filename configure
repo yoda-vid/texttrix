@@ -271,6 +271,7 @@ fi
 # Common macros
 
 PKG_DIR="com/textflex/texttrix"
+PKG="com.textflex.texttrix"
 srcFiles='SRC_FILES=$(wildcard $(BASE_DIR)/texttrix/$(PKG_DIR)/*.java)'
 targetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SRC_FILES))'
 
@@ -296,8 +297,6 @@ else
 fi
 
 phony='.PHONY: TextTrix texttrix TextTrix_setup'
-
-clean='clean: '"\n\t"'rm -f $(TARGET_FILES)'
 
 PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
@@ -356,14 +355,25 @@ COMMON_VARS="TTX_VER=$TTX_VER
 BASE_DIR=$BASE_DIR
 PREFIX=$PREFIX
 JAVAC="$JAVA"javac
+JAVADOC="$JAVA"javadoc
 PKG_DIR=$PKG_DIR
+PKG=$PKG
 $srcFiles
 $targetFiles
 $plgSrcFiles
 $plgTargetFiles
 "
 
-# Clean-up rule
+# API rule
+
+LINK="-link http://java.sun.com/j2se/1.5.0/docs/api"
+api='api: $(TARGET_FILES)'"\n\t"'if [ ! -d docs/api ]; then mkdir docs/api; fi'
+if [ $CYGWIN = true ]
+then
+	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -wp docs/api) '$LINK' -classpath $(shell cygpath -wp texttrix) $(PKG)'
+else
+	api="$api""\n\t"'$(JAVADOC) -d docs/api '$LINK' -classpath texttrix $(PKG)'
+fi
 
 
 # Installation rules
@@ -372,6 +382,10 @@ install='intall: if [ -d $(PREFIX) ]; then mkdir $(PREFIX)'
 install="$install""\n\t"'mkdir $(PREFIX)/texttrix/$(PKG) $(PREFIX)/plugin; cp -f $(TARGET_FILES) $(PREFIX)/$(PKG)'
 
 phony="$phony clean all install install"
+
+# Clean-up rule
+
+clean='clean: '"\n\t"'rm -f $(TARGET_FILES)'
 
 # rules collection
 RULES="all: texttrix $PLGS
@@ -389,6 +403,8 @@ $ttxClassRule
 $plgRules
 $plgSetupRules
 $plgClassRules
+
+$api
 
 $clean
 "
