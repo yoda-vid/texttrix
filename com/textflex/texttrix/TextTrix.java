@@ -52,11 +52,12 @@ import javax.swing.event.*;
 */
 public class TextTrix extends JFrame {
 	// to keep track of all the TextPads
-    private static ArrayList textAreas = new ArrayList();
+	private static ArrayList textAreas = new ArrayList();
 	// tabbed window for multiple TextPads
-    private static JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+	private static JTabbedPane tabbedPane 
+		= new JTabbedPane(JTabbedPane.TOP);
 	// file open/save dialog
-    private static JFileChooser chooser = new JFileChooser();
+	private static JFileChooser chooser = new JFileChooser();
 	// auto-indent
 	private static JCheckBoxMenuItem autoIndent 
 		= new JCheckBoxMenuItem("Auto-indent");
@@ -72,342 +73,343 @@ public class TextTrix extends JFrame {
 	/**Constructs a new <code>TextTrix</code> frame and starting 
 	 * <code>TextPad</code>.
 	 */
-    public TextTrix() {
-	setTitle("Text Trix");
-	// pre-set window size; may change to adjust to user's screen size
-	setSize(500, 600);
+	public TextTrix() {
+		setTitle("Text Trix");
+		// pre-set window size; may change to adjust to user's screen size
+		setSize(500, 600);
 
-	// make first tab and text area
-	addTextArea(textAreas, tabbedPane, makeNewFile());
+		// make first tab and text area
+		addTextArea(textAreas, tabbedPane, makeNewFile());
 
-	// make menu bar and menus
-	JMenuBar menuBar = new JMenuBar();
-	JMenu fileMenu = new JMenu("File");
-	fileMenu.setMnemonic('F');
-	JMenu editMenu = new JMenu("Edit");
-	editMenu.setMnemonic('E');
-	JMenu trixMenu = new JMenu("Trix");
-	trixMenu.setMnemonic('T');
-	JMenu toolsMenu = new JMenu("Tools");
-	toolsMenu.setMnemonic('O');
-	JMenu helpMenu = new JMenu("Help");
-	helpMenu.setMnemonic('H');
+		// make menu bar and menus
+		JMenuBar menuBar = new JMenuBar();
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setMnemonic('F');
+		JMenu editMenu = new JMenu("Edit");
+		editMenu.setMnemonic('E');
+		JMenu trixMenu = new JMenu("Trix");
+		trixMenu.setMnemonic('T');
+		JMenu toolsMenu = new JMenu("Tools");
+		toolsMenu.setMnemonic('O');
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setMnemonic('H');
 
-	// make tool bar
-	JToolBar toolBar = new JToolBar("Functions and features");
+		// make tool bar
+		JToolBar toolBar = new JToolBar("Functions and features");
 
-	/* File menu items */
+		/* File menu items */
 
-	// make new tab and text area
-	Action newAction = new AbstractAction("New") {
-		public void actionPerformed(ActionEvent evt) {
-		    addTextArea(textAreas, tabbedPane, makeNewFile());
-		}
-	    };
-	// Mozilla tabbed-pane key-binding
-	setAction(newAction, "New", 'N', KeyStroke.getKeyStroke(KeyEvent.VK_T,
-						      InputEvent.CTRL_MASK));
-	fileMenu.add(newAction);
-	/* move to tabs using default Java key-bindings:
-	 * Ctrl-up to tabs
-	 * Lt, rt to switch tabs
-	 * Tab back down to TextPad */
+		// make new tab and text area
+		Action newAction = new AbstractAction("New") {
+			public void actionPerformed(ActionEvent evt) {
+		    	addTextArea(textAreas, tabbedPane, makeNewFile());
+			}
+	    	};
+		// Mozilla tabbed-pane key-binding
+		setAction(newAction, "New", 'N', 	KeyStroke.getKeyStroke(KeyEvent.VK_T,
+							      InputEvent.CTRL_MASK));
+		fileMenu.add(newAction);
+		/* move to tabs using default Java key-bindings:
+		 * Ctrl-up to tabs
+		 * Lt, rt to switch tabs
+		 * Tab back down to TextPad */
 
-	// (ctrl-o) open file; use selected tab if empty
-	Action openAction = new FileOpenAction(TextTrix.this, "Open", makeIcon("images/openicon-16x16.png"));
-	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
-				InputEvent.CTRL_MASK));
-	fileMenu.add(openAction);
-	JButton openButton = toolBar.add(openAction);
-	openButton.setBorderPainted(false);
-	setRollover(openButton, "images/openicon-roll-16x16.png");
+		// (ctrl-o) open file; use selected tab if empty
+		Action openAction = new FileOpenAction(TextTrix.this, "Open", 
+			makeIcon("images/openicon-16x16.png"));
+		setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
+					InputEvent.CTRL_MASK));
+		fileMenu.add(openAction);
+		JButton openButton = toolBar.add(openAction);
+		openButton.setBorderPainted(false);
+		setRollover(openButton, "images/openicon-roll-16x16.png");
 
-	// set text and web file filters for open/save dialog boxes
-	final ExtensionFileFilter webFilter = new ExtensionFileFilter();
-	webFilter.addExtension("html");
-	webFilter.addExtension("htm");
-	webFilter.addExtension("xhtml");
-	webFilter.addExtension("shtml");
-	webFilter.setDescription("Web files (*.html, *.htm, *.xhtml, *.shtml)");
-	chooser.setFileFilter(webFilter);
+		// set text and web file filters for open/save dialog boxes
+		final ExtensionFileFilter webFilter = new ExtensionFileFilter();
+		webFilter.addExtension("html");
+		webFilter.addExtension("htm");
+		webFilter.addExtension("xhtml");
+		webFilter.addExtension("shtml");
+		webFilter.setDescription("Web files (*.html, *.htm, *.xhtml, *.shtml)");
+		chooser.setFileFilter(webFilter);
 
-	final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
-	txtFilter.addExtension("txt");
-	txtFilter.setDescription("Text files (*.txt)");
-	chooser.setFileFilter(txtFilter);
+		final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
+		txtFilter.addExtension("txt");
+		txtFilter.setDescription("Text files (*.txt)");
+		chooser.setFileFilter(txtFilter);
 	
-	// close file; check if saved
-	Action closeAction = new AbstractAction("Close", makeIcon("images/closeicon-16x16.png")) {
-		public void actionPerformed(ActionEvent evt) {
-			int i = tabbedPane.getSelectedIndex();
-			closeTextArea(i, textAreas, tabbedPane);
-		}
-	};
-	setAction(closeAction, "Close", 'C');
-	fileMenu.add(closeAction);
+		// close file; check if saved
+		Action closeAction = new AbstractAction("Close", makeIcon("images/closeicon-16x16.png")) {
+			public void actionPerformed(ActionEvent evt) {
+				int i = tabbedPane.getSelectedIndex();
+				closeTextArea(i, textAreas, tabbedPane);
+			}
+		};
+		setAction(closeAction, "Close", 'C');
+		fileMenu.add(closeAction);
 
-	// (ctrl-s) save file; no dialog if file already created
-	Action saveAction = new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
-		public void actionPerformed(ActionEvent evt) {
-			// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
-			TextPad t = (TextPad)textAreas
-				.get(tabbedPane.getSelectedIndex());
-			// save directly to file if already created one
-			if (t.fileExists())
-				saveFile(t.getPath());
-			// otherwise, request filename for new file
-			else
-				fileSaveDialog(TextTrix.this);
-		}
-	};
-	setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
-				InputEvent.CTRL_MASK));
-	fileMenu.add(saveAction);
-	JButton saveButton = toolBar.add(saveAction);
-	saveButton.setBorderPainted(false);
-	setRollover(saveButton, "images/saveicon-roll-16x16.png");
+		// (ctrl-s) save file; no dialog if file already created
+		Action saveAction = new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
+			public void actionPerformed(ActionEvent evt) {
+				// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
+				TextPad t = (TextPad)textAreas
+					.get(tabbedPane.getSelectedIndex());
+				// save directly to file if already created one
+				if (t.fileExists())
+					saveFile(t.getPath());
+				// otherwise, request filename for new file
+				else
+					fileSaveDialog(TextTrix.this);
+			}
+		};
+		setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
+					InputEvent.CTRL_MASK));
+		fileMenu.add(saveAction);
+		JButton saveButton = toolBar.add(saveAction);
+		saveButton.setBorderPainted(false);
+		setRollover(saveButton, "images/saveicon-roll-16x16.png");
 
-	// save w/ file save dialog
-	Action saveAsAction = new FileSaveAction(TextTrix.this, "Save as...", 
-			makeIcon("images/saveasicon-16x16.png"));
-	setAction(saveAsAction, "Save as...", '.');
-	fileMenu.add(saveAsAction);
-
-	// Start exit functions
-	fileMenu.addSeparator();
+		// save w/ file save dialog
+		Action saveAsAction = new FileSaveAction(TextTrix.this, "Save as...", 
+				makeIcon("images/saveasicon-16x16.png"));
+		setAction(saveAsAction, "Save as...", '.');
+		fileMenu.add(saveAsAction);
 	
-	// (ctrl-q) exit file; close each tab separately, checking if each saved
-	Action exitAction = new AbstractAction("Exit") {
-		public void actionPerformed(ActionEvent evt) {
-			exitTextTrix();
-		}
-	    };
-	setAction(exitAction, "Exit", 'E', KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-						       InputEvent.CTRL_MASK));
-	fileMenu.add(exitAction);
-
-	/* Edit menu items */
-
-	// (ctrl-z) undo; multiple undos available
-	Action undoAction = new AbstractAction("Undo") {
-		public void actionPerformed(ActionEvent evt) {
-			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
-		}
-	};
-	setAction(undoAction, "Undo", 'U', KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-				InputEvent.CTRL_MASK));
-	editMenu.add(undoAction);
-
-	// (ctrl-y) redo; multiple redos available
-	Action redoAction = new AbstractAction("Redo") {
-		public void actionPerformed(ActionEvent evt) {
-			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
-		}
-	};
-	setAction(redoAction, "Redo", 'R', KeyStroke.getKeyStroke(KeyEvent.VK_Y,
-				InputEvent.CTRL_MASK));
-	editMenu.add(redoAction);
-
-	// Start Cut, Copy, Paste actions
-	editMenu.addSeparator();
+		// Start exit functions
+		fileMenu.addSeparator();
 	
-	// (ctrl-x) cut
-	Action cutAction = new AbstractAction("Cut") {
-		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
-		}
-	};
-	setAction(cutAction, "Cut", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_X,
-						      InputEvent.CTRL_MASK));
-	editMenu.add(cutAction);
+		// (ctrl-q) exit file; close each tab separately, checking if each saved
+		Action exitAction = new AbstractAction("Exit") {
+			public void actionPerformed(ActionEvent evt) {
+				exitTextTrix();
+			}
+		    };
+		setAction(exitAction, "Exit", 'E', KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+							       InputEvent.CTRL_MASK));
+		fileMenu.add(exitAction);
 
-	// (ctrl-c) copy
-	Action copyAction = new AbstractAction("Copy") {
-		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
-		}
-	};
-	setAction(copyAction, "Copy", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_C,
-						       InputEvent.CTRL_MASK));
-	editMenu.add(copyAction);
+		/* Edit menu items */
 
-	// (ctrl-v) paste
-	Action pasteAction = new AbstractAction("Paste") {
-		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
-		}
-	};
-	setAction(pasteAction, "Paste", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_V,
-							InputEvent.CTRL_MASK));
-	editMenu.add(pasteAction);
+		// (ctrl-z) undo; multiple undos available
+		Action undoAction = new AbstractAction("Undo") {
+			public void actionPerformed(ActionEvent evt) {
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
+			}
+		};
+		setAction(undoAction, "Undo", 'U', KeyStroke.getKeyStroke(KeyEvent.VK_Z,
+					InputEvent.CTRL_MASK));
+		editMenu.add(undoAction);
 
-	// Start selection items
-	editMenu.addSeparator();
+		// (ctrl-y) redo; multiple redos available
+		Action redoAction = new AbstractAction("Redo") {
+			public void actionPerformed(ActionEvent evt) {
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
+			}
+		};
+		setAction(redoAction, "Redo", 'R', KeyStroke.getKeyStroke(KeyEvent.VK_Y,
+					InputEvent.CTRL_MASK));
+		editMenu.add(redoAction);
 
-	// select all text in current text area
-	Action selectAllAction = new AbstractAction("Select all") {
-		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).selectAll();
-		}
-	};
-	setAction(selectAllAction, "Select all", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_L,
-				InputEvent.CTRL_MASK));
-	editMenu.add(selectAllAction);
-
-	editMenu.addSeparator();
-
-	// options sub-menu
-	JMenu optionsMenu = new JMenu("Options");
-	editMenu.add(optionsMenu);
-
-	// auto-indent
-	optionsMenu.add(autoIndent);
+		// Start Cut, Copy, Paste actions
+		editMenu.addSeparator();
 	
-	/* Help menu items */
+		// (ctrl-x) cut
+		Action cutAction = new AbstractAction("Cut") {
+			public void actionPerformed(ActionEvent evt) {
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
+			}
+		};
+		setAction(cutAction, "Cut", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_X,
+							      InputEvent.CTRL_MASK));
+		editMenu.add(cutAction);
 
-	// about Text Trix, incl copyright notice and version number
-	Action aboutAction = new AbstractAction("About...") {
-		public void actionPerformed(ActionEvent evt) {
-			String text = "";
-			text = readText("about.txt");
-			JOptionPane.showMessageDialog(null, text, "About Text Trix", 
-					JOptionPane.PLAIN_MESSAGE, 
-					makeIcon("images/texttrixsignature.png"));
-		}
-	};
-	setAction(aboutAction, "About...", 'A');
-	helpMenu.add(aboutAction);
+		// (ctrl-c) copy
+		Action copyAction = new AbstractAction("Copy") {
+			public void actionPerformed(ActionEvent evt) {
+			    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
+			}
+		};
+		setAction(copyAction, "Copy", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_C,
+							       InputEvent.CTRL_MASK));
+		editMenu.add(copyAction);
 
-	// shortcuts description; opens new tab
-	Action shortcutsAction = new AbstractAction("Shortcuts") {
-		public void actionPerformed(ActionEvent evt) {
-			// reads from "shortcuts.txt" in same directory as this class
-			String path = "shortcuts.txt";
-			displayFile(path);
-		}
-	};
-	setAction(shortcutsAction, "Shortcuts", 'S');
-	helpMenu.add(shortcutsAction);
+		// (ctrl-v) paste
+		Action pasteAction = new AbstractAction("Paste") {
+			public void actionPerformed(ActionEvent evt) {
+			    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
+			}
+		};
+		setAction(pasteAction, "Paste", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_V,
+								InputEvent.CTRL_MASK));
+		editMenu.add(pasteAction);
 
-	// features descriptions; opens new tab
-	Action featuresAction = new AbstractAction("Features descriptions") {
-		public void actionPerformed(ActionEvent evt) {
-			// reads from "features.txt" in same directory as this class
-			String path = "features.txt";
-			displayFile(path);
-		}
-	};
-	setAction(featuresAction, "Features descriptions", 'F');
-	helpMenu.add(featuresAction);
+		// Start selection items
+		editMenu.addSeparator();
 
-	// license; opens new tab
-	Action licenseAction = new AbstractAction("License") {
-		public void actionPerformed(ActionEvent evt) {
-			// reads from "license.txt" in same directory as this class
-			String path = "license.txt";
-			displayFile(path);
-		}
-	};
-	setAction(licenseAction, "License", 'L');
-	helpMenu.add(licenseAction);
+		// select all text in current text area
+		Action selectAllAction = new AbstractAction("Select all") {
+			public void actionPerformed(ActionEvent evt) {
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).selectAll();
+			}
+		};
+		setAction(selectAllAction, "Select all", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_L,
+					InputEvent.CTRL_MASK));
+		editMenu.add(selectAllAction);
 
-	// find and replace Tools feature
-	Action findAction = new AbstractAction("Find and replace", makeIcon("images/find-16x16.png")) {
-		public void actionPerformed(ActionEvent evt) {
-			if (findDialog == null) 
-				findDialog = new FindDialog(TextTrix.this);
-			findDialog.show();
-		}
-	};
-	setAction(findAction, "Find and replace", 'F');
-	toolsMenu.add(findAction);
-	JButton findButton = toolBar.add(findAction);
-	findButton.setBorderPainted(false);
-	setRollover(findButton, "images/find-roll-16x16.png");
-	findButton.setToolTipText(readText("findbutton.html"));
+		editMenu.addSeparator();
 
-	// remove hard returns except between paragraphs and within lists; 
-	// also remove " > " and similar pre-appendages to lines
-	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
-			makeIcon("images/returnicon-16x16.png")) {
-		public void actionPerformed(ActionEvent evt) {
-		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-			// may need to add original text to history buffer
-			// before making the change
-		    t.setText(Tools.removeExtraHardReturns(t.getText()));
-		}
-	};
-	setAction(removeReturnsAction, "Remove extra hard returns", 'R');
-	toolsMenu.add(removeReturnsAction);
-	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
-	removeReturnsButton.setBorderPainted(false);
-	setRollover(removeReturnsButton, "images/returnicon-roll-16x16.png");
-	removeReturnsButton.setToolTipText(readText("removereturnsbutton.html"));
+		// options sub-menu
+		JMenu optionsMenu = new JMenu("Options");
+		editMenu.add(optionsMenu);
 
-	// non-printing-character display
-	Action nonPrintingCharViewerAction = new AbstractAction(
-			"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
-		public void actionPerformed(ActionEvent evt) {
-			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-			t.setText(Tools.showNonPrintingChars(t.getText()));
-		}
-	};
-	setAction(nonPrintingCharViewerAction, "View non-printing characters", 'V');
-	toolsMenu.add(nonPrintingCharViewerAction);
-	JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
-	nonPrintingCharViewerButton.setBorderPainted(false);
-	setRollover(nonPrintingCharViewerButton, "images/nonprinting-roll-16x16.png");
-	nonPrintingCharViewerButton.setToolTipText(readText("nonprintingbutton.html"));
+		// auto-indent
+		optionsMenu.add(autoIndent);
+	
+		/* Help menu items */
 
-	// HTML replacement
-	Action htmlReplacerAction = new AbstractAction(
-			"Replace HTML tags", makeIcon("images/htmlreplacer-16x16.png")) {
-		public void actionPerformed(ActionEvent evt) {
-			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+		// about Text Trix, incl copyright notice and version number
+		Action aboutAction = new AbstractAction("About...") {
+			public void actionPerformed(ActionEvent evt) {
+				String text = "";
+				text = readText("about.txt");
+				JOptionPane.showMessageDialog(null, text, "About Text Trix", 
+						JOptionPane.PLAIN_MESSAGE, 
+						makeIcon("images/texttrixsignature.png"));
+			}
+		};
+		setAction(aboutAction, "About...", 'A');
+		helpMenu.add(aboutAction);
+	
+		// shortcuts description; opens new tab
+		Action shortcutsAction = new AbstractAction("Shortcuts") {
+			public void actionPerformed(ActionEvent evt) {
+				// reads from "shortcuts.txt" in same directory as this class
+				String path = "shortcuts.txt";
+				displayFile(path);
+			}
+		};
+		setAction(shortcutsAction, "Shortcuts", 'S');
+		helpMenu.add(shortcutsAction);
+
+		// features descriptions; opens new tab
+		Action featuresAction = new AbstractAction("Features descriptions") {
+			public void actionPerformed(ActionEvent evt) {
+				// reads from "features.txt" in same directory as this class
+				String path = "features.txt";
+				displayFile(path);
+			}
+		};
+		setAction(featuresAction, "Features descriptions", 'F');
+			helpMenu.add(featuresAction);
+
+		// license; opens new tab
+		Action licenseAction = new AbstractAction("License") {
+			public void actionPerformed(ActionEvent evt) {
+				// reads from "license.txt" in same directory as this class
+				String path = "license.txt";
+				displayFile(path);
+			}
+		};
+		setAction(licenseAction, "License", 'L');
+		helpMenu.add(licenseAction);
+	
+		// find and replace Tools feature
+		Action findAction = new AbstractAction("Find and replace", makeIcon("images/find-16x16.png")) {
+			public void actionPerformed(ActionEvent evt) {
+				if (findDialog == null) 
+					findDialog = new FindDialog(TextTrix.this);
+				findDialog.show();
+			}
+		};
+		setAction(findAction, "Find and replace", 'F');
+		toolsMenu.add(findAction);
+		JButton findButton = toolBar.add(findAction);
+		findButton.setBorderPainted(false);
+		setRollover(findButton, "images/find-roll-16x16.png");
+		findButton.setToolTipText(readText("findbutton.html"));
+
+		// remove hard returns except between paragraphs and within lists; 
+		// also remove " > " and similar pre-appendages to lines
+		Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
+				makeIcon("images/returnicon-16x16.png")) {
+			public void actionPerformed(ActionEvent evt) {
+				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+				// may need to add original text to history buffer
+				// before making the change
+				t.setText(Tools.removeExtraHardReturns(t.getText()));
+			}
+		};
+		setAction(removeReturnsAction, "Remove extra hard returns", 'R');
+		toolsMenu.add(removeReturnsAction);
+		JButton removeReturnsButton = toolBar.add(removeReturnsAction);
+		removeReturnsButton.setBorderPainted(false);
+		setRollover(removeReturnsButton, "images/returnicon-roll-16x16.png");
+		removeReturnsButton.setToolTipText(readText("removereturnsbutton.html"));
+	
+		// non-printing-character display
+		Action nonPrintingCharViewerAction = new AbstractAction(
+				"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
+			public void actionPerformed(ActionEvent evt) {
+				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+				t.setText(Tools.showNonPrintingChars(t.getText()));
+			}
+		};
+		setAction(nonPrintingCharViewerAction, "View non-printing characters", 'V');
+		toolsMenu.add(nonPrintingCharViewerAction);
+		JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
+		nonPrintingCharViewerButton.setBorderPainted(false);
+		setRollover(nonPrintingCharViewerButton, "images/nonprinting-roll-16x16.png");
+		nonPrintingCharViewerButton.setToolTipText(readText("nonprintingbutton.html"));
+
+		// HTML replacement
+		Action htmlReplacerAction = new AbstractAction(
+				"Replace HTML tags", makeIcon("images/htmlreplacer-16x16.png")) {
+			public void actionPerformed(ActionEvent evt) {
+				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 				t.setText(Tools.htmlReplacer(t.getText()));
-		}
-	};
-	setAction(htmlReplacerAction, "Replace HTML tags", 'H');
-	toolsMenu.add(htmlReplacerAction);
-	JButton htmlReplacerButton = toolBar.add(htmlReplacerAction);
-	htmlReplacerButton.setBorderPainted(false);
-	setRollover(htmlReplacerButton, "images/htmlreplacer-roll-16x16.png");
-	htmlReplacerButton.setToolTipText(readText("htmlreplacer.html"));
+			}
+		};
+		setAction(htmlReplacerAction, "Replace HTML tags", 'H');
+		toolsMenu.add(htmlReplacerAction);
+		JButton htmlReplacerButton = toolBar.add(htmlReplacerAction);
+		htmlReplacerButton.setBorderPainted(false);
+		setRollover(htmlReplacerButton, "images/htmlreplacer-roll-16x16.png");
+		htmlReplacerButton.setToolTipText(readText("htmlreplacer.html"));
 	
-	toolBar.setFloatable(false); // necessary since not BorderLayout
+		toolBar.setFloatable(false); // necessary since not BorderLayout
 
-	// add menu bar and menus
-	setJMenuBar(menuBar);
-	menuBar.add(fileMenu);
-	menuBar.add(editMenu);
-	menuBar.add(trixMenu);
-	menuBar.add(toolsMenu);
-	menuBar.add(helpMenu);
-
-	// add components to frame; "add" function to set GridBag parameters
-	Container contentPane = getContentPane();
-	GridBagLayout layout = new GridBagLayout();
-	contentPane.setLayout(layout);
-
-	GridBagConstraints constraints = new GridBagConstraints();
-
-	constraints.fill = GridBagConstraints.BOTH;
-	constraints.anchor = GridBagConstraints.CENTER;
-	add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
-
-	constraints.fill = GridBagConstraints.BOTH;
-	constraints.anchor = GridBagConstraints.CENTER;
-	add(tabbedPane, constraints, 0, 1, 1, 1, 100, 100);
+		// add menu bar and menus
+		setJMenuBar(menuBar);
+		menuBar.add(fileMenu);
+		menuBar.add(editMenu);
+		menuBar.add(trixMenu);
+		menuBar.add(toolsMenu);
+		menuBar.add(helpMenu);
 	
-    }
-
-    /**Publically executable starter method.
+		// add components to frame; "add" function to set GridBag parameters
+		Container contentPane = getContentPane();
+		GridBagLayout layout = new GridBagLayout();
+		contentPane.setLayout(layout);
+	
+		GridBagConstraints constraints = new GridBagConstraints();
+	
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+		add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
+	
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.anchor = GridBagConstraints.CENTER;
+		add(tabbedPane, constraints, 0, 1, 1, 1, 100, 100);
+		
+	    }
+	
+	/**Publically executable starter method.
 	 * Creates the <code>TextTrix</code> object, displays it,
 	 * an makes sure that it will still undergo its
 	 * exit routine when closed manually.
 	 * @param args command-line arguments; not yet used
-     */
-    public static void main(String[] args) {
+	     */
+	public static void main(String[] args) {
 		TextTrix textTrix = new TextTrix();
 		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// make sure still goes through the exit routine if close
@@ -690,29 +692,29 @@ public class TextTrix extends JFrame {
 		return text;
 	}
 
-    /**Creates a new <code>TextPad</code> object, a text area 
+	/**Creates a new <code>TextPad</code> object, a text area 
 	 * for writing, and gives it a new tab.  Can call for
 	 * each new file; names the tab, <code>Filen.txt</code>,
 	 * where <code>n</code> is the tab number.
-    */
-    public void addTextArea(ArrayList arrayList, 
+	 */
+	public void addTextArea(ArrayList arrayList, 
 			final JTabbedPane tabbedPane, File file) {
 			final TextPad textPad = new TextPad(30, 20, file);
-			// final variables so can use in inner class;
+		// final variables so can use in inner class;
 			
-			JScrollPane scrollPane = new JScrollPane(textPad);
-			DocumentListener listener = new TextPadDocListener();
+		JScrollPane scrollPane = new JScrollPane(textPad);
+		DocumentListener listener = new TextPadDocListener();
 			
-			// 1 more than highest tab index since will add tab
-			final int i = tabbedPane.getTabCount();
-			tabbedPane.addTab(file.getName() + "  ", scrollPane);
-			textPad.setLineWrap(true);
-			textPad.setWrapStyleWord(true);
-			textPad.getDocument().addDocumentListener(listener);
-			// show " *" in tab title when text changed
-			arrayList.add(textPad);
-			tabbedPane.setSelectedIndex(i);
-			tabbedPane.setToolTipTextAt(i, textPad.getPath());
+		// 1 more than highest tab index since will add tab
+		final int i = tabbedPane.getTabCount();
+		tabbedPane.addTab(file.getName() + "  ", scrollPane);
+		textPad.setLineWrap(true);
+		textPad.setWrapStyleWord(true);
+		textPad.getDocument().addDocumentListener(listener);
+		// show " *" in tab title when text changed
+		arrayList.add(textPad);
+		tabbedPane.setSelectedIndex(i);
+		tabbedPane.setToolTipTextAt(i, textPad.getPath());
 	}
 
 	/**Changes tabbed pane title to indicate whether the file's changes 
@@ -744,28 +746,28 @@ public class TextTrix extends JFrame {
 		tp.remove(i);
 	}
 
-    /**Adds a new component to the <code>GridBagLayout</code>
-       manager.
-       @param c component to add
-       @param constraints layout constraints object
-       @param x column number
-       @param y row number
-       @param w number of columns to span
-       @param h number of rows to span
-       @param wx column weight
-       @param wy row weight
-    */
-    public void add(Component c, GridBagConstraints constraints,
+	/**Adds a new component to the <code>GridBagLayout</code>
+	 * manager.
+	 * @param c component to add
+	 * @param constraints layout constraints object
+	 * @param x column number
+	 * @param y row number
+	 * @param w number of columns to span
+	 * @param h number of rows to span
+	 * @param wx column weight
+	 * @param wy row weight
+	 */
+	public void add(Component c, GridBagConstraints constraints,
 			     int x, int y, int w, int h, 
 			     int wx, int wy) {
-	constraints.gridx = x;
-	constraints.gridy = y;
-	constraints.gridwidth = w;
-	constraints.gridheight = h;
-	constraints.weightx = wx;
-	constraints.weighty = wy;
-	getContentPane().add(c, constraints);
-    }
+		constraints.gridx = x;
+		constraints.gridy = y;
+		constraints.gridwidth = w;
+		constraints.gridheight = h;
+		constraints.weightx = wx;
+		constraints.weighty = wy;
+		getContentPane().add(c, constraints);
+	    }
 
 	/**Saves text area contents to a given path.
 	 * @param path file path in which to save
@@ -820,7 +822,7 @@ public class TextTrix extends JFrame {
 	 * text area.  Filters for text files, though provides
 	 * option to display all files.
 	 */
-    private class FileOpenAction extends AbstractAction {
+	private class FileOpenAction extends AbstractAction {
 		JFrame owner;
 		
 		public FileOpenAction(JFrame aOwner, String name, Icon icon) {
@@ -832,54 +834,51 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 			// File("") evidently brings file dialog to last path, 
 			// whether last saved or opened path
-	    	chooser.setCurrentDirectory(new File(openPath));
+	    		chooser.setCurrentDirectory(new File(openPath));
 
-	    	int result = chooser.showOpenDialog(owner);
+		    	int result = chooser.showOpenDialog(owner);
 
-	    	if (result == JFileChooser.APPROVE_OPTION) {
+		    	if (result == JFileChooser.APPROVE_OPTION) {
 				String path = chooser.getSelectedFile().getPath();
 
 				try {
-		    		BufferedReader reader = 
-						new BufferedReader(new FileReader(path));
-				    String text = readText(reader);
-				
-		    		// check if tabs exist; get TextPad if true
-		    		int tabIndex = tabbedPane.getSelectedIndex();
-					TextPad t = null;
-		    		if (tabIndex != -1)
-						t = (TextPad)textAreas.get(tabIndex);
-		    		/* t.getText() != null, even if have typed nothing in it.
+			    		BufferedReader reader = 
+							new BufferedReader(new FileReader(path));
+					String text = readText(reader);
+					
+			    		// check if tabs exist; get TextPad if true
+			    		int tabIndex = tabbedPane.getSelectedIndex();
+						TextPad t = null;
+			    		if (tabIndex != -1)
+							t = (TextPad)textAreas.get(tabIndex);
+					/* t.getText() != null, even if have typed nothing in it.
 					 * Add tab and set its text if no tabs exist or if current
 					 * tab has tokens; set current tab's text otherwise */
-		    		if (tabIndex == -1 
-							|| (new StringTokenizer(t.getText()))
-							.hasMoreTokens()) { 
+			    		if (tabIndex == -1 || (new StringTokenizer(t.getText())).hasMoreTokens()) { 
 						addTextArea(textAreas, tabbedPane, new File(path));
-						t = (TextPad)textAreas
-							.get(tabbedPane.getSelectedIndex());
+						t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 						t.setText(text);
-		    		} else {
+			    		} else {
 						t.setText(text);
-		    		}
+			    		}
 					t.setCaretPosition(0);
 					t.setChanged(false);
 					t.setFile(path);
 					tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 							chooser.getSelectedFile().getName());
 	
-			    	reader.close();
+					reader.close();
 					setOpenPath(path);
 				} catch(IOException exception) {
-				    exception.printStackTrace();
+					exception.printStackTrace();
 				}
-		    }
+			}
 		}
 	}
 	
 	/**Responds to user input calling for a save dialog.
 	 */
-    private class FileSaveAction extends AbstractAction {
+	private class FileSaveAction extends AbstractAction {
 		JFrame owner;
 		
 		public FileSaveAction(JFrame aOwner, String name, Icon icon) {
@@ -889,7 +888,7 @@ public class TextTrix extends JFrame {
 		}
 		
 		public void actionPerformed(ActionEvent evt) {
-    		fileSaveDialog(owner);
+    			fileSaveDialog(owner);
 		}
 	}
 
@@ -966,7 +965,8 @@ public class TextTrix extends JFrame {
 					n = Tools.find(t.getText(), findText, n, word.isSelected(), ignoreCase.isSelected());
 					if (n != -1) {
 						if (wrap.isSelected()) {
-							n = Tools.find(t.getText(), findText, 0, word.isSelected(), ignoreCase.isSelected());
+							n = Tools.find(t.getText(), 
+								findText, 0, word.isSelected(), ignoreCase.isSelected());
 						}
 						t.setSelectionStart(n);
 						t.setSelectionEnd(n + findText.length());
@@ -1005,7 +1005,7 @@ public class TextTrix extends JFrame {
 		}
 
 		
-    	/**Adds a new component to the <code>GridBagLayout</code> manager.
+		/**Adds a new component to the <code>GridBagLayout</code> manager.
 		 * @param c component to add
 		 * @param constraints layout constraints object
 		 * @param x column number
@@ -1015,9 +1015,9 @@ public class TextTrix extends JFrame {
 		 * @param wx column weight
 		 * @param wy row weight
 		 * */
-	    public void add(Component c, GridBagConstraints constraints,
-			     int x, int y, int w, int h, 
-			     int wx, int wy) {
+		    public void add(Component c, GridBagConstraints constraints,
+				     int x, int y, int w, int h, 
+				     int wx, int wy) {
 			constraints.gridx = x;
 			constraints.gridy = y;
 			constraints.gridwidth = w;
@@ -1025,7 +1025,7 @@ public class TextTrix extends JFrame {
 			constraints.weightx = wx;
 			constraints.weighty = wy;
 			getContentPane().add(c, constraints);
-    	}
+		}
 	}
 	
 	/**Responds to changes in the <code>TextPad</code> text areas.
@@ -1075,8 +1075,8 @@ public class TextTrix extends JFrame {
 /**Filters for files with specific extensions.
  */
 class ExtensionFileFilter extends FileFilter {
-    private String description = "";
-    private ArrayList extensions = new ArrayList();
+	private String description = "";
+	private ArrayList extensions = new ArrayList();
 
 	/**Add extension to include for file display.
 	 * May need to modify to check whether extension has already
@@ -1084,26 +1084,26 @@ class ExtensionFileFilter extends FileFilter {
 	 * @param file extension, such as <code>.txt</code>, though
 	 * the period is optional
 	 */
-    public void addExtension(String extension) {
-	if (!extension.startsWith("."))
-	    extension = "." + extension;
-	extensions.add(extension.toLowerCase());
-    }
+	public void addExtension(String extension) {
+		if (!extension.startsWith("."))
+			extension = "." + extension;
+		extensions.add(extension.toLowerCase());
+	}
 
 	/**Sets the file type description.
 	 * @param aDescription file description, such as <code>text
 	 * files</code> for <code>.txt</code> files
 	 */
-    public void setDescription(String aDescription) {
-	description = aDescription;
-    }
+	public void setDescription(String aDescription) {
+		description = aDescription;
+	}
 
 	/**Gets file type's description.
 	 * @return file type description.
 	 */
-    public String getDescription() {
+	public String getDescription() {
 		return description;
-    }
+	}
 
 	/**Accept a given file to display if it has the extension
 	 * currently being filtered for.
@@ -1111,14 +1111,14 @@ class ExtensionFileFilter extends FileFilter {
 	 * @return <code>true</code> if accepts file, <code>false</code>
 	 * if don't
 	 */
-    public boolean accept(File f) {
+	public boolean accept(File f) {
 		if (f.isDirectory()) 
 			return true;
 		String name = f.getName().toLowerCase();
 
 		for (int i = 0; i < extensions.size(); i++)
 	    	if (name.endsWith((String)extensions.get(i)))
-				return true;
+			return true;
 		return false;
-    }
+	}
 }
