@@ -240,27 +240,21 @@ public class Tools {
 		while (n < len) {
 			if ((c = text.charAt(n)) == '<' && n < len - 1) {
 				n++;
-				if (lowerCase.startsWith("p>", n) || lowerCase.startsWith("p ", n)) {
+				if (startsWithAny(lowerCase, new String[] {"p>", "p "}, n)) {
 					s.append("\n\n");
-				} else if (lowerCase.startsWith("br>", n) 
-						|| lowerCase.startsWith("br ", n)) {
+				} else if (startsWithAny(lowerCase, 
+							new String[] {"br>", "br>", "/br>", "/br "}, n)) {
 					s.append("\n");
-				} else if (lowerCase.startsWith("b>", n) 
-						|| lowerCase.startsWith("b ", n)	
-						|| lowerCase.startsWith("/b>", n) 
-						|| lowerCase.startsWith("/b ", n)) {
+				} else if (startsWithAny(lowerCase, 
+							new String[] {"b>", "b ", "/b>", "/b "}, n)) {
 					s.append("*");
-				} else if (lowerCase.startsWith("i>", n) 
-						|| lowerCase.startsWith("i ", n)
-						|| lowerCase.startsWith("/i>", n) 
-						|| lowerCase.startsWith("/i ", n)) {
+				} else if (startsWithAny(lowerCase, 
+							new String[] {"i>", "i ", "/i>", "/i "}, n)) {
 					s.append("/");
-				} else if (lowerCase.startsWith("u>", n)
-						|| lowerCase.startsWith("u ", n)
-						|| lowerCase.startsWith("/u>", n)
-						|| lowerCase.startsWith("/u >", n)) {
+				} else if (startsWithAny(lowerCase, 
+							new String[] {"u>", "u ", "/u>", "/u >"}, n)) {
 					s.append("_");
-				} else if (lowerCase.startsWith("/", n)) {
+				} else if (startsWithAny(lowerCase, new String[] {"/"}, n)) {
 				}
 				n = lowerCase.indexOf('>', n);
 			} else if (c == '\n' || c == '\t') {
@@ -272,6 +266,14 @@ public class Tools {
 		return s.toString();
 	}
 
+	public static boolean startsWithAny(String s, String strs[], int offset) {
+		for (int i = 0; i < strs.length; i++) {
+			if (s.startsWith(strs[i], offset)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	/**Shows non-printing characters.
 	 * Adds String representations for non-printing characters, such as paragraph 
