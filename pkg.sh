@@ -184,7 +184,7 @@ cd "$BLD_DIR/$PKGDIR"
 rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~
 # make files readable in all sorts of systems
 unix2dos *.txt $DIR/*.txt
-chmod 664 *.txt $DIR/*.txt # prevent execution of text files
+chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files
 
 # create the source package from the master package
 cd $BLD_DIR
@@ -206,9 +206,9 @@ cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
 else
-	"$JAVA"jar -cvfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png
 fi
 rm -rf com
 
@@ -228,8 +228,8 @@ cp $TTX_DIR/$DIR/images/minicon-32x32.png $BLD_DIR/$PKGDIR/icon.png
 # zip up and move to destination
 cd $BLD_DIR
 cp $PKGDIR/$JAR $TTX_DIR
-zip -r $PKG $PKGDIR
-zip -r $SRCPKG $SRCPKGDIR
+zip -rq $PKG $PKGDIR
+zip -rq $SRCPKG $SRCPKGDIR
 echo ""
 if [ -d "$DEST" ]
 then
