@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003
+ * Portions created by the Initial Developer are Copyright (C) 2003-4
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -43,6 +43,7 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import javax.swing.text.*;
 
 /** Library class to act as a tool chest for Text Trix functions.
  * Most <code>LibTTx</code> functions are potentially relevant to multiple
@@ -227,6 +228,22 @@ public class LibTTx {
 			array[arrayInd++] = tokenizer.nextToken();
 		}
 		return (String[])truncateArray(array, arrayInd);
+	}
+	
+	public static String createStringFromArray(String[] array, int offset, int len, boolean newlines) {
+		StringBuffer buf = new StringBuffer(1000);
+		int finalLen = offset + len;
+		for (int i = offset; i < finalLen && i < array.length; i++) {
+			buf.append(array[i]);
+			if (newlines && !array[i].endsWith("\n")) {
+				buf.append("\n");
+			}
+		}
+		return buf.toString();
+	}
+	
+	public static String createStringFromArray(String[] array, boolean newlines) {
+		return createStringFromArray(array, 0, array.length, newlines);
 	}
 	
 	public static boolean inUnsortedList(String find, String[] list) {
@@ -468,6 +485,52 @@ public class LibTTx {
 		constraints.weightx = wx;
 		constraints.weighty = wy;
 		pane.add(c, constraints);
+	}
+	
+	/**Counts the number of lines visible in the given text component.
+	 * For example, the text in a JTextArea may have newlines only at
+	 * paragraph divisions or blank lines, but the graphical text
+	 * component wraps the text so that it appears to have many lines.
+	 * This method counts those lines.  The final line is ignored if it
+	 * is empty.
+	 * @param c the graphical text component, such as <code>JTextArea</code>
+	 * or its subclasses
+	 * @return the number of visible lines, ignoring the final line if
+	 * it is blank
+	 */
+	public static int getVisibleLineCount(JTextComponent c) {
+		// ignores final line if empty
+		int len = c.getDocument().getLength();
+		int offset = 0;
+		int count = 0;
+		try {
+			while (offset < len){
+				offset = Utilities.getRowEnd(c, offset) + 1;
+				count++;
+			}
+		} catch(BadLocationException e) {
+		}
+		return count;
+	}
+	
+	public static String[] getVisibleLines(JTextComponent c) {
+		String[] lines = new String[100];
+		int linesIdx = 0;
+		int len = c.getDocument().getLength();
+		int offset = 0;
+		int end = 0;
+		try {
+			while (offset < len) {
+				end = Utilities.getRowEnd(c, offset) + 1;
+				if (linesIdx >= lines.length) {
+					lines = (String[])growArray(lines);
+				}
+				lines[linesIdx++] = c.getDocument().getText(offset, end - offset);
+				offset = end;
+			}
+		} catch(BadLocationException e) {
+		}
+		return (String[])truncateArray(lines, linesIdx);
 	}
 	
 }

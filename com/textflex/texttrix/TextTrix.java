@@ -87,7 +87,9 @@ public class TextTrix extends JFrame {
 	private MenuBarCreator menuBarCreator = null; // menu and tool bar worker thread
 	private FileHist fileHist = null; // file history
 	private boolean tmpActivated = false;
-	private HashPrintRequestAttributeSet printAttributes = null;
+	private HashPrintRequestAttributeSet printAttributes = 
+		new HashPrintRequestAttributeSet();
+	private PageFormat pageFormat = null;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -2038,16 +2040,42 @@ public class TextTrix extends JFrame {
 	
 	public void printTextPad() {
 		try {
-			TextPad pad = getSelectedTextPad();
-			if (pad == null) return;
 			PrinterJob job = PrinterJob.getPrinterJob();
-			job.setPrintable(pad);
+			Book bk = createBook();
+			if (bk == null) return;
+			job.setPageable(bk);
 			if (job.printDialog(printAttributes)) {
 				job.print(printAttributes);
+				System.out.println("printed!");
+//				pad.setPrintText(null);
 			}
 		} catch (PrinterException e) {
 			JOptionPane.showMessageDialog(this, e);
 		}
+	}
+	
+	public Book createBook() {
+		TextPad textPad = getSelectedTextPad();
+		if (textPad == null) return null;
+		System.out.println("font fam: " + textPad.getFont().getFamily()
+			+ ", font name: " + textPad.getFont().getName()
+			+ ", font size: " + textPad.getFont().getSize());
+		if (pageFormat == null) {
+			PrinterJob job = PrinterJob.getPrinterJob();
+			pageFormat = job.defaultPage();
+		}
+		PrintPad pad = textPad.createPrintPad();
+		Book bk = new Book();
+		int pp = pad.getPageCount((Graphics2D)getGraphics(), pageFormat);
+		bk.append(pad, pageFormat, pp);
+		return bk;
+	}
+	
+	public void printPreview() {
+		Book bk = createBook();
+		if (bk == null) return;
+		PrintPadPreview preview = new PrintPadPreview(this, bk);
+		preview.setVisible(true);
 	}
 
 	/**Evokes a open file dialog, from which the user can
@@ -2336,6 +2364,9 @@ public class TextTrix extends JFrame {
 					KeyStroke pasteActionShortcut = KeyStroke.getKeyStroke("ctrl V");
 					char selectAllActionMnemonic = 'A';
 					KeyStroke selectAllActionShortcut = KeyStroke.getKeyStroke("ctrl A");
+					char printActionMnemonic = 'P';
+					KeyStroke printActionShortcut = KeyStroke.getKeyStroke("ctrl P");
+					char printPreviewActionMnemonic = 'R';
 
 					// Alternate keybindings: shortcuts added to and with
 					// preference over the standard shortcuts
@@ -2351,6 +2382,7 @@ public class TextTrix extends JFrame {
 						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
 							KeyStroke.getKeyStroke("ctrl L");
+						printActionShortcut = KeyStroke.getKeyStroke("ctrl shift P");
 					} else if (prefs.isEmacsKeybindings()) {
 						// Emacs: Hybrid + Emacs single-key shortcuts
 						// TODO: create double-key shortcuts, such as ctrl-x, ctrl-s for saving
@@ -2368,7 +2400,8 @@ public class TextTrix extends JFrame {
 						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
 						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
-							KeyStroke.getKeyStroke("ctrl L");							
+							KeyStroke.getKeyStroke("ctrl L");			
+						printActionShortcut = KeyStroke.getKeyStroke("ctrl shift P");				
 					}
 
 
@@ -2542,7 +2575,35 @@ public class TextTrix extends JFrame {
 							LibTTx.makeIcon("images/saveasicon-16x16.png"));
 					LibTTx.setAction(saveAsAction, "Save as...", '.');
 					fileMenu.add(saveAsAction);
+					
+					// Menu: begin print entries
+					fileMenu.addSeparator();
+					
+					Action printAction = new AbstractAction("Print...") {
+						public void actionPerformed(ActionEvent e) {
+							printTextPad();
+						}
+					};
+					LibTTx.setAcceleratedAction(
+						printAction,
+						"Print...",
+						printActionMnemonic,
+						printActionShortcut);
+					fileMenu.add(printAction);
 
+
+					Action printPreviewAction = new AbstractAction("Print preview...") {
+						public void actionPerformed(ActionEvent e) {
+							printPreview();
+						}
+					};
+					LibTTx.setAction(
+						printAction,
+						"Print...",
+						printPreviewActionMnemonic);
+					fileMenu.add(printPreviewAction);
+					
+					
 					// Menu: begin exit entries
 					fileMenu.addSeparator();
 
