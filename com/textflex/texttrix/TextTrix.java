@@ -69,6 +69,8 @@ public class TextTrix extends JFrame {
 	private static int fileIndex = 0;
 	// find dialog
 	private static FindDialog findDialog;
+	private static JComboBox urlBox;
+	private static int historySize;
 
 	/**Constructs a new <code>TextTrix</code> frame and starting 
 	 * <code>TextPad</code>.
@@ -106,7 +108,7 @@ public class TextTrix extends JFrame {
 			public void actionPerformed(ActionEvent evt) {
 		    	addTextArea(textAreas, tabbedPane, makeNewFile());
 			}
-	    	};
+	    };
 		// per Mozilla keybinding
 		setAction(newAction, "New", 'T', KeyStroke.getKeyStroke(KeyEvent.VK_T,
 							      InputEvent.CTRL_MASK));
@@ -466,6 +468,41 @@ public class TextTrix extends JFrame {
 		menuBar.add(trixMenu);
 		menuBar.add(toolsMenu);
 		menuBar.add(helpMenu);
+
+
+		/*
+		// url box
+		historySize = 0;
+		urlBox = new JComboBox();
+		urlBox.setEditable(true);
+		urlBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				String choice = (String)urlBox.getSelectedItem();
+				try {
+					URL url;
+					if (choice.startsWith("http://") || choice.startsWith("file://")) {
+						url = new URL(choice);
+					} else {
+						url = new URL("http://" + choice);
+					}
+					urlBox.insertItemAt(url.toString(), 0);
+					if (urlBox.getItemCount() > historySize)
+						urlBox.removeItemAt(historySize);
+					int tabIndex = tabbedPane.getSelectedIndex();
+					TextPad t = (TextPad)textAreas.get(tabIndex);
+					if (t.isEmpty()) {
+						t.setPage(url);
+					} else {
+						addTextArea(textAreas, tabbedPane, makeNewFile());
+						((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setPage(url);
+					}
+				} catch(IOException e) {
+					System.out.println("Sorry, I couldn't find " + choice);
+				}
+			}
+		});
+		*/
+
 	
 		// add components to frame; "add" function to set GridBag parameters
 		Container contentPane = getContentPane();
@@ -478,10 +515,16 @@ public class TextTrix extends JFrame {
 		constraints.anchor = GridBagConstraints.CENTER;
 		add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
 	
+		/*
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.CENTER;
+		add(urlBox, constraints, 0, 1, 1, 1, 0, 0);
+		*/
+		
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
-		add(tabbedPane, constraints, 0, 1, 1, 1, 100, 100);
-		
+		add(tabbedPane, constraints, 0, 2, 1, 1, 100, 100);
+
 	    }
 	
 	/**Publically executable starter method.
@@ -781,14 +824,14 @@ public class TextTrix extends JFrame {
 			final TextPad textPad = new TextPad(30, 20, file);
 		// final variables so can use in inner class;
 			
-		JScrollPane scrollPane = new JScrollPane(textPad);
+		JScrollPane scrollPane = new JScrollPane(textPad, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		DocumentListener listener = new TextPadDocListener();
 			
 		// 1 more than highest tab index since will add tab
 		final int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + "  ", scrollPane);
-		textPad.setLineWrap(true);
-		textPad.setWrapStyleWord(true);
+//		textPad.setLineWrap(true);
+//		textPad.setWrapStyleWord(true);
 		textPad.getDocument().addDocumentListener(listener);
 		// show " *" in tab title when text changed
 		arrayList.add(textPad);
@@ -940,21 +983,24 @@ public class TextTrix extends JFrame {
 				String path = chooser.getSelectedFile().getPath();
 
 				try {
-			    		BufferedReader reader = 
-							new BufferedReader(new FileReader(path));
-					String text = readText(reader);
+			    	BufferedReader reader = 
+						new BufferedReader(new FileReader(path));
+//					String text = readText(reader);
 					
-			    		// check if tabs exist; get TextPad if true
+			    	// check if tabs exist; get TextPad if true
 					/* t.getText() != null, even if have typed nothing in it.
 					 * Add tab and set its text if no tabs exist or if current
 					 * tab has tokens; set current tab's text otherwise */
-			    		if (tabIndex == -1 || (new StringTokenizer(t.getText())).hasMoreTokens()) { 
+					if (tabIndex == -1 || !t.isEmpty()) { 
 						addTextArea(textAreas, tabbedPane, new File(path));
 						t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-						t.setText(text);
-			    		} else {
-						t.setText(text);
-			    		}
+						t.read(reader, path);
+//						t.setText(text);
+		    		} else {
+//						t.setPage(url);
+						t.read(reader, path);
+//						t.setText(text);
+			   		}
 					t.setCaretPosition(0);
 					t.setChanged(false);
 					t.setFile(path);

@@ -50,7 +50,7 @@ import java.io.*;
    Consists of standard text editing methods
    as well as special, silly ones for true text fun.
 */
-public class TextPad extends JTextArea {
+public class TextPad extends JEditorPane {
 	private File file;
 	private boolean changed = false;
 	private String path;
@@ -66,12 +66,12 @@ public class TextPad extends JTextArea {
 	 * save its text area contents
 	 */
 	public TextPad(int w, int h, File aFile) {
-		super(w, h);
+//		super(w, h);
 		file = aFile;
 		// to listen for keypad events
 		// to allow multiple undos
 		doc.addUndoableEditListener(undoManager);
-		setTabSize(4); // probably add to preferences later
+//		setTabSize(4); // probably add to preferences later
 
 		// for new key-bindings
 		createActionTable(this);
@@ -256,6 +256,10 @@ public class TextPad extends JTextArea {
 	public void redo() {
 		if (undoManager.canRedo())
 			undoManager.redo();
+	}
+
+	public boolean isEmpty() {
+		return ((new StringTokenizer(getText())).hasMoreTokens()) ? false : true;
 	}
 	
 	/**Gets the index of the current word's first character.
