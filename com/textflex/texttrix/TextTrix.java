@@ -117,13 +117,13 @@ public class TextTrix extends JFrame {
 	 * Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
-	Action openAction = new FileOpenAction("Open", makeIcon("openicon-16x16.png"));
+	Action openAction = new FileOpenAction(TextTrix.this, "Open", makeIcon("images/openicon-16x16.png"));
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
 	fileMenu.add(openAction);
 	JButton openButton = toolBar.add(openAction);
 	openButton.setBorderPainted(false);
-	setRollover(openButton, "openicon-roll-16x16.png");
+	setRollover(openButton, "images/openicon-roll-16x16.png");
 
 	// set "*.txt" file filter for open/save dialog boxes
 	final ExtensionFileFilter filter = new ExtensionFileFilter();
@@ -132,7 +132,7 @@ public class TextTrix extends JFrame {
 	chooser.setFileFilter(filter);
 
 	// close file; check if saved
-	Action closeAction = new AbstractAction("Close", makeIcon("closeicon-16x16.png")) {
+	Action closeAction = new AbstractAction("Close", makeIcon("images/closeicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			int i = tabbedPane.getSelectedIndex();
 			closeTextArea(i, textAreas, tabbedPane);
@@ -142,7 +142,7 @@ public class TextTrix extends JFrame {
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
-	Action saveAction = new AbstractAction("Save", makeIcon("saveicon-16x16.png")) {
+	Action saveAction = new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
 			TextPad t = (TextPad)textAreas
@@ -152,7 +152,7 @@ public class TextTrix extends JFrame {
 				saveFile(t.getPath());
 			// otherwise, request filename for new file
 			else
-				fileSaveDialog();
+				fileSaveDialog(TextTrix.this);
 		}
 	};
 	setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
@@ -160,11 +160,11 @@ public class TextTrix extends JFrame {
 	fileMenu.add(saveAction);
 	JButton saveButton = toolBar.add(saveAction);
 	saveButton.setBorderPainted(false);
-	setRollover(saveButton, "saveicon-roll-16x16.png");
+	setRollover(saveButton, "images/saveicon-roll-16x16.png");
 
 	// save w/ file save dialog
-	Action saveAsAction = new FileSaveAction("Save as...", 
-			makeIcon("saveasicon-16x16.png"));
+	Action saveAsAction = new FileSaveAction(TextTrix.this, "Save as...", 
+			makeIcon("images/saveasicon-16x16.png"));
 	setAction(saveAsAction, "Save as...", '.');
 	fileMenu.add(saveAsAction);
 
@@ -258,7 +258,7 @@ public class TextTrix extends JFrame {
 			text = readText("about.txt");
 			JOptionPane.showMessageDialog(null, text, "About Text Trix", 
 					JOptionPane.PLAIN_MESSAGE, 
-					makeIcon("texttrixsignature.png"));
+					makeIcon("images/texttrixsignature.png"));
 		}
 	};
 	setAction(aboutAction, "About...", 'A');
@@ -286,7 +286,7 @@ public class TextTrix extends JFrame {
 	setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
 
-	Action findAction = new AbstractAction("Find", null) {
+	Action findAction = new AbstractAction("Find", makeIcon("images/find-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			if (findDialog == null) 
 				findDialog = new FindDialog(TextTrix.this);
@@ -297,10 +297,12 @@ public class TextTrix extends JFrame {
 	toolsMenu.add(findAction);
 	JButton findButton = toolBar.add(findAction);
 	findButton.setBorderPainted(false);
+	setRollover(findButton, "images/find-roll-16x16.png");
+	findButton.setToolTipText(readText("find.html"));
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
 	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
-			makeIcon("returnicon-16x16.png")) {
+			makeIcon("images/returnicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			// may need to add original text to history buffer
@@ -312,12 +314,12 @@ public class TextTrix extends JFrame {
 	toolsMenu.add(removeReturnsAction);
 	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
 	removeReturnsButton.setBorderPainted(false);
-	setRollover(removeReturnsButton, "returnicon-roll-16x16.png");
+	setRollover(removeReturnsButton, "images/returnicon-roll-16x16.png");
 	removeReturnsButton.setToolTipText(readText("removeReturnsButton.html"));
 
 	// Non-printing-character display
 	Action nonPrintingCharViewerAction = new AbstractAction(
-			"View non-printing characters", makeIcon("nonprinting-16x16.png")) {
+			"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			t.setText(Tools.showNonPrintingChars(t.getText()));
@@ -327,12 +329,12 @@ public class TextTrix extends JFrame {
 	toolsMenu.add(nonPrintingCharViewerAction);
 	JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
 	nonPrintingCharViewerButton.setBorderPainted(false);
-	setRollover(nonPrintingCharViewerButton, "nonprinting-roll-16x16.png");
+	setRollover(nonPrintingCharViewerButton, "images/nonprinting-roll-16x16.png");
 	nonPrintingCharViewerButton.setToolTipText(readText("nonPrintingButton.html"));
 
 	// HTML replacement
 	Action htmlReplacerAction = new AbstractAction(
-			"Replace HTML tags", makeIcon("htmlreplacer-16x16.png")) {
+			"Replace HTML tags", makeIcon("images/htmlreplacer-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 				t.setText(Tools.htmlReplacer(t.getText()));
@@ -342,7 +344,7 @@ public class TextTrix extends JFrame {
 	toolsMenu.add(htmlReplacerAction);
 	JButton htmlReplacerButton = toolBar.add(htmlReplacerAction);
 	htmlReplacerButton.setBorderPainted(false);
-	setRollover(htmlReplacerButton, "htmlreplacer-roll-16x16.png");
+	setRollover(htmlReplacerButton, "images/htmlreplacer-roll-16x16.png");
 	htmlReplacerButton.setToolTipText(readText("htmlreplacer.html"));
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
@@ -598,7 +600,7 @@ public class TextTrix extends JFrame {
 					} else {
 						// still closes tab if cancel "Save as..." dialog
 						// may need to change in future releases
-						successfulClose = fileSaveDialog();
+						successfulClose = fileSaveDialog(null);
 					}
 					if (successfulClose) {
 						removeTextArea(tabIndex, textAreas, tabbedPane);
@@ -768,10 +770,10 @@ public class TextTrix extends JFrame {
 	 * Sets the tabbed pane tab to the saved file name.
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
-	public static boolean fileSaveDialog() {
+	public static boolean fileSaveDialog(JFrame owner) {
 		chooser.setCurrentDirectory(new File(savePath));
 
-    	int result = chooser.showSaveDialog(null);
+    	int result = chooser.showSaveDialog(owner);
     	if (result == JFileChooser.APPROVE_OPTION) {
 			String path = chooser.getSelectedFile().getPath();
 			saveFile(path);
@@ -788,7 +790,10 @@ public class TextTrix extends JFrame {
 	 * option to display all files.
 	 */
     private class FileOpenAction extends AbstractAction {
-		public FileOpenAction(String name, Icon icon) {
+		JFrame owner;
+		
+		public FileOpenAction(JFrame aOwner, String name, Icon icon) {
+			owner = aOwner;
 			putValue(Action.NAME, name);
 			putValue(Action.SMALL_ICON, icon);
 		}
@@ -796,7 +801,7 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 	    	chooser.setCurrentDirectory(new File(openPath));
 
-	    	int result = chooser.showOpenDialog(null);
+	    	int result = chooser.showOpenDialog(owner);
 
 	    	if (result == JFileChooser.APPROVE_OPTION) {
 				String path = chooser.getSelectedFile().getPath();
@@ -842,13 +847,16 @@ public class TextTrix extends JFrame {
 	/**Responds to user input calling for a save dialog.
 	 */
     private class FileSaveAction extends AbstractAction {
-		public FileSaveAction(String name, Icon icon) {
+		JFrame owner;
+		
+		public FileSaveAction(JFrame aOwner, String name, Icon icon) {
+			owner = aOwner;
 			putValue(Action.NAME, name);
 			putValue(Action.SMALL_ICON, icon);
 		}
 		
 		public void actionPerformed(ActionEvent evt) {
-    		fileSaveDialog();
+    		fileSaveDialog(owner);
 		}
 	}
 
