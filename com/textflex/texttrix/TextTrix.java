@@ -312,6 +312,7 @@ public class TextTrix extends JFrame {
 	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
 	removeReturnsButton.setBorderPainted(false);
 	setRollover(removeReturnsButton, "returnicon-roll-16x16.png");
+	removeReturnsButton.setToolTipText(readText("removeReturnsButton.html"));
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
@@ -456,8 +457,9 @@ public class TextTrix extends JFrame {
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			t.setEditable(false); // so appropriate for read-only
 			t.setText(text);
-			t.setCaretPosition(0);
 			t.setChanged(false);
+			updateTitle(textAreas, tabbedPane);
+			t.setCaretPosition(0);
 		} catch(IOException exception) {
 			exception.printStackTrace();
 		}
@@ -549,6 +551,25 @@ public class TextTrix extends JFrame {
 	 * @param reader text file stream
 	 * @return text from file
 	 */
+	public String readText(String path) {
+		String text = "";
+		try {
+			InputStream in = TextTrix.class.getResourceAsStream(path);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			String line;
+			while ((line = reader.readLine()) != null)
+				text = text + line + "\n";
+		} catch(IOException exception) {
+			exception.printStackTrace();
+		}
+		return text;
+	}
+	/**Read in text from a file and return the text as a string.
+	 * Differs from <code>displayFile(String path)</code> because
+	 * allows editing.
+	 * @param reader text file stream
+	 * @return text from file
+	 */
 	public String readText(BufferedReader reader) {
 		String text = "";
 		String line;
@@ -583,6 +604,7 @@ public class TextTrix extends JFrame {
 			// show " *" in tab title when text changed
 			arrayList.add(textPad);
 			tabbedPane.setSelectedIndex(i);
+			tabbedPane.setToolTipTextAt(i, textPad.getPath());
 	}
 
 	public void updateTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
@@ -590,8 +612,11 @@ public class TextTrix extends JFrame {
 		TextPad textPad = (TextPad)arrayList.get(i);
 		String title = tabbedPane.getTitleAt(i);
 		// convert to filename; -2 b/c added 2 spaces
-		if (!title.endsWith(" *"))
+		if (!title.endsWith(" *")) {
 			tabbedPane.setTitleAt(i, textPad.getName() + " *");
+		} else {
+			tabbedPane.setTitleAt(i, title.substring(0, title.length() - 1) + " ");
+		}
 	}
 	/**Removes a tab containing a text area.
 	 * @param i tab index

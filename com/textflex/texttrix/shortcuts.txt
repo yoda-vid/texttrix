@@ -1,52 +1,13 @@
+shortcuts.txt
+
 Text Trix
-a goofy gui text editor
+Meaningful Mistakes
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix
-This software is OSI Certified Open Source Software.
-OSI Certified is a certification mark of the
-Open SourceInitiative.
-
-Copyright (c) 2002, David Young
-All rights reserved.
-
-Redistribution and use in source and binary forms, with
-or without modification, are permitted provided that
-the following conditions are met:
-
-    * Redistributions of source code must retain the
-	above copyright notice, this list of conditions
-	and the following disclaimer.
-    * Redistributions in binary form must reproduce
-	the above copyright notice, this list of conditions
-	and the following disclaimer in the documentation
-	and/or other materials provided with the distribution.
-    * Neither the name of the Text Trix nor the names of
-	its contributors may be used to endorse or promote
-	products derived from this software without specific
-	prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-
-
-Shortcuts
-
 
 Function	Shortcut	Notes
 -----------------------------------------------------------
-New tab	Ctrl-t		-brings up a new tab as Mozilla does
+New tab	Ctrl-t		-brings up a new tab, as Mozilla does
 Open file	Ctrl-o		-as usual
 Save file	Ctrl-s		-brings up "Save as..." dialog for new files
 Exit		Ctrl-q		-checks for unsaved files
@@ -57,20 +18,25 @@ Copy		Ctrl-c		-as usual
 Paste		Ctrl-v		-as usual
 Forward char	Ctrl-f		-Emacs-style
 Backward char	Ctrl-b		-Emacs-style
+Forward word	Alt-f		-Emacs-style
+Back word	Alt-b		-Emacs-style
+Delete word	Ctrl-bkspace	-as usual
 Up line		Ctrl-p		-Emacs-style, but includes wrapped lines
 Down line	Ctrl-n		-Emacs-style, but includes wrapped lines
 Beg of line	Ctrl-a		-Emacs-sytle
 End of line	Ctrl-e		-Emacs-style
 
 
-Goofy Features Notes
+Mistakers and Tools Notes
 ------------------
-Hard Return Remover:
+Extra Hard Return Remover:
 -this is our first feature! (a practical one)
--removes all hard returns, except between multiply-spaced lines of text
+-removes all hard returns, except between multiply-spaced lines or in lists
 -to write a list without losing its hard returns, keep all the
 elements in a given block single-spaced, and use dashes or asterisks
-at the start of each line after the first; note that indents with tabs or
-spaces are a-ok
+at the start of each line after the first; note that indents with tabs are a-ok
 -text enclosed in <pre></pre> tags will not have hard
-returns removed
+returns removed; only the tags will be removed
+-lines beginning with ">" or "<", such as those in email replies, will be 
+removed along with any spaces surrounding them; "---Original Message----"
+will be added before the region, and "-------------" will come afterward

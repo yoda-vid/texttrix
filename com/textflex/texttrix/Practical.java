@@ -55,12 +55,12 @@ public class Practical {
 	 * For example, unformatted email arrives with hard returns inserted after 
 	 * every line; this method strips all but the paragraph, double-spaced
 	 * hard returns.
-	 * Text within <code>&#60pre&#62</code>
-	 * and <code>&#60/pre&#62</code> tags are
+	 * Text within <code>&#060;pre&#062;</code>
+	 * and <code>&#060;/pre&#062;</code> tags are
 	 * left untouched.  Additionally, each line whose first character is a 
 	 * dash, asterisk, or tab
 	 * gets its own line.  The line above such lines also gets to remain
-	 * by itself.  " &#62" at the start of lines, such as from inline
+	 * by itself.  " &#062; " at the start of lines, such as from inline
 	 * email message replies, are also removed.
 	 * @param s the full text from which to strip extra hard returns
 	 * @return stripped text
@@ -75,18 +75,20 @@ public class Practical {
 		 */
 		StringBuffer stripped = new StringBuffer(s.length()); // new string
 		int n = 0; // string index
-		String searchChars = " <>"; // inline message reply chars
-		String inlineReplySigns = "<>"; // inline message indicators
+		String searchChars = " >"; // inline message reply chars
+		String inlineReplySigns = ">"; // inline message indicators
 		boolean isCurrentLineReply = false; // current line part of message reply
 		boolean isNextLineReply = false; // next line part of message reply
+		boolean ignorePre = false;
 
 		// check for inline reply symbols at start of string
 		n = containingSeq(s, n, searchChars, inlineReplySigns);
-		if (n != 0) {
+		if (s.indexOf("<pre>") == 0 || n == 0) {
+			isCurrentLineReply = false;
+		} else {	
 			isCurrentLineReply = true;
 			stripped.append("----Original Message----\n\n");
-		} else {
-			isCurrentLineReply = false;
+			ignorePre = true;
 		}
 	
 		while (n < s.length()) {
@@ -123,17 +125,16 @@ public class Practical {
 			 * and their inline msg reply chars appropriately.
 			 */
 			// skip <pre>-delimited sections, removing only the <pre> tags
-		    if (startPre != -1 && 
-					(startPre < s.length() || startPre < singleReturn)) {
+			// The <pre> tags should each be on its own line.
+		    if (startPre == n && !ignorePre
+					&& (startPre < s.length() || startPre < singleReturn)) {
 				// go to the end of the "pre" section
 				if (endPre != -1) {
-		    		stripped.append(s.substring(n, startPre) 
-							+ s.substring(startPre + 5, endPre));
-			    	n = endPre + 6;
+		    		stripped.append(s.substring(n + 6, endPre));
+			    	n = endPre + 7;
 			    // if user forgets closing "pre" tag, goes to end
 				} else {
-		    		stripped.append(s.substring(n, startPre) 
-							+ s.substring(startPre + 5));
+		    		stripped.append(s.substring(n + 6));
 		    		n = s.length();
 				}
 			// add the rest of the text if no more single returns exist.
@@ -186,6 +187,7 @@ public class Practical {
 		    }
 		// flag whether the current line is part of a msg reply
 		isCurrentLineReply = isNextLineReply;
+		ignorePre = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 		}	
 		return stripped.toString();
     }
