@@ -100,8 +100,8 @@ do
 		"$JAVA/javac" -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
 	fi
 	cd "$plugin_dir"
-	"$JAVA/jar" -0cvf "$plugin.jar" "$DIR/*.class" "$DIR/*.png" \
-	"$DIR/*.html" && mv "$plugin.jar" "$TTX_DIR/plugins"
+	"$JAVA/jar" -0cvf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
+	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
 	cd ..
 done
 
