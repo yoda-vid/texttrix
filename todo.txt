@@ -47,7 +47,9 @@ Note: "./" is the "check-mark" symbol
 ----Current Work----
 
 v.0.3.6
--auto-wrap-indent fixes
+-auto-wrap-indent additions and fixes
+	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with SHIFT+TAB
+	-adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
 	-fix loss of auto-wrap-indent when applying search plug-in
 	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
 	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
@@ -55,7 +57,7 @@ v.0.3.6
 	-fix search to not exceed the selection boundaries
 	-fix search to re-highlight replaced word after "Find and Replace" operation
 	-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
-	-fix backspace at head of unindented line
+	-fix graphical indent when backspace at head of unindented line; FIXED: corrected isLeadingTab()
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
@@ -65,10 +67,8 @@ v.0.3.6
 -prefences panel
 	-prefs panel should also be fit into a JDialog, with TextTrix as the owner; ADDED: prefs panel conforms to new plug-in window model, except that Preferences itself extends JDialog since Preferences remains internalized in the program
 	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval; adopts same default size and location as with plugIns
--tab entire regions
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
--adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
 -stop auto-save thread when close file
 
 ----Past Releases----
