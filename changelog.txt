@@ -12,6 +12,8 @@ plans for future ones.)
 ----v.0.3 Series: FEATure Series (FEATS)----
 --------------------------------------
 
+----v.0.3.5 (4//04)----
+
 ----v.0.3.4 (8/26/03)----
 
 What's your preference?  The Text Trix writer will take your order.  The text 

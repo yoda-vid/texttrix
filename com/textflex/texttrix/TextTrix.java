@@ -49,6 +49,7 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import java.awt.print.*;
 import javax.print.attribute.*;
+//import java.text.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -96,6 +97,8 @@ public class TextTrix extends JFrame {
 	private HashPrintRequestAttributeSet printAttributes =
 		new HashPrintRequestAttributeSet();
 	private PageFormat pageFormat = null;
+	private JLabel statusBar = null;
+//	private NumberFormat statusBarNumFormat = null;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -106,37 +109,31 @@ public class TextTrix extends JFrame {
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
 		fileMenu = new JMenu("File");
+		
+		// adds a window listener that responds to closure of the main
+		// window by calling the exit function
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				exitTextTrix();
 			}
 		});
 		
-
+		// adds a window listener that focuses all currently open plug-in
+		// windows before re-focusing the main window
 		addWindowListener(new WindowAdapter() {
+			
+			// focusing operations
 			public void windowActivated(WindowEvent e) {
-				//				System.out.println("tmpActivated: " + tmpActivated);
 				if (!getPrefs().getActivateWindowsTogether()) {
 				} else if (isTmpActivated()) {
-					//					setTmpActivated(false);
-					/*
-										Thread runner = new Thread() {
-											public void run() {
-												try {
-													Thread.sleep(100);
-													setTmpActivated(false);
-												} catch(InterruptedException e) {
-												}
-											}
-										};
-										runner.start();
-					*/
+					// no further focusing the main window if it originally
+					// called the focus function
 				} else {
-					//					System.out.println("focusing");
 					focusAllWindows();
 				}
 			}
-
+			
+			// prevent further focusing if just focused
 			public void windowDeactivated(WindowEvent e) {
 				setTmpActivated(true);
 			}
@@ -314,14 +311,27 @@ public class TextTrix extends JFrame {
 		fileHist = new FileHist();
 
 		// invoke the worker thread to create the initial menu bar;
-		 (menuBarCreator = new MenuBarCreator()).start();
+		(menuBarCreator = new MenuBarCreator()).start();
 
-		// open the initial files;
+		// open the initial files and create the status bar;
 		// must make sure that all of the operations do not require anything from
 		// the menu or tool bars, which MenuBarCreator is the process of making
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				contentPane.add(tabbedPane, BorderLayout.CENTER);
+				// creates a panel to store the components that will
+				// fit into the center position of the main window
+				JPanel centerPanel = new JPanel(new BorderLayout());
+				
+				// makes the status bar
+				statusBar = new JLabel("Welcome to the Text Trix writer!");
+				
+				// adds the panel's compoenents
+				centerPanel.add(tabbedPane, BorderLayout.CENTER);
+				centerPanel.add(statusBar, BorderLayout.SOUTH);
+//				contentPane.add(statusBar, BorderLayout.SOUTH);
+				
+				// adds the panel to the main window, central position
+				contentPane.add(centerPanel, BorderLayout.CENTER);
 
 				// make first tab and text area;
 				// can only create after making several other user interface
@@ -350,8 +360,12 @@ public class TextTrix extends JFrame {
 
 				// make the file history menu entries and set the auto-indent check box
 				syncMenus();
+				
+				
+				
 			}
 		});
+		
 	}
 
 	/**Publically executable starter method.
@@ -1589,7 +1603,7 @@ public class TextTrix extends JFrame {
 		ArrayList arrayList,
 		JTabbedPane tabbedPane,
 		File file) {
-		TextPad textPad = new TextPad(file, getPrefs());
+		final TextPad textPad = new TextPad(file, getPrefs());
 
 		JScrollPane scrollPane =
 			new JScrollPane(
@@ -1606,6 +1620,11 @@ public class TextTrix extends JFrame {
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
 		textPad.getDocument().addDocumentListener(listener);
 		textPad.addMouseListener(new PopupListener());
+		textPad.addCaretListener(new CaretListener() {
+			public void caretUpdate(CaretEvent e) {
+				updateStatusBarLineNumbers(textPad);
+			}
+		});
 		// show " *" in tab title when text changed
 		tabbedPane.setSelectedIndex(i);
 		tabbedPane.setToolTipTextAt(i, textPad.getPath());
@@ -2369,6 +2388,48 @@ public class TextTrix extends JFrame {
 	private JFrame getThis() {
 		return this;
 	}
+	
+	/**Gets the number of the current newline in the given pad.
+	 * Word-wrapped lines are not counted, but only lines with
+	 * hard breaks.
+	 * 
+	 * @param pad the pad
+	 * @return the line number, relative to 1 as the first line of 
+	 * the document
+	 */
+	public int getLineNumber(TextPad pad) {
+//		TextPad pad = getSelectedTextPad();
+//		Element root = pad.getDocument().getDefaultRootElement();
+		int offset = pad.getCaretPosition();
+		return pad.getDocument().getDefaultRootElement()
+			.getElementIndex(offset) + 1;
+	}
+	
+	/**Gets the number of newlines in the given pad.
+	 * Word-wrapped lines are not counted, but only lines with
+	 * hard breaks.
+	 * 
+	 * @param pad the pad
+	 * @return the number of lines with hard breaks
+	 */
+	public int getTotalLineNumber(TextPad pad) {
+		return pad.getDocument().getDefaultRootElement().getElementCount();
+	}
+	
+	/**Updates the status bar with the latest line number information.
+	 * 
+	 * @param pad the pad
+	 */
+	public void updateStatusBarLineNumbers(TextPad pad) {
+		// TODO: make one component of a larger status-bar update operation
+		int lineNum = getLineNumber(pad);
+		int totLines = getTotalLineNumber(pad);
+		// cast to float for float division rather than int division
+		int percentage = (int)((float)lineNum / (float)totLines * 100);
+//		System.out.println("percentage: " + percentage);
+		statusBar.setText(lineNum + ", " + totLines + " " 
+			+ "(" + percentage + "%)");
+	}
 
 	/**Evokes a open file dialog, from which the user can
 	 * select a file to display in the currently selected tab's
@@ -2600,7 +2661,7 @@ public class TextTrix extends JFrame {
 		 * has been selected.
 		 *
 		 */
-		public void setChanged() {
+		public void setChanged() {			
 			final TextPad pad = getSelectedTextPad();
 			if (!pad.getChanged()) {
 				pad.setChanged(true);

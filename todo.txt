@@ -14,7 +14,7 @@ Note: "./" is the "check-mark" symbol
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
 	-about dialog box
--feature to insert hard returns after a given number of characters
+-feature to insert hard returns after a given number of characters or for given visible space
 -elim multiple spaces via Extra Returns Remover
 -allow shortcuts to work when the toolbar is in focus; FIXED: seemed to solve itself w/ a JVM upgrade
 -check on shortcuts in HTML/RTF views
@@ -43,7 +43,6 @@ Note: "./" is the "check-mark" symbol
 -preferences panel to choose default paths and file type filters
 -Java Web Start compatibility
 -option to remember which specific files used auto-indent
--line number tracker
 
 ----Current Work----
 
@@ -84,6 +83,9 @@ v.0.3.5
 -build scripts update
 	-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to hard-code path
 	-option to output help documentation; ADDED: helps docs output
+-status bar
+	-add status bar for line numbers and other messages; ADDED: status bar at bottom of new panel that holds tabbed pane and status bar so can still move tool bar to southern position of main window
+	-add line numbers for lines with hard breaks; ADDED: current line number, total lines, and position as percentage of document length
 
 v.0.3.4
 -preferences:

@@ -436,7 +436,7 @@ public class Prefs extends JFrame {
 	public void storePlugInSize(String filename, int width, int height) {
 		plugInsPrefs.putInt(PLUG_IN_WIDTH + filename, width);
 		plugInsPrefs.putInt(PLUG_IN_HEIGHT + filename, height);
-		System.out.println("size saved: " + filename + ", " + width + "(X), " + height + "(Y)");
+//		System.out.println("size saved: " + filename + ", " + width + "(X), " + height + "(Y)");
 	}
 	
 	/**Stores the given plug-in's window location.
@@ -450,8 +450,10 @@ public class Prefs extends JFrame {
 	public void storePlugInLocation(String filename, Point p) {
 		plugInsPrefs.putInt(PLUG_IN_X_LOC + filename, (int) p.getX());
 		plugInsPrefs.putInt(PLUG_IN_Y_LOC + filename, (int) p.getY());
+		/*
 		System.out.println("location saved: " + filename + ", " 
 			+ p.getX() + "(X), " + p.getY() + "(Y)");
+			*/
 	}
 
 	/** Stores whether the program should reopen tabs automatically.
