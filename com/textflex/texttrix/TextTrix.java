@@ -1318,8 +1318,10 @@ public class TextTrix extends JFrame {
 		    t = (TextPad)textAreas.get(tabbedPane
 					       .getSelectedIndex());
 		    read(t, reader, path);
+		    System.out.println("I'm here");
 		} else {
 		    read(t, reader, path);
+		    System.out.println("Oh, but I'm here");
 		}
 		t.setCaretPosition(0);
 		t.setChanged(false);
@@ -1458,8 +1460,10 @@ public class TextTrix extends JFrame {
 	    // File("") evidently brings file dialog to last path, 
 	    // whether last saved or opened path
 	    String dir = openDir;
+	    //	    System.out.println("Here");
 	    if (t != null && (dir = t.getDir()).equals("")) 
 		dir = openDir;
+	    System.out.println("dir: " + dir);
 	    chooser.setCurrentDirectory(new File(dir));
 	    // allows one to open multiple files;
 	    // must disable for save dialog
@@ -1468,7 +1472,9 @@ public class TextTrix extends JFrame {
 	    // displays the dialog and opens all files selected
 	    int result = chooser.showOpenDialog(owner);
 	    if (result == JFileChooser.APPROVE_OPTION) {
+		File f1 = chooser.getSelectedFile();
 		File[] files = chooser.getSelectedFiles();
+		System.out.println("files: " + files.length + ", file: " + f1.getPath());
 		for (int i = 0; i < files.length; i++) {
 		    openFile(files[i]);
 		}
