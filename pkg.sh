@@ -42,8 +42,13 @@
 # Check them!
 ##############################
 
-# Compiler
-JAVA="" # assuming compiler from J2SDK 1.4.2
+VER="0.3.5" # version info
+DEST="/home/share" # final destination
+JAVA="" # compiler
+
+##############################
+# System setup
+##############################
 SYSTEM=`uname -s`
 CYGWIN="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
@@ -55,8 +60,11 @@ for arg in $@
 do
 	if [ $READ_PARAMETER -eq 1 ]
 	then
-		# no output b/c assuming plug.sh will be called
-		JAVA=$arg
+		if [ -Z $JAVA ]
+		then
+			# no output b/c assuming plug.sh will be called
+			JAVA=$arg
+		fi
 		READ_PARAMETER=0
 	fi
 	if [ `expr match $arg -java` -ne 0 ]
@@ -80,8 +88,6 @@ fi
 BLD_DIR="$BASE_DIR/build" # initial output directory
 TTX_DIR="$BASE_DIR/texttrix" # root directory of main Text Trix source files
 PLGS_DIR="$BASE_DIR/plugins" # root directory of Text Trix plug-in source files
-VER="0.3.5" # version info
-DEST="/home/share" # final destination
 
 ##############################
 # Build operations

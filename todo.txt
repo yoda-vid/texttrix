@@ -1,4 +1,9 @@
-todo.txt
+
+		if [ -Z $JAVA ]
+		then
+			# no output b/c assuming plug.sh will be called
+			JAVA=$arg
+		fitodo.txt
 
 Text Trix
 the text tinker
@@ -80,7 +85,7 @@ v.0.3.5
 -add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window
 -update JarAjar to allow for MacOS X integration
 -align the "About" option pane with the main window; ADDED: now opens on top of the center of the main window
--assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system, but with option to specify the paths if not in PATH
+-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to hard-code path
 
 v.0.3.4
 -preferences:

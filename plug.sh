@@ -56,7 +56,11 @@ for arg in $@
 do
 	if [ $READ_PARAMETER -eq 1 ]
 	then
-		JAVA=$arg
+		if [ -Z $JAVA ]
+		then
+			# no output b/c assuming plug.sh will be called
+			JAVA=$arg
+		fi
 		echo "Using the Java binary directory at $JAVA"
 		READ_PARAMETER=0
 	fi
