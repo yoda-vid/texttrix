@@ -94,21 +94,24 @@ public class TextTrix extends JFrame {
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
+//				System.out.println("tmpActivated: " + tmpActivated);
 				if (!getPrefs().getActivateWindowsTogether()) {
 				} else if (isTmpActivated()) {
 //					setTmpActivated(false);
 					Thread runner = new Thread() {
 						public void run() {
 							try {
-								System.out.println("or here");
+//								System.out.println("in here");
 								Thread.sleep(100);
 								setTmpActivated(false);
+//								System.out.println("outta here");
 							} catch(InterruptedException e) {
 							}
 						}
 					};
 					runner.start();
 				} else {
+//					System.out.println("focusing");
 					focusAllWindows();
 				}
 			}
