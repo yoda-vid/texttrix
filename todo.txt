@@ -47,6 +47,9 @@ Note: "./" is the "check-mark" symbol
 v.0.3.5
 -save preferences to easily retrievable file
 -auto-save
+	-preference option to save file automatically; ADDED: auto-save option to start auto-saving the moment the preference is saved
+	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again
+	-prompt before saving the changes to the current file; ADDED: preference option to prompt the user to accept the file changes since the auto-save overwrites the current file
 -preferences panel to choose default paths
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront
 	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected; to prevent automatic reactivation while shifting to other windows, flag renders window inactivatable until timer unsets flag; window deactivation listener also sets the flag to prevent Text Trix from automatically requesting activation immediately after switching activation to another program

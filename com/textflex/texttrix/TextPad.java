@@ -62,6 +62,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private int tabSize = 4; // default tab display size
 	private static boolean JVM_15 = false;
 //	private double scale = 1;
+	private Thread autoSaveTimer = null;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -534,6 +535,10 @@ public class TextPad extends JTextPane implements StateEditable {
 			return "";
 		}
 	}
+	
+	public File getFile() {
+		return file;
+	}
 
 	/**Gets the file's name.
 	 * @return filename
@@ -876,6 +881,13 @@ public class TextPad extends JTextPane implements StateEditable {
 	public PrintPad createPrintPad() {
 		return new PrintPad(LibTTx.getVisibleLines(this), 
 			new Font(getFont().getAttributes()));
+	}
+	
+	public Thread getAutoSaveTimer() {
+		return autoSaveTimer;
+	}
+	public void setAutoSaveTimer(Thread aAutoSaveTimer) {
+		autoSaveTimer = aAutoSaveTimer;
 	}
 }
 

@@ -78,16 +78,22 @@ public class TextTrix extends JFrame {
 	private int tabIndexHistoryIndex = 0; // index of next record
 	private boolean updateTabIndexHistory = true; // flag to update the record
 	private static Prefs prefs = null; // preferences
-	private static Action prefsOkayAction = null; // prefs action signaling to accept
-	private static Action prefsApplyAction = null; // prefs action signaling to immediately accept
+	private static Action prefsOkayAction = null;
+	// prefs action signaling to accept
+	private static Action prefsApplyAction = null;
+	// prefs action signaling to immediately accept
 	private static Action prefsCancelAction = null; // prefs action to reject
-	private static boolean updateFileHist = false; // flag to update file history menu entries
-	private static JMenu fileMenu = new JMenu("File"); // file menu, which incl file history
-	private static int fileHistStart = -1; // starting position of file history in file menu
-	private MenuBarCreator menuBarCreator = null; // menu and tool bar worker thread
+	private static boolean updateFileHist = false;
+	// flag to update file history menu entries
+	private static JMenu fileMenu = new JMenu("File");
+	// file menu, which incl file history
+	private static int fileHistStart = -1;
+	// starting position of file history in file menu
+	private MenuBarCreator menuBarCreator = null;
+	// menu and tool bar worker thread
 	private FileHist fileHist = null; // file history
 	private boolean tmpActivated = false;
-	private HashPrintRequestAttributeSet printAttributes = 
+	private HashPrintRequestAttributeSet printAttributes =
 		new HashPrintRequestAttributeSet();
 	private PageFormat pageFormat = null;
 
@@ -96,31 +102,31 @@ public class TextTrix extends JFrame {
 	one <code>TextPad</code>.
 	 */
 	public TextTrix(final String[] paths) {
-		
+
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
-//				System.out.println("tmpActivated: " + tmpActivated);
+				//				System.out.println("tmpActivated: " + tmpActivated);
 				if (!getPrefs().getActivateWindowsTogether()) {
 				} else if (isTmpActivated()) {
-//					setTmpActivated(false);
-/*
-					Thread runner = new Thread() {
-						public void run() {
-							try {
-								Thread.sleep(100);
-								setTmpActivated(false);
-							} catch(InterruptedException e) {
-							}
-						}
-					};
-					runner.start();
-*/
+					//					setTmpActivated(false);
+					/*
+										Thread runner = new Thread() {
+											public void run() {
+												try {
+													Thread.sleep(100);
+													setTmpActivated(false);
+												} catch(InterruptedException e) {
+												}
+											}
+										};
+										runner.start();
+					*/
 				} else {
-//					System.out.println("focusing");
+					//					System.out.println("focusing");
 					focusAllWindows();
 				}
 			}
-			
+
 			public void windowDeactivated(WindowEvent e) {
 				setTmpActivated(true);
 			}
@@ -379,13 +385,14 @@ public class TextTrix extends JFrame {
 				*/
 				//	    } else if (System.getProperty("mrj.version") != null) {
 				/*
-			} else if (System.getProperty("java.vm.version").indexOf("1.5") 
+				} else if (System.getProperty("java.vm.version").indexOf("1.5") 
 				!= -1) {
 				// the new Java v.1.5.0, Tiger release, contains a revamped
 				// Swing look-and-feel called "Ocean," implemented by default
 				 */
 			} else { // default interface
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				UIManager.setLookAndFeel(
+					UIManager.getSystemLookAndFeelClassName());
 			}
 			//	    SwingUtilities.updateComponentTreeUI(TextTrix.this);
 		} catch (Exception e) {
@@ -414,7 +421,6 @@ public class TextTrix extends JFrame {
 		 */
 		focuser();
 	}
-	
 
 	/** Synchronizes the menus with the current text pad settings.
 	 * Creates the file history menu entries in the File menu
@@ -513,7 +519,7 @@ public class TextTrix extends JFrame {
 		applyGeneralPrefs();
 		applyShortsPrefs();
 		menuBarCreator.start();
-//		getPrefs().setPlugInsPrefsChanged(false);
+		//		getPrefs().setPlugInsPrefsChanged(false);
 	}
 
 	/** Applies preferences from the General tab in the preferences panel.
@@ -522,6 +528,17 @@ public class TextTrix extends JFrame {
 	 */
 	public void applyGeneralPrefs() {
 		fileHist.start(fileMenu);
+		for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+			TextPad pad = getTextPadAt(i);
+			if (getPrefs().getAutoSave()) {
+				if (pad.getChanged()) {
+					startTextPadAutoSaveTimer(pad);
+				}
+			} else {
+				stopTextPadAutoSaveTimer(pad);
+			}
+			
+		}
 	}
 
 	/** Applies preferences from the Shorts tab in the preferences panel.
@@ -549,15 +566,16 @@ public class TextTrix extends JFrame {
 
 	public boolean continuePrefsUpdate() {
 
-//		if (getPrefs().getPlugInsPrefsChanged()) {
+		//		if (getPrefs().getPlugInsPrefsChanged()) {
 		for (int i = 0; i < plugIns.length; i++) {
 			if (plugIns[i].isWindowVisible()) {
-				int choice = JOptionPane.showConfirmDialog(
-					getPrefs(),
-					"Some plug-in windows may be closed.  Keep on going?",
-					"Electricity...",
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.WARNING_MESSAGE);
+				int choice =
+					JOptionPane.showConfirmDialog(
+						getPrefs(),
+						"Some plug-in windows may be closed.  Keep on going?",
+						"Electricity...",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
 				if (choice == JOptionPane.YES_OPTION) {
 					return true;
 				} else {
@@ -575,18 +593,18 @@ public class TextTrix extends JFrame {
 	*/
 	public void makePlugInAction(final PlugIn pl) {
 		// assumes prefs' includes is udpated
-/*
-		String[] includes = getPrefs().getIncludePlugInsNames();
-		if (!getPrefs().getAllPlugIns()
-			&& !LibTTx.inUnsortedList(pl.getName(), includes))
-			return;
-*/
+		/*
+				String[] includes = getPrefs().getIncludePlugInsNames();
+				if (!getPrefs().getAllPlugIns()
+					&& !LibTTx.inUnsortedList(pl.getName(), includes))
+					return;
+		*/
 		String[] includes = getPrefs().getIncludePlugInsList();
-/*
-		for (int i = 0; i < includes.length; i++) {
-			System.out.println("includes[" + i + "]: " + includes[i]);
-		}
-*/
+		/*
+				for (int i = 0; i < includes.length; i++) {
+					System.out.println("includes[" + i + "]: " + includes[i]);
+				}
+		*/
 		if (!getPrefs().getAllPlugIns()
 			&& !LibTTx.inUnsortedList(pl.getPath(), includes)) {
 			System.out.println(pl.getPath());
@@ -610,34 +628,34 @@ public class TextTrix extends JFrame {
 		};
 		// register the listener so the plug in knows to fire it
 		pl.addPlugInListener(listener);
-		
+
 		if (pl instanceof PlugInWindow) {
 			WindowAdapter winAdapter = new WindowAdapter() {
 				public void windowActivated(WindowEvent e) {
 					if (!prefs.getActivateWindowsTogether()) {
 					} else if (pl.isTmpActivated()) {
-/*
-//						pl.setTmpActivated(false);
-						Thread runner = new Thread() {
-							public void run() {
-								try {
-//									System.out.println("or here");
-									Thread.sleep(100);
-									pl.setTmpActivated(false);
-								} catch(InterruptedException e) {
-								}
-							}
-						};
-						runner.start();
-*/
+						/*
+						//						pl.setTmpActivated(false);
+												Thread runner = new Thread() {
+													public void run() {
+														try {
+						//									System.out.println("or here");
+															Thread.sleep(100);
+															pl.setTmpActivated(false);
+														} catch(InterruptedException e) {
+														}
+													}
+												};
+												runner.start();
+						*/
 					} else {
-//						System.out.println("here");
+						//						System.out.println("here");
 						focusAllWindows(pl);
 					}
 				}
 			};
 			pl.setWindowAdapter(winAdapter);
-//			System.out.println(pl.getName());
+			//			System.out.println(pl.getName());
 			pl.addWindowAdapter();
 		}
 
@@ -741,7 +759,7 @@ public class TextTrix extends JFrame {
 					text = doc.getText(start, len); // only get the region
 
 					// start and end only 
-					outcome = pl.run(text);// invoke the plugin
+					outcome = pl.run(text); // invoke the plugin
 
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
@@ -780,7 +798,7 @@ public class TextTrix extends JFrame {
 			t.setCaretPosition(baseline + start);
 		}
 	}
-	
+
 	/*
 	public void activatePlugInWindow(final PlugIn pl) {
 		try {
@@ -795,66 +813,66 @@ public class TextTrix extends JFrame {
 		
 	}
 	*/
-	
+
 	public void focusAllWindows(PlugIn pl) {
-//		if (pl.isActivated()) return;
+		//		if (pl.isActivated()) return;
 		for (int i = 0; i < plugIns.length; i++) {
 			if (plugIns[i] != pl && plugIns[i] instanceof PlugInWindow) {
 				plugIns[i].setTmpActivated(true);
-//				activatePlugInWindow(pl);
+				//				activatePlugInWindow(pl);
 				plugIns[i].activateWindow();
-//				plugIns[i].setActivated(false);
-			} 
+				//				plugIns[i].setActivated(false);
+			}
 		}
 		setTmpActivated(true);
 		toFront();
 		pl.setTmpActivated(true);
 		pl.activateWindow();
-//		pl.setActivated(false);
-//		System.out.println("hey there");
+		//		pl.setActivated(false);
+		//		System.out.println("hey there");
 	}
-	
+
 	public void focusAllWindows() {
-//		System.out.println("plugIns.length = " + plugIns.length);
+		//		System.out.println("plugIns.length = " + plugIns.length);
 		for (int i = 0; i < plugIns.length; i++) {
-//			System.out.println("plugIn[" + i + "]");
+			//			System.out.println("plugIn[" + i + "]");
 			if (plugIns[i] instanceof PlugInWindow) {
 				plugIns[i].setTmpActivated(true);
-			/*
-			try {
-				System.out.println("sleeping...");
-				Thread.sleep(500);
-			} catch (Exception e) {
-			}
-			*/
+				/*
+				try {
+					System.out.println("sleeping...");
+					Thread.sleep(500);
+				} catch (Exception e) {
+				}
+				*/
 				plugIns[i].activateWindow();
 			}
 		}
 		setTmpActivated(true);
 		toFront();
-//		System.out.println("hi there");
+		//		System.out.println("hi there");
 	}
-	
+
 	public void setTmpActivated(boolean b) {
 		if (tmpActivated = b) {
 			Thread runner = new Thread() {
 				public void run() {
 					try {
-//						System.out.println("main waiting");
-						Thread.sleep(500);
+							//						System.out.println("main waiting");
+	Thread.sleep(500);
 						tmpActivated = false;
-					} catch(InterruptedException e) {
+					} catch (InterruptedException e) {
 					}
 				}
 			};
 			runner.start();
 		}
 	}
-	
+
 	public boolean isTmpActivated() {
 		return tmpActivated;
 	}
-	
+
 	/** Reloads all the plug-ins in the current <code>plugins</code> folder.
 	 * Prepares the preferences panel to offer all available plug-ins.
 	 * @see #getPlugInsFile()
@@ -866,12 +884,12 @@ public class TextTrix extends JFrame {
 		String[] list = LibTTx.getPlugInPaths(file);
 		if (list == null)
 			return;
-			
+
 		// determine the currently loaded plug-ins
 		String[] paths = getPlugInPaths();
 		PlugIn[] extraPlugs = null;
 		int extraPlugsInd = 0;
-		
+
 		// load unloaded plug-ins; drop plug-ins no longer available
 		if (plugIns == null || plugIns.length == 0) {
 			setupPlugIns();
@@ -893,14 +911,15 @@ public class TextTrix extends JFrame {
 			/* TODO: May need to create a temporary collection of all loaded plug-ins
 			 * rather than adding the extraPlugs to the official, active plugIns group.
 			 */
-			plugIns = (PlugIn[])LibTTx.truncateArray(extraPlugs, extraPlugsInd);
+			plugIns =
+				(PlugIn[]) LibTTx.truncateArray(extraPlugs, extraPlugsInd);
 			for (int i = 0; i < plugIns.length; i++) {
 				plugIns[i].closeWindow();
 			}
-//			getPrefs().updatePlugInsPanel(getPlugInNames());
+			//			getPrefs().updatePlugInsPanel(getPlugInNames());
 		}
 	}
-	
+
 	public void refreshPlugInsPanel() {
 
 		// determine the available plug-ins
@@ -932,7 +951,7 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
-	
+
 	/** Gets the names of the currently loaded plug-ins.
 	 * Each plug-in has a descriptive name, usually different from the filename.
 	 * @return array of all the loaded plug-ins' descriptive name; the array's length
@@ -976,16 +995,16 @@ public class TextTrix extends JFrame {
 
 		// load the plugins and create actions for them
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
-//		getPrefs().updatePlugInsPanel(getPlugInNames());
+		//		getPrefs().updatePlugInsPanel(getPlugInNames());
 		getPrefs().updatePlugInsPanel(getPlugInPaths());
 		if (plugIns != null) {
 			for (int i = 0; i < plugIns.length; i++) {
-//				plugIns[i].removeWindowAdapter();
+				//				plugIns[i].removeWindowAdapter();
 				makePlugInAction(plugIns[i]);
 			}
 		}
 	}
-	
+
 	/** Gets the <code>plugins</code> folder file.
 	 * TODO: Add preferences mechanism to specify alternative or additional
 	 * <code>plugins</code> folder location, such as a permanent storage place
@@ -1133,12 +1152,12 @@ public class TextTrix extends JFrame {
 	public static TextPad getSelectedTextPad() {
 		int i = tabbedPane.getSelectedIndex();
 		if (i != -1) {
-			return (TextPad)textAreas.get(i);
+			return (TextPad) textAreas.get(i);
 		} else {
 			return null;
 		}
 	}
-	
+
 	/** Gets the <code>TextPad</code> at a given index in the tabbed pane.
 	 * 
 	 * @param i index of <code>TextPad</code>
@@ -1206,17 +1225,15 @@ public class TextTrix extends JFrame {
 			tabIndexHistory[--tabIndexHistoryIndex] = mostRecent;
 		} else if (tabIndexHistoryIndex >= tabIndexHistory.length) {
 			// increase the array size if necessary
-			tabIndexHistory = (int[])LibTTx.growArray(tabIndexHistory);
+			tabIndexHistory = (int[]) LibTTx.growArray(tabIndexHistory);
 			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
 		} else if (tabIndexHistoryIndex >= 0) {
 			// ensure that the tab during TextTrix's startup has no entry;
 			// otherwise, the 0 tab selection index duplicates
 			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
 		}
-		for (int i = ++tabIndexHistoryIndex;
-			i < tabIndexHistory.length;
-			i++) {
-				tabIndexHistory[i] = -1;
+		for (int i = ++tabIndexHistoryIndex; i < tabIndexHistory.length; i++) {
+			tabIndexHistory[i] = -1;
 		}
 		//tabIndexHistoryIndex++;
 		/*
@@ -1275,7 +1292,7 @@ public class TextTrix extends JFrame {
 	public static void setSaveDir(String aSaveDir) {
 		saveDir = aSaveDir;
 	}
-	
+
 	/** Flags the menu check box to indicate whether the current
 	 * Text Pad is in auto-indent mode.
 	 *
@@ -1358,7 +1375,7 @@ public class TextTrix extends JFrame {
 		//int i = 0;
 		boolean b = true;
 		int totTabs = tabbedPane.getTabCount();
-		
+
 		// close the files and prepare to store their paths in the list
 		// of files left open at the end of the session
 		while (totTabs > 0 && b) {
@@ -1375,7 +1392,7 @@ public class TextTrix extends JFrame {
 			b = closeTextArea(0, textAreas, tabbedPane);
 			totTabs = tabbedPane.getTabCount();
 		}
-		
+
 		// store the file list and exit Text Trix all the files closed successfully
 		if (b == true) {
 			if (reopenTabs) {
@@ -1404,7 +1421,7 @@ public class TextTrix extends JFrame {
 		JTabbedPane tabbedPane) {
 		boolean successfulClose = false;
 
-		TextPad t = (TextPad)textAreas.get(tabIndex);
+		TextPad t = (TextPad) textAreas.get(tabIndex);
 		// check if unsaved text area
 		if (t.getChanged()) {
 			String s = "Please save first.";
@@ -1556,9 +1573,12 @@ public class TextTrix extends JFrame {
 	 */
 	public static void updateTabTitle(
 		ArrayList arrayList,
-		JTabbedPane tabbedPane) {
-		int i = tabbedPane.getSelectedIndex();
-		TextPad textPad = (TextPad)arrayList.get(i);
+		JTabbedPane tabbedPane,
+		int i) {
+		if (i < 0) {
+			i = tabbedPane.getSelectedIndex();
+		}
+		TextPad textPad = (TextPad) arrayList.get(i);
 		//	String title = tabbedPane.getTitleAt(i);
 		String title = textPad.getFilename();
 		// convert to filename; -2 b/c added 2 spaces
@@ -1568,6 +1588,10 @@ public class TextTrix extends JFrame {
 			tabbedPane.setTitleAt(i, title + " ");
 			//		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 		}
+	}
+	
+	public static void updateTabTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
+		updateTabTitle(arrayList, tabbedPane, -1);
 	}
 
 	/**Adds additional listeners and other settings to a <code>TextPad</code>.
@@ -1655,13 +1679,14 @@ public class TextTrix extends JFrame {
 	 * @param path file path in which to save
 	 * @return true for a successful save, false if otherwise
 	 */
-	public boolean saveFile(String path) {
+	public boolean saveFile(String path, TextPad t) {
 		//	System.out.println("printing");
-		TextPad t = getSelectedTextPad();
+		if (t == null)
+			t = getSelectedTextPad();
 		PrintWriter out = null;
 		try {
 			if (t != null) {
-				File f = new File(path);
+//				File f = new File(path);
 				/* if don't use canWrite(), work instead by 
 				   catching exception and either handling it there
 				   or returning signal of the failure
@@ -1672,7 +1697,11 @@ public class TextTrix extends JFrame {
 				out.print(t.getText());
 				t.setChanged(false);
 				t.setFile(path);
-				updateTabTitle(textAreas, tabbedPane);
+				
+				stopTextPadAutoSaveTimer(t);
+				
+				System.out.println("about to update the tab title");
+				updateTabTitle(textAreas, tabbedPane, textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
 				return true;
@@ -1687,6 +1716,25 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
+	public boolean saveFile(String path) {
+		return saveFile(path, null);
+	}
+	
+	
+	public boolean saveFile(TextPad pad) {
+		return saveFile(pad.getPath(), pad);
+		//		return false;
+	}
+	
+
+	/**Saves the file to the given path.
+	 * Similar to <code>saveFile(String)</code>, but tailored for
+	 * the program exit by ignoring updates to the graphical user 
+	 * interface.
+	 * @param path the path to the modified file 
+	 * @return true if the file saves successfully
+	 * @see #saveFile(String)
+	 */
 	public static boolean saveFileOnExit(String path) {
 		//	System.out.println("printing");
 		TextPad t = getSelectedTextPad();
@@ -1739,7 +1787,7 @@ public class TextTrix extends JFrame {
 				*/
 				if (t == null || !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
-					t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
 					read(t, reader, path);
 				} else { // open file in current, empty pad
 					read(t, reader, path);
@@ -1790,7 +1838,7 @@ public class TextTrix extends JFrame {
 			t.setAutoIndent(true);
 		}
 	}
-	
+
 	/** Checks if the given file extension is in the user-defined list of files
 	 * to automatically auto-indent.
 	 * @param path file to check
@@ -1834,6 +1882,12 @@ public class TextTrix extends JFrame {
 			return false;
 		return getSavePath(owner);
 	}
+	
+	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
+		if (!prepFileSaveDialog(pad))
+			return false;
+		return getSavePath(pad, owner);
+	}
 
 	/** Prepares the file save dialog.
 	 * Finds the current directory if the file and selects it, if the file has already 
@@ -1841,9 +1895,9 @@ public class TextTrix extends JFrame {
 	 * and selects no file.
 	 * @return <code>true</code> if a Text Pad is selected, necessary to save a file 
 	 */
-	public static boolean prepFileSaveDialog() {
+	public static boolean prepFileSaveDialog(TextPad t) {
 		//	int tabIndex = tabbedPane.getSelectedIndex();
-		TextPad t = getSelectedTextPad();
+		if (t == null) t = getSelectedTextPad();
 		//	if (tabIndex != -1) {
 		if (t != null) {
 			//	    TextPad t = (TextPad)textAreas.get(tabIndex);
@@ -1865,6 +1919,11 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
+
+	public static boolean prepFileSaveDialog() {
+		return prepFileSaveDialog(null);
+	}
+
 
 	/** Helper function to <code>fileSaveDialog</code> when exiting Text Trix.
 	 * Unlike <code>getSavePath(JFrame)</code>, this method does not
@@ -1947,7 +2006,7 @@ public class TextTrix extends JFrame {
 	@return true if the file is saved successfully
 	@see #getSavePathOnExit(JFrame)
 	*/
-	private boolean getSavePath(JFrame owner) {
+	private boolean getSavePath(TextPad pad, JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name, 
@@ -1985,17 +2044,27 @@ public class TextTrix extends JFrame {
 					return false;
 				} else { // write, even if overwriting
 					// try to save the file and check if successful
-					if (saveFile(path)) { // success
+					boolean success = false;
+					int idx = -1;
+					if (pad == null) {
+						success = saveFile(path);
+						idx = tabbedPane.getSelectedIndex();
+					} else {
+						success = saveFile(path, pad);
+						idx = textAreas.indexOf(pad);
+					}
+					if (success) {
 						setSaveDir(chooser.getSelectedFile().getParent());
 						// update graphical components
-						tabbedPane.setToolTipTextAt(
-							tabbedPane.getSelectedIndex(),
-							path);
-						updateTitle(owner, f.getName());
+						tabbedPane.setToolTipTextAt(idx, path);
+						if (idx == tabbedPane.getSelectedIndex()) {
+							updateTitle(owner, f.getName());
+						}
 						getPrefs().storeFileHist(path);
 						fileHist.start(fileMenu);
 
 						return true;
+						
 					} else { // fail; request another try at saving
 						String msg =
 							path
@@ -2011,6 +2080,10 @@ public class TextTrix extends JFrame {
 			}
 		} while (repeat); // repeat if retrying save after failure
 		return false;
+	}
+
+	private boolean getSavePath(JFrame owner) {
+		return getSavePath(null, owner);
 	}
 
 	/** Front-end, helper function to ask yes/no questions.
@@ -2037,50 +2110,53 @@ public class TextTrix extends JFrame {
 			return false;
 		}
 	}
-	
+
 	public void printTextPad() {
 		try {
 			PrinterJob job = PrinterJob.getPrinterJob();
 			Book bk = createBook();
-			if (bk == null) return;
+			if (bk == null)
+				return;
 			job.setPageable(bk);
 			if (job.printDialog(printAttributes)) {
 				job.print(printAttributes);
-//				System.out.println("printed!");
-//				pad.setPrintText(null);
+				//				System.out.println("printed!");
+				//				pad.setPrintText(null);
 			}
 		} catch (PrinterException e) {
 			JOptionPane.showMessageDialog(this, e);
 		}
 	}
-	
+
 	public Book createBook() {
 		TextPad textPad = getSelectedTextPad();
-		if (textPad == null) return null;
-/*
-		System.out.println("font fam: " + textPad.getFont().getFamily()
-			+ ", font name: " + textPad.getFont().getName()
-			+ ", font size: " + textPad.getFont().getSize());
-*/
+		if (textPad == null)
+			return null;
+		/*
+				System.out.println("font fam: " + textPad.getFont().getFamily()
+					+ ", font name: " + textPad.getFont().getName()
+					+ ", font size: " + textPad.getFont().getSize());
+		*/
 		if (pageFormat == null) {
 			PrinterJob job = PrinterJob.getPrinterJob();
 			pageFormat = job.defaultPage();
 		}
 		PrintPad pad = textPad.createPrintPad();
 		Book bk = new Book();
-		int pp = pad.getPageCount((Graphics2D)getGraphics(), pageFormat);
+		int pp = pad.getPageCount((Graphics2D) getGraphics(), pageFormat);
 		bk.append(pad, pageFormat, pp);
 		return bk;
 	}
-	
+
 	public void printTextPadSettings() {
 		PrinterJob job = PrinterJob.getPrinterJob();
 		job.pageDialog(printAttributes);
 	}
-	
+
 	public void printPreview() {
 		Book bk = createBook();
-		if (bk == null) return;
+		if (bk == null)
+			return;
 		Action printAction = new AbstractAction("Print...", null) {
 			public void actionPerformed(ActionEvent e) {
 				printTextPad();
@@ -2093,6 +2169,32 @@ public class TextTrix extends JFrame {
 			KeyStroke.getKeyStroke("alt I"));
 		PrintPadPreview preview = new PrintPadPreview(this, bk, printAction);
 		preview.setVisible(true);
+	}
+
+	
+	public void startTextPadAutoSaveTimer(TextPad pad) {
+		Thread timer = pad.getAutoSaveTimer();
+		TextPadAutoSaveTimer textTimer = null;
+		if (timer == null) {
+			pad.setAutoSaveTimer(textTimer = new TextPadAutoSaveTimer(pad));
+			textTimer.start();
+		} else if (timer instanceof TextPadAutoSaveTimer 
+			&& (textTimer = (TextPadAutoSaveTimer) timer).isStopped()) {
+			textTimer.start();
+		}
+		
+	}
+	
+	public void stopTextPadAutoSaveTimer(TextPad pad) {
+		Thread timer = pad.getAutoSaveTimer();
+		if (timer != null) {
+			timer.interrupt();
+			pad.setAutoSaveTimer(null);
+		}
+	}
+	
+	private JFrame getThis() {
+		return this;
 	}
 
 	/**Evokes a open file dialog, from which the user can
@@ -2262,14 +2364,14 @@ public class TextTrix extends JFrame {
 			fileSaveDialog(owner);
 		}
 	}
-	
+
 	private class FileCloseAction extends AbstractAction {
-		
+
 		public FileCloseAction(String name, Icon icon) {
 			putValue(Action.NAME, name);
 			putValue(Action.SMALL_ICON, icon);
 		}
-		
+
 		public void actionPerformed(ActionEvent evt) {
 			int i = tabbedPane.getSelectedIndex();
 			if (i >= 0) {
@@ -2290,18 +2392,14 @@ public class TextTrix extends JFrame {
 		 * @param e insertion event
 		 */
 		public void insertUpdate(DocumentEvent e) {
-			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(
-				true);
-			updateTabTitle(textAreas, tabbedPane);
+			setChanged();
 		}
 
 		/**Flags a text removal.
 		 * @param e removal event
 		 */
 		public void removeUpdate(DocumentEvent e) {
-			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(
-				true);
-			updateTabTitle(textAreas, tabbedPane);
+			setChanged();
 		}
 
 		/**Flags any sort of text change.
@@ -2309,6 +2407,105 @@ public class TextTrix extends JFrame {
 		 */
 		public void changedUpdate(DocumentEvent e) {
 		}
+
+		public void setChanged() {
+			final TextPad pad = getSelectedTextPad();
+			if (!pad.getChanged()) {
+				pad.setChanged(true);
+				updateTabTitle(textAreas, tabbedPane);
+				// TODO: use instanceof to check before cast?
+				if (getPrefs().getAutoSave()) {
+					System.out.println("i'm here");
+					startTextPadAutoSaveTimer(pad);
+				}
+			}
+		}
+
+	}
+
+	private class TextPadAutoSaveTimer extends Thread {
+		private boolean stopped = false;
+		private TextPad textPad = null;
+
+		public TextPadAutoSaveTimer(TextPad aTextPad) {
+			textPad = aTextPad;
+		}
+
+		public void run() {
+			//			while (getPrefs().getAutoSave() && !interrupted()) {
+			try {
+				System.out.println("Waiting to save...");
+				Thread.sleep(getPrefs().getAutoSaveInterval() * 60000);
+				System.out.println("...saving...");
+				// don't need getPrefs().getAutoSave() && b/c only start
+				// timer if auto-save pref set, and interrupt already called
+				// if unset while timer running
+				if (!interrupted()) {
+					if (getPrefs().getAutoSavePrompt()) {
+						int choice =
+							JOptionPane.showConfirmDialog(
+								null,
+								"We're about to auto-save this baby"
+									+ " (" + textPad.getFilename() + ").  "
+									+ "You OK with that?"
+									+ "\n(\"No\" means we won't ask again "
+									+ "about this file.)",
+								"Auto-Save Prompt",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+						if (choice == JOptionPane.NO_OPTION) {
+							stopped = true;
+							return;
+						}
+					}
+					if (textPad.fileExists()) {
+						saveFile(textPad);
+					} else {
+						int choice =
+							JOptionPane.showConfirmDialog(
+								null,
+								"We're about to auto-save this baby"
+									+ " (" + textPad.getFilename() + "), "
+									+ "but we need a name for it."
+									+ "\nMind if we got that from you?"
+									+ "\n(\"No\" means we won't ask again "
+									+ "about this file.)",
+								"Auto-Save Prompt",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+						if (choice == JOptionPane.NO_OPTION) {
+							stopped = true;
+							return;
+						}
+						fileSaveDialog(textPad, getThis());
+					}
+					System.out.println("saved!");
+				} else {
+					stopped = true;
+				}
+			} catch (InterruptedException e) {
+				stopped = true;
+				Thread.currentThread().interrupt();
+			}
+
+			//			}
+		}
+
+		public boolean isStopped() {
+			return stopped;
+		}
+
+		/*
+		public void stopRequested() {
+			stopRequested = true;
+			interrupt();
+		}
+		
+		public void resetTimer() {
+			stopRequested();
+			(new Thread(this)).start();
+		}
+		*/
 	}
 
 	/** Listener to pop up a context menu when right-clicking.
@@ -2343,7 +2540,7 @@ public class TextTrix extends JFrame {
 	 * @author davit
 	 */
 	private class MenuBarCreator extends Thread {
-		
+
 		/** Begins creating the bars.
 		 * 
 		 */
@@ -2360,29 +2557,38 @@ public class TextTrix extends JFrame {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					//System.out.println("Creating the menu bar...");
-					
+
 					/* Shortcuts */
-					
+
 					// Standard keybindings
 					char fileMenuMnemonic = 'F';
 					char newActionMnemonic = 'N';
-					KeyStroke newActionShortcut = KeyStroke.getKeyStroke("ctrl N");
+					KeyStroke newActionShortcut =
+						KeyStroke.getKeyStroke("ctrl N");
 					char closeActionMnemonic = 'C';
-					KeyStroke closeActionShortcut = KeyStroke.getKeyStroke("ctrl W");
+					KeyStroke closeActionShortcut =
+						KeyStroke.getKeyStroke("ctrl W");
 					String exitActionTxt = "Exit";
 					char exitActionMnemonic = 'X';
-					KeyStroke exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
+					KeyStroke exitActionShortcut =
+						KeyStroke.getKeyStroke("ctrl Q");
 					char cutActionMnemonic = 'T';
-					KeyStroke cutActionShortcut = KeyStroke.getKeyStroke("ctrl X");
-					KeyStroke redoActionShortcut = KeyStroke.getKeyStroke("ctrl Y");
+					KeyStroke cutActionShortcut =
+						KeyStroke.getKeyStroke("ctrl X");
+					KeyStroke redoActionShortcut =
+						KeyStroke.getKeyStroke("ctrl Y");
 					char copyActionMnemonic = 'C';
-					KeyStroke copyActionShortcut = KeyStroke.getKeyStroke("ctrl C");
+					KeyStroke copyActionShortcut =
+						KeyStroke.getKeyStroke("ctrl C");
 					char pasteActionMnemonic = 'P';
-					KeyStroke pasteActionShortcut = KeyStroke.getKeyStroke("ctrl V");
+					KeyStroke pasteActionShortcut =
+						KeyStroke.getKeyStroke("ctrl V");
 					char selectAllActionMnemonic = 'A';
-					KeyStroke selectAllActionShortcut = KeyStroke.getKeyStroke("ctrl A");
+					KeyStroke selectAllActionShortcut =
+						KeyStroke.getKeyStroke("ctrl A");
 					char printActionMnemonic = 'P';
-					KeyStroke printActionShortcut = KeyStroke.getKeyStroke("ctrl P");
+					KeyStroke printActionShortcut =
+						KeyStroke.getKeyStroke("ctrl P");
 					char printPreviewActionMnemonic = 'R';
 					char printSettingsActionMnemonic = 'I';
 
@@ -2400,7 +2606,8 @@ public class TextTrix extends JFrame {
 						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
 							KeyStroke.getKeyStroke("ctrl L");
-						printActionShortcut = KeyStroke.getKeyStroke("ctrl shift P");
+						printActionShortcut =
+							KeyStroke.getKeyStroke("ctrl shift P");
 					} else if (prefs.isEmacsKeybindings()) {
 						// Emacs: Hybrid + Emacs single-key shortcuts
 						// TODO: create double-key shortcuts, such as ctrl-x, ctrl-s for saving
@@ -2418,25 +2625,20 @@ public class TextTrix extends JFrame {
 						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
 						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
-							KeyStroke.getKeyStroke("ctrl L");			
-						printActionShortcut = KeyStroke.getKeyStroke("ctrl shift P");				
+							KeyStroke.getKeyStroke("ctrl L");
+						printActionShortcut =
+							KeyStroke.getKeyStroke("ctrl shift P");
 					}
 
-
-
-
-
-
-
 					/* Create new menu and tool bars */
-					
+
 					// remove the old components if necessary
 					if (menuBar != null) {
 						contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");
 						contentPane.remove(toolBar);
 					}
-					
+
 					// make menu bar and menus
 					menuBar = new JMenuBar();
 					fileMenu.setMnemonic(fileMenuMnemonic);
@@ -2455,14 +2657,9 @@ public class TextTrix extends JFrame {
 					toolBar = new JToolBar("Trix and Tools");
 					toolBar.addMouseListener(new PopupListener());
 					toolBar.setBorderPainted(false);
-					
+
 					// create pop-up menu for right-mouse-clicking
 					popup = new JPopupMenu();
-
-
-
-
-
 
 					/* File menu items */
 
@@ -2531,7 +2728,7 @@ public class TextTrix extends JFrame {
 						closeActionShortcut);
 					fileMenu.add(closeAction);
 
-					Action closeActionForBtn = 
+					Action closeActionForBtn =
 						new FileCloseAction(
 							"Close",
 							LibTTx.makeIcon("images/door-60deg-16x16.png"));
@@ -2581,7 +2778,7 @@ public class TextTrix extends JFrame {
 					LibTTx.setRollover(
 						saveButton,
 						"images/saveicon-roll-16x16.png");
-						
+
 					// Tool Bar: begin plug-ins
 					toolBar.addSeparator();
 
@@ -2593,10 +2790,10 @@ public class TextTrix extends JFrame {
 							LibTTx.makeIcon("images/saveasicon-16x16.png"));
 					LibTTx.setAction(saveAsAction, "Save as...", '.');
 					fileMenu.add(saveAsAction);
-					
+
 					// Menu: begin print entries
 					fileMenu.addSeparator();
-					
+
 					Action printAction = new AbstractAction("Print...") {
 						public void actionPerformed(ActionEvent e) {
 							printTextPad();
@@ -2609,8 +2806,8 @@ public class TextTrix extends JFrame {
 						printActionShortcut);
 					fileMenu.add(printAction);
 
-
-					Action printPreviewAction = new AbstractAction("Print preview...") {
+					Action printPreviewAction =
+						new AbstractAction("Print preview...") {
 						public void actionPerformed(ActionEvent e) {
 							printPreview();
 						}
@@ -2620,9 +2817,9 @@ public class TextTrix extends JFrame {
 						"Print...",
 						printPreviewActionMnemonic);
 					fileMenu.add(printPreviewAction);
-					
 
-					Action printSettingsAction = new AbstractAction("Print settings...") {
+					Action printSettingsAction =
+						new AbstractAction("Print settings...") {
 						public void actionPerformed(ActionEvent e) {
 							printTextPadSettings();
 						}
@@ -2632,7 +2829,7 @@ public class TextTrix extends JFrame {
 						"Print settings...",
 						printSettingsActionMnemonic);
 					fileMenu.add(printSettingsAction);
-					
+
 					// Menu: begin exit entries
 					fileMenu.addSeparator();
 
@@ -2653,19 +2850,13 @@ public class TextTrix extends JFrame {
 
 					fileMenu.addSeparator();
 					//System.out.println("About to create the menu entries");
-					
-					
-					
-					
-					
-					
 
 					/* Edit menu items */
 
 					// (ctrl-z) undo; multiple undos available
 					Action undoAction = new AbstractAction("Undo") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad)textAreas
+							((TextPad) textAreas
 								.get(tabbedPane.getSelectedIndex()))
 								.undo();
 						}
@@ -2680,7 +2871,7 @@ public class TextTrix extends JFrame {
 					// redo; multiple redos available
 					Action redoAction = new AbstractAction("Redo") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad)textAreas
+							((TextPad) textAreas
 								.get(tabbedPane.getSelectedIndex()))
 								.redo();
 						}
@@ -2699,7 +2890,7 @@ public class TextTrix extends JFrame {
 					// cut
 					Action cutAction = new AbstractAction("Cut") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad)textAreas
+							((TextPad) textAreas
 								.get(tabbedPane.getSelectedIndex()))
 								.cut();
 						}
@@ -2715,7 +2906,7 @@ public class TextTrix extends JFrame {
 					// copy
 					Action copyAction = new AbstractAction("Copy") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad)textAreas
+							((TextPad) textAreas
 								.get(tabbedPane.getSelectedIndex()))
 								.copy();
 						}
@@ -2731,7 +2922,7 @@ public class TextTrix extends JFrame {
 					// paste
 					Action pasteAction = new AbstractAction("Paste") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad)textAreas
+							((TextPad) textAreas
 								.get(tabbedPane.getSelectedIndex()))
 								.paste();
 						}
@@ -2750,7 +2941,7 @@ public class TextTrix extends JFrame {
 					// select all text in current text area
 					Action selectAllAction = new AbstractAction("Select all") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad)textAreas
+							((TextPad) textAreas
 								.get(tabbedPane.getSelectedIndex()))
 								.selectAll();
 						}
@@ -2783,15 +2974,15 @@ public class TextTrix extends JFrame {
 						KeyStroke.getKeyStroke("alt shift I"));
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 					editMenu.add(autoIndent);
-					
+
 					// Preferences panel starter;
 					// also reloads the plug-ins
 					Action prefsAction =
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
-//							reloadPlugIns();
-							refreshPlugInsPanel();
-							getPrefs().setVisible(true);//show();
+								//							reloadPlugIns();
+	refreshPlugInsPanel();
+							getPrefs().setVisible(true); //show();
 						}
 					};
 					LibTTx.setAction(
@@ -2951,12 +3142,6 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'R');
 					viewMenu.add(toggleRTFViewAction);
-					
-					
-					
-					
-					
-					
 
 					/* Help menu items */
 
@@ -3017,27 +3202,16 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(licenseAction, "License", 'L');
 					helpMenu.add(licenseAction);
-					
-					
-					
-					
-					
-					
-					
 
 					/* Trix and Tools menus */
 
 					// Load plugins; add to appropriate menu
 					setupPlugIns();
-/*
-*/					
-					
-					
-					
-					
+					/*
+					*/
 
 					/* Place menus and other UI components */
-					
+
 					// must add tool bar before set menu bar lest tool bar shortcuts 
 					// take precedence
 					contentPane.add(toolBar, BorderLayout.NORTH);
@@ -3050,7 +3224,7 @@ public class TextTrix extends JFrame {
 					menuBar.add(trixMenu);
 					menuBar.add(toolsMenu);
 					menuBar.add(helpMenu);
-					
+
 					// prepare the file history menu entries
 					fileHistStart = fileMenu.getItemCount();
 					syncMenus();
@@ -3063,7 +3237,7 @@ public class TextTrix extends JFrame {
 						try {
 						EventQueue.invokeAndWait(new Runnable() {
 							public void run() {
-
+					
 									if (pl.isWindowVisible()) {
 										pl.reloadWindow();
 									}
@@ -3080,7 +3254,7 @@ public class TextTrix extends JFrame {
 			});
 		}
 	}
-	
+
 	/** Worker thread class to update the file history entries.
 	 * @author davit
 	 *
@@ -3094,7 +3268,7 @@ public class TextTrix extends JFrame {
 		 */
 		public void start(JMenu aMenu) {
 			menu = aMenu;
-			 (new Thread(this, "thread")).start();
+			(new Thread(this, "thread")).start();
 		}
 
 		/** Updates the file history record and menu entries.
@@ -3145,7 +3319,7 @@ public class TextTrix extends JFrame {
 			LibTTx.setAction(act, file); // tool tip displays full file path
 			return act;
 		}
-		
+
 		/** Updates the file history menu by deleting old entries and
 		 * replacing them with the current ones.
 		 * Assumes that <code>fileHistStart</code> in <code>TextTrix</code>
@@ -3255,7 +3429,7 @@ class ExtensionFileFilter extends FileFilter {
 		String name = f.getName().toLowerCase();
 
 		for (int i = 0; i < extensions.size(); i++)
-			if (name.endsWith((String)extensions.get(i)))
+			if (name.endsWith((String) extensions.get(i)))
 				return true;
 		return false;
 	}

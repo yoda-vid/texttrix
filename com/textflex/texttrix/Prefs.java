@@ -107,9 +107,18 @@ public class Prefs extends JFrame {
 	private static final String AUTO_INDENT_EXT = "autoIndentExt";
 	private JTextField autoIndentExtFld = null; // input list
 	
+	// group windows
 	private static final String ACTIVATE_WINDOWS_TOGETHER = "activateWindowsTogether";
 	private JCheckBox activateWindowsTogetherChk = null;
 	
+	// auto-save
+	private static final String AUTO_SAVE = "autoSave";
+	private JCheckBox autoSaveChk = null;
+	private static final String AUTO_SAVE_INTERVAL = "autoSaveInterval";
+	private JSpinner autoSaveIntervalSpinner = null;
+	private SpinnerNumberModel autoSaveIntervalMdl = null;
+	private static final String AUTO_SAVE_PROMPT = "autoSavePrompt";
+	private JCheckBox autoSavePromptChk = null;
 	
 	
 	
@@ -343,6 +352,10 @@ public class Prefs extends JFrame {
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
 		generalPrefs.putBoolean(ACTIVATE_WINDOWS_TOGETHER, 
 			activateWindowsTogetherChk.isSelected());
+		generalPrefs.putBoolean(AUTO_SAVE, autoSaveChk.isSelected());
+		generalPrefs.putInt(AUTO_SAVE_INTERVAL, 
+			autoSaveIntervalMdl.getNumber().intValue());
+		generalPrefs.putBoolean(AUTO_SAVE_PROMPT, autoSavePromptChk.isSelected());
 	}
 	
 	/** Stores the Shorts preferences.
@@ -646,6 +659,15 @@ public class Prefs extends JFrame {
 	public boolean getActivateWindowsTogether() {
 		return generalPrefs.getBoolean(ACTIVATE_WINDOWS_TOGETHER, true);
 	}
+	public boolean getAutoSave() {
+		return generalPrefs.getBoolean(AUTO_SAVE, false);
+	}
+	public int getAutoSaveInterval() {
+		return generalPrefs.getInt(AUTO_SAVE_INTERVAL, 5);
+	}
+	public boolean getAutoSavePrompt() {
+		return generalPrefs.getBoolean(AUTO_SAVE_PROMPT, false);
+	}
 	/** Gets the stored keybindings preference.
 	 * 
 	 * @return the keybindings preference
@@ -693,6 +715,8 @@ public class Prefs extends JFrame {
 	 * @author davit
 	 */
 	private class CreateGeneralPanel extends Thread {
+		
+		private JLabel autoSaveIntervalLbl = null;
 
 		/** Starts the thread.
 		 * 
@@ -757,7 +781,49 @@ public class Prefs extends JFrame {
 					activateWindowsTogetherChk =
 						new JCheckBox(activateWindowsTogetherTxt, getActivateWindowsTogether());
 					activateWindowsTogetherChk.setToolTipText(activateWindowsTogetherTipTxt);
-
+					
+					
+					// auto-saves files
+					String autoSaveTxt =
+						"Save changed files automatically:";
+					String autoSaveTipTxt =
+						"<html>Saves files automatically after the specified"
+							+ "<br>interval.  To prevent unwanted changes from"
+							+ "<br>being saved, the user can choose to be"
+							+ "<br>prompted before any saves.</html>";
+					autoSaveChk = 
+						new JCheckBox(autoSaveTxt, getAutoSave());
+					autoSaveChk.setToolTipText(autoSaveTipTxt);
+					autoSaveChk.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent e) {
+							setAutoSaveSelectors(autoSaveChk.isSelected());
+						}
+					});
+					
+					autoSaveIntervalLbl = 
+						new JLabel("Minutes between auto saves:");
+					String autoSaveIntervalTipTxt =
+						"<html>The number of minutes between automatically"
+						+ "<br>saving the file.  If the file is manually"
+						+ "<br>saved, the interval timer is reset.</html>";
+					autoSaveIntervalLbl.setToolTipText(autoSaveIntervalTipTxt);
+					
+					autoSaveIntervalMdl =
+						new SpinnerNumberModel(getAutoSaveInterval(), 0, 100, 1);
+					autoSaveIntervalSpinner = new JSpinner(autoSaveIntervalMdl);
+					
+					String autoSavePromptTxt =
+						"Prompt before auto-saving files:";
+					String autoSavePromptTipTxt =
+						"<html>Asks the user whether to save any changes before"
+						+ "<br>automatically saving them.  Otherwise, the"						+ "<br>current file will be overwritten, and the original"
+						+ "<br>file will be no more.</html>";
+					autoSavePromptChk = 
+						new JCheckBox(autoSavePromptTxt, getAutoSavePrompt());
+					autoSavePromptChk.setToolTipText(autoSavePromptTipTxt);
+					
+					setAutoSaveSelectors(autoSaveChk.isSelected());
+					
 					// add components to a grid-bag layout
 					panel.setLayout(new GridBagLayout());
 
@@ -819,11 +885,58 @@ public class Prefs extends JFrame {
 						2,
 						1,
 						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						autoSaveChk,
+						constraints,
+						0,
+						4,
+						2,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						autoSaveIntervalLbl,
+						constraints,
+						0,
+						5,
+						1,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						autoSaveIntervalSpinner,
+						constraints,
+						1,
+						5,
+						1,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						autoSavePromptChk,
+						constraints,
+						0,
+						6,
+						2,
+						1,
+						0,
 						100,
 						panel);
 					tabbedPane.setComponentAt(GENERAL_PANEL_INDEX, panel);
 				}
 			});
+		}
+		
+		public void setAutoSaveSelectors(boolean b) {
+			autoSaveIntervalLbl.setEnabled(b);
+			autoSaveIntervalSpinner.setEnabled(b);
+			autoSavePromptChk.setEnabled(b);
+			
 		}
 	}
 
