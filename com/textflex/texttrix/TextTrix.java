@@ -2115,12 +2115,3 @@ class ExtensionFileFilter extends FileFilter {
     }
 }
 
-/** Abstract listener that responds to <code>PlugIn</code> action events.
-    Defines a function from the <code>PlugInListener</code> interface 
-    to override.
-*/
-abstract class PlugInAction implements PlugInListener {
-    /** Runs the plug in.
-     */
-    public abstract void runPlugIn(PlugInEvent event);
-}
