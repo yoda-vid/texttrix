@@ -27,7 +27,8 @@ environment (http://www.cygwin.com/)
 Instructions for compilation:
 -Unzip the Text Trix source package:
 	-Use a graphical unzip program, or
-	-Change to the directory holding the zip file ("cd [zip file path]"), and type "unzip texttrix-x.y.z-src.zip"
+	-Change to the directory holding the zip file ("cd [zip file path]"), 
+	and type "unzip texttrix-x.y.z-src.zip"
 -Compile the Java classes:
 	-Change into the Text Trix directory: "cd texttrix-x.y.z"
 	-Build the Text Trix program and its plug-ins: "sh build.sh --plug --pkg".  
@@ -60,7 +61,8 @@ FAQs and forums, or email us at support@textflex.com
 
 
 Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
-Sun Microsystems, Java, and all Java-based marks are trademarks or registered trademarks of Sun Microsystems, Inc. in the United States and 
+Sun Microsystems, Java, and all Java-based marks are trademarks or 
+registered trademarks of Sun Microsystems, Inc. in the United States and 
 other countries. Text Flex is independent of Sun Microsystems, Inc.
 Linux is a registered trademark of Linus Torvalds.
 Microsoft and Windows are registered trademarks of Microsoft Corporation in 

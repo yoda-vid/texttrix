@@ -42,8 +42,8 @@ command automatically.
 application/x-jar MIME type is both supported and executes the command, 
 "java -jar" on the file
 -If necessary, try installing and running Text Trix via the command line:
-	-Move into the folder holding "TextTrix-x.y.z-jarajar-extractor.jar" by typing: 
-	"cd [folder holding the jarajar package]"
+	-Move into the folder holding "TextTrix-x.y.z-jarajar-extractor.jar" 
+	by typing: "cd [folder holding the jarajar package]"
 	-Run the package and follow its instructions: 
 	"java -jar texttrix-x.y.z-jarajar-extractor.jar"
 	-After file extraction, move into the TextTrix folder: 
@@ -59,7 +59,8 @@ FAQs and forums, or email us at support@textflex.com
 
 
 Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
-Sun Microsystems, Java, and all Java-based marks are trademarks or registered trademarks of Sun Microsystems, Inc. in the United States and 
+Sun Microsystems, Java, and all Java-based marks are trademarks or 
+registered trademarks of Sun Microsystems, Inc. in the United States and 
 other countries. Text Flex is independent of Sun Microsystems, Inc.
 Linux is a registered trademark of Linus Torvalds.
 Microsoft and Windows are registered trademarks of Microsoft Corporation in 
