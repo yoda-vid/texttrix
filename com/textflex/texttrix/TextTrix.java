@@ -313,15 +313,7 @@ public class TextTrix extends JFrame {
 
 		Action togglePlainViewAction = new AbstractAction("Toggle plain text view") {
 			public void actionPerformed(ActionEvent evt) {
-				int tab = tabbedPane.getSelectedIndex();
-				if (tab != -1) {
-					TextPad t = (TextPad)textAreas.get(tab);
-//					System.out.println(t.getText());
-					String text = t.getText();
-					t.setDocument(t.getEditorKit().createDefaultDocument());
-					t.setContentType("text/plain");
-					reinitializeTextPadDocumentSettings(t);
-					t.setText(text);
+				viewPlain();
 					/*
 					if (t.isEmpty()) {
 						t.setContentType("text/plain");
@@ -341,7 +333,7 @@ public class TextTrix extends JFrame {
 						readText(t.getPath());
 					}
 					*/
-				}
+				
 			}
 		};
 		viewMenu.add(togglePlainViewAction);
@@ -351,11 +343,11 @@ public class TextTrix extends JFrame {
 				int tab = tabbedPane.getSelectedIndex();
 				if (tab != -1) {
 					TextPad t = (TextPad)textAreas.get(tab);
-					String text = t.getText();
-					t.setDocument(t.getEditorKit().createDefaultDocument());
-					t.setContentType("text/html");
-					reinitializeTextPadDocumentSettings(t);
-					t.setText(text);
+					if (!t.getContentType().equals("text/html")) {
+						t.viewHTML();
+						reinitializeTextPadDocumentSettings();
+					}
+					/*
 					/*
 					if (t.isEmpty()) {
 						t.setContentType("text/plain");
@@ -372,17 +364,12 @@ public class TextTrix extends JFrame {
 				int tab = tabbedPane.getSelectedIndex();
 				if (tab != -1) {
 					TextPad t = (TextPad)textAreas.get(tab);
-					String text = t.getText();
-					t.setDocument(t.getEditorKit().createDefaultDocument());
-					t.setContentType("text/rtf");
-					reinitializeTextPadDocumentSettings(t);
-					t.setText(text);
-					if (t.isEmpty()) {
-						t.setDocument(t.getEditorKit().createDefaultDocument());
-						t.setContentType("text/plain");
-						reinitializeTextPadDocumentSettings(t);
-						t.setText(text);
+					if (!t.getContentType().equals("text/rtf")) {
+						t.viewRTF();
+						reinitializeTextPadDocumentSettings();
 					}
+					/*
+					*/
 				}
 			}
 		};
@@ -455,22 +442,27 @@ public class TextTrix extends JFrame {
 		Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
 				makeIcon("images/returnicon-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
-				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				String text = t.getText();
+				int tabIndex = tabbedPane.getSelectedIndex();
+				if (tabIndex != -1) {
+					// may want to automatically apply HTML replacer after converting to plain
+					viewPlain();
+					TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+					String text = t.getText();
 
-				// only modify the selected text
-				int start = 0;
-				int end = 0;
-				if ((start = t.getSelectionStart()) 
-						== (end = t.getSelectionEnd())) {
+					// only modify the selected text
+					int start = 0;
+					int end = 0;
+					if ((start = t.getSelectionStart()) 
+							== (end = t.getSelectionEnd())) {
 //					System.out.println(start + "," + end);
-					// may need to add original text to history buffer
-					// before making the change
-					t.setText(Tools.
-							removeExtraHardReturns(text, 0, text.length()));
-				} else {
+						// may need to add original text to history buffer
+						// before making the change
+						t.setUndoableText(Tools.
+								removeExtraHardReturns(text, 0, text.length()));
+					} else {
 //					System.out.println(start + "," + end);
-					t.setText(Tools.removeExtraHardReturns(text, start, end));
+						t.setUndoableText(Tools.removeExtraHardReturns(text, start, end));
+					}
 				}
 			}
 		};
@@ -485,22 +477,26 @@ public class TextTrix extends JFrame {
 		Action nonPrintingCharViewerAction = new AbstractAction(
 				"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
-				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				String text = t.getText();
-
-				// only modify the selected text
-				int start = 0;
-				int end = 0;
-				if ((start = t.getSelectionStart()) 
-						== (end = t.getSelectionEnd())) {
+				int tabIndex = tabbedPane.getSelectedIndex();
+				if (tabIndex != -1) {
+					viewPlain();
+					TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+					String text = t.getText();
+	
+					// only modify the selected text
+					int start = 0;
+					int end = 0;
+					if ((start = t.getSelectionStart()) 
+							== (end = t.getSelectionEnd())) {
 //					System.out.println(start + "," + end);
-					// may need to add original text to history buffer
-					// before making the change
-					t.setText(Tools.
-							showNonPrintingChars(text, 0, text.length()));
-				} else {
+						// may need to add original text to history buffer
+						// before making the change
+						t.setUndoableText(Tools.
+								showNonPrintingChars(text, 0, text.length()));
+					} else {
 //					System.out.println(start + "," + end);
-					t.setText(Tools.showNonPrintingChars(text, start, end));
+						t.setUndoableText(Tools.showNonPrintingChars(text, start, end));
+					}
 				}
 			}
 		};
@@ -515,21 +511,25 @@ public class TextTrix extends JFrame {
 		Action htmlReplacerAction = new AbstractAction(
 				"Replace HTML tags", makeIcon("images/htmlreplacer-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
-				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				String text = t.getText();
+				int tabIndex = tabbedPane.getSelectedIndex();
+				if (tabIndex != -1) {
+					viewPlain();
+					TextPad t = (TextPad)textAreas.get(tabIndex);
+					String text = t.getText();
 
-				// only modify the selected text
-				int start = 0;
-				int end = 0;
-				if ((start = t.getSelectionStart()) 
-						== (end = t.getSelectionEnd())) {
+					// only modify the selected text
+					int start = 0;
+					int end = 0;
+					if ((start = t.getSelectionStart()) 
+							== (end = t.getSelectionEnd())) {
 //					System.out.println(start + "," + end);
-					// may need to add original text to history buffer
-					// before making the change
-					t.setText(Tools.htmlReplacer(text, 0, text.length()));
-				} else {
+						// may need to add original text to history buffer
+						// before making the change
+						t.setUndoableText(Tools.htmlReplacer(text, 0, text.length()));
+					} else {
 //					System.out.println(start + "," + end);
-					t.setText(Tools.htmlReplacer(text, start, end));
+						t.setUndoableText(Tools.htmlReplacer(text, start, end));
+					}
 				}
 			}
 		};
@@ -940,9 +940,25 @@ public class TextTrix extends JFrame {
 		}
 	}
 
-	public void reinitializeTextPadDocumentSettings(TextPad t) {
-		t.applyDocumentSettings(tabSize);
-		t.getDocument().addDocumentListener(new TextPadDocListener());
+	public void reinitializeTextPadDocumentSettings() {
+		int tabIndex = tabbedPane.getSelectedIndex();
+		if (tabIndex != -1) {
+			TextPad t = (TextPad)textAreas.get(tabIndex);
+			t.getDocument().addDocumentListener(new TextPadDocListener());
+			t.setChanged(true);
+			updateTitle(textAreas, tabbedPane);
+		}
+	}
+
+	public void viewPlain() {
+		int tab = tabbedPane.getSelectedIndex();
+		if (tab != -1) {
+			TextPad t = (TextPad)textAreas.get(tab);
+			if (!t.getContentType().equals("text/plain")) {
+				t.viewPlain();
+				reinitializeTextPadDocumentSettings();
+			}
+		}
 	}
 	
 	/**Removes a tab containing a text area.
@@ -1166,7 +1182,7 @@ public class TextTrix extends JFrame {
 			});
 			
 			// treat search expression as a separate word
-			add(word = new JCheckBox("Find word"), 
+			add(word = new JCheckBox("Whole word only"), 
 					constraints, 0, 2, 1, 1, 100, 0);
 			word.setMnemonic(KeyEvent.VK_N);
 			word.setToolTipText("Search for the expression as a separate word");
@@ -1242,36 +1258,41 @@ public class TextTrix extends JFrame {
 		}
 		
 		public void find() {
-			TextPad t = getSelectedTextPad();
-			String findText = find.getText();
-			int n = t.getCaretPosition();
+			TextPad t = null;
+			if ((t = getSelectedTextPad()) != null) {
+				String findText = find.getText();
+				int n = t.getCaretPosition();
 //			System.out.println(n + "");
-			n = Tools.find(t.getText(), findText, n, word.isSelected(), ignoreCase.isSelected());
-			if (n == -1 && wrap.isSelected()) {
-				n = Tools.find(t.getText(), findText, 0, word.isSelected(), ignoreCase.isSelected());
-			}
-			if (n != -1) {
-				t.setCaretPosition(n);
-				t.moveCaretPosition(n + findText.length());
+				n = Tools.find(t.getText(), findText, n, 
+						word.isSelected(), ignoreCase.isSelected());
+				if (n == -1 && wrap.isSelected()) {
+					n = Tools.find(t.getText(), findText, 0, 
+							word.isSelected(), ignoreCase.isSelected());
+				}
+				if (n != -1) {
+					t.setCaretPosition(n);
+					t.moveCaretPosition(n + findText.length());
 //				System.out.println("I'm here");
+				}
 			}
 		}
 		
 		public void findReplace() {
-			TextPad t = getSelectedTextPad();
-			String text = t.getText();
-			String findText = find.getText();
-			String replaceText = replace.getText();
-			if (selection.isSelected()) {
-				t.setText(Tools.findReplace(text, findText, replaceText,
-						t.getSelectionStart(), 
-						t.getSelectionEnd(), word.isSelected(), true,
-						false, ignoreCase.isSelected()));
-			} else {
-				t.setText(Tools.findReplace(text, findText, replaceText,
-						t.getCaretPosition(), text.length(), 
-						word.isSelected(), replaceAll.isSelected(), 
-						wrap.isSelected(), ignoreCase.isSelected()));
+			TextPad t = null;
+			if ((t = getSelectedTextPad()) != null) {
+				String text = t.getText();
+				String findText = find.getText();
+				String replaceText = replace.getText();
+				if (selection.isSelected()) {
+					t.setUndoableText(Tools.findReplace(text, findText, replaceText,
+							t.getSelectionStart(), t.getSelectionEnd(), word.isSelected(), true,
+							false, ignoreCase.isSelected()));
+				} else {
+					t.setUndoableText(Tools.findReplace(text, findText, replaceText,
+							t.getCaretPosition(), text.length(), 
+							word.isSelected(), replaceAll.isSelected(), 
+							wrap.isSelected(), ignoreCase.isSelected()));
+				}
 			}
 		}
 	}

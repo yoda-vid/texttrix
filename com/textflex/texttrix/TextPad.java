@@ -50,12 +50,14 @@ import java.io.*;
    Consists of standard text editing methods
    as well as special, silly ones for true text fun.
 */
-public class TextPad extends JEditorPane {
+public class TextPad extends JEditorPane implements StateEditable{
 	private File file;
 	private boolean changed = false;
 	private String path;
 	private UndoManager undoManager = new UndoManager();
 	private Hashtable actions;
+//	private Hashtable state;
+	private int tabSize = 0;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -69,7 +71,8 @@ public class TextPad extends JEditorPane {
 		file = aFile;
 		// to listen for keypad events
 		// to allow multiple undos
-		applyDocumentSettings(4);
+		tabSize = 4;
+		applyDocumentSettings();
 //		setTabSize(4); // probably add to preferences later
 
 		// for new key-bindings
@@ -233,6 +236,13 @@ public class TextPad extends JEditorPane {
 		file = new File(path);
 	}
 
+	public void setUndoableText(String text) {
+		StateEdit stateEdit = new StateEdit(this);
+		setText(text);
+		stateEdit.end();
+		undoManager.addEdit((UndoableEdit)stateEdit);
+	}
+
 	/**Check whether the file has been created.
 	 * @return <code>true</code> if the file has been created;
 	 * <code>false</code> if otherwise
@@ -257,7 +267,7 @@ public class TextPad extends JEditorPane {
 			undoManager.redo();
 	}
 
-	public void applyDocumentSettings(int tabSize) {
+	public void applyDocumentSettings() {
 		Document doc = getDocument();
 		doc.addUndoableEditListener(undoManager);
 		if (doc.getClass() == PlainDocument.class) {
@@ -268,6 +278,48 @@ public class TextPad extends JEditorPane {
 	public boolean isEmpty() {
 		String text = getText();
 		return ((text == null) || !(new StringTokenizer(text)).hasMoreTokens()) ? true : false;
+	}
+
+	public void viewPlain() {
+		String text = getText();
+		StateEdit stateEdit = new StateEdit(this);
+		setDocument(getEditorKit().createDefaultDocument());
+		setContentType("text/plain");
+		applyDocumentSettings();
+		setText(text);
+		stateEdit.end();
+		undoManager.addEdit((UndoableEdit)stateEdit);
+	}
+
+	public void viewHTML() {
+		String text = getText();
+		StateEdit stateEdit = new StateEdit(this);
+		setDocument(getEditorKit().createDefaultDocument());
+		setContentType("text/html");
+		applyDocumentSettings();
+		setText(text);
+		stateEdit.end();
+		undoManager.addEdit((UndoableEdit)stateEdit);
+	}
+
+	public void viewRTF() {
+		String text = getText();
+		StateEdit stateEdit = new StateEdit(this);
+		setDocument(getEditorKit().createDefaultDocument());
+		setContentType("text/rtf");
+		applyDocumentSettings();
+		setText(text);
+		stateEdit.end();
+		undoManager.addEdit((UndoableEdit)stateEdit);
+		if (isEmpty()) {
+			stateEdit = new StateEdit(this);
+			setDocument(getEditorKit().createDefaultDocument());
+			setContentType("text/plain");
+			applyDocumentSettings();
+			setText(text);						
+			stateEdit.end();
+			undoManager.addEdit((UndoableEdit)stateEdit);
+		}
 	}
 	
 	/**Gets the index of the current word's first character.
@@ -364,5 +416,34 @@ public class TextPad extends JEditorPane {
 	 */
 	private Action getActionByName(String name) {
 		return (Action)(actions.get(name));
+	}
+
+	public void storeState(Hashtable state) {
+		state.put("contenttype", getContentType());
+//		System.out.println("Stored:" + (String)state.get("contenttype"));
+		state.put("text", getText());
+/*		Document d = (Document)state.get("doc");
+		String s = "";
+		try { s = d.getText(0, d.getLength()); } catch(BadLocationException e) {}
+		System.out.println("Stored:" + s);
+*/
+	}
+
+	public void restoreState(Hashtable state) {
+		String contentType = (String)state.get("contenttype");
+		String text = (String)state.get("text");
+		setDocument(getEditorKit().createDefaultDocument());
+		if (contentType != null) 
+			setContentType(contentType);
+		if (text != null) 
+			setText(text);
+/*			String s = "";
+			try { s = doc.getText(0, doc.getLength()); } catch(BadLocationException e) {}
+			System.out.println("Stored:" + s);
+		}
+		System.out.println("Restored:" + contentType);
+		if (doc == null) 
+			System.out.println("The doc's not with us");
+*/
 	}
 }
