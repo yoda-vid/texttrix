@@ -44,8 +44,8 @@
 # Change for your particular setup
 ####################
 WKDIR="$HOME/src/jarajar" # Jar Ajar build script directory
-TTXDIR="$HOME/myworkspace/TextTrix/texttrix" # Text Trix build script directory
-DEST="/home/share" # Text Trix build destination
+TTXDIR="$HOME/src/TextTrix/texttrix" # Text Trix build script directory
+DEST="/home/share" # Text Trix build destinaxstion
 PKGNAME="texttrix-0.3.4" # Text Trix build name, where x.y.z refer to ver num
 ZIP="$PKGNAME.zip" # name of zipped package
 VFATDIR="/mnt/vfat/tmp" # alternate location; repeat for more sites
@@ -64,5 +64,5 @@ cp $PKGNAME*.jar $DEST
 ls -l $DEST/$PKGNAME*.jar
 
 # copy to alternative location
-rm -f $VFATDIR/$PKGNAME*.jar
-cp $PKGNAME*.jar $VFATDIR
+#rm -f $VFATDIR/$PKGNAME*.jar
+#cp $PKGNAME*.jar $VFATDIR

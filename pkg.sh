@@ -41,7 +41,7 @@
 # Variables to change for your particular setup
 ##############################
 VER="0.3.4" # version info
-BASE_DIR="$HOME/myworkspace/TextTrix" # work directory; do NOT set to the folder containing texttrix-x.y.z-src!
+BASE_DIR="$HOME/src/TextTrix" # work directory; do NOT set to the folder containing texttrix-x.y.z-src!
 BLD_DIR="$BASE_DIR/build"
 TTX_DIR="$BASE_DIR/texttrix"
 PLGS_DIR="$BASE_DIR/plugins"
@@ -118,6 +118,6 @@ zip -r $SRCPKG $SRCPKGDIR
 rm -rf $DEST/$PKGDIR*
 mv $ALL $DEST
 cd $DEST && ls -l $ALL
-sh $WIN_MOUNT
+#sh $WIN_MOUNT
 
 exit 0

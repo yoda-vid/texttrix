@@ -5,7 +5,7 @@
 #####################
 # Change to fit your particular setup
 #####################
-BASE_DIR="$HOME/myworkspace/TextTrix" # work directory
+BASE_DIR="$HOME/src/TextTrix" # work directory
 TTX_DIR="$BASE_DIR/texttrix"
 PLGS_DIR="$BASE_DIR/plugins"
 DIR="com/textflex/texttrix" # src package structure

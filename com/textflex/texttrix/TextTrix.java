@@ -87,13 +87,13 @@ public class TextTrix extends JFrame {
 	one <code>TextPad</code>.
 	 */
 	public TextTrix(final String[] paths) {
-		
+
 		/* Load preferences to create prefs panel */
-		
+
 		// create the accept action
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
-	getPrefs().storePrefs();
+				getPrefs().storePrefs();
 				applyPrefs();
 				getPrefs().dispose();
 			}
@@ -111,7 +111,7 @@ public class TextTrix extends JFrame {
 		// and destroy the object 
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
-	getPrefs().storePrefs();
+				getPrefs().storePrefs();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -119,7 +119,7 @@ public class TextTrix extends JFrame {
 			"Apply the current tabs settings immediately",
 			'A',
 			KeyStroke.getKeyStroke("alt A"));
-		
+
 		// creates the reject action, something I'm all too familiar with
 		prefsCancelAction = new AbstractAction("No way", null) {
 			public void actionPerformed(ActionEvent evt) {
@@ -135,14 +135,15 @@ public class TextTrix extends JFrame {
 		getPrefs();
 
 		/* Setup the main Text Trix window */
-		
+
 		setTitle("Text Trix");
-		
-		// pre-set window size
+
+		// restore window size and location
 		setSize(getPrefs().getPrgmWidth(), getPrefs().getPrgmHeight());
 		setLocation(
 			new Point(getPrefs().getPrgmXLoc(), getPrefs().getPrgmYLoc()));
-			
+
+		// store window size and location with each movement
 		addComponentListener(new ComponentListener() {
 			public void componentMoved(ComponentEvent evt) {
 				getPrefs().storeLocation(getLocation());
@@ -163,7 +164,7 @@ public class TextTrix extends JFrame {
 		}
 
 		/* Create the main Text Trix frame components */
-		
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		// keep the tabs the same width when substituting chars
 		tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -219,13 +220,13 @@ public class TextTrix extends JFrame {
 		webFilter.setDescription(
 			"Web files (*.html, *.htm, " + "*.xhtml, *.shtml, *.css)");
 		chooser.setFileFilter(webFilter);
-		
+
 		// RTF file filters
 		final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
 		rtfFilter.addExtension("rtf");
 		rtfFilter.setDescription("RTF files (*.rtf)");
 		chooser.setFileFilter(rtfFilter);
-		
+
 		// source code filters
 		final ExtensionFileFilter prgmFilter = new ExtensionFileFilter();
 		prgmFilter.addExtension("java");
@@ -241,19 +242,22 @@ public class TextTrix extends JFrame {
 		txtFilter.setDescription("Text files (*.txt)");
 		chooser.setFileFilter(txtFilter);
 
+		// prepare the file history
 		fileHist = new FileHist();
 
+		// invoke the worker thread to create the initial menu bar;
 		 (menuBarCreator = new MenuBarCreator()).start();
 
+		// open the initial files;
+		// must make sure that all of the operations do not require anything from
+		// the menu or tool bars, which MenuBarCreator is the process of making
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				contentPane.add(tabbedPane, BorderLayout.CENTER);
-				
+
 				// make first tab and text area;
 				// can only create after making several other user interface
 				// components, such as the autoIndent check menu item
-				
-				//System.out.println("Starting to open files");
 				addTextArea(textAreas, tabbedPane, makeNewFile());
 
 				// load files specified at start from command-line
@@ -262,8 +266,10 @@ public class TextTrix extends JFrame {
 						openInitialFile(paths[i]);
 					}
 				}
+
+				// load files left open at the close of the last session
 				if (getPrefs().getReopenTabs()) {
-					//System.out.println("Reopening tabs...");
+					// the list consists of a comma-delimited string of filenames
 					StringTokenizer tokenizer =
 						new StringTokenizer(
 							getPrefs().getReopenTabsList(),
@@ -272,7 +278,9 @@ public class TextTrix extends JFrame {
 						openInitialFile(tokenizer.nextToken());
 					}
 				}
-				System.out.println("Adding files just opened");
+				//System.out.println("Adding files just opened");
+
+				// make the file history menu entries and set the auto-indent check box
 				syncMenus();
 			}
 		});
@@ -343,21 +351,34 @@ public class TextTrix extends JFrame {
 			}
 		});
 		textTrix.show();
+
+		/* Something apparently grabs focus after he tabbed pane ChangeListener
+		 * focuses on the selected TextPad.  Calling focus after displaying the 
+		 * window seems to restore this focus at least most of the time.
+		 */
 		focuser();
 	}
 
+	/** Synchronizes the menus with the current text pad settings.
+	 * Creates the file history menu entries in the File menu
+	 * and flags the auto-indent check box according to the 
+	 * current text pad's setting.
+	 *
+	 */
 	public void syncMenus() {
 		if (fileHistStart != -1) {
-			fileHist.start(fileMenu);
+			fileHist.start(fileMenu); // assumes fileHistStart is up-to-date
 		}
 		setAutoIndent();
 	}
 
-	/*
-	private void createToolBar() {
-	}
-	*/
-
+	/** Opens the given file.
+	 * Useful for opening files at program start-up because only gives 
+	 * command-line feedback if the file cannot be opened; the user
+	 * may not have expected the opening in the first place and
+	 * thus does not have to be needlessly concerned.
+	 * @param path path to file
+	 */
 	private void openInitialFile(String path) {
 		if (!openFile(new File(path))) {
 			String msg =
@@ -406,6 +427,13 @@ public class TextTrix extends JFrame {
 		setTitle(filename + titleSuffix);
 	}
 
+	/** Gets the preferences panel object.
+	 * Creates a new object if necessary, such as after the old panel has
+	 * been cancelled and thus set to <code>null</code>.
+	 * Assumes that the necessary "okay," "apply," and "cancel"
+	 * actions have already been created.
+	 * @return the preferences panel object
+	 */
 	public static Prefs getPrefs() {
 		return (prefs == null) ? prefs =
 			new Prefs(
@@ -414,24 +442,39 @@ public class TextTrix extends JFrame {
 				prefsCancelAction) : prefs;
 	}
 
+	/** Applies the settings from the preferences panel.
+	 * Reloads the plug-ins, applies the preferences from the General and Shorts tabs,
+	 * and creates new menu and tool bars.  Front end for several functions that
+	 * update the program to match the user's preferences settings.
+	 * @see #applyGeneralPrefs()
+	 * @see #applyShortsPrefs()
+	 * @see #reloadPlugIns()
+	 * @see #MenuBarCreator
+	 */
 	public void applyPrefs() {
-		reloadPlugIns(); // no applyPlugInsPrefs b/c CreateMenuPanel takes care of GUI updates
+		reloadPlugIns();
+		// no applyPlugInsPrefs b/c CreateMenuPanel takes care of GUI updates
 		applyGeneralPrefs();
 		applyShortsPrefs();
 		menuBarCreator.start();
 	}
 
+	/** Applies preferences from the General tab in the preferences panel.
+	 * 
+	 *
+	 */
 	public void applyGeneralPrefs() {
-		//updateFileHist(fileMenu);
 		fileHist.start(fileMenu);
 	}
 
+	/** Applies preferences from the Shorts tab in the preferences panel.
+	 * Relies on a separate call to <code>#menuBarCreator.start()</code>
+	 * to complete the shortcuts update.  For example, <ocde>applyPrefs()</code>
+	 * calls the method to create the menu bar.
+	 *
+	 */
 	public void applyShortsPrefs() {
-		System.out.println("Applying shorts...");
-		/*
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-			*/
+		//System.out.println("Applying shorts...");
 		if (prefs.isHybridKeybindings()) {
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				getTextPadAt(i).hybridKeybindings();
@@ -445,29 +488,7 @@ public class TextTrix extends JFrame {
 				getTextPadAt(i).standardKeybindings();
 			}
 		}
-		//createToolBar();
-		/*
-			}
-		});
-		*/
 	}
-	
-
-	/*
-	public void updateFileHist(JMenu menu, String file) {
-		//int fileHistCount = prefs.getFileHistCount();
-		Action fileAction = createFileHistAction(file);
-		menu.insert(fileAction, menu.getItemCount() - fileHistCount);
-		// "fileHistCount" refers to the current number of file history entries
-		// in the File menu, while files.length at maximum the number
-		// of stored file history items
-		String[] files = prefs.retrieveFileHist();
-		int entriesAvail = files.length - fileHistCount;
-		for (int i = 0; i < entriesAvail; i++) {
-			menu.remove(menu.getItemCount() - 1);
-		}
-	}
-	*/
 
 	/** Creates a plugin action.
 	 * Allows the plugin to be invoked from a button or other action-capable
@@ -477,7 +498,9 @@ public class TextTrix extends JFrame {
 	public void makePlugInAction(final PlugIn pl) {
 		// assumes prefs' includes is udpated
 		String[] includes = getPrefs().getIncludePlugInsNames();
-		if (!getPrefs().getAllPlugIns() && !LibTTx.inUnsortedList(pl.getName(), includes)) return;
+		if (!getPrefs().getAllPlugIns()
+			&& !LibTTx.inUnsortedList(pl.getName(), includes))
+			return;
 		String name = pl.getName(); // plugin name
 		String category = pl.getCategory();
 		// plugin category, for menu adding
@@ -557,7 +580,8 @@ public class TextTrix extends JFrame {
 			// the action undoable
 			int start = t.getSelectionStart();
 			int end = t.getSelectionEnd(); // at the first unselected character
-			System.out.println("selectionStart: " + start + ", selectionEnd: " + end);
+			System.out.println(
+				"selectionStart: " + start + ", selectionEnd: " + end);
 			PlugInOutcome outcome = null;
 			try {
 				// determines whether a region is selected or not;
@@ -654,13 +678,13 @@ public class TextTrix extends JFrame {
 			// check for extant but unloaded plug-ins files
 			for (int i = 0; i < list.length; i++) {
 				if (!LibTTx.inUnsortedList(list[i], paths)) {
-					System.out.println("Couldn't find " + list[i]); 
+					System.out.println("Couldn't find " + list[i]);
 					extraPlugs[extraPlugsInd++] = LibTTx.loadPlugIn(list[i]);
 				}
 			}
 			// check for loaded but now missing plug-in files
 			for (int i = 0; i < plugIns.length; i++) {
-				if (LibTTx.inUnsortedList(plugIns[i].getPath(), list)) { 
+				if (LibTTx.inUnsortedList(plugIns[i].getPath(), list)) {
 					extraPlugs[extraPlugsInd++] = plugIns[i];
 				}
 			}
@@ -671,7 +695,7 @@ public class TextTrix extends JFrame {
 			getPrefs().updatePlugInsPanel(getPlugInNames());
 		}
 	}
-	
+
 	/* For some reason this fn sporadically doesn't work;
 	 * eg stats in Search plug-in doesn't give the correct
 	 * selectionEnd value from TextTrix, and find/replace
@@ -685,7 +709,7 @@ public class TextTrix extends JFrame {
 	 * miss the highlighting while others are fast enough to
 	 * still see it.
 	 */
-	
+
 	public void refreshPlugIns() {
 		reloadPlugIns();
 		if (plugIns != null) {
@@ -694,7 +718,6 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
-	
 
 	public String[] getPlugInNames() {
 		if (plugIns == null)
@@ -731,7 +754,8 @@ public class TextTrix extends JFrame {
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
 		getPrefs().updatePlugInsPanel(getPlugInNames());
 		if (plugIns != null) {
-			System.out.println("Loading them all up!  plugIns.length: " + plugIns.length);
+			System.out.println(
+				"Loading them all up!  plugIns.length: " + plugIns.length);
 			for (int i = 0; i < plugIns.length; i++) {
 				makePlugInAction(plugIns[i]);
 			}
