@@ -69,8 +69,9 @@ public class TextTrix extends JFrame {
 	private static int fileIndex = 0;
 	// find dialog
 	private static FindDialog findDialog;
-	private static JComboBox urlBox;
-	private static int historySize;
+//	private static JComboBox urlBox;
+//	private static int historySize = 0;
+	private static int tabSize = 0;
 
 	/**Constructs a new <code>TextTrix</code> frame and starting 
 	 * <code>TextPad</code>.
@@ -79,6 +80,9 @@ public class TextTrix extends JFrame {
 		setTitle("Text Trix");
 		// pre-set window size; may change to adjust to user's screen size
 		setSize(500, 600);
+
+		// set default tab size
+		tabSize = 4;
 
 		// make first tab and text area
 		addTextArea(textAreas, tabbedPane, makeNewFile());
@@ -316,6 +320,7 @@ public class TextTrix extends JFrame {
 					String text = t.getText();
 					t.setDocument(t.getEditorKit().createDefaultDocument());
 					t.setContentType("text/plain");
+					reinitializeTextPadDocumentSettings(t);
 					t.setText(text);
 					/*
 					if (t.isEmpty()) {
@@ -349,6 +354,7 @@ public class TextTrix extends JFrame {
 					String text = t.getText();
 					t.setDocument(t.getEditorKit().createDefaultDocument());
 					t.setContentType("text/html");
+					reinitializeTextPadDocumentSettings(t);
 					t.setText(text);
 					/*
 					if (t.isEmpty()) {
@@ -369,10 +375,12 @@ public class TextTrix extends JFrame {
 					String text = t.getText();
 					t.setDocument(t.getEditorKit().createDefaultDocument());
 					t.setContentType("text/rtf");
+					reinitializeTextPadDocumentSettings(t);
 					t.setText(text);
 					if (t.isEmpty()) {
 						t.setDocument(t.getEditorKit().createDefaultDocument());
 						t.setContentType("text/plain");
+						reinitializeTextPadDocumentSettings(t);
 						t.setText(text);
 					}
 				}
@@ -930,6 +938,11 @@ public class TextTrix extends JFrame {
 		} else {
 			tabbedPane.setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 		}
+	}
+
+	public void reinitializeTextPadDocumentSettings(TextPad t) {
+		t.applyDocumentSettings(tabSize);
+		t.getDocument().addDocumentListener(new TextPadDocListener());
 	}
 	
 	/**Removes a tab containing a text area.

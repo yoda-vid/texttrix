@@ -56,7 +56,6 @@ public class TextPad extends JEditorPane {
 	private String path;
 	private UndoManager undoManager = new UndoManager();
 	private Hashtable actions;
-	private Document doc = getDocument();
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -70,7 +69,7 @@ public class TextPad extends JEditorPane {
 		file = aFile;
 		// to listen for keypad events
 		// to allow multiple undos
-		doc.addUndoableEditListener(undoManager);
+		applyDocumentSettings(4);
 //		setTabSize(4); // probably add to preferences later
 
 		// for new key-bindings
@@ -160,7 +159,7 @@ public class TextPad extends JEditorPane {
 				// serialized objects of this class won't be compatible w/
 				// future releases
 				try {
-					doc.remove(wordPos, getCaretPosition() - wordPos);
+					getDocument().remove(wordPos, getCaretPosition() - wordPos);
 					setCaretPosition(wordPos);
 				} catch(BadLocationException b) {
 					System.out.println("Deletion out of range.");
@@ -258,6 +257,14 @@ public class TextPad extends JEditorPane {
 			undoManager.redo();
 	}
 
+	public void applyDocumentSettings(int tabSize) {
+		Document doc = getDocument();
+		doc.addUndoableEditListener(undoManager);
+		if (doc.getClass() == PlainDocument.class) {
+			doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(tabSize));
+		}
+	}
+
 	public boolean isEmpty() {
 		String text = getText();
 		return ((text == null) || !(new StringTokenizer(text)).hasMoreTokens()) ? true : false;
@@ -333,7 +340,7 @@ public class TextPad extends JEditorPane {
 			tabStr.append('\t');
 		}
 		try {
-			doc.insertString(getCaretPosition(), tabStr.toString(), null);
+			getDocument().insertString(getCaretPosition(), tabStr.toString(), null);
 		} catch(BadLocationException e) {
 			System.out.println("Insert location " + getCaretPosition() + " does not exist");
 		}
