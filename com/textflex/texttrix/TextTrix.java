@@ -768,6 +768,7 @@ public class TextTrix extends JFrame {
      */
     public static TextPad getSelectedTextPad() {
 	int i = tabbedPane.getSelectedIndex();
+	//	System.out.println("index: " + i + ", count: " + tabbedPane.getTabCount());
 	if (i != -1) {
 	    return (TextPad)textAreas.get(i);
 	} else {
@@ -1059,6 +1060,9 @@ public class TextTrix extends JFrame {
 	//		scrollPane.setRequestFocusEnabled(false);
 	DocumentListener listener = new TextPadDocListener();
 			
+	// must add to array list before adding scroll pane to tabbed pane
+	// or else get IndexOutOfBoundsException from the array list
+	arrayList.add(textPad);
 	// 1 more than highest tab index since will add tab
 	int i = tabbedPane.getTabCount();
 	tabbedPane.addTab(file.getName() + "  ", scrollPane);
@@ -1067,7 +1071,6 @@ public class TextTrix extends JFrame {
 	textPad.getDocument().addDocumentListener(listener);
 	textPad.addMouseListener(new PopupListener());
 	// show " *" in tab title when text changed
-	arrayList.add(textPad);
 	tabbedPane.setSelectedIndex(i);
 	tabbedPane.setToolTipTextAt(i, textPad.getPath());
     }
