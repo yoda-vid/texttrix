@@ -108,7 +108,7 @@ public class TextTrix extends JFrame {
 			}
 	    	};
 		// per Mozilla keybinding
-		setAction(newAction, "New", 'T', 	KeyStroke.getKeyStroke(KeyEvent.VK_T,
+		setAction(newAction, "New", 'T', KeyStroke.getKeyStroke(KeyEvent.VK_T,
 							      InputEvent.CTRL_MASK));
 		fileMenu.add(newAction);
 		/* tab shifts defined under View menu section;
@@ -910,9 +910,13 @@ public class TextTrix extends JFrame {
 		}
 		
 		public void actionPerformed(ActionEvent evt) {
+			TextPad t = null;
+			int tabIndex = tabbedPane.getSelectedIndex();
+	    		if (tabIndex != -1) 
+				t = (TextPad)textAreas.get(tabIndex);
 			// File("") evidently brings file dialog to last path, 
 			// whether last saved or opened path
-	    		chooser.setCurrentDirectory(new File(openPath));
+	    		chooser.setCurrentDirectory((t != null) ? new File(t.getDir()) : new File(""));
 
 		    	int result = chooser.showOpenDialog(owner);
 
@@ -925,10 +929,6 @@ public class TextTrix extends JFrame {
 					String text = readText(reader);
 					
 			    		// check if tabs exist; get TextPad if true
-			    		int tabIndex = tabbedPane.getSelectedIndex();
-						TextPad t = null;
-			    		if (tabIndex != -1)
-							t = (TextPad)textAreas.get(tabIndex);
 					/* t.getText() != null, even if have typed nothing in it.
 					 * Add tab and set its text if no tabs exist or if current
 					 * tab has tokens; set current tab's text otherwise */
@@ -999,10 +999,22 @@ public class TextTrix extends JFrame {
 			// search expression input
 			add(new JLabel("Find:"), constraints, 0, 0, 1, 1, 100, 0);
 			add(find = new JTextField(20), constraints, 1, 0, 2, 1, 100, 0);
+			find.addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent evt) {
+					if (evt.getKeyCode() == KeyEvent.VK_ENTER) 
+						find();
+				}
+			});		
 
 			// replace expression input
 			add(new JLabel("Replace:"), constraints, 0, 1, 1, 1, 100, 0);
 			add(replace = new JTextField(20), constraints, 1, 1, 2, 1, 100, 0);
+			replace.addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent evt) {
+					if (evt.getKeyCode() == KeyEvent.VK_ENTER) 
+						findReplace();
+				}
+			});
 			
 			// treat search expression as a separate word
 			add(word = new JCheckBox("Find word"), 
@@ -1037,18 +1049,7 @@ public class TextTrix extends JFrame {
 			// find action, using the appropriate options above
 			Action findAction = new AbstractAction("Find", null) {
 				public void actionPerformed(ActionEvent e) {
-					TextPad t = getSelectedTextPad();
-					String findText = find.getText();
-					int n = t.getCaretPosition();
-					n = Tools.find(t.getText(), findText, n, word.isSelected(), ignoreCase.isSelected());
-					if (n != -1) {
-						if (wrap.isSelected()) {
-							n = Tools.find(t.getText(), 
-								findText, 0, word.isSelected(), ignoreCase.isSelected());
-						}
-						t.setSelectionStart(n);
-						t.setSelectionEnd(n + findText.length());
-					}
+					find();
 				}
 			};
 			setAction(findAction, "Find", 'F', 
@@ -1059,21 +1060,7 @@ public class TextTrix extends JFrame {
 			// find and replace action, using appropriate options above
 			Action findReplaceAction = new AbstractAction("Find and Replace", null) {
 				public void actionPerformed(ActionEvent e) {
-					TextPad t = getSelectedTextPad();
-					String text = t.getText();
-					String findText = find.getText();
-					String replaceText = replace.getText();
-					if (selection.isSelected()) {
-						t.setText(Tools.findReplace(text, findText, replaceText,
-								t.getSelectionStart(), 
-								t.getSelectionEnd(), word.isSelected(), true,
-								false, ignoreCase.isSelected()));
-					} else {
-						t.setText(Tools.findReplace(text, findText, replaceText,
-								t.getCaretPosition(), text.length(), 
-								word.isSelected(), replaceAll.isSelected(), 
-								wrap.isSelected(), ignoreCase.isSelected()));
-					}
+					findReplace();
 				}
 			};
 			setAction(findReplaceAction, "Find and replace", 'R', 
@@ -1093,7 +1080,7 @@ public class TextTrix extends JFrame {
 		 * @param wx column weight
 		 * @param wy row weight
 		 * */
-		    public void add(Component c, GridBagConstraints constraints,
+		public void add(Component c, GridBagConstraints constraints,
 				     int x, int y, int w, int h, 
 				     int wx, int wy) {
 			constraints.gridx = x;
@@ -1103,6 +1090,40 @@ public class TextTrix extends JFrame {
 			constraints.weightx = wx;
 			constraints.weighty = wy;
 			getContentPane().add(c, constraints);
+		}
+		
+		public void find() {
+			TextPad t = getSelectedTextPad();
+			String findText = find.getText();
+			int n = t.getCaretPosition();
+//			System.out.println(n + "");
+			n = Tools.find(t.getText(), findText, n, word.isSelected(), ignoreCase.isSelected());
+			if (n == -1 && wrap.isSelected()) {
+				n = Tools.find(t.getText(), findText, 0, word.isSelected(), ignoreCase.isSelected());
+			}
+			if (n != -1) {
+				t.setCaretPosition(n);
+				t.moveCaretPosition(n + findText.length());
+//				System.out.println("I'm here");
+			}
+		}
+		
+		public void findReplace() {
+			TextPad t = getSelectedTextPad();
+			String text = t.getText();
+			String findText = find.getText();
+			String replaceText = replace.getText();
+			if (selection.isSelected()) {
+				t.setText(Tools.findReplace(text, findText, replaceText,
+						t.getSelectionStart(), 
+						t.getSelectionEnd(), word.isSelected(), true,
+						false, ignoreCase.isSelected()));
+			} else {
+				t.setText(Tools.findReplace(text, findText, replaceText,
+						t.getCaretPosition(), text.length(), 
+						word.isSelected(), replaceAll.isSelected(), 
+						wrap.isSelected(), ignoreCase.isSelected()));
+			}
 		}
 	}
 	

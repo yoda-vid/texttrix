@@ -481,7 +481,7 @@ public class Tools {
 			while (end < len && Character.isLetterOrDigit(text.charAt(end)))
 				end++;
 			// compare the word with the quarry to see if they match
-			if (end < len && text.substring(n, end).equals(quarry)) {
+			if (end <= len && text.substring(n, end).equals(quarry)) {
 				return n;
 			// continue search with next word if no match yet
 			} else {
@@ -553,21 +553,22 @@ public class Tools {
 			return text;
 		// replace first occurrence only
 		} else {
+//			System.out.println("I'm here");
+			int quarryLoc = -1;
 			// stay within given boundary
 			if (n < end) {
-				n = find(text, quarry, n, word, ignoreCase);
+				quarryLoc = find(text, quarry, n, word, ignoreCase);
 				// replace quarry if found
-				if (n != -1) {
-					text = (text.substring(0, n) + replacement
-						+ text.substring(n + quarry.length()));
-				// if not found and wrap is enabled, continue from 
-				// beginning of text
-				} else {
-					if (wrap) {
-						text = findReplace(text, quarry, replacement, 
-								0, start - 1, word, all, false, ignoreCase);
-					}
+				if (quarryLoc!= -1) {
+					text = (text.substring(0, quarryLoc) + replacement
+						+ text.substring(quarryLoc + quarry.length()));
 				}
+			}
+			// if not found and wrap is enabled, continue from beginning of text
+			if (quarryLoc == -1 && wrap) {
+				text = findReplace(text, quarry, replacement, 0, start - 1, word, all, false, ignoreCase);
+				
+//				System.out.println("didn't find; now wrapping");
 			}
 			return text;
 		}
