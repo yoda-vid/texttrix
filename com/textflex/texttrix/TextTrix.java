@@ -730,6 +730,9 @@ public class TextTrix extends JFrame {
 		//	toolBar.addSeparator();
 
 		/* Trix and Tools menus */
+		
+		// Load plugins; add to appropriate menu	 
+		setupPlugins();
 
 		/*
 		// Find and Replace: fixed tool, not a plugin
