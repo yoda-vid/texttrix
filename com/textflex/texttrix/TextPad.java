@@ -405,7 +405,7 @@ public class TextPad extends JTextPane implements StateEditable{
     /**Gets the file's name.
      * @return filename
      */
-    public String getName() {
+    public String getFilename() {
 	return file.getName();
     }
 

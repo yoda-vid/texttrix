@@ -31,8 +31,6 @@ v.0.5 series: advanced interface
 -elim multiple spaces via Extra Returns Remover
 -allow shortcuts to work when the toolbar is in focus
 -check on shortcuts in HTML/RTF views
--plugin adaptor class to permit leaving some methods unimplemented
--plugin methods allowing dialog boxes, listeners, etc
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./
@@ -40,6 +38,11 @@ v.0.3.3
 -word delete often only deletes half words in Windows systems; FIXED: Document methods rather than getText()/setText() to determine characters; not sure why the latter methods work for viewPlain() and similar methods, though
 -update tab tool tip when open file; FIXED: set the tool tip, not just the tab title ./
 -word-wrap indent; ADDED: left indents equal to the number of tabs within a given paragraph
+-plugin methods allowing dialog boxes, listeners, etc
+	-plugin types to specify how to implement them; eg "run", "dialog", "listener"
+	-dialog types create a dialog object that TextTrix invokes on its text
+	-listener types create listeners that TextTrix attaches to given TextPad
+-plugin adaptor class to permit unimplemented methods
 
 v.0.3.2
 -update tab tooltip when rename ./

@@ -51,23 +51,22 @@ import javax.swing.text.*;
  */
 public class TextTrix extends JFrame {
     private static ArrayList textAreas = new ArrayList(); // all the TextPads
-    private static JTabbedPane tabbedPane
-	= new JTabbedPane(JTabbedPane.TOP); // multiple TextPads
-    private static JPopupMenu popup = new JPopupMenu(); // make popup menu
-    private static JFileChooser chooser = new JFileChooser(); // file dialog
+    private static JTabbedPane tabbedPane = null; // multiple TextPads
+    private static JPopupMenu popup = null; // make popup menu
+    private static JFileChooser chooser = null; // file dialog
     private static JCheckBoxMenuItem autoIndent = null;
     private static String openDir = ""; // most recently path opened to
     private static String saveDir = ""; // most recently path saved to
     private static int fileIndex = 0; // for giving each TextPad a unique name
-    private static FindDialog findDialog; // find dialog
+    private static FindDialog findDialog = null; // find dialog
     //	private static int tabSize = 0; // user-defined tab display size
     private static PlugIn[] plugIns = null; // plugins from jar archives
     private static Action[] plugInActions = null; // plugin invokers
     private static String toolsCharsUnavailable = ""; // chars for shorcuts
     private static String trixCharsUnavailable = ""; // chars for shorcuts
-    private JMenu trixMenu = new JMenu("Trix"); // trix plugins
-    private JMenu toolsMenu = new JMenu("Tools"); // tools plugins
-    private JToolBar toolBar = new JToolBar("Trix and Tools"); // icons
+    private JMenu trixMenu = null; // trix plugins
+    private JMenu toolsMenu = null; // tools plugins
+    private JToolBar toolBar = null; // icons
 
     /** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -77,9 +76,29 @@ public class TextTrix extends JFrame {
 	setTitle("Text Trix");
 	// pre-set window size
 	setSize(500, 600); // TODO: adjust to user's screen size
+	try {
+	    System.out.println("java ver num: " + System.getProperty("java.vm.version") + ", " + System.getProperty("os.name"));
+	    if (System.getProperty("os.name").equals("Linux")
+		&& System.getProperty("java.vm.version").indexOf("1.4.2") != -1) {
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf"
+					 + ".gtk.GTKLookAndFeel");
+		//	    } else if (System.getProperty("mrj.version") != null) {
+
+	    } else {
+		UIManager.setLookAndFeel(UIManager
+					 .getSystemLookAndFeelClassName());
+	    }
+	    SwingUtilities.updateComponentTreeUI(TextTrix.this);
+	} catch (Exception e) {
+	    //	    e.printStackTrace();
+	    String msg = "Sorry, couldn't find that look-and-feel."
+		+ "  Defaulting to the Metal one.";
+	    System.out.println(msg);
+	}
 	ImageIcon im = makeIcon("images/minicon-32x32.png"); // set frame icon
 	if (im !=null) 
 	    setIconImage(im.getImage());
+	tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	// keep the tabs the same width when substituting chars
 	tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
 	// make first tab and text area
@@ -104,17 +123,22 @@ public class TextTrix extends JFrame {
 	editMenu.setMnemonic('E');
 	JMenu viewMenu = new JMenu("View");
 	viewMenu.setMnemonic('V');
+	trixMenu = new JMenu("Trix");
 	trixMenu.setMnemonic('T');
+	toolsMenu = new JMenu("Tools");
 	toolsMenu.setMnemonic('O');
 	JMenu helpMenu = new JMenu("Help");
 	helpMenu.setMnemonic('H');
 
 	// make tool bar
+	toolBar = new JToolBar("Trix and Tools");
 	toolBar.addMouseListener(new PopupListener());
 	toolBar.setFloatable(false); // necessary since not BorderLayout
+	toolBar.setBorderPainted(false);
+	//	SwingUtilities.updateComponentTreeUI(TextTrix.this);
 
-
-
+	popup = new JPopupMenu();
+	chooser = new JFileChooser();
 
 	/* File menu items */
 
@@ -1183,7 +1207,7 @@ public class TextTrix extends JFrame {
 	int i = tabbedPane.getSelectedIndex();
 	TextPad textPad = (TextPad)arrayList.get(i);
 	//	String title = tabbedPane.getTitleAt(i);
-	String title = textPad.getName();
+	String title = textPad.getFilename();
 	// convert to filename; -2 b/c added 2 spaces
 	if (textPad.getChanged()) {
 	    tabbedPane.setTitleAt(i, title + "*");
