@@ -41,18 +41,28 @@ import java.io.*;
 import javax.swing.filechooser.FileFilter;
 
 /** The main <code>TextTrix</code> class.  Sets up the window
-    and performs the text manipulation.
+    and the <code>TextPad</code>s.
 */
 public class TextTrix extends JFrame {
+	// to keep track of all the TextPads
     static ArrayList textAreas = new ArrayList();
+	// tabbed window for multiple TextPads
     static JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+	// file open/save dialog
     static JFileChooser chooser = new JFileChooser();
+	// most recently path opened to
 	static String openPath = "";
+	// most recently path saved to
 	static String savePath = "";
+	// for giving each TextPad a unique name
 	int fileIndex = 0;
 
+	/**Constructs a new <code>TextTrix</code> frame and
+	 * <code>TextPad</code> to begin with.
+	 */
     public TextTrix() {
 	setTitle("Text Trix");
+	// pre-set window size; may change to adjust to user's screen size
 	setSize(500, 600);
 
 	// make first tab and text area
@@ -80,7 +90,7 @@ public class TextTrix extends JFrame {
 	 * Lt, rt to switch tabs
 	 * Tab back down to TextPad */
 
-	// open file; use selected tab if empty
+	// (ctrl-o) open file; use selected tab if empty
 	JMenuItem openItem = new JMenuItem("Open...");
 	fileMenu.add(openItem);
 	openItem.addActionListener(new FileOpenListener());
@@ -95,13 +105,15 @@ public class TextTrix extends JFrame {
 		}
 	});
 
-	// save file; no dialog if file already created
+	// (ctrl-s) save file; no dialog if file already created
 	JMenuItem saveItem = fileMenu.add(new AbstractAction("Save") {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
+			// save directly to file if already created one
 			if (t.fileExists())
 				saveFile(t.getPath());
+			// otherwise, request filename for new file
 			else
 				fileSaveDialog();
 		}
@@ -117,7 +129,7 @@ public class TextTrix extends JFrame {
 	// Start exit functions
 	fileMenu.addSeparator();
 	
-	// exit file; close each tab separately, checking if each saved
+	// (ctrl-q) exit file; close each tab separately, checking if each saved
 	JMenuItem exitItem = fileMenu.add(new AbstractAction("Exit") {
 		public void actionPerformed(ActionEvent evt) {
 			exitTextTrix();
@@ -128,7 +140,7 @@ public class TextTrix extends JFrame {
 
 	/* Edit menu items */
 
-	// undo; multiple undos available
+	// (ctrl-z) undo; multiple undos available
 	JMenuItem undoItem = editMenu.add(new AbstractAction("Undo") {
 		public void actionPerformed(ActionEvent evt) {
 			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
@@ -137,7 +149,7 @@ public class TextTrix extends JFrame {
 	undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 				InputEvent.CTRL_MASK));
 
-	// redo; multiple redos available
+	// (ctrl-y) redo; multiple redos available
 	JMenuItem redoItem = editMenu.add(new AbstractAction("Redo") {
 		public void actionPerformed(ActionEvent evt) {
 			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
@@ -149,7 +161,7 @@ public class TextTrix extends JFrame {
 	// Start Cut, Copy, Paste actions
 	editMenu.addSeparator();
 	
-	// cut
+	// (ctrl-x) cut
 	JMenuItem cutItem = editMenu.add(new AbstractAction("Cut") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
@@ -158,7 +170,7 @@ public class TextTrix extends JFrame {
 	cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
 						      InputEvent.CTRL_MASK));
 
-	// copy
+	// (ctrl-c) copy
 	JMenuItem copyItem = editMenu.add(new AbstractAction("Copy") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
@@ -167,7 +179,7 @@ public class TextTrix extends JFrame {
 	copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
 						       InputEvent.CTRL_MASK));
 
-	// paste
+	// (ctrl-v) paste
 	JMenuItem pasteItem = editMenu.add(new AbstractAction("Paste") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
@@ -192,11 +204,13 @@ public class TextTrix extends JFrame {
 	JMenuItem aboutItem = helpMenu.add(new AbstractAction("About...") {
 		public void actionPerformed(ActionEvent evt) {
 			try {
+				// uses "about.txt" in same directory as this class
 				BufferedReader reader = new BufferedReader(new
 					InputStreamReader(TextTrix.class.
 						getResourceAsStream("about.txt")));
 				String about = readText(reader);
 				reader.close();
+				// displays in an message dialog
 				JOptionPane op = new JOptionPane();
 				op.showMessageDialog(op, about);
 			} catch(IOException exception) {
@@ -208,6 +222,7 @@ public class TextTrix extends JFrame {
 	// shortcuts and goofy features description; opens new tab
 	JMenuItem shortcutsItem = helpMenu.add(new AbstractAction("Shortcuts") {
 		public void actionPerformed(ActionEvent evt) {
+			// reads from "shortcuts.txt" in same directory as this class
 			String path = "shortcuts.txt";
 			displayFile(path);
 		}
@@ -216,6 +231,7 @@ public class TextTrix extends JFrame {
 	// license; opens new tab
 	JMenuItem licenseItem = helpMenu.add(new AbstractAction("License") {
 		public void actionPerformed(ActionEvent evt) {
+			// reads from "license.txt" in same directory as this class
 			String path = "license.txt";
 			displayFile(path);
 		}
@@ -226,6 +242,8 @@ public class TextTrix extends JFrame {
 	stripReturns.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			// may need to add original text to history buffer
+			// before making the change
 		    t.setText(t.stripExtraHardReturns(t.getText()));
 		}
 	    });
@@ -236,7 +254,7 @@ public class TextTrix extends JFrame {
 	menuBar.add(editMenu);
 	menuBar.add(helpMenu);
 
-	// add components to frame
+	// add components to frame; "add" function to set GridBag parameters
 	Container contentPane = getContentPane();
 	GridBagLayout layout = new GridBagLayout();
 	contentPane.setLayout(layout);
@@ -254,10 +272,15 @@ public class TextTrix extends JFrame {
     }
 
     /**Publically executable starter method.
-       Creates the <code>TextTrix</code> object and displays it.
+	 * Creates the <code>TextTrix</code> object, displays it,
+	 * an makes sure that it will still undergo its
+	 * exit routine when closed manually.
+	 * @param args command-line arguments; not yet used
      */
     public static void main(String[] args) {
 		TextTrix textTrix = new TextTrix();
+		// make sure still goes through the exit routine if close
+		// window manually
 		textTrix.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				exitTextTrix();
@@ -305,23 +328,31 @@ public class TextTrix extends JFrame {
 	public File makeNewFile() {
 		File file;
 		do {
-			fileIndex++;
+			fileIndex++; // ensures that no repeat of name in current session
+		// check exisiting files to ensure unique name
 		} while ((file = new File("NewFile" + fileIndex + ".txt")).exists());
 		// okay to return mutable file since created it anew in this fn?
 		return file;
 	}
-	
+
+	/**Displays a read-only file in a <code>Text Pad</code>.  
+	 * May change name to <code>readDocumentation</code> for 
+	 * consistency with <code>readText</code>.
+	 * @param path read-only text file's path.  Can also display
+	 * non-read-only text files, but can't edit.
+	 */
 	public void displayFile(String path) {
 		try {
+			// getResourceAsStream to make future usable as an applet
 			BufferedReader reader = new BufferedReader(new
 				InputStreamReader(TextTrix.class.
 					getResourceAsStream(path)));
-			String license = readText(reader);
+			String text = readText(reader);
 			reader.close();
 			addTextArea(textAreas, tabbedPane, new File(path));
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-			t.setEditable(false);
-			t.setText(license);
+			t.setEditable(false); // so appropriate for read-only
+			t.setText(text);
 			t.setCaretPosition(0);
 			t.setChanged(false);
 		} catch(IOException exception) {
@@ -329,9 +360,14 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/**Exits <code>TextTrix</code> by closing each tab individually,
+	 * checking for unsaved text areas in the meantime.
+	 */
 	public static void exitTextTrix() {
 		boolean b = true;
 		int i = tabbedPane.getTabCount();
+		// closes each tab individually, using the function that checks
+		// for unsaved changes
 		while (i > 0 && b) {
 			b = closeTextArea(i - 1, textAreas, tabbedPane);
 			i = tabbedPane.getTabCount();
@@ -340,14 +376,28 @@ public class TextTrix extends JFrame {
 			System.exit(0);
 	}
 	
+	/**Closes a text area.  Checks if the text area is unsaved;
+	 * if so, evokes a dialog asking whether the user wants to
+	 * save the text area, discard it, or cancel the closure.
+	 * If the file has not been saved before, a <code>Save as...</code>
+	 * dialog appears.  Canceling the <code>Save as...</code>
+	 * dialog discards the text area, though maybe not so in
+	 * future releases.
+	 * @param tabIndex tab to close
+	 * @param textAreas array of <code>TextPad</code>s
+	 * @param tabbedPane pane holding a tab to be closed
+	 * @return <code>true</code> if the tab successfully closes
+	 */
 	public static boolean closeTextArea(int tabIndex, ArrayList textAreas,
 			JTabbedPane tabbedPane) {
 		boolean successfulClose = false;
 		
 		TextPad t = (TextPad)textAreas.get(tabIndex);
+		// check if unsaved text area
 		if (t.getChanged()) {
 			String s = "Please save first.";
 			tabbedPane.setSelectedIndex(tabIndex);
+			// dialog with 3 choices: save, discard, cancel
 			int choice = JOptionPane.showOptionDialog(					
 				null,
 				"This file has not yet been saved.\nWhat would you like me to do with it?",
@@ -358,16 +408,23 @@ public class TextTrix extends JFrame {
 				new String[] { "Save", "Toss away", "Cancel" },
 				"Save");
 			switch (choice) {
+				// save the text area's contents
 				case 0:
+					// bring up "Save as..." dialog if never saved file before
 					if (t.fileExists()) {
 						saveFile(t.getPath());
 					} else {
+						// still closes tab if cancel "Save as..." dialog
+						// may need to change in future releases
 						fileSaveDialog();
 					}
+				// discard the text area's contents
 				case 1:
 					removeTextArea(tabIndex, textAreas, tabbedPane);
 					successfulClose = true;
 					break;
+				// cancel the dialog and return unsuccessful closure;
+				// could likely remove default case as well as case 2's break
 				case 2:
 					successfulClose = false;
 					break;
@@ -375,6 +432,7 @@ public class TextTrix extends JFrame {
 					successfulClose = false;
 					break;
 			}
+		// if unchanged, simply remove the tab
 		} else {
 			removeTextArea(tabIndex, textAreas, tabbedPane);
 			successfulClose = true;
@@ -382,6 +440,12 @@ public class TextTrix extends JFrame {
 		return successfulClose;
 	}
 
+	/**Read in text from a file and return the text as a string.
+	 * Differs from <code>displayFile(String path)</code> because
+	 * allows editing.
+	 * @param reader text file stream
+	 * @return text from file
+	 */
 	public String readText(BufferedReader reader) {
 		String text = "";
 		String line;
@@ -394,21 +458,24 @@ public class TextTrix extends JFrame {
 		return text;
 	}
 
-    /**Creates a new <code>TextPad</code> object, a text area
-       for writing, and gives it a new tab.  Can call for
-       each new file; names the tab, <code>Filen.txt</code>,
-       where <code>n</code> is the tab number.
+    /**Creates a new <code>TextPad</code> object, a text area 
+	 * for writing, and gives it a new tab.  Can call for
+	 * each new file; names the tab, <code>Filen.txt</code>,
+	 * where <code>n</code> is the tab number.
     */
     public void addTextArea(ArrayList arrayList, 
 			final JTabbedPane tabbedPane, File file) {
-//		try {
 			final TextPad textPad = new TextPad(30, 20, file);
+			// final variables so can use in inner class;
+			
 			JScrollPane scrollPane = new JScrollPane(textPad);
-
-			final int i = tabbedPane.getTabCount(); // don't subtract 1 b/c addTab next
+			
+			// 1 more than highest tab index since will add tab
+			final int i = tabbedPane.getTabCount();
 			tabbedPane.addTab(file.getName(), scrollPane);
 			textPad.setLineWrap(true);
 			textPad.setWrapStyleWord(true);
+			// show " *" in tab title when text changed
 			textPad.addKeyListener(new KeyAdapter() {
 				public void keyTyped(KeyEvent e) {
 					if (textPad.getChanged()) {
@@ -421,7 +488,12 @@ public class TextTrix extends JFrame {
 			arrayList.add(textPad);
 			tabbedPane.setSelectedIndex(i);
 	}
-	
+
+	/**Removes a tab containing a text area.
+	 * @param i tab index
+	 * @param l text area array list
+	 * @param tp tabbed pane from which to remove a tab
+	 */
 	public static void removeTextArea(int i, ArrayList l, JTabbedPane tp) {
 		l.remove(i);
 		tp.remove(i);
@@ -450,6 +522,9 @@ public class TextTrix extends JFrame {
 	getContentPane().add(c, constraints);
     }
 
+	/**Saves text area contents to a given path.
+	 * @param path file path in which to save
+	 */
 	public static void saveFile(String path) {
 		try {
 			TextPad t = (TextPad)textAreas
@@ -467,6 +542,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/**Evokes a save dialog, with a filter for text files.
+	 * Sets the tabbed pane tab to the saved file name.
+	 */
 	public static void fileSaveDialog() {
 		chooser.setCurrentDirectory(new File(savePath));
 	   	final ExtensionFileFilter filter = new ExtensionFileFilter();
@@ -484,6 +562,11 @@ public class TextTrix extends JFrame {
 	    }
 	}
 
+	/**Evokes a open file dialog, from which the user can
+	 * select a file to display in the currently selected tab's
+	 * text area.  Filters for text files, though provides
+	 * option to display all files.
+	 */
     private class FileOpenListener implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
 	    	chooser.setCurrentDirectory(new File(openPath));
@@ -535,6 +618,8 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/**Responds to user input calling for a save dialog.
+	 */
     private class FileSaveListener implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
     		fileSaveDialog();
@@ -542,31 +627,53 @@ public class TextTrix extends JFrame {
 	}
 }
 
+/**Filters for files with specific extensions.
+ */
 class ExtensionFileFilter extends FileFilter {
     private String description = "";
     private ArrayList extensions = new ArrayList();
 
+	/**Add extension to include for file display.
+	 * May need to modify to check whether extension has already
+	 * been added.
+	 * @param file extension, such as <code>.txt</code>, though
+	 * the period is optional
+	 */
     public void addExtension(String extension) {
 	if (!extension.startsWith("."))
 	    extension = "." + extension;
 	extensions.add(extension.toLowerCase());
     }
 
+	/**Sets the file type description.
+	 * @param aDescription file description, such as <code>text
+	 * files</code> for <code>.txt</code> files
+	 */
     public void setDescription(String aDescription) {
 	description = aDescription;
     }
 
+	/**Gets file type's description.
+	 * @return file type description.
+	 */
     public String getDescription() {
-	return description;
+		return description;
     }
 
+	/**Accept a given file to display if it has the extension
+	 * currently being filtered for.
+	 * @param f file whose extension need to check
+	 * @return <code>true</code> if accepts file, <code>false</code>
+	 * if don't
+	 */
     public boolean accept(File f) {
-	if (f.isDirectory()) return true;
-	String name = f.getName().toLowerCase();
+		if (f.isDirectory()) 
+			return true;
+		String name = f.getName().toLowerCase();
 
-	for (int i = 0; i < extensions.size(); i++)
-	    if (name.endsWith((String)extensions.get(i)))
-		return true;
-	return false;
+		for (int i = 0; i < extensions.size(); i++)
+	    	if (name.endsWith((String)extensions.get(i)))
+				return true;
+		return false;
     }
 }
