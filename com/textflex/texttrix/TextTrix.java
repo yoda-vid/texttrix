@@ -360,7 +360,8 @@ public class TextTrix extends JFrame {
 				exitTextTrix();
 			}
 		});
-		textTrix.show();
+		//textTrix.show(); DEPRECATED as of JVM v.1.5.0
+		textTrix.setVisible(true);
 
 		/* Something apparently grabs focus after he tabbed pane ChangeListener
 		 * focuses on the selected TextPad.  Calling focus after displaying the 
@@ -2452,7 +2453,7 @@ public class TextTrix extends JFrame {
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
 							reloadPlugIns();
-							getPrefs().show();
+							getPrefs().setVisible(true);//show();
 						}
 					};
 					LibTTx.setAction(
