@@ -50,6 +50,8 @@ v.0.3.4
 		-remember panel size; ADDED: record panel size whenever hit "ok" button
 		-remember program size and location; ADDED: record whenever move or resize the program window
 	-auto-indent automatically for given extensions; ADDED: can turn on/off and customize extensions
+	-plug-ins:
+		-load all (default) or only specific plug-ins
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./

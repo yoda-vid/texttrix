@@ -42,30 +42,35 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Prefs extends JFrame {
-	private JTabbedPane tabbedPane = new JTabbedPane(); // houses and categorizes options
-	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class); // main prefs
-	
+	private JTabbedPane tabbedPane = new JTabbedPane();
+	// houses and categorizes options
+	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class);
+	// main prefs
+
 	/* Panel-specific prefs */
-	private Preferences prefsPanelPrefs = prefs.node("prefsPanel"); 
+	private Preferences prefsPanelPrefs = prefs.node("prefsPanel");
 	private static final String PREFS_WIDTH = "prefsWidth"; // panel width
 	private static final String PREFS_HEIGHT = "prefsHeight"; // panel height
-	
+
 	/* General preferences */
 	private Preferences generalPrefs = prefs.node("General");
 	private static final String PRGM_WIDTH = "prgmWidth"; // program width
 	private static final String PRGM_HEIGHT = "prgmHeight"; // program height
-	private static final String PRGM_X_LOC = "prgmXLoc"; // program horizontal location
-	private static final String PRGM_Y_LOC = "prgmYLoc"; // program vertical location
-	
+	private static final String PRGM_X_LOC = "prgmXLoc";
+	// program horizontal location
+	private static final String PRGM_Y_LOC = "prgmYLoc";
+	// program vertical location
+
 	//	open tabs left last session
-	private static final String REOPEN_TABS = "reopenTabs"; 
+	private static final String REOPEN_TABS = "reopenTabs";
 	private JCheckBox reopenTabsChk = null; // check box
 	// comma-delimited list of paths
 	private static final String REOPEN_TABS_LIST = "reopenTabsList";
-	
+
 	// file history
 	private static final String FILE_HIST_COUNT = "fileHistCount";
-	private JSpinner fileHistCountSpinner = null; // input max num of files to remember
+	private JSpinner fileHistCountSpinner = null;
+	// input max num of files to remember
 	private SpinnerNumberModel fileHistCountMdl; // numerical input
 	private static final String FILE_HIST = "fileHist";
 
@@ -75,7 +80,7 @@ public class Prefs extends JFrame {
 	// comma-or-space-delimited, period-independent list of file extensions
 	private static final String AUTO_INDENT_EXT = "autoIndentExt";
 	private JTextField autoIndentExtFld = null; // input list
-	
+
 	/** Constructs a preferences interface.
 	 * Loads its previous size settings.  Relies on the calling function to
 	 * supply an action that generally "okays," or stores, the preferences,
@@ -92,7 +97,7 @@ public class Prefs extends JFrame {
 		setSize(width, height);
 		setTitle("You've Got Options");
 		//		System.out.println("fileHistCount: " + fileHistCount);
-		
+
 		// sets up the tabbed pane
 		tabbedPane.setTabPlacement(JTabbedPane.LEFT);
 		tabbedPane.addTab(
@@ -111,7 +116,12 @@ public class Prefs extends JFrame {
 				storePrefs();
 			}
 		};
-		
+		LibTTx.setAcceleratedAction(
+			applyAction,
+			"Apply the current tabs settings immediately",
+			'A',
+			KeyStroke.getKeyStroke("alt A"));
+
 		// adds the components to the panel
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new GridBagLayout());
@@ -144,7 +154,7 @@ public class Prefs extends JFrame {
 			100,
 			0,
 			contentPane);
-			
+
 		// immediately stores the preferences in the given tab
 		JButton applyBtn = new JButton(applyAction);
 		LibTTx.addGridBagComponent(
@@ -157,7 +167,7 @@ public class Prefs extends JFrame {
 			100,
 			0,
 			contentPane);
-			
+
 		// generally used to cancal changes made since the last preferences storage
 		JButton cancelBtn = new JButton(cancelAction);
 		LibTTx.addGridBagComponent(
@@ -171,7 +181,7 @@ public class Prefs extends JFrame {
 			0,
 			contentPane);
 	}
-	
+
 	/** Makes a panel for the "General" preferences tab.
 	 * Displays options related to the program as a whole.
 	 * @return the panel
@@ -181,13 +191,14 @@ public class Prefs extends JFrame {
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.CENTER;
 		JPanel panel = new JPanel();
-		
+
 		// re-opens the tabs left open during the previous session
 		String reopenTabsTxt = "Reopen tabs from last session";
-		String reopenTabsTipTxt = "<html>Reopen the files left open the last time<br> you used the program.</html>";
+		String reopenTabsTipTxt =
+			"<html>Reopen the files left open the last time<br> you used the program.</html>";
 		reopenTabsChk = new JCheckBox(reopenTabsTxt, getReopenTabs());
 		reopenTabsChk.setToolTipText(reopenTabsTipTxt);
-		
+
 		// keeps the given number of last-opened files in memory for quick re-opening
 		JLabel fileHistCountLbl =
 			new JLabel("Number of files in history area:");
@@ -198,7 +209,7 @@ public class Prefs extends JFrame {
 		fileHistCountMdl =
 			new SpinnerNumberModel(getFileHistCount(), 0, 100, 1);
 		fileHistCountSpinner = new JSpinner(fileHistCountMdl);
-		
+
 		// automatically auto-indents files whose extensions match any of those in
 		// the customizable list
 		String autoIndentTxt = "Auto-indent file types:";
@@ -211,11 +222,20 @@ public class Prefs extends JFrame {
 		// default list of extension
 		String autoIndentExt = ".java, .c, .cpp, .html, .css, .shtml, .xhtml";
 		autoIndentExtFld = new JTextField(autoIndentExt, 30);
-		
+
 		// add components to a grid-bag layout
 		panel.setLayout(new GridBagLayout());
-		
-		LibTTx.addGridBagComponent(reopenTabsChk, constraints, 0, 0, 1, 1, 100, 0, panel);
+
+		LibTTx.addGridBagComponent(
+			reopenTabsChk,
+			constraints,
+			0,
+			0,
+			1,
+			1,
+			100,
+			0,
+			panel);
 		LibTTx.addGridBagComponent(
 			fileHistCountLbl,
 			constraints,
@@ -258,7 +278,7 @@ public class Prefs extends JFrame {
 			panel);
 		return panel;
 	}
-	
+
 	/** Front-end to storing all the preferences at once.
 	 * Includes the panel-specific preferences.
 	 *
@@ -267,7 +287,7 @@ public class Prefs extends JFrame {
 		storePrefsPanelPrefs();
 		storeGeneralPrefs();
 	}
-	
+
 	/** Stores the panel-specific preferences.
 	 * 
 	 *
@@ -276,7 +296,7 @@ public class Prefs extends JFrame {
 		prefsPanelPrefs.putInt(PREFS_WIDTH, getWidth());
 		prefsPanelPrefs.putInt(PREFS_HEIGHT, getHeight());
 	}
-	
+
 	/** Stores the General preferences.
 	 * 
 	 *
@@ -287,7 +307,7 @@ public class Prefs extends JFrame {
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
 	}
-	
+
 	/** Stores the program window size.
 	 * Size values correspond to <code>java.awt.window.getWidth()</code>
 	 * and similar functions' return values
@@ -298,7 +318,7 @@ public class Prefs extends JFrame {
 		generalPrefs.putInt(PRGM_WIDTH, width);
 		generalPrefs.putInt(PRGM_HEIGHT, height);
 	}
-	
+
 	/** Stores the program's window location.
 	 * 
 	 * @param p upper-left-hand corner of window relative to the upper-left-hand
@@ -308,7 +328,7 @@ public class Prefs extends JFrame {
 		generalPrefs.putInt(PRGM_X_LOC, (int)p.getX());
 		generalPrefs.putInt(PRGM_Y_LOC, (int)p.getY());
 	}
-	
+
 	/** Stores whether the program should reopen tabs automatically.
 	 * The program can reopen the tabs left open at exit during the
 	 * previous session.
@@ -317,7 +337,7 @@ public class Prefs extends JFrame {
 	public void storeReopenTabs(boolean b) {
 		generalPrefs.putBoolean(REOPEN_TABS, b);
 	}
-	
+
 	/** Stores a list of files left open at exit.
 	 * The list consists of comma-delimited paths, with no spaces 
 	 * in-between paths.
@@ -326,7 +346,7 @@ public class Prefs extends JFrame {
 	public void storeReopenTabsList(String paths) {
 		generalPrefs.put(REOPEN_TABS_LIST, paths);
 	}
-	
+
 	/** Stores the number of recently opened files to remember quick re-opening.
 	 * If the new count is less than the previous one, the extra entries are removed.
 	 * @param newCount updated number files to remember
@@ -341,7 +361,7 @@ public class Prefs extends JFrame {
 		}
 		generalPrefs.putInt(FILE_HIST_COUNT, newCount);
 	}
-	
+
 	/** Stores a history of the most recently opened files.
 	 * The earlier the file in the history, the more recently the file
 	 * was opened.  When a file is added that already exists in
@@ -352,7 +372,8 @@ public class Prefs extends JFrame {
 	public void storeFileHist(String file) {
 		//System.out.println("Storing: " + file);
 		String[] files = retrieveFileHist(); // gets the current history array
-		boolean shift = false; // shift files if moving one entry to top of list
+		boolean shift = false;
+		// shift files if moving one entry to top of list
 		// shifts the records as necessary to move a potential
 		// duplicate to the front of the history;
 		// traverses backward through the list since the entries are shifted
@@ -360,10 +381,12 @@ public class Prefs extends JFrame {
 		// checked before replacing it with a future entry
 		for (int i = files.length - 1; i >= 0; i--) {
 			if (shift) { // shift the records, overwriting the duplicate record
-				files[i + 1] = files[i]; // move the current record to the next spot
+				files[i + 1] = files[i];
+				// move the current record to the next spot
 			} else if (
 				// find where to start shifting, if necessary
-				files[i].equals(file)) { 
+			files[i].equals(
+					file)) {
 				shift = true;
 			}
 			//System.out.println("files[" + i + "]: " + files[i] + ", file: " + file);
@@ -387,7 +410,7 @@ public class Prefs extends JFrame {
 		}
 
 	}
-	
+
 	/** Retrieves the file history as an array.
 	 * 
 	 * @return array of paths from each file history entry, where every element
@@ -406,7 +429,7 @@ public class Prefs extends JFrame {
 		}
 		return files;
 	}
-	
+
 	/** Gets the stored width for the program.
 	 * 
 	 * @return width

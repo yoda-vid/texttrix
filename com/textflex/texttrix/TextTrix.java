@@ -104,7 +104,7 @@ public class TextTrix extends JFrame {
 		LibTTx.setAcceleratedAction(
 			prefsCancelAction,
 			"Cancel",
-			'C',
+			'N',
 			KeyStroke.getKeyStroke("alt C"));
 		//prefs = new Prefs(prefsOkayAction, prefsCancelAction);
 		getPrefs();
