@@ -216,10 +216,13 @@ public class Tools {
 		// flag to ignore <pre> tags if in inline message reply
 		ignorePre = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 		}
+		/* n should have never exceeded len
 		String finalText = stripped.toString();
 		if (n < len)
 			finalText += s.substring(n);
 		return finalText;
+		*/
+		return stripped.toString() + s.substring(n);
     }
 
 	/**Finds the first continuous string consisting of any of a given
@@ -304,6 +307,16 @@ public class Tools {
 					if (n < len) 
 						s.append(c);
 				*/
+				} else if (c == '&' && n < len -1) {
+					n++;
+					if (startsWithAny(lowerCase, new String[] {"nbsp;"}, n)) {
+						s.append(" ");
+					} else if (startsWithAny(lowerCase, new String[] {"#151;"}, n)) {
+						s.append("--");
+					}
+					int nToBe = -1;
+					// end - 1 so that n won't ever exceed end; n++ later
+					n = ((nToBe = lowerCase.indexOf(';', n)) != -1) ? nToBe : end;
 				// skip over hard returns and tabs
 				} else if (c == '\n' || c == '\t') {
 				// add non-tag, non hard return/tab chars
@@ -313,7 +326,8 @@ public class Tools {
 				n++;
 //				System.out.println("n: " + n + ", text so far: " + s.toString());
 			}
-			n++;
+			if (n < end)
+				n++;
 		}
 
 		// wipe out multiple spaces within the tagless text
@@ -328,10 +342,15 @@ public class Tools {
 					i++;
 			}
 		}
+		// stay within original text length; n shouldn't have exceeded end or len, though
 		String finalText = text.substring(0, start) + s.toString();
 		if (n < len) 
 			finalText += text.substring(n);
 		return finalText;
+		/*
+		System.out.println("start: " + start + ", end: " + end + ", n: " + n);
+		return text.substring(0, start) + s.toString() + text.substring(n);
+		*/
 	}
 
 	/**Checks whether any of the strings in an array are at the start

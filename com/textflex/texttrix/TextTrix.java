@@ -51,27 +51,23 @@ import javax.swing.event.*;
  * tool bar, menus, and dialogs.
 */
 public class TextTrix extends JFrame {
-	// to keep track of all the TextPads
-	private static ArrayList textAreas = new ArrayList();
-	// tabbed window for multiple TextPads
-	private static JTabbedPane tabbedPane 
-		= new JTabbedPane(JTabbedPane.TOP);
-	// file open/save dialog
-	private static JFileChooser chooser = new JFileChooser();
-	// auto-indent
+	private static ArrayList textAreas = new ArrayList(); // holds all the TextPads
+/*
+	private static TextPadTabbedPane tabbedPane 
+		= new TextPadTabbedPane(JTabbedPane.TOP);
+*/
+	private static JTabbedPane tabbedPane
+		= new JTabbedPane(JTabbedPane.TOP); // tabbed window for multiple TextPads
+	private static JFileChooser chooser = new JFileChooser(); // file open/save dialog
 	private static JCheckBoxMenuItem autoIndent 
-		= new JCheckBoxMenuItem("Auto-indent");
-	// most recently path opened to
-	private static String openDir = "";
-	// most recently path saved to
-	private static String saveDir = "";
-	// for giving each TextPad a unique name
-	private static int fileIndex = 0;
-	// find dialog
-	private static FindDialog findDialog;
+		= new JCheckBoxMenuItem("Auto-indent"); // auto-indent
+	private static String openDir = ""; // most recently path opened to
+	private static String saveDir = ""; // most recently path saved to
+	private static int fileIndex = 0; // for giving each TextPad a unique name
+	private static FindDialog findDialog; // find dialog
 //	private static JComboBox urlBox;
 //	private static int historySize = 0;
-	private static int tabSize = 0;
+	private static int tabSize = 0; // user-defined tab display size
 
 	/**Constructs a new <code>TextTrix</code> frame and starting 
 	 * <code>TextPad</code>.
@@ -86,7 +82,23 @@ public class TextTrix extends JFrame {
 
 		// make first tab and text area
 		addTextArea(textAreas, tabbedPane, makeNewFile());
-
+		
+/* working to focus on the text pane after switching tabs and creating new ones
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				System.out.println("I'm here: " + tabbedPane.getSelectedIndex());
+				TextPad t = null;
+				if ((t = getSelectedTextPad()) != null) {
+					
+					t.setVisible(true);
+					t.requestFocusInWindow();
+					
+//					tabbedPane.getSelectedComponent().setVisible(true);
+//					tabbedPane.getSelectedComponent().requestFocusInWindow();
+				}
+			}
+		});
+*/
 		// make menu bar and menus
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
@@ -197,7 +209,9 @@ public class TextTrix extends JFrame {
 			public void actionPerformed(ActionEvent evt) {
 				exitTextTrix();
 			}
-		    };
+		};
+		// Doesn't work if close all tabs unless click ensure window focused, 
+		// such as clicking on menu
 		setAction(exitAction, "Exit", 'E', KeyStroke.getKeyStroke(KeyEvent.VK_Q,
 							       InputEvent.CTRL_MASK));
 		fileMenu.add(exitAction);
@@ -270,6 +284,7 @@ public class TextTrix extends JFrame {
 					InputEvent.CTRL_MASK));
 		editMenu.add(selectAllAction);
 
+		// edit menu preferences separator
 		editMenu.addSeparator();
 
 		// options sub-menu
@@ -311,6 +326,7 @@ public class TextTrix extends JFrame {
 
 		viewMenu.addSeparator();
 
+		// view as plain text
 		Action togglePlainViewAction = new AbstractAction("Toggle plain text view") {
 			public void actionPerformed(ActionEvent evt) {
 				viewPlain();
@@ -338,6 +354,7 @@ public class TextTrix extends JFrame {
 		};
 		viewMenu.add(togglePlainViewAction);
 
+		// view as HTML formatted text
 		Action toggleHTMLViewAction = new AbstractAction("Toggle HTML view") {
 			public void actionPerformed(ActionEvent evt) {
 				int tab = tabbedPane.getSelectedIndex();
@@ -359,6 +376,7 @@ public class TextTrix extends JFrame {
 		};
 		viewMenu.add(toggleHTMLViewAction);
 	
+		// view as RTF formatted text
 		Action toggleRTFViewAction = new AbstractAction("Toggle RTF view") {
 			public void actionPerformed(ActionEvent evt) {
 				int tab = tabbedPane.getSelectedIndex();
@@ -376,6 +394,7 @@ public class TextTrix extends JFrame {
 			}
 		};
 		viewMenu.add(toggleRTFViewAction);
+		
 		/* Help menu items */
 
 		// about Text Trix, incl copyright notice and version number
@@ -424,7 +443,7 @@ public class TextTrix extends JFrame {
 		setAction(licenseAction, "License", 'L');
 		helpMenu.add(licenseAction);
 	
-		// find and replace Tools feature
+		// (ctrl-shift-F) find and replace Tools feature
 		Action findAction = new AbstractAction("Find and replace", makeIcon("images/find-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				if (findDialog == null) 
@@ -432,7 +451,8 @@ public class TextTrix extends JFrame {
 				findDialog.show();
 			}
 		};
-		setAction(findAction, "Find and replace", 'F');
+		setAction(findAction, "Find and replace", 'F', 
+				KeyStroke.getKeyStroke("ctrl shift F")); // need capital "F" b/c "shift"
 		toolsMenu.add(findAction);
 		JButton findButton = toolBar.add(findAction);
 		findButton.setBorderPainted(false);
@@ -451,7 +471,7 @@ public class TextTrix extends JFrame {
 					TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 					String text = t.getText();
 
-					// only modify the selected text
+					// only modify the selected text, and make the action undoable
 					int start = 0;
 					int end = 0;
 					if ((start = t.getSelectionStart()) 
@@ -485,7 +505,7 @@ public class TextTrix extends JFrame {
 					TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 					String text = t.getText();
 	
-					// only modify the selected text
+					// only modify the selected text, and make the action undoable
 					int start = 0;
 					int end = 0;
 					if ((start = t.getSelectionStart()) 
@@ -519,7 +539,7 @@ public class TextTrix extends JFrame {
 					TextPad t = (TextPad)textAreas.get(tabIndex);
 					String text = t.getText();
 
-					// only modify the selected text
+					// only modify the selected text, and make the action undoable
 					int start = 0;
 					int end = 0;
 					if ((start = t.getSelectionStart()) 
@@ -595,6 +615,7 @@ public class TextTrix extends JFrame {
 	
 		GridBagConstraints constraints = new GridBagConstraints();
 	
+		// add toolbar menu
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
@@ -605,6 +626,7 @@ public class TextTrix extends JFrame {
 		add(urlBox, constraints, 0, 1, 1, 1, 0, 0);
 		*/
 		
+		// add tabbed pane
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.anchor = GridBagConstraints.CENTER;
 		add(tabbedPane, constraints, 0, 2, 1, 1, 100, 100);
@@ -659,7 +681,7 @@ public class TextTrix extends JFrame {
 	public static TextPad getSelectedTextPad() {
 		int i = tabbedPane.getSelectedIndex();
 		if (i != -1) {
-			return (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			return (TextPad)textAreas.get(i);
 		} else {
 			return null;
 		}
@@ -821,7 +843,7 @@ public class TextTrix extends JFrame {
 				JOptionPane.WARNING_MESSAGE,
 				JOptionPane.DEFAULT_OPTION,
 				null,				
-				new String[] { "Save", "Toss away", "Cancel" },
+				new String[] { "Save", "Toss it out", "Cancel" },
 				"Save");
 			switch (choice) {
 				// save the text area's contents
@@ -909,6 +931,7 @@ public class TextTrix extends JFrame {
 			
 		JScrollPane scrollPane = new JScrollPane(textPad, 
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//		scrollPane.setRequestFocusEnabled(false);
 		DocumentListener listener = new TextPadDocListener();
 			
 		// 1 more than highest tab index since will add tab
@@ -1303,6 +1326,7 @@ public class TextTrix extends JFrame {
 				if (n != -1) {
 					t.setCaretPosition(n);
 					t.moveCaretPosition(n + findText.length());
+					t.getCaret().setSelectionVisible(true); // to ensure selection visibility
 //				System.out.println("I'm here");
 				}
 			}
@@ -1369,7 +1393,26 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
-	
+/*	
+private class TextPadTabbedPane extends JTabbedPane {
+	public TextPadTabbedPane(int tabPlacement) {
+		super(tabPlacement);
+	}
+
+	public static ChangeListener createChangeListener() {
+		return new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				System.out.println("I'm here: " + tabbedPane.getSelectedIndex());
+				TextPad t = null;
+				if ((t = getSelectedTextPad()) != null) {
+					t.setVisible(true);
+					t.requestFocus();
+				}
+			}
+		};
+	}
+}
+*/
 }
 
 /**Filters for files with specific extensions.
@@ -1422,3 +1465,5 @@ class ExtensionFileFilter extends FileFilter {
 		return false;
 	}
 }
+
+		
