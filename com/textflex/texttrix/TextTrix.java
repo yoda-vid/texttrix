@@ -55,6 +55,11 @@ import javax.print.attribute.*;
  * the plug-ins' actions.
  */
 public class TextTrix extends JFrame {
+
+	/* Constants */
+	private static final String newline = System.getProperty("line.separator");
+	
+	/* GUI components and support variable */
 	private static ArrayList textAreas = new ArrayList(); // all the TextPads
 
 	private Container contentPane = getContentPane();
@@ -497,11 +502,14 @@ public class TextTrix extends JFrame {
 	 *            path to file
 	 */
 	private void openInitialFile(String path) {
+		System.out.print("Opening file from path " + path + "...");
 		if (!openFile(new File(path))) {
-			String msg = "Sorry, but " + path + " can't be read.\n"
-					+ "Is it a directory?  Does it have the right "
+			String msg = newline + "Sorry, but " + path + " can't be read."
+					+ newline + "Is it a directory?  Does it have the right "
 					+ "permsissions for reading?";
 			System.out.println(msg);
+		} else {
+			System.out.println("got it!");
 		}
 	}
 
@@ -701,7 +709,7 @@ public class TextTrix extends JFrame {
 		if (pl instanceof PlugInWindow) {
 			final JDialog dialog = new JDialog(this, name);
 			JPanel panel = pl.getWindow();
-				final String filename = pl.getFilename();
+			final String filename = pl.getFilename();
 			if (panel != null) {
 				dialog.setContentPane(panel);
 				
@@ -719,7 +727,8 @@ public class TextTrix extends JFrame {
 					dialog.setLocation(new Point(xLoc, yLoc));
 				}
 				*/
-				getPrefs().applyPlugInSizeLoc(dialog, filename);
+				getPrefs().applyPlugInSizeLoc(dialog, filename, 
+					pl.getWindowWidth(), pl.getWindowHeight());
 				dialog.setName(filename);
 				addPlugInDialog(dialog);
 			}/*

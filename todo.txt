@@ -63,6 +63,7 @@ v.0.3.6
 	-plug-in model
 		-option for plug-in to specify the region to replace; ADDED: when the plug-in wants to replace only a section of the text it has received, the plug-in can specify this region along with the text to replace it; TextTrix uses Document and indentRegion controls for speedy, specific updates
 		-re-highlight text after opening new plug-in dialog window; FIXED: no longer lose highlight when opening plug-in dialogs
+		-get default window size from plug-in for first-time usage of the plug-in; FIXED: gets size from plug-in rather than from dialog
 	-Search plug-in fixes
 		-fix replace-all fn to not exceed the selection boundaries; FIXED (#1007487): replace-all used to exceed boundaries by a few characters, but now no longer appears to do so; replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
 		-Selected-Area-Only and Wrap check boxes should reflect their mutual exclusivity; ADDED: since the two options opose one another, turning on one turns off the other, while both can also be unchecked simultaneously

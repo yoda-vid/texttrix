@@ -333,7 +333,7 @@ do
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath"' -classpath '"$plgSrcpath"' $? -d plugins/'"$plgDir"
 	fi
 	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; jar -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
-	plgClassRules="$plgClassRules""\n\tmv plugins/$plg/$plg.jar texttrix/plugins"
+	plgClassRules="$plgClassRules""\n\tmv plugins/$plgDir/$plg.jar texttrix/plugins"
 	plgClassRules="$plgClassRules""\n"
 	
 	phony="$phony $plg $plg"_setup
