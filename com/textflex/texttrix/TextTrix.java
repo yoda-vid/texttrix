@@ -1688,6 +1688,7 @@ public class TextTrix extends JFrame {
 				t.setFile(path);
 				updateTabTitle(textAreas, tabbedPane);
 				getPrefs().storeFileHist(path);
+				autoAutoIndent(t);
 				return true;
 			}
 		} catch (IOException e) {
@@ -1774,10 +1775,7 @@ public class TextTrix extends JFrame {
 				}
 				getPrefs().storeFileHist(path);
 				updateFileHist(fileMenu);
-				if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
-					setAutoIndent(true);
-					t.setAutoIndent(true);
-				}
+				autoAutoIndent(t);
 				return true;
 			} catch (IOException exception) {
 				//		exception.printStackTrace();
@@ -1793,6 +1791,14 @@ public class TextTrix extends JFrame {
 			}
 		}
 		return false;
+	}
+	
+	public void autoAutoIndent(TextPad t) {
+		String path = t.getPath();
+		if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
+			setAutoIndent(true);
+			t.setAutoIndent(true);
+		}
 	}
 	
 	public boolean isAutoIndentExt(String path) {

@@ -216,7 +216,6 @@ public class Prefs extends JFrame {
 		panel.setLayout(new GridBagLayout());
 		
 		LibTTx.addGridBagComponent(reopenTabsChk, constraints, 0, 0, 1, 1, 100, 0, panel);
-		
 		LibTTx.addGridBagComponent(
 			fileHistCountLbl,
 			constraints,
@@ -284,14 +283,12 @@ public class Prefs extends JFrame {
 	 */
 	public void storeGeneralPrefs() {
 		generalPrefs.putBoolean(REOPEN_TABS, reopenTabsChk.isSelected());
-		generalPrefs.putInt(
-			FILE_HIST_COUNT,
-			fileHistCountMdl.getNumber().intValue());
+		storeFileHistCount(fileHistCountMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
 	}
 	
-	/** Stores the program size.
+	/** Stores the program window size.
 	 * Size values correspond to <code>java.awt.window.getWidth()</code>
 	 * and similar functions' return values
 	 * @param width program window width
@@ -301,37 +298,77 @@ public class Prefs extends JFrame {
 		generalPrefs.putInt(PRGM_WIDTH, width);
 		generalPrefs.putInt(PRGM_HEIGHT, height);
 	}
-
+	
+	/** Stores the program's window location.
+	 * 
+	 * @param p upper-left-hand corner of window relative to the upper-left-hand
+	 * corner of the screen
+	 */
 	public void storeLocation(Point p) {
 		generalPrefs.putInt(PRGM_X_LOC, (int)p.getX());
 		generalPrefs.putInt(PRGM_Y_LOC, (int)p.getY());
 	}
-
+	
+	/** Stores whether the program should reopen tabs automatically.
+	 * The program can reopen the tabs left open at exit during the
+	 * previous session.
+	 * @param b If <code>true</code>, the program will reopen the tabs.
+	 */
 	public void storeReopenTabs(boolean b) {
 		generalPrefs.putBoolean(REOPEN_TABS, b);
 	}
 	
+	/** Stores a list of files left open at exit.
+	 * The list consists of comma-delimited paths, with no spaces 
+	 * in-between paths.
+	 * @param paths list of paths
+	 */
 	public void storeReopenTabsList(String paths) {
 		generalPrefs.put(REOPEN_TABS_LIST, paths);
 	}
 	
-
+	/** Stores the number of recently opened files to remember quick re-opening.
+	 * If the new count is less than the previous one, the extra entries are removed.
+	 * @param newCount updated number files to remember
+	 */
+	public void storeFileHistCount(int newCount) {
+		int oldCount = generalPrefs.getInt(FILE_HIST_COUNT, newCount);
+		if (newCount < oldCount) {
+			for (int i = newCount; i < oldCount; i++) {
+				//System.out.println("Removing file history entry: " + generalPrefs.get(FILE_HIST + i, ""));
+				generalPrefs.remove(FILE_HIST + i);
+			}
+		}
+		generalPrefs.putInt(FILE_HIST_COUNT, newCount);
+	}
+	
+	/** Stores a history of the most recently opened files.
+	 * The earlier the file in the history, the more recently the file
+	 * was opened.  When a file is added that already exists in
+	 * the list, the file is simply shifted to the head of the list
+	 * rather than duplicated.
+	 * @param file path of file to add to list
+	 */
 	public void storeFileHist(String file) {
 		//System.out.println("Storing: " + file);
-		String[] files = retrieveFileHist();
-		boolean shift = false;
+		String[] files = retrieveFileHist(); // gets the current history array
+		boolean shift = false; // shift files if moving one entry to top of list
+		// shifts the records as necessary to move a potential
+		// duplicate to the front of the history;
+		// traverses backward through the list since the entries are shifted
+		// in the opposite direction, meaning that each record can be
+		// checked before replacing it with a future entry
 		for (int i = files.length - 1; i >= 0; i--) {
-			// shift the records as necessary to move a potential
-			// duplicate to the front of the history
-			if (shift) { // shift the records
-				files[i + 1] = files[i];
+			if (shift) { // shift the records, overwriting the duplicate record
+				files[i + 1] = files[i]; // move the current record to the next spot
 			} else if (
-				files[i].equals(
-					file)) { // find where to start shifting, if necessary
+				// find where to start shifting, if necessary
+				files[i].equals(file)) { 
 				shift = true;
 			}
 			//System.out.println("files[" + i + "]: " + files[i] + ", file: " + file);
 		}
+		// if already shifted files, regenerate the stored list
 		if (shift) {
 			// no need to check that below fileHistCount since merely substituting an entry
 			files[0] = file;
@@ -339,74 +376,107 @@ public class Prefs extends JFrame {
 			for (i = 0; i < files.length; i++) {
 				generalPrefs.put(FILE_HIST + i, files[i]);
 			}
-			//fileHistIndex = i++;
-		} else {
-			//if (files.length >= fileHistCount) {
-			//System.out.println("I'm here");
-			//String tmpFile = file;
+		} else { // shift all records back, discarding the last one if no more room
 			int fileHistCount = getFileHistCount();
 			for (int i = fileHistCount - 1; i > 0; i--) {
-				//System.out.println("Adding: " + tmpFile);
 				generalPrefs.put(
 					FILE_HIST + i,
 					generalPrefs.get(FILE_HIST + (i - 1), ""));
-				//tmpFile = fileHist.get(FILE_HIST + (i + 1), "");
 			}
-			//fileHistIndex = fileHistCount - 1;
-			//}
-			generalPrefs.put(FILE_HIST + 0, file);
+			generalPrefs.put(FILE_HIST + 0, file); // add new entry to head
 		}
 
 	}
+	
+	/** Retrieves the file history as an array.
+	 * 
+	 * @return array of paths from each file history entry, where every element
+	 * of the array is occupied by a file path
+	 */
 	public String[] retrieveFileHist() {
 		int fileHistCount = getFileHistCount();
 		String[] files = new String[fileHistCount];
-		//fileHistIndex = 0;
 		for (int i = 0; i < files.length; i++) {
-			//fileHistIndex = i + 1;
 			files[i] = generalPrefs.get(FILE_HIST + i, "");
 			//System.out.println("files[" + i + "]: " + files[i]);
 			if (files[i] == "") {
+				// ensure that every array element is occuped by a path
 				return (String[])LibTTx.truncateArray(files, i);
 			}
-			//fileHistIndex++;
 		}
 		return files;
 	}
-
+	
+	/** Gets the stored width for the program.
+	 * 
+	 * @return width
+	 */
 	public int getPrgmWidth() {
 		return generalPrefs.getInt(PRGM_WIDTH, 500);
 	}
-
+	/** Gets the stored height for the program.
+	 * 
+	 * @return height
+	 */
 	public int getPrgmHeight() {
 		return generalPrefs.getInt(PRGM_HEIGHT, 600);
 	}
-
+	/** Gets the stored vertical location for the program.
+	 * 
+	 * @return vertical location of upper-left corner othe program window,
+	 * relative to the upper-left corner of the screen
+	 */
 	public int getPrgmXLoc() {
 		return generalPrefs.getInt(PRGM_X_LOC, 0);
 	}
-
+	/** Gets the stored vertical location for the program.
+	 * 
+	 * @return vertical location of upper-left corner othe program window,
+	 * relative to the upper-left corner of the screen
+	 */
 	public int getPrgmYLoc() {
 		return generalPrefs.getInt(PRGM_Y_LOC, 0);
 	}
-
+	/** Gets the stored flag for re-opening tabs.
+	 * 
+	 * @return width If <code>true</code>, the pogram will try
+	 * to open all the files left open in the program during its last session
+	 * @see #getReopenTabsList()
+	 */
 	public boolean getReopenTabs() {
 		return generalPrefs.getBoolean(REOPEN_TABS, false);
 	}
-
+	/** Gets the stored list of last-opened tabs.
+	 * 
+	 * @return comma-delimited list of file paths
+	 * @see #getReopenTabs()
+	 */
 	public String getReopenTabsList() {
 		return generalPrefs.get(REOPEN_TABS_LIST, "");
 	}
-
+	/** Gets the stored number of files paths to remember.
+	 * 
+	 * @return the number of paths to store in the most-recently-opened-files
+	 * history
+	 */
 	public int getFileHistCount() {
 		return generalPrefs.getInt(FILE_HIST_COUNT, 7);
-		//fileHistCountSpinner.getModel().getNumber().intValue();
 	}
-
+	/** Gets the stored flag for automatically turning on auto-indent.
+	 * 
+	 * @return If <code>true</code>, the program will automatically
+	 * auto-indent files with particular extensions when opening or saving them
+	 * @see #getAutoIndentExt()
+	 */
 	public boolean getAutoIndent() {
 		return generalPrefs.getBoolean(AUTO_INDENT, false);
 	}
-
+	/** Gets the stored the list of file extensions of files to automatically
+	 * turn on auto-indent for.
+	 * 
+	 * @return comma-or-space-delimited list of file extensions, where the
+	 * period is assumed and optional
+	 */
 	public String getAutoIndentExt() {
 		return generalPrefs.get(AUTO_INDENT_EXT, "");
 	}
