@@ -87,6 +87,7 @@ v.0.3.5
 -status bar
 	-add status bar for line numbers and other messages; ADDED: status bar at bottom of new panel that holds tabbed pane and status bar so can still move tool bar to southern position of main window
 	-add line numbers for lines with hard breaks; ADDED: current line number, total lines, and position as percentage of document length
+	-update line numbers when switching tabs; ADDED: call update in tab change listener
 
 v.0.3.4
 -preferences:

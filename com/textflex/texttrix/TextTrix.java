@@ -255,6 +255,7 @@ public class TextTrix extends JFrame {
 							// only works when changing between already created
 							// tabs or creating new ones via the menu item
 							t.requestFocusInWindow();
+							updateStatusBarLineNumbers(t);
 						}
 					}
 				});
