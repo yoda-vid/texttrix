@@ -87,9 +87,9 @@ public abstract class PlugIn extends JComponent {
 		iconPath = aIconPath;
 		rollIconPath = aRollIconPath;
 		listenerList = new EventListenerList();
-//		System.out.println((new File(iconPath)).getAbsolutePath());
-//		icon = getIcon(iconPath);
-//		createIcon();
+		//		System.out.println((new File(iconPath)).getAbsolutePath());
+		//		icon = getIcon(iconPath);
+		//		createIcon();
 	}
 
 	/** Registers a new plug-in listener to respond to notify
@@ -177,13 +177,6 @@ public abstract class PlugIn extends JComponent {
 	public void setAlwaysEntireText(boolean aAlwaysEntireText) {
 		alwaysEntireText = aAlwaysEntireText;
 	}
-	
-	
-	
-	
-	
-	
-	
 
 	/** Gets the plugin name.
 	@return name
@@ -197,22 +190,22 @@ public abstract class PlugIn extends JComponent {
 	public String getIconPath() {
 		return iconPath;
 	}
-	
+	/*
 	public ImageIcon getStoredIcon() {
 		return icon;
 	}
-	
+	*/
 	/** Gets the plugin path to the rollover icon.
 	@return path to the rollover icon
 	*/
 	public String getRollIconPath() {
 		return rollIconPath;
 	}
-	
+	/*
 	public ImageIcon getStoredRollIcon() {
 		return rollIcon;
 	}
-	
+	*/
 	/** Gets the plugin short description.
 	@return short description
 	*/
@@ -275,7 +268,7 @@ public abstract class PlugIn extends JComponent {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		return new ImageIcon(bytes);
+		//		return new ImageIcon(bytes);
 		return new ImageIcon(bytes);
 		//System.out.println("created icon: " + (imgicon != null));
 	}
@@ -288,13 +281,13 @@ public abstract class PlugIn extends JComponent {
 	}
 	*/
 	public ImageIcon getIcon(String path) {
-		if (icon == null) 
+		if (icon == null)
 			icon = getImageIcon(path);
 		return icon;
 		//
 	}
 	public ImageIcon getRollIcon(String path) {
-		if (rollIcon == null) 
+		if (rollIcon == null)
 			rollIcon = getImageIcon(path);
 		return rollIcon;
 		//
