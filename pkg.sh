@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003
+# Portions created by the Initial Developer are Copyright (C) 2003-4
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -37,6 +37,30 @@
 
 # Text Trix packager
 
+HELP="
+Packages both binary and source code archives of Text Trix.
+
+Syntax:
+	pkg.sh [ -java java-compiler-binaries-path ] [ -help ]
+(\"sh \" might need to precede the command on the same line, in case
+the file pkg.sh does not have executable permissions.)
+
+Parameters:
+	-java java-compiler-binaries-path: Specifies the path to javac, 
+	jar, and other Java tools necessary for compilation.  
+	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	to specify the path, which would override any command-line 
+	specification.
+	
+	-help: Lends a hand by displaying yours truly.
+	
+Copyright:
+	Copyright (c) 2003-4 Text Flex
+
+Last updated:
+	2004-03-17
+"
+
 ##############################
 # User-defined variables
 # Check them!
@@ -45,6 +69,7 @@
 VER="0.3.5" # version info
 DEST="/home/share" # final destination
 JAVA="" # compiler
+BASE_DIR="" # source directories
 
 ##############################
 # System setup
@@ -56,24 +81,27 @@ then
 	CYGWIN="true"
 fi
 READ_PARAMETER=0
-for arg in $@
+for arg in "$@"
 do
 	if [ $READ_PARAMETER -eq 1 ]
 	then
-		if [ -Z $JAVA ]
+		if [ "x$JAVA" = "x" ]
 		then
 			# no output b/c assuming plug.sh will be called
-			JAVA=$arg
+			JAVA="$arg"
 		fi
 		READ_PARAMETER=0
 	fi
-	if [ `expr match $arg -java` -ne 0 ]
+	if [ `expr match "$arg" -help` -ne 0 ]
+	then
+		echo "$HELP"
+		exit 0
+	elif [ `expr match "$arg" -java` -ne 0 ]
 	then
 		READ_PARAMETER=1
 	fi
 done
-# Source directories
-BASE_DIR=""
+
 # Determine the base dir if not specified above
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
@@ -110,7 +138,7 @@ cd $BLD_DIR # base of operations
 #############
 # Plug-in building
 echo "Compiling the Text Trix program and its plug-ins..."
-sh $TTX_DIR/plug.sh "-java $JAVA" # build the plugins
+sh $TTX_DIR/plug.sh -java "$JAVA" # build the plugins
 
 ##########
 # Packaging

@@ -106,6 +106,12 @@ public class TextTrix extends JFrame {
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
 		fileMenu = new JMenu("File");
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				exitTextTrix();
+			}
+		});
+		
 
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
@@ -290,8 +296,9 @@ public class TextTrix extends JFrame {
 		prgmFilter.addExtension("java");
 		prgmFilter.addExtension("cpp");
 		prgmFilter.addExtension("c");
+		prgmFilter.addExtension("sh");
 		prgmFilter.setDescription(
-			"Programming source code (*.java, *.cpp, *.c)");
+			"Programming source code (*.java, *.cpp, *.c, *.sh)");
 		chooser.setFileFilter(prgmFilter);
 
 		// Text! filters
@@ -410,11 +417,13 @@ public class TextTrix extends JFrame {
 		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// make sure still goes through the exit routine if close
 		// window manually
+		/*
 		textTrix.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				exitTextTrix();
 			}
 		});
+		*/
 		textTrix.setTmpActivated(true);
 		//textTrix.show(); DEPRECATED as of JVM v.1.5.0
 		textTrix.setVisible(true);
@@ -1396,11 +1405,12 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
+	
 
 	/**Exits <code>TextTrix</code> by closing each tab individually,
 	 * checking for unsaved text areas in the meantime.
 	 */
-	public static boolean exitTextTrix() {
+	public boolean exitTextTrix() {
 		// closes each tab individually, using the function that checks
 		// for unsaved changes
 		String openedPaths = "";
@@ -1451,7 +1461,7 @@ public class TextTrix extends JFrame {
 	 * @param tabbedPane pane holding a tab to be closed
 	 * @return <code>true</code> if the tab successfully closes
 	 */
-	public static boolean closeTextArea(
+	public boolean closeTextArea(
 		int tabIndex,
 		ArrayList textAreas,
 		JTabbedPane tabbedPane) {
@@ -1468,7 +1478,7 @@ public class TextTrix extends JFrame {
 					+ "\nWhat would you like me to do with this new version?";
 			int choice =
 				JOptionPane.showOptionDialog(
-					null,
+					getThis(),
 					msg,
 					"Save before close",
 					JOptionPane.WARNING_MESSAGE,
@@ -1951,13 +1961,16 @@ public class TextTrix extends JFrame {
 	@return true if the approve button is chosen, false if otherwise
 	 */
 	public boolean fileSaveDialog(JFrame owner) {
+		return fileSaveDialog(null, owner);
+		/*
 		if (!prepFileSaveDialog())
 			return false;
 		return getSavePath(owner);
+		*/
 	}
 
 	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
-		if (!prepFileSaveDialog(pad))
+		if (chooser.isShowing() || !prepFileSaveDialog(pad))
 			return false;
 		return getSavePath(pad, owner);
 	}
@@ -2632,7 +2645,9 @@ public class TextTrix extends JFrame {
 
 		/**Saves the file after the time interval that the preferences
 		 * specify.
-		 * 
+		 * Once the information dialogs have displayed, canceling the chooser,
+		 * whether opened manually or by the auto-save,
+		 * disables the auto-save function until the next save.
 		 */
 		public void run() {
 			// TODO: need interrupt check methods?  May only need to 
@@ -2647,10 +2662,13 @@ public class TextTrix extends JFrame {
 				// as during a save-as operation;
 				// TODO: see whether to repeat only if about to issue a prompt
 				// or show the save-as chooser
+				/*
 				do {
 					sleep(getPrefs().getAutoSaveInterval() * 60000);
 					System.out.println("repeating");
 				} while (isChooserShowing()); //chooser.isShowing());
+				*/
+				sleep(getPrefs().getAutoSaveInterval() * 60000);
 				System.out.println("...saving...");
 				// don't need getPrefs().getAutoSave() && b/c only start
 				// timer if auto-save pref set, and interrupt already called

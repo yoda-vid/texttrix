@@ -42,8 +42,12 @@
 # Check them!
 ####################
 
-# Compiler location
-JAVA=""
+JAVA="" # compiler location
+
+####################
+# System setup
+####################
+
 SYSTEM=`uname -s`
 CYGWIN="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
@@ -52,11 +56,12 @@ then
 fi
 
 READ_PARAMETER=0
-for arg in $@
+for arg in "$@"
 do
+	# echo "arg: $arg"
 	if [ $READ_PARAMETER -eq 1 ]
 	then
-		if [ -Z $JAVA ]
+		if [ "x$JAVA" = "x" ]
 		then
 			# no output b/c assuming plug.sh will be called
 			JAVA=$arg
@@ -64,7 +69,7 @@ do
 		echo "Using the Java binary directory at $JAVA"
 		READ_PARAMETER=0
 	fi
-	if [ `expr match $arg -java` -ne 0 ]
+	if [ `expr match "$arg" -java` -ne 0 ]
 	then
 		READ_PARAMETER=1
 	fi

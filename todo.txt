@@ -1,10 +1,3 @@
-
-		if [ -Z $JAVA ]
-		then
-			# no output b/c assuming plug.sh will be called
-			JAVA=$arg
-		fitodo.txt
-
 Text Trix
 the text tinker
 Copyright (c) 2002-4, Text Flex
@@ -53,9 +46,9 @@ Note: "./" is the "check-mark" symbol
 v.0.3.5
 -auto-save
 	-preference option to save file automatically; ADDED: auto-save option to start auto-saving the moment the preference is saved
-	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again; recycles if file chooser open to prevent duplication of save-as and mulitplication of dialogs
+	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again
+	-file chooser should check whether already open; ADDED: checks whether open to prevent duplicate openings; existing file still auto-saves underneath open chooser
 	-prompt before saving the changes to the current file; ADDED: preference option to prompt the user to accept the file changes since the auto-save overwrites the current file
-	-check print width anomalies
 	-new StoppableThread abstract class to easily request threads to stop; ADDED: private classes can extend this class to have both private status and the ability for an external class to stop the thread
 -preferences panel to choose default paths
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront
@@ -74,6 +67,7 @@ v.0.3.5
 	-print text as viewed in Text Pad; ADDED: prints plain text with line breaks at the same location as the current Text Pad displays the text
 	-print preview; ADDED: screen shows each page before printing, with print button to enter the print dialog directly
 	-print images and multi-formatted text
+	-check print width anomalies
 -fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
 -PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application
 -button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
