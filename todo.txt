@@ -54,7 +54,7 @@ v.0.3.2
 -specify on command-line extra files to open at start (eventually want to have option to load files from last exit, too) ./
 -check before overwriting file; ADDED: file overwrite warning dialog ./
 -check file permissions before saving; ADDED: unpermitted-path dialog, with option to save to new path ./
--close streams in catch statements
+-close streams in catch statements; ADDED: finally statements as well as null pointer checks on resource input streams from files ./
 
 v.0.3.1
 -convert HTML character entities and convert multiple spaces to single spaces in the HTML Replacer tool

@@ -15,35 +15,25 @@ Welcome to Text Trix!  We're just getting underway here.
 Please try us out!
 
 System Reqs:
--Java[tm] 2 Runtime Environment or Software Development Kit 1.3+,
+-Java[tm] 2 Runtime Environment or Software Development Kit 1.4+,
 freely available from Sun (http://java.sun.com/getjava/index.html)
 
-Instructions for use (see http://textflex.com/texttrix/downloads.html
-for more details):
+Instructions for use:
 
-Unzip:
--Unzip TextTrix-x.y.z.zip.  Use a graphical program, or try typing 
-on a command line: 
-"unzip TextTrix-x.y.z.zip" from the directory holding the zip file
+-Unzip Text Trix by double-clicking on the Jar Ajar self-extracting file, "texttrix-x.y.z-jarajar-extractor.jar".  Follow the instructions to unpack the file.  Finally, double-click on the "texttrix-x.y.z.jar" in the directory that you unpacked.
 
-Run (the easy way):
--Try double-clicking on TextTrix-x.y.z.jar
--If that doesn't work:
-	-For use on Windows(R) systems: check that the desktop is set 
-	to use "javaw" for ".jar" programs
-	-For use on Linux(R) or MacOS(R) X system: check that the 
-	application/x-jar MIME type is both supported 
-	and executes the command, "java -jar" on the file
-
-Run (the text-friendly way):
--To start Text Trix via a command line, follow the next instructions:
--move into the TextTrix folder:
-	-When using the Windows systems command prompt:
-	"cd [directory where unzipped]\TextTrix-x.y.z"
-	-When using a terminal on Linux or MacOS X systems:
-	"cd [directory where unzipped]/TextTrix-x.y.z"
--Start the TextTrix-x.y.z.jar file:
-"ava -jar TextTrix-x.y.z.jar"
+Troubleshooting:
+-Ensure that the Java 2 Runtime Environment is installed.  Point your browser to http://java.sun.com/getjava/index.html and click on the Download banner to check.
+-For use on Windows(R) systems: check that the desktop is set to use "javaw" for ".jar" programs
+-For use on Linux(R) or MacOS(R) X system: check that the application/x-jar MIME type is both supported and executes the command, "java -jar" on the file
+-If necessary, try unzipping and running Text Trix via the command line:
+	-Move into the folder holding "texttrix-x.y.z-jarajar-extractor.jar" by typing: "cd [folder holding the jarajar package]"
+	-Run the package and follow its instructions: "unzip texttrix-x.y.z-jarajar-extractor.jar"
+	-After file extraction, move into the TextTrix folder by typing:
+	"cd [directory where unzipped]/texttrix-x.y.z"
+	-Start "texttrix-x.y.z.jar" by typing:
+	"java -jar TextTrix-x.y.z.jar"
+-See http://textflex.com/texttrix/downloads.html for more details
 
 Run...away?
 -if any of the instructions have not worked, check out 

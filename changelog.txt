@@ -14,7 +14,7 @@ v.0.3 Series: FEATure Series (FEATS)
 
 ---------------
 v.0.3.2 (2/28/03)
-Text Trix, the text tinkering editor, now has a plugin architecture to easily add new tools or trix.  Not everyone wants the same text manipulators; now they can pick and choose.  What's left is to build a repertoire of plugins.
+Text Trix, the text tinkering processor, now has a plugin architecture to easily add new tools or trix.  Not everyone wants the same text manipulators; now they can pick and choose.  What's left is to build a repertoire of plugins.
 
 Text tinkering development had taken a break during the major football season to work on tXtFL (http://textflex.com/txtfl), a text-based football game.  The main impediment to Text Trix development had been getting over the plugin hump.
 
@@ -23,9 +23,9 @@ Some big bugs in Text Trix on various platforms motivated developers to start ma
 New features include:
 -Plugin architecture to allow users to selet the particular tools and trix they want
 -Open multiple files at once
--Open files from the command-line at startup
+-Open files from the command-line at startup; try using Text Trix as the default program to open up files
 -Carets now return approximately to their original location after using text tools or trix
--Dialog windows with options when opening or saving to unpermitted files
+-Dialog windows provide options when opening or saving to unpermitted files
 
 Bug fixes include:
 -Text tools now work consistently and in all tested platforms (691520)
