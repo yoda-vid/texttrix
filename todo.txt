@@ -37,7 +37,8 @@ v.0.3.3
 -JTabbedPane tabs still adjust their widths when the asterisk indicating unsaved changes pops up; FIXED: using monospaced font to substitute characters w/o incurring any width changes ./
 -word delete often only deletes half words in Windows systems; FIXED: Document methods rather than getText()/setText() to determine characters; not sure why the latter methods work for viewPlain() and similar methods, though
 -update tab tool tip when open file; FIXED: set the tool tip, not just the tab title ./
--word-wrap indent; ADDED: left indents equal to the number of tabs within a given paragraph
+-word-wrap indent; ADDED: left indents equal to the number of tabs within a given paragraph ./
+-URLClassLoader can't load plugins in JRE v.1.4.2-beta-b19; FIXED: create file from path and convert file into URL rather than creating URL address manually before converting ./
 -plugin methods allowing dialog boxes, listeners, etc
 	-plugin types to specify how to implement them; eg "run", "dialog", "listener"
 	-dialog types create a dialog object that TextTrix invokes on its text

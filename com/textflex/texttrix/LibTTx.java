@@ -73,9 +73,8 @@ public class LibTTx {
 		*/
 		try {
 		    //		    System.out.println(plugInDir.toString());
-		    String sep = System.getProperty("file.separator");
 		    path = plugInDir.toString() 
-			+ sep + plugInList[i];
+			+ File.separator + plugInList[i];
 		    //		    System.out.println("path: " + path);
 		    //		    String urlPath = "file://" + path;
 		    //		    URL url = new URL(urlPath);

@@ -5,7 +5,7 @@
 ##############################
 # Variables to change for your particular setup
 ##############################
-VER="0.3.2" # version info
+VER="0.3.3" # version info
 WKDIR="/home/davit/src/texttrix" # work directory
 DEST="/home/share" # final destination
 

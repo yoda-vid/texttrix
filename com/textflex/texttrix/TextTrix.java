@@ -595,8 +595,10 @@ public class TextTrix extends JFrame {
 	    if (System.getProperty("os.name").equals("Linux")
 		&& System.getProperty("java.vm.version").indexOf("1.4.2") 
 		!= -1) { // GTK+ only for available systems
+		/*
 		UIManager.setLookAndFeel("com.sun.java.swing.plaf"
 					 + ".gtk.GTKLookAndFeel");
+		*/
 		//	    } else if (System.getProperty("mrj.version") != null) {
 
 	    } else { // default interface
