@@ -70,8 +70,6 @@ PLGS_DIR="$BASE_DIR/plugins" # plugins folder within main dir
 DIR="com/textflex/texttrix" # src package structure
 PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" # the chosen plugins
 
-
-
 #####################
 # Build operations
 #####################
@@ -81,7 +79,7 @@ if [ "$CYGWIN" = "true" ]
 then
 	$JAVA/javac "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
 else
-	$JAVA/javac "$TTX_DIR/$DIR/*.java"
+	$JAVA/javac "$TTX_DIR/$DIR/"*.java
 fi
 # change to plugins directory and compile and package each plugin;
 # list the directory names and their corresponding classes in the "for" line;
@@ -100,7 +98,7 @@ do
 	then
 		$JAVA/javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
 	else
-		$JAVA/javac -classpath $TTX_DIR:$plugin_dir $plugin_dir/$DIR/*.java
+		$JAVA/javac -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
 	fi
 	cd $plugin_dir
 	$JAVA/jar -0cvf $plugin.jar $DIR/*.class $DIR/*.png \

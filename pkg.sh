@@ -119,7 +119,12 @@ cp -rf $PLGS_DIR $SRCPKGDIR/plugins
 # create binaries
 cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
-$JAVA/jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+if [ "$CGYWIN" = "true" ]
+then
+	$JAVA/jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+else
+	$JAVA/jar -cvfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+fi
 rm -rf com
 
 # remove all but source and related files
