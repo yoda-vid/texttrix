@@ -11,7 +11,7 @@ Some shortcuts only work when the text pane is focused.
 
 -Standard Keybindings: What you're used to.
 -Hybrid Keybindings: A fresh blend of Emacs single character and line navigation shortcuts plus the standard ones.
--Emacs Keybindings: Emacs shortcuts all the way--well, at least for single-charcter combos--well, at least for some of them.
+-Emacs Keybindings: Emacs shortcuts all the way--well, at least the single-key ones--well, at least some of them.
 
 ----What are the keybindings?----
 

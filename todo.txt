@@ -40,6 +40,7 @@ Note: "./" is the "check-mark" symbol
 -truncate filenames on tabs
 -automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
 -when saving an already existing file, match the file filter with the file's extension
+-tab history doesn't always follow new tab route; FIXED: when add a new entry in the middle of the history, erase the forward history, just as browsers do
 
 ----Current Work----
 
@@ -71,6 +72,7 @@ v.0.3.4
 -provide original name by default when saving-as an already saved file; ADDED: provides the name; ADDED: uses the "All Files" filter when opening files
 -fix StringIndexOutOfBoundsError when running most plug-ins on selected text; FIXED: TextTrix.textTinker passed in only the selected region, but the plug-ins treated it as if they received the whole text; revised PlugIn spec so that default to run(String) rather than making all run methods abstract; plug-ins w/ alwaysEntireText == true need to override run(String, int, int) to respond to selection boundaries
 -re-highlight selected text in Search plug-in; ADDED: if "Selected Area Only" option chosen in stats mode, will rehighlight; otherwise, removes highlighting to avoid giving the false impression that the stats are for the selected area only
+-tab history doesn't always follow most recent path
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./
