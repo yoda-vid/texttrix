@@ -3723,7 +3723,8 @@ public class TextTrix extends JFrame {
 	/**Creates the status bar in a worker thread.
 	*/
 	private class StatusBarCreator implements Runnable {
-	
+		
+		private int lastLine = 0;
 
 		/**
 		 * Begins creating the bars.
@@ -3757,19 +3758,15 @@ public class TextTrix extends JFrame {
 					// caret listener to find-as-you-type the line number into the text box
 					lineNumFld.addCaretListener(new CaretListener() {
 						public void caretUpdate(CaretEvent e) {
-							TextPad t = getSelectedTextPad();
-							if (t != null) {
-								String lineStr = lineNumFld.getText();
-								int line = 0;
-								// do nothing if empty box
-								if (!lineStr.equals("")) {
-									// otherwise, parse string, assuming key listener has
-									// filtered out non-digits
-									line = Integer.parseInt(lineStr);
-									// highlight the appropriate line
-									Point p = getPositionFromLineNumber(t, line);
-									textSelectionReverse(t, (int) p.getX(), 0, 
-										(int) p.getY() - (int) p.getX());
+							String lineStr = lineNumFld.getText();
+							int line = 0;
+							// do nothing if empty box
+							if (!lineStr.equals("")) {
+								// otherwise, parse string, assuming key listener has
+								// filtered out non-digits
+								line = Integer.parseInt(lineStr);
+								if (line != lastLine) {
+									selectLine(line);
 								}
 							}
 						}
@@ -3780,6 +3777,9 @@ public class TextTrix extends JFrame {
 							char keyChar = evt.getKeyChar();
 							if (!Character.isDigit(keyChar)) {
 								evt.consume();
+								if (keyChar == KeyEvent.VK_ENTER) {
+									selectLine(lastLine);
+								}
 							}
 						}
 					});
@@ -3840,6 +3840,17 @@ public class TextTrix extends JFrame {
 					validate();
 				}
 			});
+		}
+		
+		public void selectLine(int line) {
+			TextPad t = getSelectedTextPad();
+			if (t != null) {
+				// highlight the appropriate line
+				Point p = getPositionFromLineNumber(t, line);
+				textSelectionReverse(t, (int) p.getX(), 0, 
+					(int) p.getY() - (int) p.getX());
+				lastLine = line;
+			}
 		}
 	}
 
