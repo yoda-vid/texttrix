@@ -173,7 +173,7 @@ public abstract class PlugIn extends JComponent {
 			Thread runner = new Thread() {
 				public void run() {
 					try {
-						Thread.sleep(500);
+						Thread.sleep(1000);
 						tmpActivated = false;
 					} catch (InterruptedException e) {
 						// ensures that an interrupt during the sleep is still flagged

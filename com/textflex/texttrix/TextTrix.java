@@ -929,7 +929,7 @@ public class TextTrix extends JFrame {
 	/**Flags the main Text Trix window as temporarily active to ward
 	 * off a focusing mechanism from calling itself again. 
 	 * The flag automatically resets itself to <code>false</code>
-	 * after 500 ms.
+	 * after 1 s (1000 ms).
 	 * 
 	 * @param b <code>true</code> indicates that the window has been
 	 * recently activated and should not fire the mechanism to focus all
@@ -942,7 +942,7 @@ public class TextTrix extends JFrame {
 			Thread runner = new Thread() {
 				public void run() {
 					try {
-						Thread.sleep(500);
+						Thread.sleep(1000);
 						tmpActivated = false;
 					} catch (InterruptedException e) {
 					}
