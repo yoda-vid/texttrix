@@ -39,17 +39,31 @@ import java.net.*;
 import java.io.*;
 import java.util.jar.*;
 
+/** The abstract superclass for all plugins.
+    Specifies the files and locations from which to load plugin resources
+    as well as the code to both load them and manipulate text.
+    All plugins must extend this abstract class and be packaged in 
+    uncompressed JAR files.
+*/
 public abstract class PlugIn {
-    private String description = null;
-    private String detailedDescription = null;
-    private String name = null;
-    private String iconPath = null;
-    private String rollIconPath = null;
-    private String detailedDescriptionPath = null;
-    private String category = null;
-    private String path = null;
-    private JarFile jar = null;
+    private String description = null; // short description
+    private String detailedDescription = null; // long, HTML-formatted desc.
+    private String name = null; // plugin name
+    private String iconPath = null; // path to main icon
+    private String rollIconPath = null; // path to rollover icon
+    private String detailedDescriptionPath = null; // path to formatted desc.
+    private String category = null; // plugin category, eg "tools"
+    private String path = null; // plugin JAR's path
+    private JarFile jar = null; // plugin's JAR
 
+    /** Constructs a plugin.
+	@param aName plugin name
+	@param aCategory plugin category, eg "tools"
+	@param aDescription short description
+	@param aDetailedDescriptionPath path to the HTML-formatted description
+	@param aIconPath path to the main icon
+	@param aRollIconPath path to the rollover icon
+    */
     public PlugIn(String aName, String aCategory, 
 		  String aDescription,
 		  String aDetailedDescriptionPath, String aIconPath,
@@ -62,23 +76,47 @@ public abstract class PlugIn {
 	rollIconPath = aRollIconPath;
     }
 
+    /** Sets the plugin's path.
+	@param aPath path
+     */
     public void setPath(String aPath) { path = aPath; }
 
+    /** Runs the plugin on a given section of the text.
+	@param s text to manipulate
+	@param x index at which to start
+	@param y first index at which to no longer work
+    */
     public abstract String run(String s, int x, int y);
 
+    /** Runs the plugin over all the given text.
+	@param s text to manipulate
+    */
     public abstract String run(String s);
-
+    /** Gets the plugin name.
+	@return name
+    */
     public String getName() { return name; }
-
+    /** Gets the plugin path to the main icon.
+	@return path to the main icon
+    */
     public String getIconPath() { return iconPath; }
-
+    /** Gets the plugin path to the rollover icon.
+	@return path to the rollover icon
+    */
     public String getRollIconPath() { return rollIconPath; }
-
+    /** Gets the plugin short description.
+	@return short description
+    */
     public String getDescription() { return description; }
-
+    /** Gets the plugin category.
+	@return category
+    */
     public String getCategory() { return category; }
 
-    public ImageIcon getIcon(String descPath) {
+    /** Gets an icon.
+	@param iconPath icon's path
+    */
+    public ImageIcon getIcon(String iconPath) {
 	/*
 	URL url = cl.getResource(path);
 	//	System.out.println(path);
@@ -96,11 +134,11 @@ public abstract class PlugIn {
 	*/
 	byte[] bytes = null;
 	try {
-	    descPath = "com/textflex/texttrix/" + descPath;
+	    iconPath = "com/textflex/texttrix/" + iconPath;
 	    //	    System.out.println((new File(path)).exists());
 	    if (jar == null) 
 		jar = new JarFile(new File(path));
-	    JarEntry entry = jar.getJarEntry(descPath);
+	    JarEntry entry = jar.getJarEntry(iconPath);
 	    //	    System.out.println(entry.getName());
 	    if (entry == null) return null;
 	    InputStream in = jar.getInputStream(entry);

@@ -90,7 +90,9 @@ public class TextTrix extends JFrame {
 		    if (t != null) 
 			setAutoIndent(t.getAutoIndent());
 		}
-	    });		
+	    });
+	// display tool tips for up to 100s
+	ToolTipManager.sharedInstance().setDismissDelay(100000);
 
 	// make menu bar and menus
 	JMenuBar menuBar = new JMenuBar();
