@@ -130,11 +130,12 @@ public class TextTrix extends JFrame {
 								// addTabIndexHistory increments the record index;
 								// add the current tab selection now to ensure that
 								// all selections are recorded
+								int i = tabbedPane.getSelectedIndex();
 								if (updateTabIndexHistory) {
-									addTabIndexHistory(
-										tabbedPane.getSelectedIndex());
+									addTabIndexHistory(i);
 									//			    addTabIndexHistory(currTabIndex);
 								}
+								updateTitle(t.getFilename());
 								//					focuser.start();
 								// doesn't work when creating new tabs via
 								// the keyboard accelerator;
@@ -897,7 +898,18 @@ public class TextTrix extends JFrame {
 			}
 		});
 	}
-
+	
+	public static void updateTitle(JFrame frame, String filename) {
+		String titleSuffix = " - Text Trix";
+		frame.setTitle(filename + titleSuffix);
+	}
+	
+	public void updateTitle(String filename) {
+		String titleSuffix = " - Text Trix";
+		setTitle(filename + titleSuffix);
+	}
+	
+	
 	/** Creates a plugin action.
 	Allows the plugin to be invoked from a button or other action-capable
 	interface.
@@ -1421,11 +1433,12 @@ public class TextTrix extends JFrame {
 			reader = new BufferedReader(new InputStreamReader(in));
 			String text = readText(reader); // retrieve the text
 			addTextArea(textAreas, tabbedPane, new File(path));
-			TextPad t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
+			TextPad t = getSelectedTextPad();//(TextPad) textAreas.get(tabbedPane.getSelectedIndex());
 			t.setEditable(false); // so appropriate for read-only
 			t.setText(text);
 			t.setChanged(false);
-			updateTitle(textAreas, tabbedPane);
+			updateTabTitle(textAreas, tabbedPane);
+//			updateTitle(t.getFilename());
 			t.setCaretPosition(0);
 			return true;
 		} finally {
@@ -1650,7 +1663,7 @@ public class TextTrix extends JFrame {
 	 * tabbed pane displays
 	 * @param tabbedPane tabbed pane to update
 	 */
-	public static void updateTitle(
+	public static void updateTabTitle(
 		ArrayList arrayList,
 		JTabbedPane tabbedPane) {
 		int i = tabbedPane.getSelectedIndex();
@@ -1674,7 +1687,7 @@ public class TextTrix extends JFrame {
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
 		textPad.getDocument().addDocumentListener(new TextPadDocListener());
 		textPad.setChanged(true);
-		updateTitle(textAreas, tabbedPane);
+		updateTabTitle(textAreas, tabbedPane);
 	}
 
 	/**Displays the given <code>TextPad</code> in plain text format.
@@ -1748,7 +1761,7 @@ public class TextTrix extends JFrame {
 		tp.remove(i);
 	}
 
-	/**Adds a new component to the <code>GridBagLayout</code>
+	/*Adds a new component to the <code>GridBagLayout</code>
 	 * manager.
 	 * @param c component to add
 	 * @param constraints layout constraints object
@@ -1807,12 +1820,12 @@ public class TextTrix extends JFrame {
 				t.setChanged(false);
 				t.setFile(path);
 				// the the tab title to indicate that no unsaved changes;
-				// in place of updateTitle b/c static context
+				// in place of updateTabTitle b/c static context
 				//		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 				//				      t.getName() + " ");
 				//		tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
 				//					    t.getPath());
-				updateTitle(textAreas, tabbedPane);
+				updateTabTitle(textAreas, tabbedPane);
 				return true;
 				/*
 				} else {
@@ -1867,7 +1880,8 @@ public class TextTrix extends JFrame {
 				tabbedPane.setToolTipTextAt(
 					tabbedPane.getSelectedIndex(),
 					t.getPath());
-				updateTitle(textAreas, tabbedPane);
+				updateTabTitle(textAreas, tabbedPane);
+				updateTitle(t.getFilename());
 				// set the path to the last opened directory
 				setOpenDir(file.getParent());
 				// file.getParent() returns null when opening file
@@ -1936,6 +1950,7 @@ public class TextTrix extends JFrame {
 	*/
 	private static boolean getSavePath(JFrame owner) {
 		boolean repeat = false;
+		File f = null;
 		// repeat the retrieval until gets an unused file name, 
 		// overwrites a used one, or the user cancels the save
 		do {
@@ -1944,7 +1959,7 @@ public class TextTrix extends JFrame {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				// save button chosen
 				String path = chooser.getSelectedFile().getPath();
-				File f = new File(path);
+				f = new File(path);
 				int choice = 0;
 				// check whether a file by the chosen name already exists
 				if (f.exists()) {
@@ -1976,6 +1991,7 @@ public class TextTrix extends JFrame {
 						tabbedPane.setToolTipTextAt(
 							tabbedPane.getSelectedIndex(),
 							path);
+						updateTitle(owner, f.getName());
 						return true;
 					} else { // fail; request another try at saving
 						String msg =
@@ -2208,7 +2224,7 @@ public class TextTrix extends JFrame {
 				(TextPad) textAreas.get(
 					tabbedPane.getSelectedIndex())).setChanged(
 				true);
-			updateTitle(textAreas, tabbedPane);
+			updateTabTitle(textAreas, tabbedPane);
 		}
 
 		/**Flags a text removal.
@@ -2219,7 +2235,7 @@ public class TextTrix extends JFrame {
 				(TextPad) textAreas.get(
 					tabbedPane.getSelectedIndex())).setChanged(
 				true);
-			updateTitle(textAreas, tabbedPane);
+			updateTabTitle(textAreas, tabbedPane);
 		}
 
 		/**Flags any sort of text change.

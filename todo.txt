@@ -47,6 +47,7 @@ v.0.3.3
 -shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order; ADDED: "Back" and "Forward" shortcuts (View > Back/Forward or Ctrl-Shift-]/[) with an unlimited history
 -text area focus w/ each JTabbedPane switch; ADDED: two separate calls to requestFocusInWindow() in tabbed pane's stateChanged ChangeListener method -- one call within EventQueue.invokeLater(), the other afterward
 -change to MPL 1.1/GPL 2.0/LGPL 2.1 triple license; SWITCHED: swithced to the triple license to ensure that the Text Trix editor remains open source while permitting its inclusion in both proprietary and copyleft software
+-retitle window bar when opening or saving new file; ADDED: title updater
 
 v.0.3.2
 -update tab tooltip when rename ./
