@@ -2146,7 +2146,13 @@ public class TextTrix extends JFrame {
 					return;
 				}
 			}
+			int pos = t.getCaretPosition();
 			openFile(t.getFile(), t.isEditable(), false, true);
+			if (pos <= t.getDocument().getLength()) {
+				t.setCaretPosition(pos);
+			} else {
+				t.setCaretPosition(t.getDocument().getLength());
+			}
 		}
 	}
 

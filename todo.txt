@@ -67,6 +67,7 @@ v.0.3.6
 -prefences panel
 	-prefs panel should also be fit into a JDialog, with TextTrix as the owner; ADDED: prefs panel conforms to new plug-in window model, except that Preferences itself extends JDialog since Preferences remains internalized in the program
 	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval; adopts same default size and location as with plugIns
+	-reorganize to compact unnecessarily large fields; ADDED: divided general prefs panel from 2 to 3 columns
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -stop auto-save thread when close file; FIXED: removing tab stops the timer
