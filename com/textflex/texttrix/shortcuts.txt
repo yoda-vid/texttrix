@@ -10,16 +10,20 @@ Some shortcuts only work when the text pane is focused.
 ----What's the difference among the keybindings?----
 
 -Standard Keybindings: What you're used to.
--Hybrid Keybindings: A fresh blend of Emacs single character and line navigation shortcuts plus the standard ones.
--Emacs Keybindings: Emacs shortcuts all the way--well, at least the single-key ones--well, at least some of them.
+-Hybrid Keybindings: A fresh blend of Emacs single character and line 
+navigation shortcuts plus the standard ones.
+-Emacs Keybindings: Emacs shortcuts all the way--well, at least the 
+single-key ones--well, at least some of them.
 
 ----What are the keybindings?----
+
+(Not including non-accelerated functions, such as simply hitting Home alone)
 
 Function				Standard			Hybrid				Emacs
 -----------------------------------------------------------
 New tab			Ctrl-n				Ctrl-t					(ditto)
-Back					Ctrl-shift-[			(ditto)				(ditto)
-Forward				Ctrl-shift-]			(ditto)				(ditto)
+Back tab			Ctrl-shift-[			(ditto)				(ditto)
+Forward tab		Ctrl-shift-]			(ditto)				(ditto)
 Open file			Ctrl-o				(ditto)				(ditto)
 Close file			Ctrl-w				(ditto)				Ctrl-k
 Save file				Ctrl-s				(ditto)				(ditto)
@@ -36,7 +40,7 @@ Back word			-						Alt-b					(ditto)
 Delete word		Ctrl-bkspc			(ditto)				(ditto)
 Up line				-						Ctrl-p				(ditto)
 Down line			-						Ctrl-n				(ditto)
-Beg of line			Home				(ditto), Ctrl-a		(ditto)
-End of line			End					End, Ctrl-e		(ditto)
+Beg of line			-						Ctrl-a				(ditto)
+End of line			-						Ctrl-e				(ditto)
 Beg of file			Ctrl-Home			(ditto), Ctrl-<		(ditto)
 End of file			Ctrl-End			(ditto), Ctrl->		(ditto)

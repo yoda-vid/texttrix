@@ -9,30 +9,29 @@ http://textflex.com/texttrix
 
 -Search for a sequence of characters or a specific word
 -Replace with another sequence if desired
--Optionally replace all occurrances or just the first
+-Optionally replace all occurrences or just the first
 -Choose to search within highlighted text only
 -Get word, character, and line counts on all or only selected text
 
 ----Extra Returns Remover: Remove hard returns to re-wrap lines, as in emails (this was our first feature!)----
 
--To write a list without losing its hard returns, leave the first line of a block unmarked and use dashes, asterisks, numbers, or tabs at the start of each line after the first. Add an empty line between blocks.
+-To write a list without losing its hard returns, leave the first line of a block unmarked and use dashes, asterisks, numbers, or tabs at the start of each subsequent line.  Add an empty line between blocks.
 -Text enclosed in <pre></pre> tags will be preserved. Each tag should be placed on its own line to ensure the tags' removal.
 -Lines beginning with ">", such as " > > " in email replies, will be removed along with any spaces surrounding them; "---Original Message----" will be added before the region, and "-------------" will come afterward
--Select the text to modify, or leave it unhighlighted to work on the whole text
+-Select the text to modify, or leave it unhighlighted to tinker with all the text
 -If necessary, undo changes by selecting Undo [Edit > Undo (2x), or Ctrl-z (2x)]
 
 ----HTML Replacer: Replace HTML tags with plain-text equivalents----
 
 -All HTML tags get removed. Where appropriate, their plain-text equivalents are substituted
 -E.g., "<b>" becomes "*"
--Select the text to modify, or leave it unhighlighted to work on the whole text
+-Select the text to modify, or leave it unhighlighted to tinker with all the text
 -If necessary, undo changes by selecting Undo [Edit > Undo (2x), or Ctrl-z (2x)]
 
 ----Non-Printing-Character Viewer: make visible characters for non-printing ones----
 
 -Writes "\n" before every hard return, and "\t" before every tab
--Select the text to modify, or leave it unhighlighted to work on the whole text
--To remove the characters, Undo (ctrl-z) as many times as necessary
+-Select the text to modify, or leave it unhighlighted to tinker with all the text
 -If necessary, undo changes by selecting Undo [Edit > Undo (2x), or Ctrl-z (2x)]
 
 ----Letter Pulse: Highlight hidden messages by letter pulsing----
@@ -41,4 +40,4 @@ http://textflex.com/texttrix
 -Choose the message to highlight within the Letter Pulse options window
 -Set the time interval between pulses
 -Start pulsing, and watch the message reveal itself sequentially within your message
--If the pulsing stops before its time, trying writing more text and restarting the pulse
+-If the pulsing stops before its time, try writing more text and restarting the pulse
