@@ -102,7 +102,7 @@ public class TextTrix extends JFrame {
 	 * Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
-	url = TextTrix.class.getResource("openicon-16x16.gif");
+	url = TextTrix.class.getResource("openicon-16x16.png");
 	icon = new ImageIcon(url);
 	Action openAction = new FileOpenAction("Open", icon);
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
@@ -115,7 +115,7 @@ public class TextTrix extends JFrame {
 //						       InputEvent.CTRL_MASK));
 
 	// close file; check if saved
-	url = TextTrix.class.getResource("closeicon-16x16.gif");
+	url = TextTrix.class.getResource("closeicon-16x16.png");
 	icon = new ImageIcon(url);
 	Action closeAction = new AbstractAction("Close", icon) {
 		public void actionPerformed(ActionEvent evt) {
@@ -127,7 +127,7 @@ public class TextTrix extends JFrame {
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
-	url = TextTrix.class.getResource("saveicon-16x16.gif");
+	url = TextTrix.class.getResource("saveicon-16x16.png");
 	icon = new ImageIcon(url);
 	Action saveAction = new AbstractAction("Save", icon) {
 		public void actionPerformed(ActionEvent evt) {
@@ -149,7 +149,7 @@ public class TextTrix extends JFrame {
 //				InputEvent.CTRL_MASK));
 
 	// save w/ file save dialog
-	url = TextTrix.class.getResource("saveasicon-16x16.gif");
+	url = TextTrix.class.getResource("saveasicon-16x16.png");
 	icon = new ImageIcon(url);
 	Action saveAsAction = new FileSaveAction("Save as...", icon);
 	setAction(saveAsAction, "Save as...", '.', null);
@@ -281,7 +281,7 @@ public class TextTrix extends JFrame {
 	helpMenu.add(licenseAction);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
-	url = TextTrix.class.getResource("returnicon-16x16.gif");
+	url = TextTrix.class.getResource("returnicon-16x16.png");
 	icon = new ImageIcon(url);
 	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", icon) {
 		public void actionPerformed(ActionEvent evt) {
