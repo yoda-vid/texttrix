@@ -69,12 +69,19 @@ public class Practical {
 		int n = 0; // string index
 		String searchChars = " <>"; // inline message reply chars
 		String inlineReplySigns = "<>"; // inline message indicators
-		boolean isCurrentInlineReply = false; // current line part of message reply
+//		boolean isPrevInlineReply = false;
+		boolean isCurrentLineReply = false; // current line part of message reply
+		boolean isNextLineReply = false; // next line part of message reply
 //		System.out.println(s.length() + "");
 
 		// check for inline reply symbols at start of string
 		n = containingSeq(s, n, searchChars, inlineReplySigns);
-		isCurrentInlineReply = (n != 0) ? true : false;
+		if (n != 0) {
+			isCurrentLineReply = true;
+			stripped.append("----Original Message----\n\n");
+		} else {
+			isCurrentLineReply = false;
+		}
 	
 		while (n < s.length()) {
 //			System.out.println(n + "");
@@ -83,8 +90,8 @@ public class Practical {
 	    	int singleReturn = s.indexOf("\n", n); // next hard return occurrence
 			boolean isDoubleReturn = false; // double hard return flag
 //		    int nextReturn = -1;
-		    int dash = s.indexOf("-", n); // next dash occurrence 
-	    	int asterisk = s.indexOf("*", n); // next asterisk occurrence
+		    int dash = -1; // next dash occurrence 
+	    	int asterisk = -1; // next asterisk occurrence
 			int tab = -1; // next tab occurence
 //			int spaces = 0;
 	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag occurrence
@@ -118,7 +125,6 @@ public class Practical {
 							searchChars, inlineReplySigns);
 				}
 //				System.out.println("inlineReply is " + inlineReply);
-//				System.out.println("isCurrentReply is " + isCurrentInlineReply);
 				/*
 //				searchChars = " <>";
 				i = singleReturn + 1;
@@ -134,6 +140,8 @@ public class Practical {
 					nextInlineReply = i - singleReturn - 1;
 				*/
 				tab = s.indexOf("\t", singleReturn + 1);
+				dash = s.indexOf("-", singleReturn + 1);
+				asterisk = s.indexOf("*", singleReturn + 1);
 				/*
 				int afterSingleReturnNextInlineReply
 				if (s.length() > afterSingleReturnNextInlineReply
@@ -142,7 +150,10 @@ public class Practical {
 				}
 				*/
 			}
-						
+			isNextLineReply = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
+			
+//			System.out.println("isCurrentLineReply is " + isCurrentLineReply);
+//			System.out.println("isNextLineReply is " + isNextLineReply);
 
 			/*
 			if (inlineReply == 0 && singleReturn != -1) {
@@ -156,7 +167,7 @@ public class Practical {
 				}
 			}
 			*/
-	
+/*
 		    // only catch dashes and asterisks after newline
 	    	while (dash != -1 && dash < singleReturn) {
 				dash = s.indexOf("-", n + dash + 1);
@@ -164,7 +175,7 @@ public class Practical {
 	    	while (asterisk != -1 && asterisk < singleReturn) {
 				asterisk = s.indexOf("*", n + asterisk + 1);
 		    }
-	
+*/	
 		    // find all leading spaces after a single return
 
 //			System.out.println("Past dashes, asterisks, and leading spaces");
@@ -188,25 +199,48 @@ public class Practical {
 				}
 			// add the rest of the text if no more single returns exist.
 			// Also catches null strings
+			// Skips final "--------" for inline replies if no singleReturn after
 	    	} else if (singleReturn == -1) {
 //				System.out.println("I'm here.");
 				stripped.append(s.substring(n));
+				/* to add final dashed line after reply, even when no final
+				 * return, uncomment these lines
+				if (isCurrentReply)
+					stripped.append("\n-----------------------\n\n");
+				*/
 				n = s.length();
+			// may eventually show explicity that "Original Message": by flagging prev line?
+			} else if (!isCurrentLineReply && isNextLineReply) {
+				stripped.append(s.substring(n, singleReturn)
+						+ "\n\n----Original Message----\n\n");
+				n = (isDoubleReturn) ? (singleReturn + inlineReply + 2 + nextInlineReply)
+					: (singleReturn + inlineReply + 1);
+//				System.out.println("I'm here");
+//			} else if (singleReturn != -1 && isCurrentInlineReply 
+//						&& inlineReply == 0 && singleReturn != s.length()) {
+			} else if (isCurrentLineReply && !isNextLineReply) {
+				stripped.append(s.substring(n, singleReturn)
+						+ "\n------------------------\n\n"); // dashed start, so own line
+				n = (isDoubleReturn) ? (singleReturn + inlineReply + 2 + nextInlineReply)
+					: (singleReturn + inlineReply + 1);
+				/*
+				stripped.append("\n\n------------------------\n\n" + s.substring(n, singleReturn));
+				if (isDoubleReturn) {
+					n = (singleReturn + inlineReply + 2 + nextInlineReply);
+				} else if (singleReturn == -1) {
+					n = s.length();
+				} else {
+					n = (singleReturn + inlineReply + 1);
+				}
+//				n = (isDoubleReturn) ? (singleReturn + 2 + nextInlineReply) 
+//					: (singleReturn + inlineReply + 1);
+//					*/
 			// preserve doubly-returned lines, as between paragraphs
 //	    	} else if (nextReturn != -1 
 //					&& singleReturn == nextReturn - 1 - inlineReply) {
 			} else if (isDoubleReturn) {
 				stripped.append(s.substring(n, singleReturn) + "\n\n");
 				n = singleReturn + inlineReply + 2 + nextInlineReply; // skip over processed rets
-			// may eventually show explicity that "Original Message"
-			} else if (!isCurrentInlineReply && inlineReply != 0) {
-				stripped.append(s.substring(n, singleReturn) + "\n\n----\n\n");
-				n = singleReturn + inlineReply + 1;
-				System.out.println("I'm here");
-			} else if (singleReturn != -1 && isCurrentInlineReply 
-						&& inlineReply == 0 && singleReturn != s.length()) {
-				stripped.append(s.substring(n, singleReturn) + "\n\n----\n\n");
-				n = singleReturn + inlineReply + 1;
 			// preserve separate lines for lines starting w/
 			// dashes or asterisks or spaces before them
 		    } else if (dash == singleReturn + 1 + inlineReply
@@ -231,7 +265,8 @@ public class Practical {
 				n = singleReturn + inlineReply + 1;
 		    }
 		// flag whether the current line is part of a msg reply
-		isCurrentInlineReply = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
+		isCurrentLineReply = isNextLineReply;
+//		isPrevInlineReply = isCurrentInlineReply;
 		}	
 		
 		/*
