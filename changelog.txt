@@ -12,26 +12,43 @@ plans for future ones.)
 ----v.0.3 Series: FEATure Series (FEATS)----
 --------------------------------------
 
-----v.0.3.2 (3/15/03)------
+----v.0.3.2 (3/18/03)------
 
-Text Trix, the text tinkering tool, now has a plugin architecture to easily add new tools or trix.  Not everyone wants the same text manipulators; now each person can pick and choose.  What's left is to build a repertoire of plugins.
+Text Trix, the text tinkering tool, now has a plugin architecture to easily add 
+new tools or trix.  Not everyone wants the same text manipulators; now each 
+person can pick and choose.  What's left is to build a repertoire of plugins.
 
-The main impediment to recent Text Trix development had been getting over the plugin hump.  The idea of adding tiny, self-sufficient packages for each new tinkerer proved attractive, but methods to load and use them proved quite the opposite.  Also, with the major football season rolling around, work on another text project (tXtFL, http://textflex.com/txtfl) became increasingly enticing.
+The main impediment to recent Text Trix development had been getting over 
+the plugin hump.  The idea of adding tiny, self-sufficient packages for each 
+new tinkerer proved attractive, but methods to load and use them proved 
+quite the opposite.  Also, with the major football season rolling around, work 
+on another text project (tXtFL, http://textflex.com/txtfl) became increasingly 
+enticing.
 
-But the football season is over for now; it's time for school and work again, where text tools have more practical use than text football has.  Extra motivation to write the plugin platform came from an unexpected source: bugs that stopped the tinkerers from working on one popular operating system.  This release addresses these bugs and provides the new architecture now awaiting contibutions for new tools and trix!
+But the football season is over for now; it's time for school and work again, 
+where text tools have more practical use than text football has.  Extra 
+motivation to write the plugin platform came from an unexpected source: bugs 
+that stopped the tinkerers from working on one popular operating system.  
+This release addresses these bugs and provides the new architecture, which 
+now awaits contributions for new tools and trix!
 
 New features include:
--Plugin architecture to allow users to selet the particular tools and trix they want
--Open multiple files at once
--Open files from the command-line at startup; try using Text Trix as the default program to open files
--Carets now return approximately to their original location after using text tools or trix
--Dialog windows provide alternative options when opening or saving to unpermitted locations
+-Plugin architecture allows users to selet the particular tools and trix they 
+want
+-Multiple files can open at once
+-Files can open from the command-line at startup; try using Text Trix as the 
+default program to open files
+-Carets now return approximately to their original location after each text 
+tinkerer runs
+-Dialog windows provide alternative options when opening or saving to 
+non-permitted locations
 
 Bug fixes include:
 -Text tools now work consistently and in all tested platforms (691520)
 -The function to find whole words now finds them (699860)
--Popup menus work also consistently across tested platforms (696328)
--Tabbed pane tool tips update to show the new file name after saving a file for the first time (699865)
+-Popup menus also work consistently across tested platforms (696328)
+-Tabbed pane tool tips update to show the new file name after saving a file 
+for the first time (699865)
 
 ----v.0.3.1 (8/26/02)----
 

@@ -9,12 +9,12 @@ Some shortcuts only work when the text pane is focused.
 
 Function		Shortcut		Notes
 -----------------------------------------------------------
-New tab		Ctrl-t		-brings up a new tab
+New tab		Ctrl-t		-creates a new text pad
 Open file		Ctrl-o		-as usual
-Save file		Ctrl-s		-brings up "Save as..." dialog for new files
+Save file		Ctrl-s		-opens the "Save as..." dialog
 Exit		Ctrl-q		-checks for unsaved files
-Undo		Ctrl-z		-multiple undos by pressing repeatedly
-Redo		Ctrl-r		-multiple redos by pressing repeatedly
+Undo		Ctrl-z		-multi-capable
+Redo		Ctrl-r		-multi-capable
 Cut		Ctrl-x		-as usual
 Copy		Ctrl-c		-as usual
 Paste		Ctrl-v		-as usual
@@ -23,7 +23,7 @@ Backward char	Ctrl-b		-Emacs-style
 Forward word	Alt-f		-Emacs-style
 Back word		Alt-b		-Emacs-style
 Delete word		Ctrl-bkspace	-as usual
-Up line		Ctrl-p		-Emacs-style, but includes wrapped lines
-Down line		Ctrl-n		-Emacs-style, but includes wrapped lines
+Up line		Ctrl-p		-Emacs-style, plug line-wrap
+Down line		Ctrl-n		-Emacs-style, plug line-wrap
 Beg of line		Ctrl-a		-Emacs-sytle
 End of line		Ctrl-e		-Emacs-style
