@@ -45,7 +45,6 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-//import java.util.prefs.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -77,10 +76,8 @@ public class TextTrix extends JFrame {
 	private static Action prefsOkayAction = null;
 	private static Action prefsApplyAction = null;
 	private static Action prefsCancelAction = null;
-	//private static PrefsListener prefsListener = null;
 	private static boolean updateFileHist = false;
 	private static JMenu fileMenu = new JMenu("File");
-	//private static int fileHistCount = 0;
 	private static int fileHistStart = -1;
 	private MenuBarCreator menuBarCreator = null;
 	private FileHist fileHist = null;
@@ -90,15 +87,14 @@ public class TextTrix extends JFrame {
 	one <code>TextPad</code>.
 	 */
 	public TextTrix(final String[] paths) {
-		setTitle("Text Trix");
-
+		
+		/* Load preferences to create prefs panel */
+		
+		// create the accept action
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
-					//respondToPrefsListener = true;
-		//System.out.println("Storing the prefs...");
 	getPrefs().storePrefs();
 				applyPrefs();
-				//respondToPrefsListener = false;
 				getPrefs().dispose();
 			}
 		};
@@ -115,10 +111,7 @@ public class TextTrix extends JFrame {
 		// and destroy the object 
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
-					//respondToPrefsListener = true;
-		//System.out.println("Storing the prefs...");
 	getPrefs().storePrefs();
-				//respondToPrefsListener = false;
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -126,7 +119,8 @@ public class TextTrix extends JFrame {
 			"Apply the current tabs settings immediately",
 			'A',
 			KeyStroke.getKeyStroke("alt A"));
-
+		
+		// creates the reject action, something I'm all too familiar with
 		prefsCancelAction = new AbstractAction("No way", null) {
 			public void actionPerformed(ActionEvent evt) {
 				prefs.dispose();
@@ -138,27 +132,23 @@ public class TextTrix extends JFrame {
 			"Cancel",
 			'N',
 			KeyStroke.getKeyStroke("alt C"));
-		//prefs = new Prefs(prefsOkayAction, prefsCancelAction);
-		//prefsListener = new PrefsListener();
 		getPrefs();
 
+		/* Setup the main Text Trix window */
+		
+		setTitle("Text Trix");
+		
 		// pre-set window size
 		setSize(getPrefs().getPrgmWidth(), getPrefs().getPrgmHeight());
 		setLocation(
 			new Point(getPrefs().getPrgmXLoc(), getPrefs().getPrgmYLoc()));
-		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
-		// set frame icon
-		if (im != null) {
-			setIconImage(im.getImage());
-		}
+			
 		addComponentListener(new ComponentListener() {
 			public void componentMoved(ComponentEvent evt) {
 				getPrefs().storeLocation(getLocation());
 			}
 			public void componentResized(ComponentEvent evt) {
 				getPrefs().storeSize(getWidth(), getHeight());
-				//System.out.println("Width: " + getWidth());
-				//System.out.println("Height: " + getHeight());
 			}
 			public void componentShown(ComponentEvent evt) {
 			}
@@ -166,9 +156,14 @@ public class TextTrix extends JFrame {
 			}
 		});
 
-		//Point loc = getLocation();
-		//getPrefs().storeSizeAndLocation(getWidth(), getHeight(), loc.getX(), loc.getY());	
+		// set frame icon
+		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
+		if (im != null) {
+			setIconImage(im.getImage());
+		}
 
+		/* Create the main Text Trix frame components */
+		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		// keep the tabs the same width when substituting chars
 		tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -224,12 +219,14 @@ public class TextTrix extends JFrame {
 		webFilter.setDescription(
 			"Web files (*.html, *.htm, " + "*.xhtml, *.shtml, *.css)");
 		chooser.setFileFilter(webFilter);
-
+		
+		// RTF file filters
 		final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
 		rtfFilter.addExtension("rtf");
 		rtfFilter.setDescription("RTF files (*.rtf)");
 		chooser.setFileFilter(rtfFilter);
-
+		
+		// source code filters
 		final ExtensionFileFilter prgmFilter = new ExtensionFileFilter();
 		prgmFilter.addExtension("java");
 		prgmFilter.addExtension("cpp");
@@ -238,36 +235,25 @@ public class TextTrix extends JFrame {
 			"Programming source code (*.java, *.cpp, *.c)");
 		chooser.setFileFilter(prgmFilter);
 
+		// Text! filters
 		final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
 		txtFilter.addExtension("txt");
 		txtFilter.setDescription("Text files (*.txt)");
 		chooser.setFileFilter(txtFilter);
 
 		fileHist = new FileHist();
-		/*
-		try {
-			EventQueue.invokeAndWait(new Runnable() {
-				public void run() {
-					(menuBarCreator = new MenuBarCreator()).start();
-				}
-			});
-		} catch (InterruptedException e) {
-		} catch (java.lang.reflect.InvocationTargetException e) {
-		}
-		*/
 
 		 (menuBarCreator = new MenuBarCreator()).start();
-		//toolBarCreator.start();
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				contentPane.add(tabbedPane, BorderLayout.CENTER);
-				//	contentPane.add(new TextArea(10, 5), BorderLayout.SOUTH);
-
+				
 				// make first tab and text area;
 				// can only create after making several other user interface
 				// components, such as the autoIndent check menu item
-				System.out.println("Starting to open files");
+				
+				//System.out.println("Starting to open files");
 				addTextArea(textAreas, tabbedPane, makeNewFile());
 
 				// load files specified at start from command-line
@@ -290,8 +276,6 @@ public class TextTrix extends JFrame {
 				syncMenus();
 			}
 		});
-		//fileHist.start(fileMenu, false);
-
 	}
 
 	/**Publically executable starter method.
