@@ -43,12 +43,12 @@
 ##############################
 
 # Compiler
-JAVA="/usr/java/j2sdk1.4.2/bin" # assuming compiler from J2SDK 1.4.2
+JAVA="/usr/java/j2sdk1.4.2_01/bin" # assuming compiler from J2SDK 1.4.2
 SYSTEM=`uname -s`
 CYGWIN="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	JAVA="/cygdrive/c/j2sdk1.4.2/bin" # assuming comipler in C drive
+	JAVA="/cygdrive/c/j2sdk1.4.2_01/bin" # assuming comipler in C drive
 	CYGWIN="true"
 fi
 

@@ -43,12 +43,12 @@
 ####################
 
 # Compiler location
-JAVA="/usr/java/j2sdk1.4.2/bin" # set for J2SDK ver. 1.4.2
+JAVA="/usr/java/j2sdk1.4.2_01/bin" # set for J2SDK ver. 1.4.2
 SYSTEM=`uname -s`
 CYGWIN="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	JAVA="/cygdrive/c/j2sdk1.4.2/bin" # assuming compiler in C drive
+	JAVA="/cygdrive/c/j2sdk1.4.2_01/bin" # assuming compiler in C drive
 	CYGWIN="true"
 fi
 

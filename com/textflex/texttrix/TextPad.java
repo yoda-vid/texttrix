@@ -99,7 +99,8 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& keyChar == KeyEvent.VK_BACK_SPACE
 						&& isLeadingTab()) {
 					// performs the action before deleting the char
-					unindentCurrentParagraph(getTabSize());
+//					System.out.println("I'm here");
+					indentCurrentParagraph(getTabSize());
 				}
 			}
 		});
@@ -408,6 +409,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
 
+
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
 		//StateEdit stateEdit = new StateEdit(this);
@@ -431,17 +433,24 @@ public class TextPad extends JTextPane implements StateEditable {
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
 
+	// Method no longer necessary b/c simply processes tabs according to the
+	// number currently present, just as indentCurrentParagraph operates;
+	// both methods assume that the tab character change has already been accomplished
 	/** Reverses the indent on the current paragraph.
 	 * Restores the size of each tab, but also decreases the entire paragraph indentation.
 	 * @param tabChars number of spaces for each tab to represent
-	 */
+	 *
 	public void unindentCurrentParagraph(int tabChars) {
+//		setDefaultTabs(tabChars);
+//		setIndentTabs(tabChars);
 		String s = getAllText();
 		//	System.out.println("caret pos: " + caretPos);
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
-		int tabs = leadingTabsCount(s, start) - 1;
+		int tabs = leadingTabsCount(s, start); // don't subtract 1 b/c tab already deleted
+//		indent(tabChars, 0, start, s.indexOf("\n", start) - start);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
+	*/
 
 	/** Determines whether the tab is at the start of a given line.
 	 * The tab must be either at the head of the line or connected to it by a continuous string
