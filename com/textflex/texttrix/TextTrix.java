@@ -573,6 +573,7 @@ public class TextTrix extends JFrame {
 			// the action undoable
 			int start = t.getSelectionStart();
 			int end = t.getSelectionEnd(); // at the first unselected character
+			System.out.println("selectionStart: " + start + ", selectionEnd: " + end);
 			PlugInOutcome outcome = null;
 			try {
 				// determines whether a region is selected or not;
@@ -584,12 +585,12 @@ public class TextTrix extends JFrame {
 					// when "alwaysEntireText" b/c want to both get all of 
 					// the text and show its highlighted portion,
 					// rather than only getting that part of the text
-					System.out.println("I'm here");
+					//System.out.println(text);
 					outcome =
 						pl.getAlwaysEntireText()
 							? pl.run(text, start, end)
 							: pl.run(text, end);
-					System.out.println("I'm there");
+					//System.out.println("I'm there");
 
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
@@ -666,22 +667,41 @@ public class TextTrix extends JFrame {
 			setupPlugins();
 		} else if (paths != null) {
 			extraPlugs = new PlugIn[list.length + plugIns.length];
+			// check for extant but unloaded plug-ins files
 			for (int i = 0; i < list.length; i++) {
 				if (!LibTTx.inUnsortedList(list[i], paths)) {
 					System.out.println("Couldn't find " + list[i]); 
 					extraPlugs[extraPlugsInd++] = LibTTx.loadPlugIn(list[i]);
 				}
 			}
+			// check for loaded but now missing plug-in files
 			for (int i = 0; i < plugIns.length; i++) {
 				if (LibTTx.inUnsortedList(plugIns[i].getPath(), list)) { 
 					extraPlugs[extraPlugsInd++] = plugIns[i];
 				}
 			}
+			/* TODO: May need to create a temporary collection of all loaded plug-ins
+			 * rather than adding the extraPlugs to the official, active plugIns group.
+			 */
 			plugIns = (PlugIn[])LibTTx.truncateArray(extraPlugs, extraPlugsInd);
 			getPrefs().updatePlugInsPanel(getPlugInNames());
 		}
 	}
-
+	
+	/* For some reason this fn sporadically doesn't work;
+	 * eg stats in Search plug-in doesn't give the correct
+	 * selectionEnd value from TextTrix, and find/replace
+	 * calls runPlugIn twice and entered some sort of
+	 * infinite loop once.  My guess is that makePlugInAction
+	 * somehow creates duplicate actions that get called twice.
+	 * As usual, the first call in Search removes the highlighting,
+	 * causing the second call to occasionally treat the text
+	 * as if it were never highlighted.  The actions run in
+	 * parallel, meaning that some actions' second call will
+	 * miss the highlighting while others are fast enough to
+	 * still see it.
+	 */
+	
 	public void refreshPlugIns() {
 		reloadPlugIns();
 		if (plugIns != null) {
@@ -690,6 +710,7 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
+	
 
 	public String[] getPlugInNames() {
 		if (plugIns == null)
@@ -2024,7 +2045,7 @@ public class TextTrix extends JFrame {
 					}
 
 					if (menuBar != null) {
-						//contentPane.remove(menuBar);
+						contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");
 						contentPane.remove(toolBar);
 						//fileHistCount = 0;
@@ -2547,11 +2568,14 @@ public class TextTrix extends JFrame {
 					/* Trix and Tools menus */
 
 					// Load plugins; add to appropriate menu
+					/*
 					if (plugIns == null) {
 						setupPlugins();
 					} else {
 						refreshPlugIns();
 					}
+					*/
+					setupPlugins();
 
 					/* Place menus and other UI components */
 					// must add tool bar before set menu bar lest tool bar shortcuts 
