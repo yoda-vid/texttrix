@@ -41,12 +41,10 @@
 
 TTX_VER=0.3.6
 HELP="
-Builds the tXtFL football simulator, compiling according to the 
-specified graphical environment.  
+Builds Text Trix, the super text tool chest.
 
 Syntax:
-      configure [--gui=motif|win] [--java=java-compiler-path] 
-		[--gcj=gcj-compiler-path] [--help] 
+      configure [--java=java-compiler-path] [--help] 
 (The command may need to be invoked with \"sh configure\", if
 the file \"configure\" does not have executable permissions.)
 
@@ -56,24 +54,6 @@ environment, even if the resulting executables will run in the Windows
 envrionemnt.
 
 Parameters:
-	--gcj=gcj-compiler-binaries-path: Specifies the path to gcj for 
-	compilation.  From here, strip and other tools can be found.
-	Alternatively, the GCJ_BIN_DIR variable in pkg.sh can be 
-	hand-edited to specify the path, which would override any 
-	command-line specification.  Note that some of these
-	variables are hard-coded deep within the script for specific
-	environments.
-	
-	--gui=win|motif: Specifies the graphical user interface.
-	If this script is run on Cygwin systems, this parameter is 
-	unnecessary.
-		
-		\"win\" for Linux-based cross-compilations windows-
-		based versions.
-		
-		\"motif\" for motif-based versions that will run on 
-		Linux and other Un*x systems.
-	
 	--help: Lends a hand by displaying yours truly.
 		
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
@@ -86,7 +66,7 @@ Copyright:
 	Copyright (c) 2003-4 Text Flex
 
 Last updated:
-	2004-07-27
+	2004-12-27
 "
 
 
@@ -183,14 +163,16 @@ fi
 
 # Source directories
 # Note that currently requires the user to remain case-sensitive with the name
-# of the base dir, even if Cygwin navigates w/o regard to case
-if [ "x$BASE_DIR" = "x" ] # empty string
+# of the base dir, even if Cygwin navigates w/o regard to case.
+# Determine the base dir if not specified above
+if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
-	if [ `expr index "$0" "/"` -eq 1 ]
+	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
 	then
 		BASE_DIR="$0"
-	else
-		BASE_DIR="$PWD/$0"
+	else # assume that script path is relative to current dir
+		script="${0#./}"
+		BASE_DIR="$PWD/$script"
 	fi
 	BASE_DIR="${BASE_DIR%/texttrix/configure}" # assumes the script's name is plug.sh
 	BASE_DIR="${BASE_DIR%/.}"
@@ -378,10 +360,17 @@ fi
 
 # Installation rules
 
-install='intall: if [ -d $(PREFIX) ]; then mkdir $(PREFIX)'
-install="$install""\n\t"'mkdir $(PREFIX)/texttrix/$(PKG) $(PREFIX)/plugin; cp -f $(TARGET_FILES) $(PREFIX)/$(PKG)'
+install='install: install_setup'
+install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/$(PKG_DIR)/*.class $(PREFIX)/$(PKG_DIR)'
+install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/$(PKG_DIR)/images/*.* $(PREFIX)/$(PKG_DIR)/images'
+install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/plugins/*.jar $(PREFIX)/plugins'
+install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/run.sh $(PREFIX)/run.sh'
 
-phony="$phony clean all install install"
+installSetup='install_setup:'
+installSetup="$installSetup""\n\t"'if [ ! -e $(PREFIX)/$(PKG_DIR)/images ]; then mkdir -p $(PREFIX)/$(PKG_DIR)/images; fi'
+installSetup="$installSetup""\n\t"'if [ ! -e $(PREFIX)/plugins ]; then mkdir -p $(PREFIX)/plugins; fi'
+
+phony="$phony clean all install install_setup"
 
 # Clean-up rule
 
@@ -393,6 +382,8 @@ RULES="all: texttrix $PLGS
 $phony
 
 $install
+
+$installSetup
 
 $ttxRule
 

@@ -8,10 +8,16 @@ Note: "./" is the "check-mark" symbol
 ----Future Work----
 
 -drag selected text
+-drag-n-drop files to open them in Text Trix
+-Bookmarks groups
+	-open all files in a group
+	-create separate dialog window listing all the files, where files can be added by dragging their tab into the box
+	-move to each tab by clicking on a file in the group dialog window
 -check on lost I-bar after switching to HTML view
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
 	-about dialog box
+	-update JarAjar to allow for MacOS X integration
 -feature to insert hard returns after a given number of characters or for given visible space
 -elim multiple spaces via Extra Returns Remover
 -check on shortcuts in HTML/RTF views
@@ -20,30 +26,35 @@ Note: "./" is the "check-mark" symbol
 	-check on auto-indent adjustments after switching tabs in the middle of a pulse session
 	-make HTML-view pulsing possible
 -check on Forward/Back when opening multiple tabs
--Forward/Back icon?
+-Navigation
+	-Forward/Back icon?
+	-forward and back to previous edit positions
 -new, unsaved(?) files don't register in the tab history(?)
 -use java.util.ResourceBundle for internationalization and further keybinding customization
 -auto-indent: adjust when single word spans multiple lines, including when hit enter in the middle
 -automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
 -when saving an already existing file, match the file filter with the file's extension
--compound edits during plug-in edits
--plug-ins' pref list fields sizes
--plug-in: spell checker
--plug-in: spell-check any given text in system clipborad, displaying corrected text in Text Trix pad
+-Plug-ins
+	-plug-ins' pref list fields sizes
+	-plug-in: spell checker
+	-plug-in: spell-check any given text in system clipborad, displaying corrected text in Text Trix pad
+	-build API for plug-ins?
+	-Search plug-in
+		-option to search backward
 -save preferences to easily retrievable file
 -preferences panel to choose default paths and file type filters
 -Java Web Start compatibility
 -option to remember which specific files used auto-indent
--group tabs in separate tabbed panes
--tabbed pane updates
+-Tabbed pane updates
 	-when have multiple files with same filename, add more of path to tab titles
 	-truncate filenames on tabs
 -print images and multi-formatted text
--update JarAjar to allow for MacOS X integration
--convert player "starter" field into numerical ranking system for depth charts
 -rename files in place
 -new icons!
 -TablePad for spreadsheets, including tXtFL player-creation plug-in
+-Wrap-indent
+	-update indents when paste over selected area
+-command-line arg not to reopen files
 
 ----Current Work----
 
@@ -58,7 +69,6 @@ v.0.3.6
 	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
 	-adjust isLeadingTab() or the backspace unindenter to check if the text is selected, since selecting text backward and culminating at a leading tab causes a graphical unindent after a backspace; FIXED: leading tab checker looks at either the first character of a selection, to ensure that changes to  leading tabs at the start of a selection affect the graphical indent, or, if no text is selected, the character just behind the current caret position
 	-undo should apply indents if auto-indent is enabled; FIXED: graphically indents the current paragraph if autoIndent is on
-	-update indents when paste over selected area
 	-wrap indent to the first line in the paragraph, rather than indenting the first line a little more with each tab; ADDED: negative, hanging indent for each tab, along with array of negative tab stops to fill up the space from the hanging indent
 -plug-in updates
 	-plug-in model
@@ -70,7 +80,6 @@ v.0.3.6
 		-Selected-Area-Only and Wrap check boxes should reflect their mutual exclusivity; ADDED: since the two options opose one another, turning on one turns off the other, while both can also be unchecked simultaneously
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
 		-add summary field; ADDED: "Results: " label summarizes the find/replace findings
-		-option to search backward
 		-fix replace when Ignore Case unchecked; FIXED: stores selected text before exiting "if" b/c of false ignoreCase
 	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED (#1007490): removed obsolete advice
@@ -95,22 +104,13 @@ v.0.3.6
 -update icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -stop auto-save thread when close file; FIXED (#1007497): removing tab stops the timer
 -refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
--drag-n-drop files to open them in Text Trix
 -new build process
 	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
 	-build the API through the Makefile; ADDED: api rule for texttrix package
-	-build API for plug-ins?
 	-rules to clean and install
 	-pkg script should check that build directory exists or successfully created before continuing; FIXED: checks for directory b/c lack of it indicates that the script will not be able to change directories and will instead delete files in the current directory
--fix tab history from failing under certain extreme cases
--bookmarks groups
-	-open all files in a group
-	-create separate dialog window listing all the files, where files can be added by dragging their tab into the box
-	-move to each tab by clicking on a file in the group dialog window
--add forward and back icons
--forward and back to previous edit positions
+	-fix pkg script to allow "./" run calls from within Cygwin; FIXED: remove "./" from prefix of "$0"
 -function to go directly to a line number
--check file menu history
 -fix printer indentation loss; FIXED (#1067823): store indent information from the paragraph attributes in a new PrintPadText object for each line
 
 ----Past Releases----

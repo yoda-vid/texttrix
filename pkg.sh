@@ -58,7 +58,7 @@ Copyright:
 	Copyright (c) 2003-4 Text Flex
 
 Last updated:
-	2004-05-28
+	2004-12-27
 "
 
 ##############################
@@ -123,7 +123,6 @@ then
 	else # assume that script path is relative to current dir
 		script="${0#./}"
 		BASE_DIR="$PWD/$script"
-	echo $BASE_DIR
 	fi
 	BASE_DIR="${BASE_DIR%/texttrix/pkg.sh}" # set base dir to main Text Trix dir
 	# BASE_DIR="${BASE_DIR%/.}"
@@ -192,7 +191,7 @@ cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
 mv texttrix $SRCPKGDIR # copy to source package
 cd "$TTX_DIR"
-cp build.sh plug.sh pkg.sh manifest-additions.mf \
+cp configure pkg.sh run.sh manifest-additions.mf \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
 cp plugins/*.jar "$BLD_DIR/$PKGDIR"/plugins # only want jars in binary package
 cd "$BLD_DIR"
