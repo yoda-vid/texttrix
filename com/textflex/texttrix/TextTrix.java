@@ -657,8 +657,9 @@ public class TextTrix extends JFrame {
 	ImageIcon icon = pl.getIcon(); // icon
 	ImageIcon rollIcon = pl.getRollIcon(); // icon for mouse-rollover
 
+	/*
 	// create the action
-	Action action = 
+	Action runAction = 
 	    new AbstractAction(name, icon) {
 		public void actionPerformed(ActionEvent evt) {
 		    // invoke the plugin's text manipulation on the current
@@ -667,17 +668,40 @@ public class TextTrix extends JFrame {
 		}
 	    };
 	
+	pl.setAction(runAction);
+	*/
+
+	// create the listener to respond to events that the plug in fires
+	PlugInAction listener = new PlugInAction() {
+		public void runPlugIn(PlugInEvent event) {
+		    textTinker(pl); 
+		}
+	    };
+	// register the listener so the plug in knows to fire it
+	pl.addPlugInListener(listener);
+	
+	// action to start the plug in, such as invoking its options
+	// panel if it has one
+	Action startAction = 
+	    new AbstractAction(name, icon) {
+		public void actionPerformed(ActionEvent evt) {
+		    // invoke the plugin's text manipulation on the current
+		    // TextPad's text
+		    pl.startPlugIn();
+		}
+	    };
+
 	// add the action to the appropriate menu
 	if (category.equalsIgnoreCase("tools")) {
-	    setAction(action, name, description, toolsCharsUnavailable);
-	    toolsMenu.add(action);
+	    setAction(startAction, name, description, toolsCharsUnavailable);
+	    toolsMenu.add(startAction);
 	} else {
-	    setAction(action, name, description, trixCharsUnavailable);
-	    trixMenu.add(action);
+	    setAction(startAction, name, description, trixCharsUnavailable);
+	    trixMenu.add(startAction);
 	}
 
 	// add the action to a tool bar menu
-	JButton button = toolBar.add(action);
+	JButton button = toolBar.add(startAction);
 	button.setBorderPainted(false);
 	setRollover(button, rollIcon);
 	if (detailedDescriptionBuf != null)
@@ -2091,3 +2115,12 @@ class ExtensionFileFilter extends FileFilter {
     }
 }
 
+/** Abstract listener that responds to <code>PlugIn</code> action events.
+    Defines a function from the <code>PlugInListener</code> interface 
+    to override.
+*/
+abstract class PlugInAction implements PlugInListener {
+    /** Runs the plug in.
+     */
+    public abstract void runPlugIn(PlugInEvent event);
+}

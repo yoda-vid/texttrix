@@ -38,6 +38,9 @@ import javax.swing.*;
 import java.net.*;
 import java.io.*;
 import java.util.jar.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.util.*;
 
 /** The abstract superclass for all plugins.
     Specifies the files and locations from which to load plugin resources
@@ -45,7 +48,7 @@ import java.util.jar.*;
     All plugins must extend this abstract class and be packaged in 
     uncompressed JAR files.
 */
-public abstract class PlugIn {
+public abstract class PlugIn extends JComponent {
     private String description = null; // short description
     private String detailedDescription = null; // long, HTML-formatted desc.
     private String name = null; // plugin name
@@ -55,6 +58,9 @@ public abstract class PlugIn {
     private String category = null; // plugin category, eg "tools"
     private String path = null; // plugin JAR's path
     private JarFile jar = null; // plugin's JAR
+    //    private Action action = null;
+    //    private JButton actionButton = null;
+    private EventListenerList listenerList = null;
 
     /** Constructs a plugin.
 	@param aName plugin name
@@ -74,24 +80,121 @@ public abstract class PlugIn {
 	detailedDescriptionPath = aDetailedDescriptionPath;
 	iconPath = aIconPath;
 	rollIconPath = aRollIconPath;
+	listenerList = new EventListenerList();
     }
 
-    /** Sets the plugin's path.
-	@param aPath path
-     */
-    public void setPath(String aPath) { path = aPath; }
+    /** Registers a new plug-in listener to respond to notify
+	when the plug-in runs.
+	@param listener listener to register and notify
+	@see #runPlugIn()
+    */
+    public void addPlugInListener(PlugInListener listener) {
+	listenerList.add(PlugInListener.class, listener);
+    }
+
+    /** Removes a registered listener.
+	@param listener listener to register and notify
+	@see #runPlugIn()
+    */
+    public void removePlugInListener(PlugInListener listener) {
+	listenerList.remove(PlugInListener.class, listener);
+    }
 
     /** Runs the plugin on a given section of the text.
 	@param s text to manipulate
 	@param x index at which to start
 	@param y first index at which to no longer work
     */
-    public abstract String run(String s, int x, int y);
+    public abstract String run(String s, int x, int y) ;
 
     /** Runs the plugin over all the given text.
 	@param s text to manipulate
     */
     public abstract String run(String s);
+
+
+
+    /** Invokes the primary action of the plug in.
+	Creates an event to notify listeners that the plug has now
+	begun to perform its main function.
+    */
+    public void runPlugIn() {
+	PlugInEvent event = new PlugInEvent(this);
+	EventQueue queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+	queue.postEvent(event);
+    }
+
+    /** Processes the event that the plug in invokes by notifying all 
+	listeners so that they can act on the plug in.
+	@param event plug in event
+	@see #runPlugIn()
+    */
+    public void processEvent(AWTEvent event) {
+	if (event instanceof PlugInEvent) {
+	    EventListener[] listeners 
+		= listenerList.getListeners(PlugInListener.class);
+	    for (int i = 0; i < listeners.length; i++)
+		((PlugInListener)listeners[i]).runPlugIn((PlugInEvent)event);
+	} else {
+	    super.processEvent(event);
+	}
+    }
+
+    /** Starts the plug in.
+	Override this method to customize what happens when the user
+	presses the plug in button within the Text Trix frame.
+	By default, the method simply fires <code>runPlugIn</code>
+	to start the plug in's primary action, defined in <code>run</code>.
+	@see #runPlugIn()
+	@see #run(String, int, int)
+    */
+    public void startPlugIn() {
+	runPlugIn();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    /** Sets the plugin's path.
+	@param aPath path
+     */
+    public void setPath(String aPath) { path = aPath; }
+
+    /*
+    public void setAction(Action aAction) { 
+	action = aAction; 
+	actionButton = new JButton(action) {
+		protected void fireActionPerformed(ActionEvent evt) {
+		    try {
+			super.fireActionPerformed(evt);
+		    } catch (Exception e) {
+		    }
+		}
+	    }
+    }
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /** Gets the plugin name.
 	@return name
     */
@@ -123,14 +226,21 @@ public abstract class PlugIn {
 	//	System.out.println(url.toString());
 	return new ImageIcon(url);
 	*/
-	/* Workaround for a bug in JRE v.1.4, where PNG/GIF images
-	   don't load from compressed JAR files.  The workaround
-	   first loads the date into a byte array before loading
-	   the array into a PNG constructor.  Evidently the two-step
-	   inflation process avoids creating a chain of streams
-	   with more than one zip inflator
-	   (see http://developer.java.sun.com/developer/bugParade/bugs/ //
-	   4764639.html)
+	/* A bug in JRE v.1.4 prevents loading of PNG/GIF images
+	   from compressed JAR files.  The workaround is to create
+	   uncompressed JAR plug-in files by using the "0" (zero)
+	   command-line option while creating the JAR
+	   (see http://developer.java.sun.com/developer/bugParade/bugs/ \
+	   4764639.html).
+	*/
+
+
+	/* Workaround for an apparent bug preventing the getResourceAsStream's
+	   URL via getResource from accessing an external JAR, despite
+	   the successful loading from the class loader.  Evidently
+	   some systems try to interpret "C:" in "file:/C:/..."
+	   as a network host.  Somehow loading a normal path representation
+	   into a JarFile properly loads the JAR.
 	*/
 	byte[] bytes = null;
 	try {

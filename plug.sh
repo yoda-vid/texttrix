@@ -35,7 +35,8 @@ do
 	#cd $plugin_dir
 	# gives the jar the same name and caps as the plugin's class
 	cd $plugin_dir
-	$JAVA/jar -0cvf $plugin.jar $DIR/$plugin.class $DIR/*.png $DIR/*.html && mv $plugin.jar ..
+	$JAVA/jar -0cvf $plugin.jar $DIR/$plugin.class $DIR/*.png \
+	$DIR/*.html && mv $plugin.jar ..
 	cd ..
 	#mv $plugin.jar ..
 	#cd ..
