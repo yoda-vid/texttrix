@@ -108,7 +108,8 @@ public class TextTrix extends JFrame {
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
 	fileMenu.add(openAction);
-	toolBar.add(openAction);
+	JButton openButton = toolBar.add(openAction);
+	openButton.setBorderPainted(false);
 //	fileMenu.add(openItem);
 //	openItem.addActionListener(new FileOpenListener());
 //	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
@@ -144,7 +145,8 @@ public class TextTrix extends JFrame {
 	setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				InputEvent.CTRL_MASK));
 	fileMenu.add(saveAction);
-	toolBar.add(saveAction);
+	JButton saveButton = toolBar.add(saveAction);
+	saveButton.setBorderPainted(false);
 //	saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 //				InputEvent.CTRL_MASK));
 
@@ -292,7 +294,10 @@ public class TextTrix extends JFrame {
 		}
 	};
 	setAction(removeReturnsAction, "Remove extra hard returns", null);
-	toolBar.add(removeReturnsAction);
+	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
+	removeReturnsButton.setBorderPainted(false);
+	
+	toolBar.setFloatable(false); // necessary since not BorderLayout
 
 	// add menu bar and menus
 	setJMenuBar(menuBar);

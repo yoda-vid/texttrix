@@ -257,7 +257,10 @@ public class TextPad extends JTextArea {
 			undoManager.redo();
 	}
 
-	/**Get the index of the current word's first character.
+	/**Gets the index of the current word's first character.
+	 * @return string index of either the current word or the previous
+	 * word if only delimiters intervene between the word and
+	 * the caret position.
 	 */
 	public int getWordPosition() {
 		int caretPos = getCaretPosition(); // current caret position
@@ -277,6 +280,7 @@ public class TextPad extends JTextArea {
 		return (newCaretPos <= 0) ? 0 : newCaretPos;
 	}
 		/*
+		 * This method fails to skip over multiple delimiters.
 		while (newCaretPos > 0 && 
 				// check for space, comma, semicolon, etc
 				(((checkChar = getText().charAt(--newCaretPos)) != ' ')
@@ -301,7 +305,9 @@ public class TextPad extends JTextArea {
 	}
 	*/
 
-	/**Get the index of the next word's first character.
+	/**Gets the index of the next word's first character.
+	 * @return string index of the next word's beginning, past
+	 * any delimiters
 	 */
 	public int getNextWordPosition() {
 		int caretPos = getCaretPosition(); // current caret position
@@ -321,7 +327,7 @@ public class TextPad extends JTextArea {
 
 		return newCaretPos;
 	}
-		/*
+		/* This method does not skip over multiple delimiters.
 		int caretPos; // current caret position
 		int newCaretPos; // caret position progressing to desired position
 		caretPos = newCaretPos = getCaretPosition();
