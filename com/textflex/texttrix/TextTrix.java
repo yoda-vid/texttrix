@@ -281,7 +281,9 @@ public class TextTrix extends JFrame {
 	helpMenu.add(licenseAction);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
-	Action removeReturnsAction = new AbstractAction("Remove extra hard returns") {
+	url = TextTrix.class.getResource("returnicon-16x16.gif");
+	icon = new ImageIcon(url);
+	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", icon) {
 		public void actionPerformed(ActionEvent evt) {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			// may need to add original text to history buffer

@@ -114,19 +114,38 @@ public class TextPad extends JTextArea {
 				"endLineChar");
 		amap.put("endLineChar", getActionByName(
 					DefaultEditorKit.endLineAction));
-/*
- * need some decisions to go to the appropriate position of each word
- * 
+		
+		// (alt-b) go to beginning of current word
 		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_B, Event.ALT_MASK), 
-				"beginWord");
-		amap.put("beginWord", getActionByName(
-					DefaultEditorKit.beginWordAction));
+				"wordStart");
+		amap.put("wordStart", new AbstractAction() {
+			public void actionPerformed(ActionEvent evt) {
+				setCaretPosition(getWordPosition());
+			}
+		});
 
+		// (alt-f) go to beginning of next word
 		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.ALT_MASK), 
 				"nextWord");
-		amap.put("nextWord", getActionByName(
-					DefaultEditorKit.nextWordAction));
-*/
+		amap.put("nextWord", new AbstractAction() {
+			public void actionPerformed(ActionEvent evt) {
+				setCaretPosition(getNextWordPosition());
+			}
+		});
+
+		// (ctrl-backspace) delete from caret to current word start
+		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
+				"deleteWord");
+		amap.put("deleteWord", new AbstractAction() {
+			public void actionPerformed(ActionEvent evt) {
+				int wordPos = getWordPosition();
+				setText(getText().substring(0, wordPos)
+					+ getText().substring(getCaretPosition()));
+				setCaretPosition(wordPos);
+			}
+		});
+
+		
 	}
 
 	/**Gets the value showing whether the text in the text area
@@ -204,6 +223,59 @@ public class TextPad extends JTextArea {
 			undoManager.redo();
 	}
 
+	/**Get the index of the current word's first character.
+	 */
+	public int getWordPosition() {
+		int caretPos; // current caret position
+		int newCaretPos; // caret position progressing to desired position
+		caretPos = newCaretPos = getCaretPosition();
+		char checkChar;
+		// check that new caret not at start of string
+		while (newCaretPos > 0 && 
+				// check for space, comma, semicolon, etc
+				(((checkChar = getText().charAt(--newCaretPos)) != ' ')
+				 && checkChar != ','
+				 && checkChar != ';'
+				 && checkChar != ':'
+				 && checkChar != '-'
+				 && checkChar != '\\'
+				 && checkChar != '/'
+				 && checkChar != '\"'
+				 && checkChar != '\'')
+				// if space, comma, etc, check before exiting to ensure that not
+				// directly before orig caret position
+				|| newCaretPos == caretPos - 1);
+		// if caret didn't move or reached start of string,
+		// set new caret to one position before string since will increment
+		if (newCaretPos == caretPos - 1 || newCaretPos == 0) 
+			newCaretPos = -1;
+		// place cursor after space, comma, etc, or at start of string
+		return ++newCaretPos;
+	}
+
+	/**Get the index of the next word's first character.
+	 */
+	public int getNextWordPosition() {
+		int caretPos; // current caret position
+		int newCaretPos; // caret position progressing to desired position
+		caretPos = newCaretPos = getCaretPosition();
+		char checkChar;
+		int textLen = getText().length();
+		// check that new caret not at end of string
+		while (newCaretPos < textLen && 
+				// check for space, comma, semicolon, etc
+				((checkChar = getText().charAt(newCaretPos++)) != ' ')
+				&& checkChar != ','
+				&& checkChar != ';'
+				&& checkChar != ':'
+				&& checkChar != '-'
+				&& checkChar != '\\'
+				&& checkChar != '/'
+				&& checkChar != '\"'
+				&& checkChar != '\'');
+		return newCaretPos;
+	}
+	
 	/**Fills an array with the component's possible actions.
 	 * @param txtComp <code>Java Swing</code> text component
 	 */
