@@ -14,7 +14,7 @@ plans for future ones.)
 
 ----v.0.3.4 (8/19/03)----
 
-What's your preference?  Text Trix will take your order.  The text tinkering tool sports a new Preferences panel for users to customize their tinkering experience.  If you would like, Text Trix can provide quick access to recently opened files or reopen them automatically at start-up.  Users can also choose which set of shortcuts they want, including ones that reduce finger-reach and speed up typing.  It's your preference.
+What's your preference?  Text Trix will take your order.  The text tinkering tool sports a new Preferences panel for users to customize their tinkering experience.  If you would like, Text Trix can provide quick access to recently opened files or reopen them automatically at start-up.  Users can also choose which set of shortcuts they want, including ones that shorten finger-reach and speed up typing.  It's your preference.
 
 As the set of Text Trix plug-ins grow, people might not want to use every plug-in they installed.  Now they can select which ones to ignore--and re-include them on the fly if desired.
 
@@ -22,8 +22,8 @@ Text Trix continues to work toward providing an on-the-go experience for its use
 
 New features include:
 -Preferences panel to save user settings
--Ability to remember a chosen number of files and reopen them automatically
--Three separate keybindings models: Standard, Emacs, and Hybrid
+-Ability to remember files and reopen them automatically
+-Three keybindings models: Standard, Emacs, and Hybrid
 -Choice of which plug-ins to include or ignore
 -Improved start-up performance by creating graphical components in separate threads
 

@@ -18,7 +18,7 @@ System Reqs:
 freely available from Sun Microsystems(TM)
 
 Instructions for use:
--Unzip Text Trix by double-clicking on the Jar Ajar self-extracting file, 
+-Unzip the Text Trix[tm] package by double-clicking on the Jar Ajar[tm] self-extracting file, 
 "texttrix-x.y.z-jarajar-extractor.jar".  Follow the instructions to unpack the 
 file.
 -Double-click on "TextTrix.jar" in the directory that you unpacked
@@ -51,7 +51,7 @@ http://textflex.com/texttrix/faq.html or email support@textflex.com
 
 
 
-Text Trix and Text Flex are trademarks of Text Flex.
+Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
 Sun Microsystems, Java, and all Java-based marks are trademarks or registered trademarks of Sun Microsystems, Inc. in the United States and 
 other countries. Text Flex is independent of Sun Microsystems, Inc.
 Linux is a registered trademark of Linus Torvalds.

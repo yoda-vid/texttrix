@@ -46,6 +46,7 @@ Note: "./" is the "check-mark" symbol
 -plug-ins' pref list fields sizes
 -preferences panel to choose default paths
 -auto-save
+-build scripts pass paths to one another
 
 ----Current Work----
 
