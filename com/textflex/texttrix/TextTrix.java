@@ -111,6 +111,18 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    });
+
+	/*
+	tabbedPane.addFocusListener(new FocusListener() {
+		public void focusGained(FocusEvent evt) {
+		    getSelectedTextPad().requestFocusInWindow();
+		}
+
+		public void focusLost(FocusEvent evt) {
+		}
+	    });
+	*/
+
 	// display tool tips for up to 100s
 	ToolTipManager.sharedInstance().setDismissDelay(100000);
 
@@ -145,17 +157,16 @@ public class TextTrix extends JFrame {
 	Action newAction = new AbstractAction("New") {
 		public void actionPerformed(ActionEvent evt) {
 		    addTextArea(textAreas, tabbedPane, makeNewFile());
+		    //		    transferFocus();
+		    //		    toolsMenu.requestFocusInWindow();
+		    //		    getSelectedTextPad().requestFocusInWindow();
+		    //		    System.out.println(getFocusOwner().toString());
 		}
 	    };
 	// per Mozilla keybinding
 	setAcceleratedAction(newAction, "New", 'T', 
 			     KeyStroke.getKeyStroke("ctrl T"));
 	fileMenu.add(newAction);
-	/* tab shifts defined under View menu section;
-	 * alternatively, move to tabs using default Java key-bindings:
-	 * -Ctrl-up to tabs
-	 * -Lt, rt to switch tabs
-	 * -Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
 	Action openAction 
@@ -389,6 +400,26 @@ public class TextTrix extends JFrame {
 
 
 	/* View menu items */
+
+	/* Tab switching attempts to combine several elements of web
+	   browser behavior.  Users can cycle through the tabs in the order
+	   in which they were created by using the Ctrl-]/[ key combinations,
+	   similar to the tab cycling in the Mozilla browser.  Occasionally
+	   the user will open a group of files but want to switch among
+	   only a particular subset of them.  Web browsers' "Back" and
+	   "Forward" buttons become useful here.  By first clicking on the
+	   desired sequence of tabs, the order becomes stored in the
+	   Text Trix history.  To traverse up and down that history,
+	   the user can use the Ctrl-Shift-]\[ shortcut keys.
+	   
+	   These shortcuts intend to expand upon the default Java key-bindings
+	   for tab cycling.  These shortcuts remain available to those
+	   more familiar with other Java applications employing these default
+	   settings:
+	   -Ctrl-up to tabs
+	   -Leftt/Right to switch tabs
+	   -Tab back down to TextPad area
+	*/
 	
 	// (ctrl-shift-[) switch back in the tab history
 	Action backTabAction = new AbstractAction("Back") {
@@ -1459,6 +1490,7 @@ public class TextTrix extends JFrame {
 	// show " *" in tab title when text changed
 	tabbedPane.setSelectedIndex(i);
 	tabbedPane.setToolTipTextAt(i, textPad.getPath());
+	//	textPad.requestFocusInWindow();
     }
 
     /**Changes tabbed pane title to indicate whether the file's changes 
