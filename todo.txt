@@ -47,13 +47,15 @@ Note: "./" is the "check-mark" symbol
 ----Current Work----
 
 v.0.3.6
--fix loss of auto-wrap-indent bug when applying search plug-in
--fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
--fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
--fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
--fix search to not exceed the selection boundaries
--fix search to re-highlight replaced word after "Find and Replace" operation
--fix HTMLReplacer tool tip now that no longer need double undos
+-auto-wrap-indent fixes
+	-fix loss of auto-wrap-indent when applying search plug-in
+	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
+	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
+	-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
+	-fix search to not exceed the selection boundaries
+	-fix search to re-highlight replaced word after "Find and Replace" operation
+	-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
+	-fix backspace at head of unindented line
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
@@ -67,6 +69,7 @@ v.0.3.6
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
+-stop auto-save thread when close file
 
 ----Past Releases----
 

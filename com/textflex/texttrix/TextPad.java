@@ -131,7 +131,7 @@ public class TextPad extends JTextPane implements StateEditable {
 				if (autoIndent
 					&& keyCode == KeyEvent.VK_BACK_SPACE
 					&& isLeadingTab()) {
-//					System.out.println("leading tab");
+					System.out.println("leading tab");
 					// no longer should JVM_15 b/c the behavior applies
 					// to <= JVM_15 in keyPressed
 					indentCurrentParagraph(getTabSize(), true);//JVM_15);
@@ -562,6 +562,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	public boolean isLeadingTab() {
 		int i = getCaretPosition() - 1;
 		try {
+			if (i >= 0 && !getDocument().getText(i, 1).equals("\t")) return false;
 			while (i > 0 && getDocument().getText(i, 1).equals("\t"))
 				i--;
 			return i == 0 || i >= 0 && getDocument().getText(i, 1).equals("\n");
