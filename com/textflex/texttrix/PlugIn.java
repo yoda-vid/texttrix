@@ -85,6 +85,15 @@ public abstract class PlugIn {
 	//	System.out.println(url.toString());
 	return new ImageIcon(url);
 	*/
+	/* Workaround for a bug in JRE v.1.4, where PNG/GIF images
+	   don't load from compressed JAR files.  The workaround
+	   first loads the date into a byte array before loading
+	   the array into a PNG constructor.  Evidently the two-step
+	   inflation process avoids creating a chain of streams
+	   with more than one zip inflator
+	   (see http://developer.java.sun.com/developer/bugParade/bugs/ //
+	   4764639.html)
+	*/
 	byte[] bytes = null;
 	try {
 	    descPath = "com/textflex/texttrix/" + descPath;
