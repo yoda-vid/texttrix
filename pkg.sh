@@ -68,7 +68,7 @@ fi
 BLD_DIR="$BASE_DIR/build" # initial output directory
 TTX_DIR="$BASE_DIR/texttrix" # root directory of main Text Trix source files
 PLGS_DIR="$BASE_DIR/plugins" # root directory of Text Trix plug-in source files
-VER="0.3.4" # version info
+VER="0.3.5" # version info
 DEST="/home/share" # final destination
 
 ##############################
@@ -136,6 +136,9 @@ rm -rf plugins/CVS plugins/*/CVS plugins/*/com/CVS plugins/*/com/textflex/CVS \
 	plugins/*/$DIR/CVS plugins/*/$DIR/*.class plugins/*/$DIR/*~ \
 	plugins/*.jar
 mv texttrix/*.txt .
+
+# Add PKGDIR-specific files
+cp $TTX_DIR/$DIR/images/minicon-32x32.png $BLD_DIR/$PKGDIR/icon.png
 
 # zip up and move to destination
 cd $BLD_DIR
