@@ -1936,6 +1936,8 @@ public class TextTrix extends JFrame {
 	 *            <code>true</code> if the file should be accessed as a
 	 *            resource, via
 	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
+	 * @param resueTab <code>false</code> if a tab should never be reused,
+	 * even if empty
 	 * @see #openFile(File)
 	 */
 	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
@@ -1963,7 +1965,7 @@ public class TextTrix extends JFrame {
 				 * tab and set its text if no tabs exist or if current tab has
 				 * tokens; set current tab's text otherwise.
 				 */
-				if (t == null || !reuseTab && !t.isEmpty()) { // open file in new pad
+				if (t == null || !reuseTab || !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
 					t = getSelectedTextPad();
 					read(t, reader, path);
@@ -2026,13 +2028,34 @@ public class TextTrix extends JFrame {
 		return openFile(file, true, false, false);
 	}
 	
+	/**Opens a file as editable and not from a resource.
+	 * Simply acts as a front end to 
+	 * <code>openFile(File, boolean, boolean, boolean)</code>,
+	 * with <code>resueTab</code> set to false.
+	 * @param file
+	 *            file to open
+	 * @param editable
+	 *            <code>true</code> if the resulting text pad should be
+	 *            editable
+	 * @param resource
+	 *            <code>true</code> if the file should be accessed as a
+	 *            resource, via
+	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
+	 * @see #openFile(File, boolean, boolean, boolean)
+	*/
 	public boolean openFile(File file, boolean editable, boolean resource) {
-		return openFile(file, true, false, false);
+//		return openFile(file, true, false, false);
+		return openFile(file, editable, resource, false);
 	}
 	
+	/**Refreshes a tab without the user having to close and reopen it.
+	 * Useful when an open file is externally changed.
+	*/
 	public void refreshTab() {
+		// refreshes the currently selected TextPad
 		TextPad t = getSelectedTextPad();
 		if (t != null) {
+			// Ensure that has a saved file to refresh
 			if (!t.fileExists()) {
 				String title = "Refreshing ain't always easy";
 				String msg = "This is all we've got.  There's no saved file yet"
@@ -2041,10 +2064,12 @@ public class TextTrix extends JFrame {
 					JOptionPane.INFORMATION_MESSAGE, null);
 				return;
 			}
+			
+			// Confirms with user that willing to override any unsaved changes
 			if (t.getChanged()) {
 				
 				String s = "Refresh request";
-				// dialog with 3 choices: save, discard, cancel
+				// dialog with 2 choices: discard, cancel
 				String msg = "This file has not yet been saved."
 						+ "\nShould I still refresh it with the currently saved version?";
 				int choice = JOptionPane.showOptionDialog(getThis(), msg,
@@ -2053,15 +2078,19 @@ public class TextTrix extends JFrame {
 								"Refresh me now", "Cancel" }, "Cancel"
 						);
 				switch (choice) {
-				// save the text area's contents
+				// preserve the text area's contents by default
 				case 0:
 					break;
 				default:
 					return;
 				}
 			}
+			
+			// Refreshes the tab and tries to restore the caret position
+			// to its original position
 			int pos = t.getCaretPosition();
 			openFile(t.getFile(), t.isEditable(), false, true);
+			// prevent caret from exceeding length of newly refreshed file
 			if (pos <= t.getDocument().getLength()) {
 				t.setCaretPosition(pos);
 			} else {
@@ -2080,6 +2109,8 @@ public class TextTrix extends JFrame {
 	 */
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
+		// if tab set to auto-indent, or file fits auto-indent extension in prefs
+		// and prefs set to auto-indent, then auto-indent
 		if (t.isAutoIndent() || getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
 			t.setAutoIndent(true);
 		}
@@ -2095,14 +2126,19 @@ public class TextTrix extends JFrame {
 	 * @see #autoAutoIndent(TextPad)
 	 */
 	public boolean isAutoIndentExt(String path) {
+		// get the file extension index
 		int extIndex = LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
+		// stop searching if no extension
 		if (extIndex < 0 || extIndex >= path.length())
 			return false;
+		// get the extension str
 		String ext = path.substring(extIndex);
-		//System.out.println("Ext: " + ext);
+		// get the list of extensions to check
 		StringTokenizer tokenizer = new StringTokenizer(getPrefs()
 				.getAutoIndentExt(), " ,.");
 		String token = "";
+		// compare the extension with the list of extensions;
+		// return true once find
 		while (tokenizer.hasMoreTokens()) {
 			if (tokenizer.nextElement().equals(ext))
 				return true;
@@ -2559,19 +2595,35 @@ public class TextTrix extends JFrame {
 		return pad.getDocument().getDefaultRootElement().getElementCount();
 	}
 	
+	/**Gets the index position within the document, given the line number.
+	 * @param pad the text pad to search for the given line number
+	 * @param line the number of the line, starting at 1; add 1 to the
+	 * document element number
+	 * @return a <code>Point</code> object whose X value corresponds
+	 * to the start of the line and whose Y value corresponds to the end,
+	 * the index of the last character - 1, dropping the last char to avoid
+	 * including a newline char or exceeding the document length;
+	 * both values relative to the start
+	 * of the document
+	*/
 	public Point getPositionFromLineNumber(TextPad pad, int line) {
+		// adjusts the line number from the user-friendly, 1 to n+1 numbering
+		// system, to the standard 0 to n system
 		line--;
 		Element elt = pad.getDocument().getDefaultRootElement();
 		int len = pad.getDocument().getLength();
+		// returns x=0, y=0 if the line number precedes the doc
 		if (line < 0) {
 			return new Point(0, 0);
 		} else if (line >= elt.getElementCount()) {
+			// returns x=len,y=len if the line num exceeds the doc
 			int i = len;
 			return new Point(i, i);
 		}
+		// otherwise, returns the boundary indices of the line
 		Element lineElt = elt.getElement(line);
-		int end = lineElt.getEndOffset();
-		if (end >= len) end--;
+		int end = lineElt.getEndOffset() - 1;
+//		if (end >= len) end--;
 		return new Point(lineElt.getStartOffset(), end);
 	}
 
@@ -3668,7 +3720,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
-	private class StatusBarCreator implements Runnable { //extends Thread {
+	/**Creates the status bar in a worker thread.
+	*/
+	private class StatusBarCreator implements Runnable {
 	
 
 		/**
@@ -3689,27 +3743,38 @@ public class TextTrix extends JFrame {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					
+					// Prime the layout
 					SpringLayout layout = new SpringLayout();
 					statusBarPanel.setLayout(layout);
 					
-					// makes the status bar
+					// Make the status bar components;
+					// statusBar already created so that could accept line updates
+					
+					// Line Find
 					JLabel lineNumLbl = new JLabel("Line Find:");
 					lineNumLbl.setToolTipText("GoTo the line number as it's typed");
 					lineNumFld = new JTextField(5);
+					// caret listener to find-as-you-type the line number into the text box
 					lineNumFld.addCaretListener(new CaretListener() {
 						public void caretUpdate(CaretEvent e) {
 							TextPad t = getSelectedTextPad();
 							if (t != null) {
 								String lineStr = lineNumFld.getText();
 								int line = 0;
+								// do nothing if empty box
 								if (!lineStr.equals("")) {
+									// otherwise, parse string, assuming key listener has
+									// filtered out non-digits
 									line = Integer.parseInt(lineStr);
+									// highlight the appropriate line
 									Point p = getPositionFromLineNumber(t, line);
-									textSelectionReverse(t, (int) p.getX(), 0, (int) p.getY() - (int) p.getX());
+									textSelectionReverse(t, (int) p.getX(), 0, 
+										(int) p.getY() - (int) p.getX());
 								}
 							}
 						}
 					});
+					// filter input to only accept digits
 					lineNumFld.addKeyListener(new KeyAdapter() {
 						public void keyTyped(KeyEvent evt) {
 							char keyChar = evt.getKeyChar();
@@ -3718,10 +3783,26 @@ public class TextTrix extends JFrame {
 							}
 						}
 					});
+					
+					// Add the components
 					statusBarPanel.add(statusBar);
 					statusBarPanel.add(lineNumLbl);
 					statusBarPanel.add(lineNumFld);
 					
+					// Lay out the components using the all-new (as of JVM v.1.4)
+					// SpringLayout for graphical glee
+					/* Figuring out the SpringLayout
+					 * 
+					 * All positioning indices apparently point to the right and down;
+					 * negative values go in the opposite directions.  The given side of
+					 * the first component in the putConstraint argument list is set relative 
+					 * to the given side of the second component.  Eg for the Line Find
+					 * label below, the label's East (right) border is positioned 2 points
+					 * to the left (-2 to the right) of the West (left) border of the text field.
+					 *
+					*/
+					
+					// position the statusBar line indicator
 					layout.putConstraint(SpringLayout.WEST, statusBar,
 						5,
 						SpringLayout.WEST, statusBarPanel);
@@ -3732,26 +3813,20 @@ public class TextTrix extends JFrame {
 						2,
 						SpringLayout.SOUTH, statusBar);
 					
-					/*
-					layout.putConstraint(SpringLayout.WEST, lineNumLbl,
-						50,
-						SpringLayout.EAST, statusBar);
-					*/
+					// position the Line Find label relative to the Line Find
+					// text field, which is in turn relative to the right side of 
+					// the panel
 					layout.putConstraint(SpringLayout.NORTH, lineNumLbl,
 						2,
 						SpringLayout.NORTH, statusBarPanel);
 					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
 						2,
 						SpringLayout.SOUTH, lineNumFld);
-					
 					layout.putConstraint(SpringLayout.EAST, lineNumLbl,
 						-2,
 						SpringLayout.WEST, lineNumFld);
-					/*
-					layout.putConstraint(SpringLayout.WEST, lineNumFld,
-						5,
-						SpringLayout.EAST, lineNumLbl);
-					*/
+					
+					// position the Lind Find text field
 					layout.putConstraint(SpringLayout.EAST, lineNumFld,
 						5,
 						SpringLayout.EAST, statusBarPanel);

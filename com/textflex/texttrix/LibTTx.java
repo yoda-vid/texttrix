@@ -700,6 +700,21 @@ public class LibTTx {
 		//		}
 		return text.substring(n, end);
 	}
+	
+	public static String convertEscapeChars(String escapedStr) {
+		String convertedStr = escapedStr
+			.replaceAll("\\^t", "\t")
+			.replaceAll("\\^T", "\t")
+			.replaceAll("\\^n", "\n")
+			.replaceAll("\\^N", "\n");
+//		System.out.println("escapedStr: " + escapedStr + ", convertedStr: " + convertedStr);
+		return convertedStr;
+	}
+	
+	public static String pickWeightedStr(String[] strings, int weightFront) {
+		int n = (int) (strings.length * Math.pow(Math.random(), weightFront));
+		return strings[n];
+	}
 
 
 }

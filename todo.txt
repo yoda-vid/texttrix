@@ -84,6 +84,7 @@ v.0.3.6
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
 		-add summary field; ADDED: "Results: " label summarizes the find/replace findings
 		-fix replace when Ignore Case unchecked; FIXED: stores selected text before exiting "if" b/c of false ignoreCase
+		-escape chars; ADDED: accepts TAB (^t) and NEWLINE (^n) escape characters to both find and replace
 	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED (#1007490): removed obsolete advice
 	-ExtraReturnsRemover
