@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-3
+ * Portions created by the Initial Developer are Copyright (C) 2002-4
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -94,7 +94,7 @@ public class TextTrix extends JFrame {
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
-				if (!prefs.getActivateWindowsTogether()) {
+				if (!getPrefs().getActivateWindowsTogether()) {
 				} else if (isTmpActivated()) {
 					setTmpActivated(false);
 				} else {
@@ -391,26 +391,6 @@ public class TextTrix extends JFrame {
 		focuser();
 	}
 	
-	public boolean continuePrefsUpdate() {
-
-//		if (getPrefs().getPlugInsPrefsChanged()) {
-		for (int i = 0; i < plugIns.length; i++) {
-			if (plugIns[i].isWindowVisible()) {
-				int choice = JOptionPane.showConfirmDialog(
-					this,
-					"Some plug-in windows may be closed if I store plug-in prefs.  Keep on going?",
-					"Electricity...",
-					JOptionPane.WARNING_MESSAGE,
-					JOptionPane.YES_NO_OPTION);
-				if (choice == JOptionPane.YES_OPTION) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
 
 	/** Synchronizes the menus with the current text pad settings.
 	 * Creates the file history menu entries in the File menu
@@ -543,6 +523,27 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	public boolean continuePrefsUpdate() {
+
+//		if (getPrefs().getPlugInsPrefsChanged()) {
+		for (int i = 0; i < plugIns.length; i++) {
+			if (plugIns[i].isWindowVisible()) {
+				int choice = JOptionPane.showConfirmDialog(
+					getPrefs(),
+					"Some plug-in windows may be closed.  Keep on going?",
+					"Electricity...",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+				if (choice == JOptionPane.YES_OPTION) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	/** Creates a plugin action.
 	 * Allows the plugin to be invoked from a button or other action-capable
 	 * interface.
@@ -557,9 +558,11 @@ public class TextTrix extends JFrame {
 			return;
 */
 		String[] includes = getPrefs().getIncludePlugInsList();
+/*
 		for (int i = 0; i < includes.length; i++) {
 			System.out.println("includes[" + i + "]: " + includes[i]);
 		}
+*/
 		if (!getPrefs().getAllPlugIns()
 			&& !LibTTx.inUnsortedList(pl.getPath(), includes)) {
 			System.out.println(pl.getPath());

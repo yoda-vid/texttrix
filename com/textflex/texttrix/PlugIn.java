@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003
+ * Portions created by the Initial Developer are Copyright (C) 2003-4
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -125,7 +125,11 @@ public abstract class PlugIn extends JComponent {
 	}
 	public void removeWindowAdapter() {
 	}
-	
+
+	public void setWindowAdapter(WindowAdapter adapter) {
+		winAdapter = adapter;
+	}
+
 	
 	public boolean isTmpActivated() {
 		return tmpActivated;
@@ -135,10 +139,6 @@ public abstract class PlugIn extends JComponent {
 		tmpActivated = b;
 	}
 	
-	public void setWindowAdapter(WindowAdapter adapter) {
-		winAdapter = adapter;
-	}
-
 	/** Runs the plugin on a given section of the text.
 	 * To use, must override or else the function will simply call <code>run(s)</code>.
 	 * @param s text to manipulate

@@ -52,10 +52,15 @@ v.0.3.5
 -auto-save
 -preferences panel to choose default paths
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront
+	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected
+	-option to turn off; ADDED: Prefs option to turn off the activateWindowsTogether feature
+	-close open plug-in windows, or else they will no longer respond to activation requests; ADDED: dialog warning that plug-in windows will be closed when saving preferences while any of the windows are open
+	-try putting windowing events in separate thread so can still capture function from click on first window clicked
 -pass main Text Trix window position parameters to plug-in dialogs
 -Java Web Start compatibility
 -printing
--fix auto-indent over-indentation; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
+-fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
+-PlugInWindow class to provide core windowing functions automatically
 
 v.0.3.4
 -preferences:

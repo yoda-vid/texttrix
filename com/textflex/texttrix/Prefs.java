@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-3
+ * Portions created by the Initial Developer are Copyright (C) 2002-4
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -57,7 +57,7 @@ public class Prefs extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	// main prefs
 	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class);
-	private boolean plugInsPrefsChanged = false;
+	private boolean plugInsPrefsChanged = false;  // REMOVE
 
 
 
@@ -197,6 +197,9 @@ public class Prefs extends JFrame {
 			null,
 			"Don't get electricuted...",
 			PLUG_INS_PANEL_INDEX);
+			
+			
+		/*
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				if (tabbedPane.getSelectedIndex() == PLUG_INS_PANEL_INDEX) {
@@ -206,6 +209,7 @@ public class Prefs extends JFrame {
 			}
 						
 		});
+		*/
 
 		// adds the components to the panel
 		Container contentPane = getContentPane();
