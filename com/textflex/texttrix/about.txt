@@ -1,0 +1,6 @@
+Text Trix
+a goofy gui editor
+version 0.1.4pre0
+Copyright (c) 2002, David Young
+http://texttrix.sourceforge.net
+http://sourceforge.net/projects/texttrix
