@@ -42,6 +42,7 @@ import java.util.jar.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.util.*;
+import java.awt.event.*;
 
 /** The abstract superclass for all plugins.
     Specifies the files and locations from which to load plugin resources
@@ -65,6 +66,8 @@ public abstract class PlugIn extends JComponent {
 	// list of listeners to notify
 	// flag to retrieve the entire text, not just the selected region
 	private boolean alwaysEntireText = false;
+	private WindowAdapter winAdapter = null;
+	private boolean tmpActivated = false;
 
 	/** Constructs a plugin.
 	@param aName plugin name
@@ -106,6 +109,34 @@ public abstract class PlugIn extends JComponent {
 	*/
 	public void removePlugInListener(PlugInListener listener) {
 		listenerList.remove(PlugInListener.class, listener);
+	}
+	
+	public void addWindowAdapter() {
+	}
+	
+	public void activateWindow() {
+	}
+	/*
+	public boolean isWindowVisible() {
+		return false;
+	}
+	
+	public void reloadWindow(){
+	}
+	public void removeWindowAdapter() {
+	}
+	*/
+	
+	public boolean isTmpActivated() {
+		return tmpActivated;
+	}
+	
+	public void setTmpActivated(boolean b) {
+		tmpActivated = b;
+	}
+	
+	public void setWindowAdapter(WindowAdapter adapter) {
+		winAdapter = adapter;
 	}
 
 	/** Runs the plugin on a given section of the text.
@@ -155,6 +186,7 @@ public abstract class PlugIn extends JComponent {
 	@see #runPlugIn()
 	*/
 	public void processEvent(AWTEvent event) {
+//		System.out.println("processing event");
 		if (event instanceof PlugInEvent) {
 			EventListener[] listeners =
 				listenerList.getListeners(PlugInListener.class);
@@ -166,16 +198,20 @@ public abstract class PlugIn extends JComponent {
 	}
 
 	/** Starts the plug in.
-	Override this method to customize what happens when the user
-	presses the plug in button within the Text Trix frame.
-	By default, the method simply fires <code>runPlugIn</code>
-	to start the plug in's primary action, defined in <code>run</code>.
+	 * Override this method to customize what happens when the user
+	 * presses the plug in button within the Text Trix frame.
+	 * By default, the method simply fires <code>runPlugIn</code>
+	 * to start the plug in's primary action, defined in <code>run</code>.
+	 * Before making visible a window, such as a plug-in dialog box, 
+	 * <code>setTmpActivated(true)</code> should usually be called to
+	 * prevent <code>TextTrix</code> from redundantly activating all its windows.
 	@see #runPlugIn()
 	@see #run(String, int, int)
 	*/
 	public void startPlugIn() {
 		runPlugIn();
 	}
+	
 
 	/** Sets the plugin's path.
 	@param aPath path
@@ -388,6 +424,11 @@ public abstract class PlugIn extends JComponent {
 	 */
 	public String getPath() {
 		return path;
+	}
+	
+	public WindowAdapter getWindowAdapter() {
+//		System.out.println("making winAdapter");
+		return winAdapter;
 	}
 
 }

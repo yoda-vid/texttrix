@@ -70,7 +70,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	public TextPad(File aFile, Prefs prefs) {
 		// TODO: decide whether to check JVM within each TextPad or only once,
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
-		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5.0") != -1;
+		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
 		applyDocumentSettings();
 		// to allow multiple undos and listen for events

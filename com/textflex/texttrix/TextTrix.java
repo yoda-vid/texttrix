@@ -82,12 +82,24 @@ public class TextTrix extends JFrame {
 	private static int fileHistStart = -1; // starting position of file history in file menu
 	private MenuBarCreator menuBarCreator = null; // menu and tool bar worker thread
 	private FileHist fileHist = null; // file history
+	private boolean tmpActivated = false;
 
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
 	one <code>TextPad</code>.
 	 */
 	public TextTrix(final String[] paths) {
+		
+		addWindowListener(new WindowAdapter() {
+			public void windowActivated(WindowEvent e) {
+				if (!prefs.getActivateWindowsTogether()) {
+				} else if (isTmpActivated()) {
+					setTmpActivated(false);
+				} else {
+					focusAllWindows();
+				}
+			}
+		});
 
 		/* Load preferences to create prefs panel */
 
@@ -337,7 +349,7 @@ public class TextTrix extends JFrame {
 				*/
 				//	    } else if (System.getProperty("mrj.version") != null) {
 				/*
-			} else if (System.getProperty("java.vm.version").indexOf("1.5.0") 
+			} else if (System.getProperty("java.vm.version").indexOf("1.5") 
 				!= -1) {
 				// the new Java v.1.5.0, Tiger release, contains a revamped
 				// Swing look-and-feel called "Ocean," implemented by default
@@ -362,6 +374,7 @@ public class TextTrix extends JFrame {
 				exitTextTrix();
 			}
 		});
+		textTrix.setTmpActivated(true);
 		//textTrix.show(); DEPRECATED as of JVM v.1.5.0
 		textTrix.setVisible(true);
 
@@ -531,6 +544,19 @@ public class TextTrix extends JFrame {
 		};
 		// register the listener so the plug in knows to fire it
 		pl.addPlugInListener(listener);
+		
+		WindowAdapter winAdapter = new WindowAdapter() {
+			public void windowActivated(WindowEvent e) {
+				if (!prefs.getActivateWindowsTogether()) {
+				} else if (pl.isTmpActivated()) {
+					pl.setTmpActivated(false);
+				} else {
+					focusAllWindows(pl);
+				}
+			}
+		};
+		pl.setWindowAdapter(winAdapter);
+		pl.addWindowAdapter();
 
 		// action to start the plug in, such as invoking its options
 		// panel if it has one;
@@ -672,6 +698,59 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/*
+	public void activatePlugInWindow(final PlugIn pl) {
+		try {
+			EventQueue.invokeAndWait(new Runnable() {
+				public void run() {
+					pl.activateWindow();
+				} 
+			});
+		} catch(InterruptedException e) {
+		} catch(java.lang.reflect.InvocationTargetException e) {
+		}
+		
+	}
+	*/
+	
+	public void focusAllWindows(PlugIn pl) {
+//		if (pl.isActivated()) return;
+		for (int i = 0; i < plugIns.length; i++) {
+			if (plugIns[i] != pl) {
+				plugIns[i].setTmpActivated(true);
+//				activatePlugInWindow(pl);
+				plugIns[i].activateWindow();
+//				plugIns[i].setActivated(false);
+			} 
+		}
+		setTmpActivated(true);
+		toFront();
+		pl.setTmpActivated(true);
+		pl.activateWindow();
+//		pl.setActivated(false);
+//		System.out.println("hey there");
+	}
+	
+	public void focusAllWindows() {
+//		System.out.println("plugIns.length = " + plugIns.length);
+		for (int i = 0; i < plugIns.length; i++) {
+//			System.out.println("plugIn[" + i + "]");
+			plugIns[i].setTmpActivated(true);
+			plugIns[i].activateWindow();
+		}
+		setTmpActivated(true);
+		toFront();
+//		System.out.println("hi there");
+	}
+	
+	public void setTmpActivated(boolean b) {
+		tmpActivated = b;
+	}
+	
+	public boolean isTmpActivated() {
+		return tmpActivated;
+	}
+	
 	/** Reloads all the plug-ins in the current <code>plugins</code> folder.
 	 * Prepares the preferences panel to offer all available plug-ins.
 	 * @see #getPlugInsFile()
@@ -785,6 +864,7 @@ public class TextTrix extends JFrame {
 		getPrefs().updatePlugInsPanel(getPlugInNames());
 		if (plugIns != null) {
 			for (int i = 0; i < plugIns.length; i++) {
+//				plugIns[i].removeWindowAdapter();
 				makePlugInAction(plugIns[i]);
 			}
 		}
@@ -2693,8 +2773,13 @@ public class TextTrix extends JFrame {
 
 					// Load plugins; add to appropriate menu
 					setupPlugIns();
-					
-					
+/*
+					for (int i = 0; i < plugIns.length; i++) {
+						if (plugIns[i].isWindowVisible()) {
+							plugIns[i].reloadWindow();
+						}
+					}
+*/					
 					
 					
 					

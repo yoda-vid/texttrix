@@ -106,6 +106,9 @@ public class Prefs extends JFrame {
 	private static final String AUTO_INDENT_EXT = "autoIndentExt";
 	private JTextField autoIndentExtFld = null; // input list
 	
+	private static final String ACTIVATE_WINDOWS_TOGETHER = "activateWindowsTogether";
+	private JCheckBox activateWindowsTogetherChk = null;
+	
 	
 	
 	
@@ -324,6 +327,8 @@ public class Prefs extends JFrame {
 		storeFileHistCount(fileHistCountMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
+		generalPrefs.putBoolean(ACTIVATE_WINDOWS_TOGETHER, 
+			activateWindowsTogetherChk.isSelected());
 	}
 	
 	/** Stores the Shorts preferences.
@@ -620,6 +625,9 @@ public class Prefs extends JFrame {
 	public String getAutoIndentExt() {
 		return generalPrefs.get(AUTO_INDENT_EXT, "");
 	}
+	public boolean getActivateWindowsTogether() {
+		return generalPrefs.getBoolean(ACTIVATE_WINDOWS_TOGETHER, true);
+	}
 	/** Gets the stored keybindings preference.
 	 * 
 	 * @return the keybindings preference
@@ -717,6 +725,16 @@ public class Prefs extends JFrame {
 					String autoIndentExt =
 						".java, .c, .cpp, .html, .css, .shtml, .xhtml";
 					autoIndentExtFld = new JTextField(autoIndentExt, 30);
+					
+
+
+					// re-opens the tabs left open during the previous session
+					String activateWindowsTogetherTxt = "Bring all windows to the front";
+					String activateWindowsTogetherTipTxt =
+						"<html>When activating one window, all other windows are"							+ "brought just below it.</html>";
+					activateWindowsTogetherChk =
+						new JCheckBox(activateWindowsTogetherTxt, getActivateWindowsTogether());
+					activateWindowsTogetherChk.setToolTipText(activateWindowsTogetherTipTxt);
 
 					// add components to a grid-bag layout
 					panel.setLayout(new GridBagLayout());
@@ -759,7 +777,7 @@ public class Prefs extends JFrame {
 						1,
 						1,
 						0,
-						100,
+						0,
 						panel);
 					LibTTx.addGridBagComponent(
 						autoIndentExtFld,
@@ -770,6 +788,16 @@ public class Prefs extends JFrame {
 						1,
 						0,
 						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						activateWindowsTogetherChk,
+						constraints,
+						0,
+						3,
+						2,
+						1,
+						0,
+						100,
 						panel);
 					tabbedPane.setComponentAt(GENERAL_PANEL_INDEX, panel);
 				}
