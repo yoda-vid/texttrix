@@ -104,6 +104,11 @@ do
 	fi
 done
 
+if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+then
+	JAVA="$JAVA"/
+fi
+
 # Source directories
 BASE_DIR=""
 if [ "x$BASE_DIR" = "x" ] # empty string
@@ -129,9 +134,9 @@ PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" #
 cd "$BASE_DIR"
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA/javac" "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
+	"$JAVA"javac "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
 else
-	"$JAVA/javac" "$TTX_DIR/$DIR/"*.java
+	"$JAVA"javac "$TTX_DIR/$DIR/"*.java
 fi
 # change to plugins directory and compile and package each plugin;
 # list the directory names and their corresponding classes in the "for" line;
@@ -147,12 +152,12 @@ do
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
 	if [ "$CYGWIN" = "true" ]
 	then
-		"$JAVA/javac" -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
+		"$JAVA"javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
 	else
-		"$JAVA/javac" -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
+		"$JAVA"javac -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
 	fi
 	cd "$plugin_dir"
-	"$JAVA/jar" -0cvf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
+	"$JAVA"jar -0cvf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
 	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
 	cd ..
 done
