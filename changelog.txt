@@ -12,7 +12,28 @@ plans for future ones.)
 ----v.0.3 Series: FEATure Series (FEATS)----
 --------------------------------------
 
-----v.0.3.2 (3/18/03)------
+----v.0.3.3 (6/30/03)----
+
+Ever tried to indent HTML and wished that all the lines would line up?  Programs for writing text often wrap lines back to the left margin, not to the orignal indentation.  Even earlier Text Trix versions did that, but no longer.  The latest version sports a bolstered auto-indent function to automatically line up all the text, without adding any extra tabs or returns.
+
+The auto-indent feature works for any type of source code, not just HTML.  Similarly, the Forward/Back function works any time one edits multiple documents at once, such as code spanning several files.  Press Ctrl-Shift-[, and the Text Trix editor shifts to the most recently displayed tab, regardless of its distance from the current one.  Continue to previous tabs, or press Ctrl-Shfit-] to go to the original tab.
+
+The idea behind plug-ins is to allow people to use them however the people would like.  Install the plug-ins one wants.  Choose the plug-in options to suit one's preference.  Previous versions of Text Trix began to fulfill the first goal, and now plug-ins can flash windows for users to enter their options.  The first "trix," or goofy plug-in, provides a window for users to type in the message and time interval they want to highlight letter-by-letter in the current text.
+
+New features include:
+-Tab sizes are more reasonable and can indent even non-wrapped lines when auto-indent is on
+-Forward/Back-style tab navigation
+-Plug-ins with options windows
+-Statistics feature counts the characters, words, and lines in a chosen section
+-Filenames display in the window's title bar
+-Letter Pulse plug-in demonstrates the flexibility to update the text multiple times and incorporate options from a window
+
+Bug fixes include:
+-Plug-ins load in JRE v.1.4.2-beta
+-Tab tool tip updates when opening new file
+-Ctrl-Backspace deletes words consistently on all test platforms
+
+----v.0.3.2 (3/18/03)----
 
 Text Trix, the text tinkering tool, now has a plugin architecture to easily add 
 new tools or trix.  Not everyone wants the same text manipulators; now each 

@@ -29,6 +29,9 @@ v.0.5 series: advanced interface
 -elim multiple spaces via Extra Returns Remover
 -allow shortcuts to work when the toolbar is in focus
 -check on shortcuts in HTML/RTF views
+-plug-ins: listener types create listeners that TextTrix attaches to given TextPad
+-Search plug-in: count words directly by checking for non-word character
+-pop-up dialog when null pointers for hard-coded documentation names
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./
@@ -38,26 +41,26 @@ v.0.3.3
 -word-wrap indent; ADDED: left indents equal to the number of tabs within a given paragraph ./
 -URLClassLoader can't load plugins in JRE v.1.4.2-beta-b19; FIXED: create file from path and convert file into URL rather than creating URL address manually before converting ./
 -plugin methods allowing option windows, listeners, etc:
-	-plugin types to specify how to implement them; eg "run", "dialog", "listener"
+	-plugin types to specify how to implement them; eg "run", "dialog", "listener"; DEFERRED: plug-ins can open "dialogs," now called "options windows," through the universal startPlugIn() method (see below); may need separate plug-in type for "listeners," though
 	-dialog types create a dialog object that TextTrix invokes on its text; ADDED: PlugIn now has two separate methods that TextTrix invokes: startPlugIn and runPlugIn; TextTrix calls startPlugIn when the user first presses the plug-in's button, which can in turn either immediately notify TextTrix to call runPlugIn or allow the plug-in to create its own dialog box to set options and a button to make the notification ./
-	-listener types create listeners that TextTrix attaches to given TextPad
-	-check whether to make PlugInEvent and similar classes public; ADDED: the events, listeners, etc are all public to allow referencing and extension
-	-store icon and rollIcon for future use, such as in option windows; ADDED: storage variables; plug-ins must now call PlugIn.getRollIcon(String) in getRollIcon()
--plugin adaptor class to permit unimplemented methods; DEFERRED: virtually all PlugIn's abstract classes are necessary now
+	-check whether to make PlugInEvent and similar classes public; ADDED: the events, listeners, etc are all public to allow referencing and extension ./
+	-store icon and rollIcon for future use, such as in option windows; ADDED: storage variables; plug-ins must now call PlugIn.getRollIcon(String) in getRollIcon() ./
+-plugin adaptor class to permit unimplemented methods; DEFERRED: virtually all PlugIn's abstract classes are necessary now ./
 -shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order; ADDED: "Back" and "Forward" shortcuts (View > Back/Forward or Ctrl-Shift-]/[) with an unlimited history
 -text area focus w/ each JTabbedPane switch; ADDED: two separate calls to requestFocusInWindow() in tabbed pane's stateChanged ChangeListener method -- one call within EventQueue.invokeLater(), the other afterward
--change to MPL 1.1/GPL 2.0/LGPL 2.1 triple license; SWITCHED: swithced to the triple license to ensure that the Text Trix editor remains open source while permitting its inclusion in both proprietary and copyleft software
+-change to MPL 1.1/GPL 2.0/LGPL 2.1 triple license; SWITCHED: switched to the triple license to ensure that the Text Trix editor remains open source while permitting its inclusion in both proprietary and copyleft software ./
 -retitle window bar when opening or saving new file; ADDED: title updater
 -"Search" plugin:
 	-port the FindReplace tool to a dialog-based plug-in tool; ADDED: "FindReplace" is now "Search"; PlugIn classes can now alter an "alwaysEntireText" variable to specify that the plug-in should receive all of the text despite any highlighting, along w/ highlight positions; plug-ins now return text to highlight as well as altered text
 	-make statistics fns; ADDED: character, word, and line count
-	-fix word search when caret at end of text; FIXED: removed detrimetnal variable in getWord() (formerly part of findWord()) 
+	-fix word search when caret at end of text; FIXED: removed detrimental variable in getWord() (formerly part of findWord()) 
 	-add a no-text-change value to PlugInOutcome; ADDED: flag to show that the text has not changed, such as when finding text but not repacing it
 -"Letter Pulse" plugin:
 	-demonstrate as a "trix" plugin; ADDED: sequentially highlights the letters of a given message
-	-demonstrate the options panel; ADDED: follows a similar model as the "Search" plugin
+	-demonstrate the options window; ADDED: follows a similar model as the "Search" plugin
 	-demonstrate multiple updates to the Text Pad; ADDED: repeatedly calls the highlighter to select a different letter with each pulse
 	-demonstrate the no-text-change flag; ADDED: pulse, but no text update
+-null pointer when no "features.txt", "shortcuts.txt", or "license.txt"; FIXED: weed out these and similar calls when null
 
 v.0.3.2
 -update tab tooltip when rename ./
