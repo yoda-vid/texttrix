@@ -66,7 +66,7 @@ public abstract class PlugIn extends JComponent {
 	// list of listeners to notify
 	// flag to retrieve the entire text, not just the selected region
 	private boolean alwaysEntireText = false;
-	private WindowAdapter winAdapter = null;
+//	private WindowAdapter winAdapter = null;
 	private boolean tmpActivated = false;
 
 	/** Constructs a plugin.
@@ -127,7 +127,7 @@ public abstract class PlugIn extends JComponent {
 	}
 
 	public void setWindowAdapter(WindowAdapter adapter) {
-		winAdapter = adapter;
+//		winAdapter = adapter;
 	}
 
 	
@@ -428,7 +428,8 @@ public abstract class PlugIn extends JComponent {
 	
 	public WindowAdapter getWindowAdapter() {
 //		System.out.println("making winAdapter");
-		return winAdapter;
+//		return winAdapter;
+		return null;
 	}
 
 }

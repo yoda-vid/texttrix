@@ -587,18 +587,21 @@ public class TextTrix extends JFrame {
 		// register the listener so the plug in knows to fire it
 		pl.addPlugInListener(listener);
 		
-		WindowAdapter winAdapter = new WindowAdapter() {
-			public void windowActivated(WindowEvent e) {
-				if (!prefs.getActivateWindowsTogether()) {
-				} else if (pl.isTmpActivated()) {
-					pl.setTmpActivated(false);
-				} else {
-					focusAllWindows(pl);
+		if (pl instanceof PlugInWindow) {
+			WindowAdapter winAdapter = new WindowAdapter() {
+				public void windowActivated(WindowEvent e) {
+					if (!prefs.getActivateWindowsTogether()) {
+					} else if (pl.isTmpActivated()) {
+						pl.setTmpActivated(false);
+					} else {
+						focusAllWindows(pl);
+					}
 				}
-			}
-		};
-		pl.setWindowAdapter(winAdapter);
-		pl.addWindowAdapter();
+			};
+			pl.setWindowAdapter(winAdapter);
+//			System.out.println(pl.getName());
+			pl.addWindowAdapter();
+		}
 
 		// action to start the plug in, such as invoking its options
 		// panel if it has one;
