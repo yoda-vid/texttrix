@@ -92,6 +92,7 @@ v.0.3.6
 	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
 	-build the API through the Makefile
 	-rules to clean and install
+	-pkg script should check that build directory exists or successfully created before continuing; FIXED: checks for directory b/c lack of it indicates that the script will not be able to change directories and will instead delete files in the current directory
 -fix tab history from failing under certain extreme cases
 -bookmarks groups
 	-open all files in a group

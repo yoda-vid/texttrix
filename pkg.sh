@@ -147,10 +147,13 @@ then
 	mkdir "$BLD_DIR"
 fi
 
-if [ -e "$BLD_DIR" ]
+if [ -d "$BLD_DIR" ]
 then
 	cd "$BLD_DIR" # base of operations
 else
+	echo "Sorry, but $BASE_DIR isn't a directory,"
+	echo "so I won't be very useful."
+	echo "Goodbye."
 	exit 1
 fi
 
