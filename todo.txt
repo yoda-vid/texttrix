@@ -40,7 +40,6 @@ Note: "./" is the "check-mark" symbol
 	-truncate filenames on tabs
 -print images and multi-formatted text
 -update JarAjar to allow for MacOS X integration
--bookmarks, including bookmark groups
 -convert player "starter" field into numerical ranking system for depth charts
 -rename files in place
 
@@ -55,10 +54,16 @@ v.0.3.6
 	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
 	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
 	-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
-	-fix search to not exceed the selection boundaries
-	-fix search to re-highlight replaced word after "Find and Replace" operation
-	-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
 	-fix graphical indent when backspace at head of unindented line; FIXED: corrected isLeadingTab()
+	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
+-plugin updates
+	-Search plugin fixes
+		-fix replace-all fn to not exceed the selection boundaries; FIXED: replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
+		-make selected-area-only and wrap boxes alternate choices; ADDED: since the two options are mutually exclusive, turning on one turns off the other, while both can also be unchecked simultaneously
+		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
+		-add summary field
+	-HTMLReplacer plugin comprehensiveness
+		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
 -streamline integrated windowing design
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
@@ -76,6 +81,12 @@ v.0.3.6
 -drag-n-drop files to open them in Text Trix
 -new build process
 	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
+	-build the API through the Makefile
+-fix tab history from failing
+-bookmarks groups
+	-open all files in a group
+	-create separate dialog window listing all the files, where files can be added be dragging their tab into the box
+	-move to each tab by clicking on a file in the group dialog window
 
 ----Past Releases----
 

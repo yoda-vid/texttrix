@@ -296,7 +296,7 @@ fi
 PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
 plgTargetFiles=""
-plgRules=""
+plgRules="Plugs plugs: $PLGS""\n"
 plgSetupRules=""
 plgClassRules=""
 for plg in $PLGS

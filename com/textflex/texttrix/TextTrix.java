@@ -918,8 +918,8 @@ public class TextTrix extends JFrame {
 					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						doc.remove(0, doc.getLength()); // remove all the text
-						doc.insertString(0, outcome.getText(), null);
-						// insert text
+						doc.insertString(0, outcome.getText(), null);	// insert text
+						autoAutoIndent(t);
 					}
 					// approximates the original caret position
 					int i = -1;
@@ -945,6 +945,7 @@ public class TextTrix extends JFrame {
 						doc.remove(start, len);
 						// insert text
 						doc.insertString(start, outcome.getText(), null);
+						autoAutoIndent(t);
 					}
 					// caret automatically returns to end of selected region
 					int i = -1;
@@ -2166,7 +2167,7 @@ public class TextTrix extends JFrame {
 	 */
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
-		if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
+		if (t.isAutoIndent() || getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
 			t.setAutoIndent(true);
 		}
 	}
