@@ -57,6 +57,9 @@ public class TextTrix extends JFrame {
     private static JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	// file open/save dialog
     private static JFileChooser chooser = new JFileChooser();
+	// auto-indent
+	private static JCheckBoxMenuItem autoIndent 
+		= new JCheckBoxMenuItem("Auto-indent");
 	// most recently path opened to
 	private static String openPath = "";
 	// most recently path saved to
@@ -66,8 +69,8 @@ public class TextTrix extends JFrame {
 	// find dialog
 	private static FindDialog findDialog;
 
-	/**Constructs a new <code>TextTrix</code> frame and
-	 * <code>TextPad</code> to begin with.
+	/**Constructs a new <code>TextTrix</code> frame and starting 
+	 * <code>TextPad</code>.
 	 */
     public TextTrix() {
 	setTitle("Text Trix");
@@ -83,10 +86,10 @@ public class TextTrix extends JFrame {
 	fileMenu.setMnemonic('F');
 	JMenu editMenu = new JMenu("Edit");
 	editMenu.setMnemonic('E');
-	JMenu mistakerMenu = new JMenu("Mistaker");
-	mistakerMenu.setMnemonic('M');
+	JMenu trixMenu = new JMenu("Trix");
+	trixMenu.setMnemonic('T');
 	JMenu toolsMenu = new JMenu("Tools");
-	toolsMenu.setMnemonic('T');
+	toolsMenu.setMnemonic('O');
 	JMenu helpMenu = new JMenu("Help");
 	helpMenu.setMnemonic('H');
 
@@ -250,6 +253,15 @@ public class TextTrix extends JFrame {
 	setAction(selectAllAction, "Select all", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_L,
 				InputEvent.CTRL_MASK));
 	editMenu.add(selectAllAction);
+
+	editMenu.addSeparator();
+
+	// options sub-menu
+	JMenu optionsMenu = new JMenu("Options");
+	editMenu.add(optionsMenu);
+
+	// auto-indent
+	optionsMenu.add(autoIndent);
 	
 	/* Help menu items */
 
@@ -368,7 +380,7 @@ public class TextTrix extends JFrame {
 	setJMenuBar(menuBar);
 	menuBar.add(fileMenu);
 	menuBar.add(editMenu);
-	menuBar.add(mistakerMenu);
+	menuBar.add(trixMenu);
 	menuBar.add(toolsMenu);
 	menuBar.add(helpMenu);
 
@@ -443,6 +455,10 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	public static boolean getAutoIndent() {
+		return autoIndent.isSelected();
+	}
+
 	/**Sets the given path as the most recently one used
 	 * to open a file.
 	 * @param anOpenPath path to set as last opened location
@@ -457,6 +473,10 @@ public class TextTrix extends JFrame {
 	 */
 	public static void setSavePath(String aSavePath) {
 		savePath = aSavePath;
+	}
+
+	public static void setAutoIndent(boolean b) {
+		autoIndent.setSelected(b);
 	}
 
 	/**Enable button rollover icon change.

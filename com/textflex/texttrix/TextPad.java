@@ -56,6 +56,7 @@ public class TextPad extends JTextArea {
 	private String path;
 	private UndoManager undoManager = new UndoManager();
 	private Hashtable actions;
+	private Document doc = getDocument();
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -69,7 +70,7 @@ public class TextPad extends JTextArea {
 		file = aFile;
 		// to listen for keypad events
 		// to allow multiple undos
-		getDocument().addUndoableEditListener(undoManager);
+		doc.addUndoableEditListener(undoManager);
 		setTabSize(4); // probably add to preferences later
 
 		// for new key-bindings
@@ -132,12 +133,18 @@ public class TextPad extends JTextArea {
 		});
 
 		// (ctrl-backspace) delete from caret to current word start
-		// First need to discard JTextComponent's usual dealing with ctrl-backspace
+		// First discard JTextComponent's usual dealing with ctrl-backspace.
+		// Auto-indent if Text Trix's option selected.
 		addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent event) {
 				char keyChar = event.getKeyChar();
-				if (event.isControlDown() && keyChar == KeyEvent.VK_BACK_SPACE)
+				if (event.isControlDown() && keyChar 
+					== KeyEvent.VK_BACK_SPACE) {
 					event.consume();
+				} else if (TextTrix.getAutoIndent() 
+					&& keyChar == KeyEvent.VK_ENTER) {
+					autoIndent();
+				}
 			}
 		});
 		
@@ -153,7 +160,7 @@ public class TextPad extends JTextArea {
 				// serialized objects of this class won't be compatible w/
 				// future releases
 				try {
-					getDocument().remove(wordPos, getCaretPosition() - wordPos);
+					doc.remove(wordPos, getCaretPosition() - wordPos);
 					setCaretPosition(wordPos);
 				} catch(BadLocationException b) {
 					System.out.println("Deletion out of range.");
@@ -298,6 +305,30 @@ public class TextPad extends JTextArea {
 
 		return newCaretPos;
 	}
+
+	/**Auto-indent to the previous line's tab position.
+	 */
+	public void autoIndent() {
+		int tabs = 0;
+		String text = getText();
+		char c;
+		for (int n = getCaretPosition() - 2; 
+				n >= 0 && (c = text.charAt(n)) != '\n'; n--) {
+			if (c == '\t') {
+				tabs++;
+			}
+		}
+		StringBuffer tabStr = new StringBuffer(tabs);
+		for (int i = 0; i < tabs; i++) {
+			tabStr.append('\t');
+		}
+		try {
+			doc.insertString(getCaretPosition(), tabStr.toString(), null);
+		} catch(BadLocationException e) {
+			System.out.println("Insert location " + getCaretPosition() + " does not exist");
+		}
+	}
+	
 	/**Fills an array with the component's possible actions.
 	 * @param txtComp <code>Java Swing</code> text component
 	 */
