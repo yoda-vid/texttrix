@@ -56,12 +56,12 @@ v.0.3.4
 		-remember program size and location; ADDED: record whenever move or resize the program window
 	-auto-indent automatically for given extensions; ADDED: can turn on/off and customize extensions
 	-plug-ins:
-		-load all (default) or only specific plug-ins
--GUI worker threads; ADDED: menu creation and updating in own threads
+		-load all (default) or only specific plug-ins; ADDED: load plug-ins dynamically whenever open Preferences panel; include all plug-ins or specify from list
+-GUI worker threads; ADDED: menu creation and updating in own threads to simultaneously load various graphics
 -programming src code file filter; ADDED: filter to accept java, cpp, and c files
 -fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts
--close files from left to right; RFE: allows tab restoration to easily open files in the same order that they were at closing
--clear default name when saving new file
+-close files from left to right; REVISED: allows tab restoration to easily open files in the same order that they were at closing
+-clear default name from file chooser when saving new file
 -fix StringIndexOutOfBoundsError when running most plug-ins on selected text; FIXED: TextTrix.textTinker passed in only the selected region, but the plug-ins treated it as if they received the whole text; revised PlugIn spec so that default to run(String) rather than making all run methods abstract; plug-ins w/ alwaysEntireText == true need to override run(String, int, int) to respond to selection boundaries
 
 v.0.3.3
