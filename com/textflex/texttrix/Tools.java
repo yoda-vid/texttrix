@@ -68,7 +68,7 @@ public class Tools {
 	 * @param s the full text from which to strip extra hard returns
 	 * @return stripped text
 	 */
-    public static String removeExtraHardReturns(String s) {
+    public static String removeExtraHardReturns(String s, int start, int end) {
 		/* This function works by generally checking the characters afer
 		 * a hard return to determine whether to keep it or not.
 		 * To strip inline message reply characters, the function must also
@@ -77,16 +77,18 @@ public class Tools {
 		 * return removal.
 		 */
 		StringBuffer stripped = new StringBuffer(s.length()); // new string
-		int n = 0; // string index
+		int n = start; // string index
 		String searchChars = " >"; // inline message reply chars
 		String inlineReplySigns = ">"; // inline message indicators
 		boolean isCurrentLineReply = false; // current line part of message reply
 		boolean isNextLineReply = false; // next line part of message reply
 		boolean ignorePre = false; // ignore <pre>'s within inline replies
 
+		// append text preceding the selection
+		stripped.append(s.substring(0, n));
 		// check for inline reply symbols at start of string
 		n = containingSeq(s, n, searchChars, inlineReplySigns);
-		if (s.indexOf("<pre>") == 0 || n == 0) {
+		if (s.indexOf("<pre>") == 0 || n == start) {
 			isCurrentLineReply = false;
 		} else {	
 			isCurrentLineReply = true;
@@ -94,7 +96,7 @@ public class Tools {
 			ignorePre = true;
 		}
 	
-		while (n < s.length()) {
+		while (n < end) {
 			int inlineReply = 0; // eg ">" or "<" from inline email msg replies
 			int nextInlineReply = 0; // inline replies on next line
 	    	int singleReturn = s.indexOf("\n", n); // next hard return occurrence
@@ -103,8 +105,8 @@ public class Tools {
 	    	boolean isAsterisk = false; // asterisk flag
 			boolean isNumber = false; // number flag
 			boolean isTab = false; // tab flag
-	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag occurrence
-		    int endPre = s.indexOf("</pre>", n); // next cloisng pre tag occurrence
+	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag
+		    int endPre = s.indexOf("</pre>", n); // next cloisng pre tag
 			
 			// check the character after a hard return
 			if (singleReturn != -1) {
@@ -113,10 +115,10 @@ public class Tools {
 				inlineReply = containingSeq(s, afterSingRet, searchChars, inlineReplySigns);
 				// if the reply chars contine another hard return, find the length
 				// of reply chars after it
-				if (s.length() > afterSingRet + inlineReply
-						&& s.charAt(afterSingRet + inlineReply) == '\n') {
+				if (s.length() > (afterSingRet += inlineReply)
+						&& s.charAt(afterSingRet) == '\n') {
 					isDoubleReturn = true;
-					nextInlineReply = containingSeq(s, afterSingRet + inlineReply + 1,
+					nextInlineReply = containingSeq(s, afterSingRet + 1,
 							searchChars, inlineReplySigns);
 				}
 				// check whether the character after a return is a 
@@ -137,29 +139,31 @@ public class Tools {
 			 * and their inline msg reply chars appropriately.
 			 */
 			// skip <pre>-delimited sections, removing only the <pre> tags
-			// The <pre> tags should each be on its own line.
-		    if (startPre == n && !ignorePre
-					&& (startPre < s.length() || startPre < singleReturn)) {
+			// The <pre> tags should each be at the start of its own line.
+		    if (startPre == n && !ignorePre) {
+//					&& (startPre < s.length() || startPre < singleReturn)) {
 				// go to the end of the "pre" section
 				if (endPre != -1) {
 		    		stripped.append(s.substring(n + 6, endPre));
 			    	n = endPre + 7;
 			    // if user forgets closing "pre" tag, goes to end
+				} else if (n + 6 < end) {
+		    		stripped.append(s.substring(n + 6, end));
+		    		n = end;
 				} else {
-		    		stripped.append(s.substring(n + 6));
-		    		n = s.length();
+					n = end;
 				}
 			// add the rest of the text if no more single returns exist.
 			// Also catches null strings
 			// Skips final "--------" for inline replies if no singleReturn after
 	    	} else if (singleReturn == -1) {
-				stripped.append(s.substring(n));
+				stripped.append(s.substring(n, end));
 				/* to add final dashed line after reply, even when no final
 				 * return, uncomment these lines
 				if (isCurrentReply)
 					stripped.append("\n-----------------------\n\n");
 				*/
-				n = s.length();
+				n = end;
 			// mark that start of inline message reply
 			} else if (!isCurrentLineReply && isNextLineReply) {
 				stripped.append(s.substring(n, singleReturn)
@@ -199,7 +203,7 @@ public class Tools {
 		// flag to ignore <pre> tags if in inline message reply
 		ignorePre = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 		}	
-		return stripped.toString();
+		return stripped.toString() + s.substring(n);
     }
 
 	/**Finds the first continuous string consisting of any of a given
@@ -231,15 +235,18 @@ public class Tools {
 	 * @param text text from which to remove HTML tags
 	 * @return text with HTML tags removed
 	 */
-	public static String htmlReplacer(String text) {
+	public static String htmlReplacer(String text, int start, int end) {
 		String lowerCase = text.toLowerCase(); // so ignore tag upper/lower case
 		int len = text.length();
 		StringBuffer s = new StringBuffer(len);
-		int n = 0;
+		int n = start;
 		char c;
+
+		// append text preceding the selection
+		s.append(text.substring(0, n));
 		// add to the stringbuffer char by char, deleting and replacing 
 		// tags as appropriate
-		while (n < len) {
+		while (n < end) {
 			// tags
 			if ((c = text.charAt(n)) == '<' && n < len - 1) {
 				n++;
@@ -274,7 +281,7 @@ public class Tools {
 			}
 			n++;
 		}
-		return s.toString();
+		return s.toString() + text.substring(n);
 	}
 
 	/**Checks whether any of the strings in an array are at the start
@@ -302,11 +309,15 @@ public class Tools {
 	 * @param text text to convert
 	 * @return text with added String representations
 	 */
-	public static String showNonPrintingChars(String text) {
-		StringBuffer s = new StringBuffer(text.length());
+	public static String showNonPrintingChars(String text, int start, int end) {
+		int len = text.length();
+		StringBuffer s = new StringBuffer(len);
 		char c;
+
+		// append text preceding the selection
+		s.append(text.substring(0, start));
 		// progress char by char, revealing newlines and tabs explicitly
-		for (int i = 0; i < text.length(); i++) {
+		for (int i = start; i < end; i++) {
 			c = text.charAt(i);
 			switch (c) {
 				case '\n':
@@ -320,7 +331,7 @@ public class Tools {
 					break;
 			}
 		}
-		return s.toString();
+		return s.toString() + text.substring(end);
 	}
 
 	/**Load a table of equivalencies between two strings.

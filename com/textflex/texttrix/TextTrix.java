@@ -369,9 +369,22 @@ public class TextTrix extends JFrame {
 				makeIcon("images/returnicon-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				// may need to add original text to history buffer
-				// before making the change
-				t.setText(Tools.removeExtraHardReturns(t.getText()));
+				String text = t.getText();
+
+				// only modify the selected text
+				int start = 0;
+				int end = 0;
+				if ((start = t.getSelectionStart()) 
+						== (end = t.getSelectionEnd())) {
+//					System.out.println(start + "," + end);
+					// may need to add original text to history buffer
+					// before making the change
+					t.setText(Tools.
+							removeExtraHardReturns(text, 0, text.length()));
+				} else {
+//					System.out.println(start + "," + end);
+					t.setText(Tools.removeExtraHardReturns(text, start, end));
+				}
 			}
 		};
 		setAction(removeReturnsAction, "Remove extra hard returns", 'R');
@@ -386,7 +399,22 @@ public class TextTrix extends JFrame {
 				"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				t.setText(Tools.showNonPrintingChars(t.getText()));
+				String text = t.getText();
+
+				// only modify the selected text
+				int start = 0;
+				int end = 0;
+				if ((start = t.getSelectionStart()) 
+						== (end = t.getSelectionEnd())) {
+//					System.out.println(start + "," + end);
+					// may need to add original text to history buffer
+					// before making the change
+					t.setText(Tools.
+							showNonPrintingChars(text, 0, text.length()));
+				} else {
+//					System.out.println(start + "," + end);
+					t.setText(Tools.showNonPrintingChars(text, start, end));
+				}
 			}
 		};
 		setAction(nonPrintingCharViewerAction, "View non-printing characters", 'V');
@@ -401,7 +429,21 @@ public class TextTrix extends JFrame {
 				"Replace HTML tags", makeIcon("images/htmlreplacer-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				t.setText(Tools.htmlReplacer(t.getText()));
+				String text = t.getText();
+
+				// only modify the selected text
+				int start = 0;
+				int end = 0;
+				if ((start = t.getSelectionStart()) 
+						== (end = t.getSelectionEnd())) {
+//					System.out.println(start + "," + end);
+					// may need to add original text to history buffer
+					// before making the change
+					t.setText(Tools.htmlReplacer(text, 0, text.length()));
+				} else {
+//					System.out.println(start + "," + end);
+					t.setText(Tools.htmlReplacer(text, start, end));
+				}
 			}
 		};
 		setAction(htmlReplacerAction, "Replace HTML tags", 'H');

@@ -8,7 +8,10 @@ http://sourceforge.net/projects/texttrix
 
 Function	Shortcut	Notes
 -----------------------------------------------------------
-New tab	Ctrl-t		-brings up a new tab, as Mozilla does
+New tab	Ctrl-t		-brings up a new tab, Mozilla-style
+Close tab	Ctrl-w		-closes current tab, Mozilla-style
+Previous tab	Ctrl-[		-hit the tab key to get back to the text
+Next tab	Ctrl-]		-hit the tab key to get back to the text
 Open file	Ctrl-o		-as usual
 Save file	Ctrl-s		-brings up "Save as..." dialog for new files
 Exit		Ctrl-q		-checks for unsaved files
