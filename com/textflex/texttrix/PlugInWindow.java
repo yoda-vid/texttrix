@@ -49,6 +49,19 @@ import java.awt.*;
  * <code>startPlugIn()</code> method, the plug-in starts by opening the 
  * dialog rather than calling <code>run(String)</code>.
  * 
+ * <p>The <code>TextTrix</code> class takes care to encapsulate itself rom 
+ * this <code>PlugInWindow</code> class, lest a plug-in could gain access over
+ * the main application and damage it.  This plug-in class uses 
+ * <code>JFrame</code>s as its windowing component, for example.
+ * While the main class could create a <code>JDialog</code> with the main class
+ * as the owner to simplify integration with the main class, the plug-in could
+ * call <code>getOwner()</code> to gain access to the entire main class.  To
+ * still integrate the main class with the plug-in, the main class
+ * passes listeners that listen to plug-in windowing and action events and relays
+ * the information to the main class.  This class can respond by altering
+ * <code>TextPad</code>s, recording plug-in window positions and sizes, or
+ * making other changes.
+ * 
  * @author David Young
  *
  * 

@@ -2,7 +2,7 @@ todo.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-3, Text Flex
+Copyright (c) 2002-4, Text Flex
 http://textflex.com/texttrix
 
 Note: "./" is the "check-mark" symbol
@@ -41,11 +41,11 @@ Note: "./" is the "check-mark" symbol
 -build scripts pass paths to one another
 -plug-in: spell checker
 -plug-in: spell-check any given text in system clipborad, displaying corrected text in Text Trix pad
+-save preferences to easily retrievable file
 
 ----Current Work----
 
 v.0.3.5
--save preferences to easily retrievable file
 -auto-save
 	-preference option to save file automatically; ADDED: auto-save option to start auto-saving the moment the preference is saved
 	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again; recycles if file chooser open to prevent duplication of save-as and mulitplication of dialogs
@@ -59,6 +59,7 @@ v.0.3.5
 	-try putting windowing events in separate thread so can still capture function from click on first window clicked
 	-check toFront() failures with one Fedora Core 1 installation
 	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
+	-check for breakage of single thread rule
 -save plug-in window positions
 	-component listener to store plug-in position nfo in prefs; ADDED: component listener captures plug-in window size and location changes to store in the prefs according to plug-ins' filenames
 	-restore plug-in window position parameters from last opening;  ADDED: TextTrix restores these parameters from prefs when creating plug-in action
@@ -72,6 +73,7 @@ v.0.3.5
 -button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
 -add *.js files to Web file type; ADDED: as "Web file"; should also add to programming?
 -fix bold file menu font; FIXED (#911283): moved menu creation from class variable declaration area to TextTrix constructor
+-remove "Features Descriptions" menu item and document
 
 v.0.3.4
 -preferences:

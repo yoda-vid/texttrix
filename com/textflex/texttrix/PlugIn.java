@@ -66,7 +66,8 @@ public abstract class PlugIn extends JComponent {
 	// list of listeners to notify
 	// flag to retrieve the entire text, not just the selected region
 	private boolean alwaysEntireText = false;
-//	private WindowAdapter winAdapter = null;
+	//	private WindowAdapter winAdapter = null;
+	// flag to indicate that the plug-in's window has been activated
 	private boolean tmpActivated = false;
 
 	/** Constructs a plugin.
@@ -110,51 +111,82 @@ public abstract class PlugIn extends JComponent {
 	public void removePlugInListener(PlugInListener listener) {
 		listenerList.remove(PlugInListener.class, listener);
 	}
-	
+
+	/**Stub method to add the window adapter that allows other classes to respond
+	 * to this plug in's windowing events.
+	 * @see PlugInWindow
+	 */
 	public void addWindowAdapter() {
 	}
-	
+	/**Stub method to add the component listener that allows other classes to respond
+	 * to this plug in's windowing events.
+	 * @see PlugInWindow
+	 */
 	public void addWindowComponentListener() {
 	}
-	
+	/**Stub method to activate the plug-in's window.
+	 * @see PlugInWindow
+	 */
 	public void activateWindow() {
 	}
-	
+	/**Stub method to check if the plug-in's window is visible.
+	 * @see PlugInWindow
+	 */
 	public boolean isWindowVisible() {
 		return false;
 	}
-	
-	public void closeWindow(){
+	/**Stub method to close the plug-in's window.
+	 * @see PlugInWindow
+	 */
+	public void closeWindow() {
 	}
+	/**Stub method to remove the plug-in's window adapter.
+	 * @see PlugInWindow
+	 */
 	public void removeWindowAdapter() {
 	}
-
+	/**Stub method to set the plug-in's window adapter.
+	 * @see PlugInWindow
+	 */
 	public void setWindowAdapter(WindowAdapter adapter) {
-//		winAdapter = adapter;
+		//		winAdapter = adapter;
 	}
 
-	
+	/**Checks the flag that indicates that the plug-in
+	 * has just been activated.
+	 * 
+	 * @return <code>true</code> if the plug-in has just been flagged as 
+	 * activated
+	 */
 	public boolean isTmpActivated() {
 		return tmpActivated;
 	}
-	
+	/**Sets the flag that indicates that the plug-in has just been
+	 * activated.
+	 * After a pause of 500 ms, the flag will revert to <code>false</code>.
+	 * 
+	 * @param b <code>true</code> indicates that the plug-in has just
+	 * been activated
+	 */
 	public void setTmpActivated(boolean b) {
 		if (tmpActivated = b) {
 			Thread runner = new Thread() {
 				public void run() {
 					try {
-//						System.out.println(name + "waiting...");
+							//						System.out.println(name + "waiting...");
 						Thread.sleep(500);
 						tmpActivated = false;
-					} catch(InterruptedException e) {
+					} catch (InterruptedException e) {
+						// ensures that an interrupt during the sleep is still flagged
+						Thread.currentThread().interrupt();
 					}
 				}
 			};
 			runner.start();
 		}
-//		tmpActivated = b;
+		//		tmpActivated = b;
 	}
-	
+
 	/** Runs the plugin on a given section of the text.
 	 * To use, must override or else the function will simply call <code>run(s)</code>.
 	 * @param s text to manipulate
@@ -202,7 +234,7 @@ public abstract class PlugIn extends JComponent {
 	@see #runPlugIn()
 	*/
 	public void processEvent(AWTEvent event) {
-//		System.out.println("processing event");
+		//		System.out.println("processing event");
 		if (event instanceof PlugInEvent) {
 			EventListener[] listeners =
 				listenerList.getListeners(PlugInListener.class);
@@ -227,7 +259,6 @@ public abstract class PlugIn extends JComponent {
 	public void startPlugIn() {
 		runPlugIn();
 	}
-	
 
 	/** Sets the plugin's path.
 	@param aPath path
@@ -433,7 +464,7 @@ public abstract class PlugIn extends JComponent {
 	public String getDetailedDescriptionPath() {
 		return detailedDescriptionPath;
 	}
-	
+
 	/** Gets the path to the plug-in.
 	 * 
 	 * @return the path
@@ -441,32 +472,72 @@ public abstract class PlugIn extends JComponent {
 	public String getPath() {
 		return path;
 	}
-	
+	/**Gets the filename from the current path setting.
+	 * 
+	 * @return the filename; if the file separator does not exist or is only
+	 * at the end of the path, the entire path is returned
+	 */
 	public String getFilename() {
-		int lastSep = LibTTx.reverseIndexOf(path, File.separator, path.length());
-		return lastSep != -1 && lastSep != path.length() - 1 
-			? path.substring(lastSep + 1) : path;
+		int lastSep =
+			LibTTx.reverseIndexOf(path, File.separator, path.length());
+		return lastSep != -1
+			&& lastSep != path.length() - 1 ? path.substring(lastSep + 1) : path;
 	}
-	
+	/**Stub method to get the plug-in's window adapter.
+	 * 
+	 * @return <code>null</code>
+	 * @see PlugInWindow
+	 */
 	public WindowAdapter getWindowAdapter() {
-//		System.out.println("making winAdapter");
-//		return winAdapter;
+		//		System.out.println("making winAdapter");
+		//		return winAdapter;
 		return null;
 	}
-	
+
+	/**Stub method to set the plug-in's window size.
+	 * 
+	 * @param width the window's width in pixels
+	 * @param height the window's height in pixels
+	 * @see PlugInWindow
+	 */
 	public void setWindowSize(int width, int height) {
 	}
+	/**Stub method to set the plug-in's window location.
+	 * 
+	 * @param p the (x,y) location of the window
+	 * @see PlugInWindow
+	 */
 	public void setWindowLocation(Point p) {
 	}
+	/**Stub method to get the width of the plug-in's window.
+	 * 
+	 * @return 0
+	 * @see PlugInWindow
+	 */
 	public int getWindowWidth() {
 		return 0;
 	}
+	/**Stub method to get the height of the plug-in's window.
+	 * 
+	 * @return 0
+	 * @see PlugInWindow
+	 */
 	public int getWindowHeight() {
 		return 0;
 	}
+	/**Stub method to get the location of the plug-in's window.
+	 * 
+	 * @return <code>null</code>
+	 * @see PlugInWindow
+	 */
 	public Point getWindowLocation() {
 		return null;
 	}
+	/**Stub method to set the component listener of the plug-in's window.
+	 * 
+	 * @param compListener the listener to keep track of window movements
+	 * @see PlugInWindow
+	 */
 	public void setWindowComponentListener(ComponentListener compListener) {
 	}
 

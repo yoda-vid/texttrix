@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-4
+ * Portions created by the Initial Developer are Copyright (C) 2003-4
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -113,12 +113,14 @@ public class Prefs extends JFrame {
 	
 	// auto-save
 	private static final String AUTO_SAVE = "autoSave";
-	private JCheckBox autoSaveChk = null;
+	private JCheckBox autoSaveChk = null; // check box
+	// interval between document change and auto-save
 	private static final String AUTO_SAVE_INTERVAL = "autoSaveInterval";
-	private JSpinner autoSaveIntervalSpinner = null;
+	private JSpinner autoSaveIntervalSpinner = null; // numerical input
 	private SpinnerNumberModel autoSaveIntervalMdl = null;
+	// dialog prompt to ask if the user wishes to allow the automatic save
 	private static final String AUTO_SAVE_PROMPT = "autoSavePrompt";
-	private JCheckBox autoSavePromptChk = null;
+	private JCheckBox autoSavePromptChk = null; // check box
 	
 	
 	
@@ -423,12 +425,28 @@ public class Prefs extends JFrame {
 		internalPrefs.putInt(PRGM_Y_LOC, (int) p.getY());
 	}
 	
+	/**Stores the given plug-in's window size.
+	 * The storage parameter's name includes the plug-in's <code>.jar</code>
+	 * filename.
+	 * 
+	 * @param filename the <code>.jar</code> name of the plug-in
+	 * @param width the width of the plug-in's window, in pixels
+	 * @param height the height of the plug-in's window, in pixesl
+	 */
 	public void storePlugInSize(String filename, int width, int height) {
 		plugInsPrefs.putInt(PLUG_IN_WIDTH + filename, width);
 		plugInsPrefs.putInt(PLUG_IN_HEIGHT + filename, height);
 		System.out.println("size saved: " + filename + ", " + width + "(X), " + height + "(Y)");
 	}
 	
+	/**Stores the given plug-in's window location.
+	 * The storage parameter's name includes the plug-in's <code>.jar</code>
+	 * filname
+	 * 
+	 * @param filename the <code>.jar</code> name of the plug-in
+	 * @param p the distance from the upper left corner of the display,
+	 * in pixels
+	 */
 	public void storePlugInLocation(String filename, Point p) {
 		plugInsPrefs.putInt(PLUG_IN_X_LOC + filename, (int) p.getX());
 		plugInsPrefs.putInt(PLUG_IN_Y_LOC + filename, (int) p.getY());

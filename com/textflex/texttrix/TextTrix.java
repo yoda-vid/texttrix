@@ -85,7 +85,7 @@ public class TextTrix extends JFrame {
 	private static Action prefsCancelAction = null; // prefs action to reject
 	private static boolean updateFileHist = false;
 	// flag to update file history menu entries
-	private static JMenu fileMenu = null;//new JMenu("File");
+	private static JMenu fileMenu = null; //new JMenu("File");
 	// file menu, which incl file history
 	private static int fileHistStart = -1;
 	// starting position of file history in file menu
@@ -102,7 +102,7 @@ public class TextTrix extends JFrame {
 	one <code>TextPad</code>.
 	 */
 	public TextTrix(final String[] paths) {
-		
+
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
 		fileMenu = new JMenu("File");
@@ -541,7 +541,7 @@ public class TextTrix extends JFrame {
 			} else {
 				stopTextPadAutoSaveTimer(pad);
 			}
-			
+
 		}
 	}
 
@@ -611,7 +611,7 @@ public class TextTrix extends JFrame {
 		*/
 		if (!getPrefs().getAllPlugIns()
 			&& !LibTTx.inUnsortedList(pl.getPath(), includes)) {
-//			System.out.println(pl.getPath());
+			//			System.out.println(pl.getPath());
 			return;
 		}
 		String name = pl.getName(); // plugin name
@@ -661,25 +661,29 @@ public class TextTrix extends JFrame {
 			pl.setWindowAdapter(winAdapter);
 			//			System.out.println(pl.getName());
 			pl.addWindowAdapter();
-			
-			
+
 			// restore window size and location
 			final String filename = pl.getFilename();
-			pl.setWindowSize(getPrefs().getPlugInWidth(filename), 
+			pl.setWindowSize(
+				getPrefs().getPlugInWidth(filename),
 				getPrefs().getPlugInHeight(filename));
 			pl.setWindowLocation(
-				new Point(getPrefs().getPlugInXLoc(filename), 
-				getPrefs().getPlugInYLoc(filename)));
+				new Point(
+					getPrefs().getPlugInXLoc(filename),
+					getPrefs().getPlugInYLoc(filename)));
 
 			// store window size and location with each movement
 			ComponentListener compListener = new ComponentListener() {
 				public void componentMoved(ComponentEvent evt) {
-					getPrefs().storePlugInLocation(filename, 
+					getPrefs().storePlugInLocation(
+						filename,
 						pl.getWindowLocation());
 				}
 				public void componentResized(ComponentEvent evt) {
-					getPrefs().storePlugInSize(filename, 
-						pl.getWindowWidth(), pl.getWindowHeight());
+					getPrefs().storePlugInSize(
+						filename,
+						pl.getWindowWidth(),
+						pl.getWindowHeight());
 				}
 				public void componentShown(ComponentEvent evt) {
 				}
@@ -1620,8 +1624,10 @@ public class TextTrix extends JFrame {
 			//		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 		}
 	}
-	
-	public static void updateTabTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
+
+	public static void updateTabTitle(
+		ArrayList arrayList,
+		JTabbedPane tabbedPane) {
 		updateTabTitle(arrayList, tabbedPane, -1);
 	}
 
@@ -1721,7 +1727,7 @@ public class TextTrix extends JFrame {
 		PrintWriter out = null;
 		try {
 			if (t != null) {
-//				File f = new File(path);
+				//				File f = new File(path);
 				/* if don't use canWrite(), work instead by 
 				   catching exception and either handling it there
 				   or returning signal of the failure
@@ -1732,13 +1738,13 @@ public class TextTrix extends JFrame {
 				out.print(t.getText());
 				t.setChanged(false);
 				t.setFile(path);
-				
+
 				// stops any auto-save timer attached to the pad
 				// since the file has just been saved;
 				// relies on TextPadDocListener to restart the timer
 				stopTextPadAutoSaveTimer(t);
-				
-//				System.out.println("about to update the tab title");
+
+				//				System.out.println("about to update the tab title");
 				updateTabTitle(textAreas, tabbedPane, textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
@@ -1753,7 +1759,7 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-	
+
 	/**Saves text from the currently selected <code>TextPad</code>
 	 * to a given path.
 	 * 
@@ -1765,7 +1771,7 @@ public class TextTrix extends JFrame {
 	public boolean saveFile(String path) {
 		return saveFile(path, null);
 	}
-	
+
 	/**Saves text from the given <code>TextPad</code>
 	 * to a given path.
 	 * 
@@ -1778,7 +1784,6 @@ public class TextTrix extends JFrame {
 		return saveFile(pad.getPath(), pad);
 		//		return false;
 	}
-	
 
 	/**Saves the file to the given path.
 	 * Similar to <code>saveFile(String)</code>, but tailored for
@@ -1935,7 +1940,7 @@ public class TextTrix extends JFrame {
 			return false;
 		return getSavePath(owner);
 	}
-	
+
 	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
 		if (!prepFileSaveDialog(pad))
 			return false;
@@ -1953,7 +1958,8 @@ public class TextTrix extends JFrame {
 	 */
 	public static boolean prepFileSaveDialog(TextPad t) {
 		//	int tabIndex = tabbedPane.getSelectedIndex();
-		if (t == null) t = getSelectedTextPad();
+		if (t == null)
+			t = getSelectedTextPad();
 		//	if (tabIndex != -1) {
 		if (t != null) {
 			//	    TextPad t = (TextPad)textAreas.get(tabIndex);
@@ -1984,7 +1990,6 @@ public class TextTrix extends JFrame {
 	public static boolean prepFileSaveDialog() {
 		return prepFileSaveDialog(null);
 	}
-
 
 	/**Helper function to <code>fileSaveDialog</code> when exiting Text Trix.
 	 * Unlike <code>getSavePath(JFrame)</code>, this method does not
@@ -2125,7 +2130,7 @@ public class TextTrix extends JFrame {
 						fileHist.start(fileMenu);
 
 						return true;
-						
+
 					} else { // fail; request another try at saving
 						String msg =
 							path
@@ -2171,8 +2176,7 @@ public class TextTrix extends JFrame {
 			return false;
 		}
 	}
-	
-	
+
 	/**Prints the currently selected <code>TextPad</code>.
 	 * A printer dialog pops up for the user to select printing
 	 * options, such as page size and layout.  The output travels
@@ -2197,7 +2201,7 @@ public class TextTrix extends JFrame {
 			JOptionPane.showMessageDialog(this, e);
 		}
 	}
-	
+
 	/**Creats a book of multiple pages for a print job.
 	 * Returns <code>null</code> if no <code>TextPad</code>
 	 * exists.
@@ -2223,7 +2227,7 @@ public class TextTrix extends JFrame {
 		bk.append(pad, pageFormat, pp);
 		return bk;
 	}
-	
+
 	/**Displays a dialog for the user to select print job settings.
 	 * Settings include paper size and orientation.
 	 *
@@ -2232,7 +2236,7 @@ public class TextTrix extends JFrame {
 		PrinterJob job = PrinterJob.getPrinterJob();
 		job.pageDialog(printAttributes);
 	}
-	
+
 	/**Displays a preview of what would be printed, given the
 	 * current page format.
 	 * The preview window includes a button for the user to 
@@ -2277,7 +2281,7 @@ public class TextTrix extends JFrame {
 		// TextPads store the timer as a Thread object since the timer's
 		// class is private
 		Thread timer = pad.getAutoSaveTimer();
-//		TextPadAutoSaveTimer textTimer = null;
+		//		TextPadAutoSaveTimer textTimer = null;
 		// creates a new timer if it doesn't exist, the case when auto-save 
 		// hasn't started, or stopTextPadAutoSaveTimer has stopped it;
 		// if try to restart, get ThreadStateException for some reason
@@ -2285,15 +2289,15 @@ public class TextTrix extends JFrame {
 		if (timer == null) {
 			pad.setAutoSaveTimer(timer = new TextPadAutoSaveTimer(pad));
 			timer.start();
-		}/* else if (timer instanceof TextPadAutoSaveTimer 
-			&& !(textTimer = (TextPadAutoSaveTimer) timer).isAlive()) {//.isStopped()) {
-			// only restarts if stopped; otherwise would continually
-			// call the timer to start when it is already running
-			textTimer.start();
-		}*/
-		
+		} /* else if (timer instanceof TextPadAutoSaveTimer 
+					&& !(textTimer = (TextPadAutoSaveTimer) timer).isAlive()) {//.isStopped()) {
+					// only restarts if stopped; otherwise would continually
+					// call the timer to start when it is already running
+					textTimer.start();
+				}*/
+
 	}
-	
+
 	/**Stops the auto-save timer by calling its interrupt method
 	 * and destroying the object.
 	 * 
@@ -2309,7 +2313,7 @@ public class TextTrix extends JFrame {
 			pad.setAutoSaveTimer(null);
 		}
 	}
-	
+
 	/**Gets this <code>TextTrix</code> object.
 	 * Useful for private classes that need to access this object as
 	 * the owner of a dialog.
@@ -2486,12 +2490,12 @@ public class TextTrix extends JFrame {
 			fileSaveDialog(owner);
 		}
 	}
-	
+
 	/**Closes files and removes them from the tab history.
 	 * 
 	 */
 	private class FileCloseAction extends AbstractAction {
-		
+
 		/**Constructs the file close action.
 		 * 
 		 * @param name name of the action
@@ -2501,7 +2505,7 @@ public class TextTrix extends JFrame {
 			putValue(Action.NAME, name);
 			putValue(Action.SMALL_ICON, icon);
 		}
-		
+
 		/**Removes the tab from the tab history and closes the
 		 * tab.
 		 * 
@@ -2541,7 +2545,7 @@ public class TextTrix extends JFrame {
 		 */
 		public void changedUpdate(DocumentEvent e) {
 		}
-		
+
 		/**Updates the pad's tab and starts the auto-save timer
 		 * if the pad's contents have changed for
 		 * the first time since the last save.
@@ -2555,22 +2559,23 @@ public class TextTrix extends JFrame {
 				pad.setChanged(true);
 				updateTabTitle(textAreas, tabbedPane);
 				if (getPrefs().getAutoSave()) {
-//					System.out.println("i'm here");
+					//					System.out.println("i'm here");
 					startTextPadAutoSaveTimer(pad);
 				}
 			}
 		}
 
 	}
-	
+
 	/**A timer to automatically save the <code>TextPad</code>'s contents.
 	 * The timer checks the preferences to determine the interval between
 	 * saves and to see whether the user would like a prompt before the
 	 * timer saves the file automatically.
 	 */
 	private class TextPadAutoSaveTimer extends Thread {
-//		private boolean stopped = false;
+		//		private boolean stopped = false;
 		private TextPad textPad = null;
+		private boolean chooserShowing = false;
 
 		/**Creates a timer to work on the given <code>TextPad</code>.
 		 * The pad will in turn store the timer.
@@ -2579,7 +2584,7 @@ public class TextTrix extends JFrame {
 		public TextPadAutoSaveTimer(TextPad aTextPad) {
 			textPad = aTextPad;
 		}
-		
+
 		/**Saves the file after the time interval that the preferences
 		 * specify.
 		 * 
@@ -2588,7 +2593,7 @@ public class TextTrix extends JFrame {
 			// TODO: need interrupt check methods?  May only need to 
 			// stop by destroying timer
 			interrupted(); // clears any interrupt during a previous run
-//			stopped = false;
+			//			stopped = false;
 			//			while (getPrefs().getAutoSave() && !interrupted()) {
 			try {
 				System.out.println("Waiting to save...");
@@ -2600,82 +2605,103 @@ public class TextTrix extends JFrame {
 				do {
 					sleep(getPrefs().getAutoSaveInterval() * 60000);
 					System.out.println("repeating");
-				} while (chooser.isShowing());
+				} while (isChooserShowing()); //chooser.isShowing());
 				System.out.println("...saving...");
 				// don't need getPrefs().getAutoSave() && b/c only start
 				// timer if auto-save pref set, and interrupt already called
 				// if unset while timer running
 				if (!interrupted()) {
-					// prompt if the preference selected;
-					// skip if file doesn't exist b/c will ask for file name later,
-					// when can still cancel the save
-					if (getPrefs().getAutoSavePrompt() && textPad.fileExists()) {
-						// creates a save prompt dialog
-						int choice =
-							JOptionPane.showConfirmDialog(
-								null,
-								"We're about to auto-save this baby"
-									+ " (" + textPad.getFilename() + ")."
-									+ "\nYou OK with that?"
-									+ "\n(\"No\" means we won't ask again "
-									+ "about this file.)",
-								"Auto-Save Prompt",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE);
-						if (choice == JOptionPane.NO_OPTION) {
-//							stopped = true;
-							return;
+					// to avoid breaking the single thread rule, invokeLater
+					// runs all of the UI code to ensure that it synchronizes
+					// with events in the main dispatch thread
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+
+							// prompt if the preference selected;
+							// skip if file doesn't exist b/c will ask for file name later,
+							// when can still cancel the save
+							if (getPrefs().getAutoSavePrompt()
+								&& textPad.fileExists()) {
+								// creates a save prompt dialog
+								int choice =
+									JOptionPane.showConfirmDialog(
+										null,
+										"We're about to auto-save this baby"
+											+ " ("
+											+ textPad.getFilename()
+											+ ")."
+											+ "\nYou OK with that?"
+											+ "\n(\"No\" means we won't ask again "
+											+ "about this file.)",
+										"Auto-Save Prompt",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE);
+								if (choice == JOptionPane.NO_OPTION) {
+									//							stopped = true;
+									return;
+								}
+							}
+							// saves the pad directly if it already exists;
+							// otherwise, asks for a file path
+							if (textPad.fileExists()) {
+								saveFile(textPad);
+							} else {
+								// asks users whether they would like to supply a file 
+								// path rather than diving immediately and cryptically
+								// into the file save dialog 
+								int choice =
+									JOptionPane.showConfirmDialog(
+										null,
+										"We're about to auto-save this baby"
+											+ " ("
+											+ textPad.getFilename()
+											+ "), "
+											+ "\nbut we need a name for it.  "
+											+ "Mind if we got that from you?"
+											+ "\n(\"No\" means we won't ask again "
+											+ "about this file.)",
+										"Auto-Save Prompt",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE);
+								// exit immediately if users cancel the save
+								if (choice == JOptionPane.NO_OPTION) {
+									//							stopped = true;
+									return;
+								}
+								// solicits users for a file name;
+								// main prgm as dialog owner
+								fileSaveDialog(textPad, getThis());
+							}
 						}
-					}
-					// saves the pad directly if it already exists;
-					// otherwise, asks for a file path
-					if (textPad.fileExists()) {
-						saveFile(textPad);
-					} else {
-						// asks users whether they would like to supply a file 
-						// path rather than diving immediately and cryptically
-						// into the file save dialog 
-						int choice =
-							JOptionPane.showConfirmDialog(
-								null,
-								"We're about to auto-save this baby"
-									+ " (" + textPad.getFilename() + "), "
-									+ "\nbut we need a name for it.  "
-									+ "Mind if we got that from you?"
-									+ "\n(\"No\" means we won't ask again "
-									+ "about this file.)",
-								"Auto-Save Prompt",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE);
-						// exit immediately if users cancel the save
-						if (choice == JOptionPane.NO_OPTION) {
-//							stopped = true;
-							return;
-						}
-						// solicits users for a file name;
-						// main prgm as dialog owner
-						fileSaveDialog(textPad, getThis());
-					}
+					});
 					System.out.println("now saved!");
 				} else {
-//					stopped = true;
+					//					stopped = true;
 				}
-//				interrupted();
-//				return;
+				//				interrupted();
+				//				return;
 			} catch (InterruptedException e) {
-//				stopped = true;
-//				return;
+				//				stopped = true;
+				//				return;
 				// ensures that an interrupt during the sleep is still flagged
 				Thread.currentThread().interrupt();
 			}
 
 			//			}
 		}
-/*
-		public boolean isStopped() {
-			return stopped;
+		public boolean isChooserShowing() {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					chooserShowing = chooser.isShowing();
+				}
+			});
+			return chooserShowing;
 		}
-*/
+		/*
+				public boolean isStopped() {
+					return stopped;
+				}
+		*/
 		/*
 		public void stopRequested() {
 			stopRequested = true;
@@ -2814,7 +2840,7 @@ public class TextTrix extends JFrame {
 					/* Create new menu and tool bars */
 
 					// remove the old components if necessary
-//					UIManager.put("Menu.font", new Font("SansSerif", Font.PLAIN, 12));
+					//					UIManager.put("Menu.font", new Font("SansSerif", Font.PLAIN, 12));
 					if (menuBar != null) {
 						contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");

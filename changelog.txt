@@ -2,7 +2,7 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-3, Text Flex
+Copyright (c) 2002-4, Text Flex
 http://textflex.com/texttrix
 
 (See todo.txt for a more detailed log of improvements and
