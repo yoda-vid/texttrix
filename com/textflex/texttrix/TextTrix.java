@@ -336,10 +336,12 @@ public class TextTrix extends JFrame {
 							 + ".gtk.GTKLookAndFeel");
 				*/
 				//	    } else if (System.getProperty("mrj.version") != null) {
+				/*
 			} else if (System.getProperty("java.vm.version").indexOf("1.5.0") 
 				!= -1) {
 				// the new Java v.1.5.0, Tiger release, contains a revamped
-				// Swing look-and-feel called "Ocean," implemented by default 
+				// Swing look-and-feel called "Ocean," implemented by default
+				 */
 			} else { // default interface
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			}

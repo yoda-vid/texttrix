@@ -55,7 +55,7 @@ v.0.3.5
 -pass main Text Trix window position parameters to plug-in dialogs
 -Java Web Start compatibility
 -printing
--fix auto-indent over-indentation; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted and thus unindented an extra tab space; separate unindent fn no longer necessary since indent function already processes current tab chars
+-fix auto-indent over-indentation; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
 
 v.0.3.4
 -preferences:

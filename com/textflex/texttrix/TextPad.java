@@ -60,6 +60,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private ActionMap amap = null; // map of actions
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
+	private static boolean JVM_15 = false; 
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -67,6 +68,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * save its text area contents
 	 */
 	public TextPad(File aFile, Prefs prefs) {
+		// TODO: decide whether to check JVM within each TextPad or only once,
+		// within TextTrix, with ways to check TextTrix or pass as a parameter 
+		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5.0") != -1;
 		file = aFile;
 		applyDocumentSettings();
 		// to allow multiple undos and listen for events
@@ -99,8 +103,14 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& keyChar == KeyEvent.VK_BACK_SPACE
 						&& isLeadingTab()) {
 					// performs the action before deleting the char
-//					System.out.println("I'm here");
-					indentCurrentParagraph(getTabSize());
+/*					System.out.println("I'm here");
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						
+					}
+*/					
+					indentCurrentParagraph(getTabSize(), !JVM_15);
 				}
 			}
 		});
@@ -424,18 +434,42 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Renders tabs as spaces, but indents the entire region a given number of spaces
 	 * per tab.
 	 * @param tabChars number of spaces for each tab to represent
+	 * @param unindentNotJVM_15 an unindent has occurred within a Java Virtual
+	 * Machine whose version precedes 1.5
+	 * @see #indentCurrentParagraph(int)
 	 */
-	public void indentCurrentParagraph(int tabChars) {
+	/* JVM v.1.5 simply processes tabs according to the
+	 * number currently present, just as indentCurrentParagraph operates;
+	 * both methods assume that the tab character change has already been 
+	 * accomplished.  Tab deletions in JVM < v.1.5, by contrast, 
+	 * appear to not be processed until the KeyListener methods finish.
+	 * Rather than create two separate indentation methods, a single indent
+	 * method now assumes that the tabs have been processed but also allows
+	 * for a parameter to flag when a tab deletion takes place in JVM < v.1.5. 
+	 */
+	public void indentCurrentParagraph(int tabChars, boolean unindentNotJVM_15) {
 		String s = getAllText();
 		//	System.out.println("caret pos: " + caretPos);
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
 		int tabs = leadingTabsCount(s, start);
+		if (unindentNotJVM_15) {
+			--tabs;
+		}
+//		System.out.println("tabs: " + tabs);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
+	
+	/** Indents the current paragraph, no matter where the caret is within it.
+	 * Renders tabs as spaces, but indents the entire region a given number of spaces
+	 * per tab.  Assumes that either an indent, as opposed to an unindent,
+	 * has occurred, or that the Java Virtual Machine is >= v.1.5, or both. 
+	 * @param tabChars number of spaces for each tab to represent
+	 * @see #indentCurrentParagraph(int, boolean)
+	 */
+	public void indentCurrentParagraph(int tabChars) {
+		indentCurrentParagraph(tabChars, false);
+	}
 
-	// Method no longer necessary b/c simply processes tabs according to the
-	// number currently present, just as indentCurrentParagraph operates;
-	// both methods assume that the tab character change has already been accomplished
 	/** Reverses the indent on the current paragraph.
 	 * Restores the size of each tab, but also decreases the entire paragraph indentation.
 	 * @param tabChars number of spaces for each tab to represent
@@ -446,8 +480,9 @@ public class TextPad extends JTextPane implements StateEditable {
 		String s = getAllText();
 		//	System.out.println("caret pos: " + caretPos);
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
-		int tabs = leadingTabsCount(s, start); // don't subtract 1 b/c tab already deleted
+		int tabs = leadingTabsCount(s, start) - 1; // don't subtract 1 b/c tab already deleted
 //		indent(tabChars, 0, start, s.indexOf("\n", start) - start);
+		System.out.println("tabs: " + tabs);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
 	*/
