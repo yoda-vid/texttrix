@@ -46,8 +46,25 @@ import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
 
-/**The writing pad, complete with keyboard shortcuts, auto-indent
+/**The writing pad, complete with keyboard shortcuts, auto-wrap indent
  * functions, and text sytle changes.
+ * 
+ * <p>The auto-wrap indent graphically indents text according to tabs at the
+ * beginning of each newline.  Wrapped lines graphically indent along
+ * with the first, tabbed line, but without any alteration to the underlying
+ * text.  Auto-wrap indent mode consists of two distinct components&#151;
+ * the auto- and wrap-indents, but remain integrated as a single feature
+ * because of their complementary function.  While wrap-indent graphically
+ * aligns word-wrapped text, auto-indent automatically adds tabs to the start
+ * of new lines.  Both functions are useful in coding, such as Java 
+ * programming, but especially in tagging, such as HTML, where each
+ * newline may contain several screenlines of text.  It would usually
+ * be useful to have auto-indented code also automatically wrap-indented
+ * to perpetuate the tab structure graphically.
+ * 
+ * <p>By keeping shortcuts within the pad, they need not affect behavior
+ * program-wide.  For example, if a program integrates a spreadsheet as well
+ * as the pad, the pad's shortcuts keep out of the way of the spreadsheet.
  */
 public class TextPad extends JTextPane implements StateEditable {
 	private File file; // the file that the pad displays
@@ -128,16 +145,21 @@ public class TextPad extends JTextPane implements StateEditable {
 			 */
 			public void keyPressed(KeyEvent evt) {
 				int keyCode = evt.getKeyChar();
+				// respond to key presses, which have not yet
+				// processed the event
 				if (autoIndent
 					&& keyCode == KeyEvent.VK_BACK_SPACE
 					&& isLeadingTab()) {
-//					System.out.println("leading tab");
 					// no longer should JVM_15 b/c the behavior also applies
 					// to < JVM v.1.4.2 in keyPressed
 					indentCurrentParagraph(getTabSize(), true);//JVM_15);
+					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
 					&& evt.isShiftDown()) {
+					// un-tab entire region if selected in auto-indent
+					// mode, or current line if none selected
+					
 					evt.consume();
 					try {
 						if (getSelectionStart() != getSelectionEnd()) {
@@ -148,9 +170,12 @@ public class TextPad extends JTextPane implements StateEditable {
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
+					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
 					&& getSelectionStart() != getSelectionEnd()) {
+					// tab entire region
+					
 					evt.consume();
 					try {
 						tabRegion();
@@ -170,78 +195,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 
-	}
-	
-	public void unindentLeadingTab() throws BadLocationException {
-		Document doc = getDocument();
-		int i = getCaretPosition();
-		int lineLeadingChar = LibTTx.reverseIndexOf(doc, "\n", i) + 1;
-		if (doc.getText(lineLeadingChar, 1).equals("\t")) {
-			doc.remove(lineLeadingChar, 1);
-			indentCurrentParagraph();
-		}
-	}
-	
-	public void tabRegion() throws BadLocationException {
-		Document doc = getDocument();
-		int start = getSelectionStart();
-		int end = getSelectionEnd();
-		int len = end - start;
-		StringBuffer buf = new StringBuffer((int) (len + len * .1));
-		String currChar = "";
-		int charsAdded = 0;
-		boolean addTab = false;
-		for (int i = start - 1; i < end; i++) {
-			if (i != -1) currChar = doc.getText(i, 1);
-			if (i != start - 1) buf.append(currChar);
-			if (i == -1|| currChar.equals("\n")) {
-				buf.append("\t");
-				charsAdded++;
-			}
-		}
-		startCompoundEdit();
-		doc.remove(start, len);
-		doc.insertString(start, buf.toString(), null);
-		stopCompoundEdit();
-		setSelectionEnd(end + charsAdded);
-		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
-		if (autoIndent) indentRegion(start, end + charsAdded);
-		moveCaretPosition(start);
-	}
-
-	public void tabRegionReverse() throws BadLocationException {
-		Document doc = getDocument();
-		int start = getSelectionStart();
-		int end = getSelectionEnd();
-		int len = end - start;
-		StringBuffer buf = new StringBuffer((int) (len + len * .1));
-		String currChar = "";
-		int charsAdded = 0;
-		boolean checkTab = false;
-		for (int i = start - 1; i < end; i++) {
-			if (i != -1) currChar = doc.getText(i, 1);
-			if (i != start - 1 && !(checkTab && currChar.equals("\t"))) {
-				buf.append(currChar);
-				charsAdded++;
-			} else {
-				checkTab = false;
-			}
-			if (i == -1|| currChar.equals("\n")) {
-				checkTab = true;
-			}
-			
-		}
-		startCompoundEdit();
-		doc.remove(start, len);
-		doc.insertString(start, buf.toString(), null);
-		end = start + charsAdded;
-		if (doc.getLength() > end && checkTab && doc.getText(end, 1).equals("\t"))
-			doc.remove(end, 1);
-		stopCompoundEdit();
-		setSelectionEnd(end);
-		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
-		if (autoIndent) indentRegion(start, end);
-		moveCaretPosition(start);
 	}
 
 	/** Sets the keybindings to the preferred value.
@@ -595,6 +548,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param s text to count for tabs
 	 * @param offset position to start counting
 	 * @return number of continuous tabs from a given position
+	 * @see #leadingTabsCount(Document, int)
 	 */
 	public int leadingTabsCount(String s, int offset) {
 		int tabs = 0;
@@ -603,6 +557,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		return tabs;
 	}
 
+	/** Counts the number of continuous tabs from a given position.
+	 * Useful when determining the number of tabs in the current line to auto-indent
+	 * the same number for the next line, for example.
+	 * @param s text to count for tabs
+	 * @param offset position to start counting
+	 * @return number of continuous tabs from a given position
+	 * @see #leadingTabsCount(String, int)
+	 */
 	public int leadingTabsCount(Document doc, int offset) {
 		int tabs = 0;
 		int len = doc.getLength();
@@ -729,12 +691,161 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	/**Gets the character immediately preceding the caret or,
+	 * if the text is selected, the first character in the selection.
+	 * @return indext of the character preceding the caret in
+	 * unselected text or, in selected text, the first selected
+	 * character.
+	*/
 	private int getLeadingCharIndex() {
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
 		return (start == end) ? --end : start;
 	}
+		
+	/**Unindents the leading tab on the current line.
+	 * The current line is the line with the caret.  The line is
+	 * first checked for a tab immediately following the preceding
+	 * line.  If a tab exists there, it will be removed, and the current
+	 * paragraph will be graphically re-indented.
+	 * @throws BadLocationException if the document cannot
+	 * access text in the current line
+	*/
+	public void unindentLeadingTab() throws BadLocationException {
+		Document doc = getDocument();
+		// the current line is the line with the caret
+		int i = getCaretPosition();
+		// finds the start of the line, either immediately following
+		// the previous newline, or if none exists, the first character
+		// of the document
+		int lineLeadingChar = LibTTx.reverseIndexOf(doc, "\n", i) + 1;
+		// removes the first tab
+		if (doc.getText(lineLeadingChar, 1).equals("\t")) {
+			doc.remove(lineLeadingChar, 1);
+			indentCurrentParagraph();
+		}
+	}
 	
+	/**Tabs each line in an entire selected region.
+	 * Any line that that starts or has a leading tab within the selected
+	 * region receives a new leading tab.
+	*/
+	public void tabRegion() throws BadLocationException {
+		Document doc = getDocument();
+		int start = getSelectionStart();
+		int end = getSelectionEnd();
+		int len = end - start;
+		// buffer slightly larger than the text to accommodate
+		// any new tabs
+		StringBuffer buf = new StringBuffer((int) (len + len * .1));
+		String currChar = ""; // currently evaluated character
+		int charsAdded = 0; // char count for re-highlighting
+		boolean addTab = false; // flag to add a tab
+		
+		// starts from the character just before the selected region
+		// to the last character that the selection encompasses
+		for (int i = start - 1; i < end; i++) {
+			// get each character after the first char in the document
+			if (i != -1) currChar = doc.getText(i, 1);
+			// append every character but the one preceding the
+			// selected region
+			if (i != start - 1) buf.append(currChar);
+			// add a tab after any newline or at the start of 
+			// the document; the tab follows the newline
+			if (i == -1|| currChar.equals("\n")) {
+				buf.append("\t");
+				charsAdded++;
+			}
+		}
+		// allow one undo to undo the entire edit
+		startCompoundEdit();
+		doc.remove(start, len);
+		doc.insertString(start, buf.toString(), null);
+		stopCompoundEdit();
+		
+		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
+		
+		// re-indent graphically, if necessary
+		if (autoIndent) indentRegion(start, end + charsAdded);
+		
+		// re-highlight the text
+		setSelectionEnd(end + charsAdded);
+		moveCaretPosition(start);
+	}
+	
+	/**Removes a leading tab from each line in an entire selected region.
+	 * Any line that that has a leading tab within the selected
+	 * region loses a leading tab.
+	*/
+	public void tabRegionReverse() throws BadLocationException {
+		Document doc = getDocument();
+		int start = getSelectionStart();
+		int end = getSelectionEnd();
+		int len = end - start;
+		// buffer slightly larger than the text to accommodate
+		// any new tabs
+		StringBuffer buf = new StringBuffer((int) (len + len * .1));
+		String currChar = ""; // currently evaluated character
+		int charsAdded = 0; // char count for re-highlighting
+		boolean checkTab = false; // flag to check for a tab
+		
+		// starts from the character just before the selected region
+		// to the last character that the selection encompasses
+		for (int i = start - 1; i < end; i++) {
+			// gets each char except the char at the beginning of the doc
+			if (i != -1) currChar = doc.getText(i, 1);
+			// adds each char except the one immediately preceding the
+			// selected region and the first tab encountered in the line
+			if (i != start - 1 && !(checkTab && currChar.equals("\t"))) {
+				buf.append(currChar);
+				charsAdded++;
+			} else {
+				// resets the tab flag after skipping a char
+				checkTab = false;
+			}
+			// flag tab check if newline or start of doc
+			if (i == -1|| currChar.equals("\n")) {
+				checkTab = true;
+			}
+			
+		}
+		
+		// allow one undo to undo the entire edit
+		startCompoundEdit();
+		doc.remove(start, len);
+		doc.insertString(start, buf.toString(), null);
+		end = start + charsAdded;
+		
+		// remove one final tab if the last selected character is a newline,
+		// and the tab immediately follows the selection
+		if (doc.getLength() > end && checkTab && doc.getText(end, 1).equals("\t"))
+			doc.remove(end, 1);
+		stopCompoundEdit();
+		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
+		
+		// re-indent graphically and re-highlight
+		if (autoIndent) indentRegion(start, end);
+		setSelectionEnd(end);
+		moveCaretPosition(start);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**Gets the value showing whether the text in the text area
 	 * has changed.
@@ -910,7 +1021,10 @@ public class TextPad extends JTextPane implements StateEditable {
 			return "";
 		}
 	}
-
+	
+	/**Replaces the entire body of text with the given string.
+	 * @param s the string to replace the document's text
+	*/
 	public void replaceAllText(String s) {
 		try {
 			//	    System.out.println(s);
@@ -1135,6 +1249,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	/**Wrap-indents a given region.
+	 * @param start the character at which to begin indenting
+	 * @param end the last character to indent, non-inclusive
+	*/
 	public void indentRegion(int start, int end) {
 		int prevBreak = end; // position of next preceding "\n"
 		String text = getAllText(); // pad's text
@@ -1150,19 +1268,32 @@ public class TextPad extends JTextPane implements StateEditable {
 		setCaretPosition(end); // returns caret position to end of region
 	}
 	
+	/**Deletes the following character or, if text is selected, the
+	 * selected region, re-wrap-indenting if necessary.
+	*/
 	public void deleteNextChar() {
 		Document doc = getDocument();
-		int caretPos = getCaretPosition();
+		//int caretPos = getCaretPosition();
+		int start = getSelectionStart();
+		int end = getSelectionEnd();
 		//System.out.println("i've been called!");
-		if (caretPos < doc.getLength()) {
-			try {
-				doc.remove(caretPos, 1);
-			} catch (BadLocationException badE) {
-				System.out.println("having trouble deleting next char...");
+		try {
+			// Delete region if selected
+			if (start != end) {
+				doc.remove(start, end - start);
+			} else if (end < doc.getLength()) {
+				// Delete following character
+				doc.remove(end, 1);
 			}
+			
+			// only need to re-indent current paragraph because 
+			// deletions either occur within a line or join two lines,
+			// however disparate, into one
 			if (isAutoIndent()) {
-				indentCurrentParagraph(getTabSize(), false);
+				indentCurrentParagraph();
 			}
+		} catch (BadLocationException badE) {
+			System.out.println("having trouble deleting next char...");
 		}
 	}
 	
@@ -1335,11 +1466,20 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	/**An action to delete the next character.
+	*/
 	private class DeleteNextCharAction implements Action {
-	
+		
+		/**Constructs an empty action.
+		*/
 		public DeleteNextCharAction() {
 		}
 		
+		/**Deletes the previous character or, if the text is selected,
+		 * the selected region
+		 * @param e
+		 * @see TextPad#deleteNextChar()
+		*/
 		public void actionPerformed(ActionEvent e) {
 			deleteNextChar();
 		}
