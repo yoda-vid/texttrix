@@ -48,7 +48,7 @@ v.0.3.5
 -save preferences to easily retrievable file
 -auto-save
 	-preference option to save file automatically; ADDED: auto-save option to start auto-saving the moment the preference is saved
-	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again
+	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again; recycles if file chooser open to prevent duplication of save-as and mulitplication of dialogs
 	-prompt before saving the changes to the current file; ADDED: preference option to prompt the user to accept the file changes since the auto-save overwrites the current file
 -preferences panel to choose default paths
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront

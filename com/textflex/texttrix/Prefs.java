@@ -809,7 +809,7 @@ public class Prefs extends JFrame {
 					autoSaveIntervalLbl.setToolTipText(autoSaveIntervalTipTxt);
 					
 					autoSaveIntervalMdl =
-						new SpinnerNumberModel(getAutoSaveInterval(), 0, 100, 1);
+						new SpinnerNumberModel(getAutoSaveInterval(), 1, 100, 1);
 					autoSaveIntervalSpinner = new JSpinner(autoSaveIntervalMdl);
 					
 					String autoSavePromptTxt =
