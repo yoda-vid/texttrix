@@ -16,20 +16,20 @@ plans for future ones.)
 
 What's your preference?  Text Trix now has preferences.  The text tinkering tool sports a new Preferences panel for users to customize their tinkering experience.  Text Trix can provide quick access to recently opened files or reopen them automatically at start-up.  Users can choose which set of shortcuts they want, including ones that reduce finger-reach and speed up typing.  It's your preference.
 
-As the set of Text Trix plug-ins grow, people might not want to use all the ones they installed.  Now they can select which ones to ignore--and re-include them on the fly if desired.
+As the set of Text Trix plug-ins grow, people might not want to use every plug-in they installed.  Now they can select which ones to ignore--and re-include them on the fly if desired.
 
-Text Trix continues to work toward providing an on-the-go experience for its users.  With the new file history and preferences functions, users no longer have to manually reopen files or restore settings every time they open the program.  That includes features unique to Text Trix, such as the auto-wrap-indent for each type of file.
+Text Trix continues to work toward providing an on-the-go experience for its users.  With the new file history and preferences functions, users no longer have to manually reopen files or restore settings every time they start the program.  Those settings includes features unique to Text Trix, such as the auto-wrap-indent for differ file types.
 
 New features include:
 -Preferences panel to save user settings
 -Ability to remember a user-defined number of files and reopen them automatically
 -Three separate keybindings models: Standard, Emacs, and Hybrid
 -Choice of which plug-ins to include or ignore
--Improved start-up performance by creating graphical components in parallel
+-Improved start-up performance by creating sets of graphical components in parallel
 
 Bug fixes include:
 -Plug-ins work again on selected text
--Tab history browsing follows new routes correctly for better quick-flipping between files
+-Tab history browsing follows new routes correctly for better quick-flipping among files
 
 ----v.0.3.3 (7/01/03)----
 

@@ -34,7 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 package com.textflex.texttrix;
 
 import javax.swing.*;
@@ -44,6 +43,7 @@ import java.awt.event.*;
 import javax.swing.undo.*;
 import javax.swing.text.*;
 import java.io.*;
+import javax.swing.event.*;
 
 /**The writing pad and text manipulator.
  * Consists of practical text editing tools
@@ -53,7 +53,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	private File file; // the file that the pad displays
 	private boolean changed = false; // flag that text changed
 	private String path; // file's path
-	private UndoManager undoManager = new UndoManager(); // undos
+	// allows for multiple and ignored undo operations
+	private UndoManagerTTx undoManager = new UndoManagerTTx();
 	private Hashtable actions; // table of shortcut actions
 	private InputMap imap = null; // map of keyboard inputs
 	private ActionMap amap = null; // map of actions
@@ -67,14 +68,14 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public TextPad(File aFile, Prefs prefs) {
 		file = aFile;
-		applyDocumentSettings(); // to allow multiple undos and listen for events
+		applyDocumentSettings();
+		// to allow multiple undos and listen for events
 
 		// for new key-bindings
 		imap = getInputMap(JComponent.WHEN_FOCUSED);
 		amap = getActionMap();
 		createActionTable(this);
 
-		
 		// (ctrl-backspace) delete from caret to current word start
 		// First discard JTextComponent's usual dealing with ctrl-backspace.
 		// (enter) Auto-indent if Text Trix's option selected.
@@ -102,11 +103,11 @@ public class TextPad extends JTextPane implements StateEditable {
 				}
 			}
 		});
-		
+
 		applyKeybindings(prefs);
 
 	}
-	
+
 	/** Sets the keybindings to the preferred value.
 	 * 
 	 * @param prefs preferences storage
@@ -120,7 +121,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			standardKeybindings();
 		}
 	}
-	
+
 	/** Sets the keybindings to standard shortcuts.
 	 * These shortcuts consist of those typically found on most desktop
 	 * systems.  The old set of keybindings are replaced with this set.
@@ -130,7 +131,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		createActionTable(this);
 		universalShortcuts();
 	}
-	
+
 	/** Sets the keybindings to a mesh of standard and Emacs shortcuts.
 	 * The keybinding uses Emacs shortcuts are those for most single line or 
 	 * character navigation, but standard shortcuts for everything else.  In case
@@ -142,7 +143,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		universalShortcuts();
 		partialEmacsShortcuts();
 	}
-	
+
 	/** Sets the keybindings to Emacs shortcuts for most typical single-key
 	 * combinations.  
 	 * The keybindings essentially uses a hierarchy of standard, hybrid,
@@ -156,7 +157,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		partialEmacsShortcuts();
 		emacsShortcuts();
 	}
-	
+
 	/** Creates the universal shortcuts, common to standard, partial-Emacs,
 	 * and Emacs keybindings.
 	 * Currently the standard set consists of only the universal shortcuts.
@@ -189,14 +190,14 @@ public class TextPad extends JTextPane implements StateEditable {
 				 * text component itself to tell it to perform the deletions rather 
 				 * than building string manually, a slow task
 				 */
-				 /*
-				 (new JTextComponent.AccessibleJTextComponent())
-				 .delete(wordPos, getCaretPosition());
+				/*
+				(new JTextComponent.AccessibleJTextComponent())
+				.delete(wordPos, getCaretPosition());
 				*/
 			}
 		});
 	}
-	
+
 	/** Creates the partial-Emacs shortcuts, consisting of single character and
 	 * line navigation.
 	 *
@@ -275,7 +276,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		});
 
 	}
-	
+
 	/** Sets the Emacs shortcuts, consisting of common single-key Emacs keybindings.
 	 * These shortcuts should be applied on top of those from
 	 * <code>partialEmacsShortcuts()</code>; <code>emacsShortcuts()</code>
@@ -286,33 +287,29 @@ public class TextPad extends JTextPane implements StateEditable {
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK),
 			"pageDown");
-		amap.put(
-			"pageDown",
-			getActionByName(DefaultEditorKit.pageDownAction));
+		amap.put("pageDown", getActionByName(DefaultEditorKit.pageDownAction));
 
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.ALT_MASK),
 			"pageUp");
-		amap.put(
-			"pageUp",
-			getActionByName(DefaultEditorKit.pageUpAction));
-		
+		amap.put("pageUp", getActionByName(DefaultEditorKit.pageUpAction));
+
 		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, Event.ALT_MASK | Event.SHIFT_MASK),
+			KeyStroke.getKeyStroke(
+				KeyEvent.VK_COMMA,
+				Event.ALT_MASK | Event.SHIFT_MASK),
 			"begin");
-		amap.put(
-			"begin",
-			getActionByName(DefaultEditorKit.beginAction));
-			
+		amap.put("begin", getActionByName(DefaultEditorKit.beginAction));
+
 		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, Event.ALT_MASK | Event.SHIFT_MASK),
+			KeyStroke.getKeyStroke(
+				KeyEvent.VK_PERIOD,
+				Event.ALT_MASK | Event.SHIFT_MASK),
 			"end");
-		amap.put(
-			"end",
-			getActionByName(DefaultEditorKit.endAction));
-		
+		amap.put("end", getActionByName(DefaultEditorKit.endAction));
+
 	}
-	
+
 	/** Sets the default displayed tab sizes.
 	 * Only affects the displayed size, since the text itself represents the tab simply
 	 * as "\t".
@@ -331,10 +328,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
 		StyleConstants.setLeftIndent(attribs, 0);
+		//StateEdit stateEdit = new StateEdit(this);
+		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument()
 			.setParagraphAttributes(0, getDocument().getLength() + 1,
 		// next char
 		attribs, false); // false to preserve default font
+		//stateEdit.end();
+		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
 	/** Sets the displayed tab size to 0.
@@ -350,12 +351,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		TabSet tabSet = new TabSet(tabs);
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
+		//StateEdit stateEdit = new StateEdit(this);
+		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument()
 			.setParagraphAttributes(0, getDocument().getLength() + 1,
 		// next char
 		attribs, false); // false to preserve default font
+		//stateEdit.end();
+		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
-
 
 	/** Sets the region's displayed indentation. 
 	 * Only affects the displayed size.  Useful to represent tabs as styled indents.
@@ -376,7 +380,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		int tabs = leadingTabsCount(s, i);
 		indent(tabChars, tabs, i, s.length() + 1);
 	}
-	
+
 	/** Counts the number of continuous tabs from a given position.
 	 * Useful when determining the number of tabs in the current line to auto-indent
 	 * the same number for the next line, for example.
@@ -406,8 +410,12 @@ public class TextPad extends JTextPane implements StateEditable {
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
+		//StateEdit stateEdit = new StateEdit(this);
+		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument().setParagraphAttributes(offset, length, // next char
 		attribs, false); // false to preserve default font
+		//stateEdit.end();
+		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
 	/** Indents the current paragraph, no matter where the caret is within it.
@@ -422,7 +430,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		int tabs = leadingTabsCount(s, start);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
-	
+
 	/** Reverses the indent on the current paragraph.
 	 * Restores the size of each tab, but also decreases the entire paragraph indentation.
 	 * @param tabChars number of spaces for each tab to represent
@@ -588,7 +596,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			? true
 			: false;
 	}
-	
+
 	/** Gets all the current text.
 	 * 
 	 * @return the text
@@ -800,7 +808,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		if (doc != null)
 			setDocument(doc);
 	}
-	
+
 	/** Sets the number of characters that each tab represents.
 	 * The tab is still represented by a '/t' rather than the given number
 	 * of characters; this setting is merely for display purposes.
@@ -810,7 +818,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void setTabSize(int aTabSize) {
 		tabSize = aTabSize;
 	}
-	
+
 	/** Gets the number of characters that each tab represents.
 	 * 
 	 * @return the number of characters
@@ -818,5 +826,51 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public int getTabSize() {
 		return tabSize;
+	}
+}
+
+/** Subclass of the <code>UndoManager</code>.
+ * Allows the code to ignore undos.
+ * @author davit
+ */
+class UndoManagerTTx extends UndoManager {
+	private boolean ignoreNextStyleChange = false;
+
+	/** Sublcassed method to add ability to ignore undos when flagged.
+	 * If <code>ignoreNextStyleChange</code> is set to <code>true</code>,
+	 * the method doesn't call the superclass' corresponding method.
+	 */
+	public synchronized boolean addEdit(UndoableEdit anEdit) {
+		// check if undoable
+		if (anEdit instanceof AbstractDocument.DefaultDocumentEvent) {
+			AbstractDocument.DefaultDocumentEvent de =
+				(AbstractDocument.DefaultDocumentEvent) anEdit;
+			// ignore if flag set and a change event
+			if (de.getType() == DocumentEvent.EventType.CHANGE
+				&& ignoreNextStyleChange) {
+				ignoreNextStyleChange = false; // reset the ignore flag
+				return false;
+			}
+		}
+		// call superclass' method
+		return super.addEdit(anEdit);
+	}
+	
+	/** Flags the manager to ignore the next change in style.
+	 * For example, stylistic auto-indentation indents should maybe be ignored
+	 * @param b <code>true</code> to ignore the next style change
+	 */
+	public void setIgnoreNextStyleChange(boolean b) {
+		ignoreNextStyleChange = b;
+	}
+	
+	
+	
+	/** Gets the state of the flag for ignoring the next style change.
+	 * 
+	 * @return <code>true</code> if the next style will be ignored
+	 */
+	public boolean getIgnoreNextStyleChange() {
+		return ignoreNextStyleChange;
 	}
 }

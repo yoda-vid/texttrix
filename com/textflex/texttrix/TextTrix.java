@@ -1472,7 +1472,7 @@ public class TextTrix extends JFrame {
 				t.setFile(path);
 				updateTabTitle(textAreas, tabbedPane);
 				getPrefs().storeFileHist(path);
-				autoAutoIndent(t);
+				autoAutoIndent(t); // prevents undos from before the save
 				return true;
 			}
 		} catch (IOException e) {
