@@ -124,6 +124,7 @@ then
 		BASE_DIR="$PWD/$0"
 	fi
 	BASE_DIR="${BASE_DIR%/texttrix/pkg.sh}" # set base dir to main Text Trix dir
+	BASE_DIR="${BASE_DIR%/.}"
 fi
 BLD_DIR="$BASE_DIR/build" # initial output directory
 TTX_DIR="$BASE_DIR/texttrix" # root directory of main Text Trix source files
@@ -141,11 +142,17 @@ SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR="TextTrix.jar" # executable jar
 ALL="$PKGDIR $PKG $SRCPKGDIR $SRCPKG"
 
-if [ ! -d $BLD_DIR ]
+if [ ! -d "$BLD_DIR" ]
 then
-	mkdir $BLD_DIR
+	mkdir "$BLD_DIR"
 fi
-cd $BLD_DIR # base of operations
+
+if [ -e "$BLD_DIR" ]
+then
+	cd "$BLD_DIR" # base of operations
+else
+	exit 1
+fi
 
 ##########
 # Packaging

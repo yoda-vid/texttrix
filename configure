@@ -295,6 +295,7 @@ fi
 
 phony='.PHONY: TextTrix texttrix TextTrix_setup'
 
+clean='clean: '"\n\t"'rm -f $(TARGET_FILES)'
 
 PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
@@ -336,6 +337,8 @@ do
 	plgClassRules="$plgClassRules""\n"
 	
 	phony="$phony $plg $plg"_setup
+	
+	clean="$clean "'$('"$plgTargetFilesVar)"
 done
 
 # Setup installation directory
@@ -360,7 +363,6 @@ $plgTargetFiles
 
 # Clean-up rule
 
-clean='clean: '"\n\t"'rm -f $(TARGET_FILES) $(APP_BIN) $(APP_DRAFT_BIN) $(APP_AR) $(APP_OBJ)'
 
 # Installation rules
 
