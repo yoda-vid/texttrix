@@ -618,7 +618,7 @@ public class Tools {
 		end++;
 	    // compare the word with the quarry to see if they match
 	    //	    System.out.println("n: " + n + ", end: " + end);
-	    if (end < len && text.substring(n, end).equals(quarry)) {
+	    if (end <= len && text.substring(n, end).equals(quarry)) {
 		return n;
 		// continue search with next word if no match yet
 	    } else {
