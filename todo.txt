@@ -24,7 +24,9 @@ v.0.5 series: advanced interface
 -more sophisticated find/replace search
 -status bar, incl line count
 -check on lost I-bar after switching to HTML view
--check on lack of shortcuts in MacOS X
+-MacOS X compatibility
+	-check on lack of shortcuts in MacOS X
+	-about dialog box
 -feature to insert hard returns after a given number of characters
 -elim multiple spaces via Extra Returns Remover
 -allow shortcuts to work when the toolbar is in focus
@@ -37,6 +39,7 @@ v.0.3.3
 -JTabbedPane tabs still adjust their widths when the asterisk indicating unsaved changes pops up; FIXED: using monospaced font to substitute characters w/o incurring any width changes ./
 -word delete often only deletes half words in Windows systems; FIXED: Document methods rather than getText()/setText() to determine characters; not sure why the latter methods work for viewPlain() and similar methods, though
 -update tab tool tip when open file; FIXED: set the tool tip, not just the tab title ./
+-word-wrap indent; ADDED: left indents equal to the number of tabs within a given paragraph
 
 v.0.3.2
 -update tab tooltip when rename ./

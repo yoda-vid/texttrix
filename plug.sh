@@ -7,6 +7,8 @@
 #####################
 WKDIR="/home/davit/src/texttrix" # work directory
 DIR="com/textflex/texttrix" # src package structure
+# CYGWIN USERS: change the first argument to "javac -classpath"
+# below from "..:$1" to "`cygpath ..:$1`"
 
 #####################
 # Only change for new plugins and extra tweaking
