@@ -30,7 +30,7 @@ New features include:
 -Loop capability in the LetterPulse plug-in
 
 Fixed bugs include:
--Auto-indent compatibility with JVM v.1.5.0-beta1
+-Auto-indent compatibility with JVM v.1.5.0-beta2
 -Auto-indenting newly pasted text
 -Shfit-backspace as normal backspace
 -Button to close tabs

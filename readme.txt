@@ -7,40 +7,41 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-3, Text Flex
+Copyright (c) 2002-4, Text Flex
 All rights reserved.
 
 -----------------
-Welcome to Text Trix!  We're just getting underway here.  Please try us out!
+Welcome to the Text Trix[tm] writer!  We're just getting underway here.  
+Please try us out!
 
 System Reqs:
--Java[tm] 2 Runtime Environment (http://www.java.com/en/index.jsp) or 
-Software Development Kit, v.1.4+ 
-(http://java.sun.com/j2se/1.4.2/download.html), 
-freely available from Sun Microsystems(TM); also available from IBM 
-(https://www6.software.ibm.com/dl/lxdk/lxdk-p), the only major kit for 
-Linux PPC systems (IBM SDK for 32-bit iSeries/pSeries)
+-Java[tm] Virtual Machine, v.1.4+ (http://java.sun.com/getjava/index.html), 
+freely available from Sun Microsystems[tm]; also available from IBM[tm] 
+(https://www6.software.ibm.com/dl/lxdk/lxdk-p), offering the only major kit 
+for Linux PPC systems (IBM SDK for 32-bit iSeries/pSeries)
 
 Instructions for use:
--Unzip the Text Trix[tm] package by double-clicking on the Jar Ajar[tm] 
-self-extracting file, "texttrix-x.y.z-jarajar-extractor.jar".  Follow the 
+-Install the Text Trix package by double-clicking on the Jar Ajar[tm] self-
+extracting file, "texttrix-x.y.z-jarajar-selfextractor.jar".  Follow the 
 instructions to unpack the file.
 -Double-click on "TextTrix.jar" in the directory that you unpacked
 
 Troubleshooting:
--Ensure that the Java 2 Runtime Environment, v.1.4+, is installed.  To check, 
+-Ensure that the Java Virtual Machine, v.1.4+, is installed.  To check, 
 point your browser to http://java.sun.com/getjava/index.html and click on 
-the Download banner to check.  Even if the browser does not indicate that 
-the Environment is installed, however, it may be.  Check by opening a 
-command prompt, typing "java -version", and looking for output displaying 
-version 1.4 or higher.  See http://textflex.com/texttrix/faq.html#jre for more 
-details.
--For use on Windows(R) systems: check that the desktop is set to use "javaw" 
-for ".jar" programs
+the Download banner.  Even if the browser does not indicate that 
+the virtual machine is installed, it may be.  If necessary, check by opening
+a command prompt, typing "java -version", and looking for output 
+displaying version 1.4 or higher.  See 
+http://textflex.com/texttrix/faq.html#jvm for more details, including how to 
+set the PATH environment variable that looks for the "java" command 
+automatically.
+-For use on Windows(R) systems: check that the desktop is set to use 
+"javaw" for ".jar" programs
 -For use on Linux(R) or MacOS(R) X system: check that the application/x-jar 
 MIME type is both supported and executes the command, "java -jar" on the 
 file
--If necessary, try unzip and run Text Trix via the command line:
+-If necessary, try installing and running Text Trix via the command line:
 	-Move into the folder holding "texttrix-x.y.z-jarajar-extractor.jar" 
 	by typing: "cd [folder holding the jarajar package]"
 	-Run the package and follow its instructions: 
@@ -51,8 +52,8 @@ file
 -See http://textflex.com/texttrix/faq.html for more details
 
 Run...away?
--If any of the instructions have not worked, check out 
-http://textflex.com/texttrix/faq.html or email support@textflex.com
+-If any of the instructions have not worked, check out our website for the 
+FAQs and forums, or email us at support@textflex.com
 -And please don't run away...help is just some text away!
 
 
