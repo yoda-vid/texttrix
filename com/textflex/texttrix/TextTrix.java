@@ -77,39 +77,49 @@ public class TextTrix extends JFrame {
 	JMenu editMenu = new JMenu("Edit");
 	JMenu helpMenu = new JMenu("Help");
 
+	// make tool bar
+	JToolBar toolBar = new JToolBar("Functions and features");
+
 	/* File menu items */
 
 	// make new tab and text area
-	JMenuItem newItem = fileMenu.add(new AbstractAction("New") {
+	Action newAction = new AbstractAction("New") {
 		public void actionPerformed(ActionEvent evt) {
 		    addTextArea(textAreas, tabbedPane, makeNewFile());
 		}
-	    });
+	    };
 	// Mozilla tabbed-pane key-binding
-	newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+	setAction(newAction, "New", 'N', KeyStroke.getKeyStroke(KeyEvent.VK_T,
 						      InputEvent.CTRL_MASK));
+	fileMenu.add(newAction);
 	/* move to tabs using default Java key-bindings:
 	 * Ctrl-up to tabs
 	 * Lt, rt to switch tabs
 	 * Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
-	JMenuItem openItem = new JMenuItem("Open...");
-	fileMenu.add(openItem);
-	openItem.addActionListener(new FileOpenListener());
-	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-						       InputEvent.CTRL_MASK));
+	Action openAction = new FileOpenAction("Open", null);
+	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
+				InputEvent.CTRL_MASK));
+	fileMenu.add(openAction);
+	toolBar.add(newAction);
+//	fileMenu.add(openItem);
+//	openItem.addActionListener(new FileOpenListener());
+//	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+//						       InputEvent.CTRL_MASK));
 
 	// close file; check if saved
-	JMenuItem closeItem = fileMenu.add(new AbstractAction("Close") {
+	Action closeAction = new AbstractAction("Close") {
 		public void actionPerformed(ActionEvent evt) {
 			int i = tabbedPane.getSelectedIndex();
 			closeTextArea(i, textAreas, tabbedPane);
 		}
-	});
+	};
+	setAction(closeAction, "Close", 'C', null);
+	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
-	JMenuItem saveItem = fileMenu.add(new AbstractAction("Save") {
+	Action saveAction = new AbstractAction("Save") {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
@@ -120,91 +130,104 @@ public class TextTrix extends JFrame {
 			else
 				fileSaveDialog();
 		}
-	});
-	saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+	};
+	setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
 				InputEvent.CTRL_MASK));
+	fileMenu.add(saveAction);
+	toolBar.add(saveAction);
+//	saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+//				InputEvent.CTRL_MASK));
 
 	// save w/ file save dialog
-	JMenuItem saveAsItem = new JMenuItem("Save as...");
-	fileMenu.add(saveAsItem);
-	saveAsItem.addActionListener(new FileSaveListener());
+	Action saveAsAction = new FileSaveAction("Save as...", null);
+	setAction(saveAsAction, "Save as...", '.', null);
+	fileMenu.add(saveAsAction);
 
 	// Start exit functions
 	fileMenu.addSeparator();
 	
 	// (ctrl-q) exit file; close each tab separately, checking if each saved
-	JMenuItem exitItem = fileMenu.add(new AbstractAction("Exit") {
+	Action exitAction = new AbstractAction("Exit") {
 		public void actionPerformed(ActionEvent evt) {
 			exitTextTrix();
 		}
-	    });
-	exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+	    };
+	setAction(exitAction, "Exit", 'E', KeyStroke.getKeyStroke(KeyEvent.VK_Q,
 						       InputEvent.CTRL_MASK));
+	fileMenu.add(exitAction);
 
 	/* Edit menu items */
 
 	// (ctrl-z) undo; multiple undos available
-	JMenuItem undoItem = editMenu.add(new AbstractAction("Undo") {
+	Action undoAction = new AbstractAction("Undo") {
 		public void actionPerformed(ActionEvent evt) {
 			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
 		}
-	});
-	undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
+	};
+	setAction(undoAction, "Undo", 'U', KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 				InputEvent.CTRL_MASK));
+	editMenu.add(undoAction);
 
 	// (ctrl-y) redo; multiple redos available
-	JMenuItem redoItem = editMenu.add(new AbstractAction("Redo") {
+	Action redoAction = new AbstractAction("Redo") {
 		public void actionPerformed(ActionEvent evt) {
 			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
 		}
-	});
-	redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
+	};
+	setAction(redoAction, "Redo", 'R', KeyStroke.getKeyStroke(KeyEvent.VK_Y,
 				InputEvent.CTRL_MASK));
+	editMenu.add(redoAction);
 
 	// Start Cut, Copy, Paste actions
 	editMenu.addSeparator();
 	
 	// (ctrl-x) cut
-	JMenuItem cutItem = editMenu.add(new AbstractAction("Cut") {
+	Action cutAction = new AbstractAction("Cut") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
 		}
-	    });
-	cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+	    };
+	setAction(cutAction, "Cut", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_X,
 						      InputEvent.CTRL_MASK));
+	editMenu.add(cutAction);
 
 	// (ctrl-c) copy
-	JMenuItem copyItem = editMenu.add(new AbstractAction("Copy") {
+	Action copyAction = new AbstractAction("Copy") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
 		}
-	    });
-	copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+	};
+	setAction(copyAction, "Copy", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_C,
 						       InputEvent.CTRL_MASK));
+	editMenu.add(copyAction);
 
 	// (ctrl-v) paste
-	JMenuItem pasteItem = editMenu.add(new AbstractAction("Paste") {
+	Action pasteAction = new AbstractAction("Paste") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
 		}
-	    });
-	pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+	    };
+	setAction(pasteAction, "Paste", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_V,
 							InputEvent.CTRL_MASK));
+	editMenu.add(pasteAction);
 
 	// Start selection items
 	editMenu.addSeparator();
 
 	// select all text in current text area
-	JMenuItem selectAllItem = editMenu.add(new AbstractAction("Select All") {
+	Action selectAllAction = new AbstractAction("Select all") {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).selectAll();
 		}
-	    });
+	};
+	setAction(selectAllAction, "Select all", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_L,
+				InputEvent.CTRL_MASK));
+	editMenu.add(selectAllAction);
 	
 	/* Help menu items */
 
 	// about Text Trix, incl copyright notice and version number
-	JMenuItem aboutItem = helpMenu.add(new AbstractAction("About...") {
+	Action aboutAction = new AbstractAction("About...") {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				// uses "about.txt" in same directory as this class
@@ -220,7 +243,9 @@ public class TextTrix extends JFrame {
 				exception.printStackTrace();
 			}
 		}
-	});
+	};
+	setAction(aboutAction, "About...", 'A', null);
+	helpMenu.add(aboutAction);
 
 	// shortcuts and goofy features description; opens new tab
 	JMenuItem shortcutsItem = helpMenu.add(new AbstractAction("Shortcuts") {
@@ -232,24 +257,26 @@ public class TextTrix extends JFrame {
 	});
 
 	// license; opens new tab
-	JMenuItem licenseItem = helpMenu.add(new AbstractAction("License") {
+	Action licenseAction = new AbstractAction("License") {
 		public void actionPerformed(ActionEvent evt) {
 			// reads from "license.txt" in same directory as this class
 			String path = "license.txt";
 			displayFile(path);
 		}
-	});
+	};
+	setAction(licenseAction, "License", 'L', null);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
-	JButton stripReturns = new JButton("Remove Extra Hard Returns");
-	stripReturns.addActionListener(new ActionListener() {
+	Action removeReturnsAction = new AbstractAction("Remove extra hard returns") {
 		public void actionPerformed(ActionEvent evt) {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			// may need to add original text to history buffer
 			// before making the change
 		    t.setText(Practical.removeExtraHardReturns(t.getText()));
 		}
-	    });
+	};
+	setAction(removeReturnsAction, "Remove extra hard returns", null);
+	toolBar.add(removeReturnsAction);
 
 	// add menu bar and menus
 	setJMenuBar(menuBar);
@@ -266,7 +293,7 @@ public class TextTrix extends JFrame {
 
 	constraints.fill = GridBagConstraints.BOTH;
 	constraints.anchor = GridBagConstraints.CENTER;
-	add(stripReturns, constraints, 0, 0, 1, 1, 0, 0);
+	add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
 
 	constraints.fill = GridBagConstraints.BOTH;
 	constraints.anchor = GridBagConstraints.CENTER;
@@ -320,6 +347,30 @@ public class TextTrix extends JFrame {
 	 */
 	public static void setSavePath(String aSavePath) {
 		savePath = aSavePath;
+	}
+
+	/**Set an action's properties.
+	 * @param action action to set
+	 * @param description tool tip
+	 * @param mnemonic menu shortcut
+	 * @param keyStroke accelerator key shortcut
+	 */
+	public void setAction(Action action, String description, 
+			char mnemonic, KeyStroke keyStroke) {
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+		action.putValue(Action.ACCELERATOR_KEY, keyStroke);
+	}
+	
+	/**Set an action's properties.
+	 * @param action action to set
+	 * @param description tool tip
+	 * @param keyStroke accelerator key shortcut
+	 */
+	public void setAction(Action action, String description,
+			KeyStroke keyStroke) {
+		action.putValue(Action.SHORT_DESCRIPTION, description);
+		action.putValue(Action.ACCELERATOR_KEY, keyStroke);
 	}
 
 	/**Makes new file with next non-existent file of name format,
@@ -573,7 +624,12 @@ public class TextTrix extends JFrame {
 	 * text area.  Filters for text files, though provides
 	 * option to display all files.
 	 */
-    private class FileOpenListener implements ActionListener {
+    private class FileOpenAction extends AbstractAction {
+		public FileOpenAction(String name, Icon icon) {
+			putValue(Action.NAME, name);
+			putValue(Action.SMALL_ICON, icon);
+		}
+		
 		public void actionPerformed(ActionEvent evt) {
 	    	chooser.setCurrentDirectory(new File(openPath));
 		    final ExtensionFileFilter filter = new ExtensionFileFilter();
@@ -626,7 +682,12 @@ public class TextTrix extends JFrame {
 	
 	/**Responds to user input calling for a save dialog.
 	 */
-    private class FileSaveListener implements ActionListener {
+    private class FileSaveAction extends AbstractAction {
+		public FileSaveAction(String name, Icon icon) {
+			putValue(Action.NAME, name);
+			putValue(Action.SMALL_ICON, icon);
+		}
+		
 		public void actionPerformed(ActionEvent evt) {
     		fileSaveDialog();
 		}
