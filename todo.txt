@@ -55,6 +55,7 @@ Note: "./" is the "check-mark" symbol
 -Wrap-indent
 	-update indents when paste over selected area
 -command-line arg not to reopen files
+-check on completeness of $(TARGET_FILES) in cleans
 
 ----Current Work----
 
@@ -107,7 +108,7 @@ v.0.3.6
 -new build process
 	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
 	-build the API through the Makefile; ADDED: api rule for texttrix package
-	-rules to clean and install
+	-rules to clean and install; ADDED: clean and install rules, including new run.sh script to run Text Trix from class files within installation directory
 	-pkg script should check that build directory exists or successfully created before continuing; FIXED: checks for directory b/c lack of it indicates that the script will not be able to change directories and will instead delete files in the current directory
 	-fix pkg script to allow "./" run calls from within Cygwin; FIXED: remove "./" from prefix of "$0"
 -function to go directly to a line number

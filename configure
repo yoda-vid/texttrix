@@ -263,10 +263,10 @@ ttxBasePkgDir="$ttxBaseDir"'/$(PKG_DIR)'
 ttxRule='TextTrix texttrix: TextTrix_setup $(TARGET_FILES)'
 
 ttxSetupRule='TextTrix_setup: '
-ttxSetupRule="$ttxSetupRule""\n\tif [ ! -e texttrix/"'$(PKG_DIR) ]; then mkdir -p texttrix/$(PKG_DIR); fi'
-ttxSetupRule="$ttxSetupRule""\n\tif [ ! -e texttrix/plugins ]; then mkdir -p texttrix/plugins; fi"
+ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/$(PKG_DIR)'
+ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/plugins'
 ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/*.txt texttrix/"'$(PKG_DIR); fi'
-ttxSetupRule="$ttxSetupRule""\n\tif [ ! -e texttrix/"'$(PKG_DIR)/images ]; then mkdir -p texttrix/$(PKG_DIR)/images; fi'
+ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/$(PKG_DIR)/images'
 ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/images/*.png"' texttrix/$(PKG_DIR)/images; fi'
 
 
@@ -279,6 +279,7 @@ else
 fi
 
 phony='.PHONY: TextTrix texttrix TextTrix_setup'
+clean=""
 
 PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
@@ -305,7 +306,7 @@ do
 	plgRules="$plgRules""\n$plg"": texttrix $plg"'_setup $('"$plgTargetFilesVar"')'"\n"
 	
 	plgSetupRules="$plgSetupRules""\n$plg"'_setup:'
-	plgSetupRules="$plgSetupRules""\n\tif [ ! -e plugins/$plgDir/"'$(PKG_DIR) ]; then mkdir -p plugins/'"$plgDir"'/$(PKG_DIR); fi'
+	plgSetupRules="$plgSetupRules""\n\t"'mkdir -p plugins/'"$plgDir"'/$(PKG_DIR)'
 	plgSetupRules="$plgSetupRules""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$plgBasePkgDir/*.html $plgBasePkgDir/*.png plugins/$plgDir/"'$(PKG_DIR); fi'"\n"
 		
 	plgClassRules="$plgClassRules""\nplugins/$plgDir"'/$(PKG_DIR)/%.class: $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/%.java'
@@ -349,7 +350,7 @@ $plgTargetFiles
 # API rule
 
 LINK="-link http://java.sun.com/j2se/1.5.0/docs/api"
-api='api: $(TARGET_FILES)'"\n\t"'if [ ! -d docs/api ]; then mkdir docs/api; fi'
+api='api: $(TARGET_FILES)'"\n\t"'mkdir docs/api'
 if [ $CYGWIN = true ]
 then
 	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -wp docs/api) '$LINK' -classpath $(shell cygpath -wp texttrix) $(PKG)'
@@ -367,14 +368,15 @@ install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/plugins/*.jar $(PREFIX)/plug
 install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/run.sh $(PREFIX)/run.sh'
 
 installSetup='install_setup:'
-installSetup="$installSetup""\n\t"'if [ ! -e $(PREFIX)/$(PKG_DIR)/images ]; then mkdir -p $(PREFIX)/$(PKG_DIR)/images; fi'
-installSetup="$installSetup""\n\t"'if [ ! -e $(PREFIX)/plugins ]; then mkdir -p $(PREFIX)/plugins; fi'
+installSetup="$installSetup""\n\t"'mkdir -p $(PREFIX)/$(PKG_DIR)/images'
+installSetup="$installSetup""\n\t"'mkdir -p $(PREFIX)/plugins'
 
 phony="$phony clean all install install_setup"
 
 # Clean-up rule
 
-clean='clean: '"\n\t"'rm -f $(TARGET_FILES)'
+clean='clean: '"\n\t""rm -f $clean"' $(TARGET_FILES)'
+clean="$clean""\n\t"'rm -f $(BASE_DIR)/texttrix/plugins/*.jar'
 
 # rules collection
 RULES="all: texttrix $PLGS
