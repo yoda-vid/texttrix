@@ -237,66 +237,74 @@ public class Practical {
 		return text;
 	}
 
-	/**Displays String representations in place of given Unicode characters.
-	 * Not working: will hard-code a table instead since the file would 
-	 * automatically convert the Unicode characters, and we only need a few 
-	 * Unicode characters in the first place--non-printing ones.
-	 * Nevertheless, the table functions will probably be useful for other 
-	 * tools and a preferences component.
+	/**Shows non-printing characters.
+	 * Adds String representations for non-printing characters, such as paragraph 
+	 * and tab markers.  The representations become part of the text.
 	 * @param text text to convert
-	 * @return text with String representations in place of given Unicode characters
+	 * @return text with added String representations
 	 */
-	public static String displayUnicode(String text) {
+	public static String showNonPrintingChars(String text) {
 		StringBuffer s = new StringBuffer(text.length());
-		String charText;
 		char c;
-		String unicodeTable[][] = loadUnicodeArray("unicodetable.txt");
+//		String unicodeTable[][] = loadUnicodeArray("unicodetable.txt");
 		for (int i = 0; i < text.length(); i++) {
 			c = text.charAt(i);
-			charText = unicodeConversion(unicodeTable, c);
+			switch (c) {
+				case '\n':
+					s.append("\\n" + c);
+					break;
+				case '\t':
+					s.append("\\t" + c);
+					break;
+				default:
+					s.append(c);
+					break;
+			}
+			/*
+//			charText = unicodeConversion(unicodeTable, c);
 			if (charText != null) {
 				s.append(charText);
 			} else {
 				s.append(c);
 			}
+			*/
 		}
 		return s.toString();
 	}
 
-	/**Load a two-column table of non-printing Unicode characters 
-	 * and their escape sequences.
-	 * The first column consists of the Unicode characters.
-	 * The second columns hold the corresponding "escape sequences."
-	 * Eg, Col. 1 might contain <code>\u000a</code>, while Col. 2 would contain
-	 * <code>"\n"</code>.
-	 * @param path file path to Unicode table, with lines of the form: 
-	 * <code><i>UnicodeChar</i> = <i>StringRepresentationOfUnicodeChar</i></code>; 
+	/**Load a table of equivalencies between two strings.
+	 * The first column consists of one string, and the second column of the 
+	 * correspondingly equivalent strings
+	 * Eg, Col. 1, Row 1 might contain "USA", and Col. 2, Row 1 would contain 
+	 * "United States of America".
+	 * @param path file path to table, with lines of the form: 
+	 * <code><i>variable</i> = <i>value</i></code>; 
 	 * a space or bar also separates the two variables
-	 * @return an array of 2-element arrays, each consisting of the Unicode character 
-	 * and its String representation
+	 * @return an array of 2-element arrays, each consisting of a string  
+	 * and its equivalent string
 	 */
-	public static String[][] loadUnicodeArray(String path) {
+	public static String[][] loadEquivalencyTable(String path) {
 		try {
 			InputStream in = Practical.class.getResourceAsStream(path);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			StringTokenizer token;
 			String delimiters = "| =";
 			String line;
-			ArrayList unicodeChars = new ArrayList();
-			ArrayList unicodeEsc = new ArrayList();
+			ArrayList vars = new ArrayList();
+			ArrayList vals = new ArrayList();
 			for (int i = 0; (line = reader.readLine()) != null; i++) {
 				token = new StringTokenizer(line, delimiters);
-				unicodeChars.add(token.nextToken());
-				unicodeEsc.add(token.nextToken());
+				vars.add(token.nextToken());
+				vals.add(token.nextToken());
 			}
-			int n = unicodeChars.size();
-			String unicode[][] = new String[n][2];
+			int n = vars.size();
+			String equivs[][] = new String[n][2];
 			for (int i = 0; i < n; i++) {
-				unicode[i][0] = (String)unicodeChars.get(i);
-				unicode[i][1] = (String)unicodeEsc.get(i);
+				equivs[i][0] = (String)vars.get(i);
+				equivs[i][1] = (String)vals.get(i);
 			}
-			sort2DStrArray(unicode);
-			return unicode;
+			sortEquivalencyTable(equivs);
+			return equivs;
 		} catch(IOException e) {
 			e.printStackTrace();
 			return null;
@@ -305,11 +313,9 @@ public class Practical {
 
 	/**Sorts a 2-dimensional String array according to the first element
 	 * of each array.
-	 * Useful for sorting unicode tables, the method compares 
-	 * the first character of each array.
 	 * @param array[][] an array of 2-element arrays
 	 */
-	public static void sort2DStrArray(String[][] array) {
+	public static void sortEquivalencyTable(String[][] array) {
 		int start;
 		int end;
 		int gap;
@@ -318,7 +324,7 @@ public class Practical {
 		for (gap = n / 2; gap > 0; gap /= 2) {
 			for (end = gap; end < n; end++) {
 				for (start = end - gap; start >= 0 
-						&& array[start][0].charAt(0) > array[start + gap][0].charAt(0); 
+						&& (array[start][0].compareTo(array[start + gap][0]) > 0); 
 						start -= gap) {
 					tmp = array[start];
 					array[start] = array[start + gap];
@@ -328,35 +334,29 @@ public class Practical {
 		}
 	}
 
-	/**Displays the appropriate String representation of a Unicode character.
-	 * Allows the Unicode character to be displayed visibly as its code in 
-	 * place of the character itself.
-	 * @param unicodeTable[][] array of 2-element arrays, each holding 
-	 * the Unicode character and its string representation
-	 * @param c Unicode character whose String representation will be retrieved
-	 * @return appropriate String representation, null if none is in the table
+	/**Displays a string's equivalent string.
+	 * @param equivalencyTable[][] array of 2-element arrays, each holding 
+	 * a string and its equivalent string
+	 * @return equivalent string, the original string if it is not in the table
 	 */
-	public static String unicodeConversion(String[][] unicodeTable, char quarry) {
-		String displayChar = null;
+	public static String strConverter(String[][] equivalencyTable, String quarry) {
+		String s = null;
 		int start = 0;
-		int end = unicodeTable.length - 1;
+		int end = equivalencyTable.length - 1;
 		int mid = end / 2;
-		char c;
-		for (int i = 0; i < unicodeTable.length; i++)
-			System.out.println(unicodeTable[i][0] + "," + unicodeTable[i][1]);
-		while (displayChar == null && start <= end) {
-			System.out.println("start == " + start + ", mid == " + mid + ", end == " + end);
-			if ((c = unicodeTable[mid][0].charAt(0)) == quarry) {
-				displayChar = unicodeTable[mid][1];
-			} else if (quarry < c) {
+		while (start <= end) {
+//			System.out.println("start == " + start + ", mid == " + mid + ", end == " + end);
+			if ((s = equivalencyTable[mid][0]).equals(quarry)) {
+				return equivalencyTable[mid][1];
+			} else if (quarry.compareTo(s) < 0) {
 				end = mid - 1;
 			} else {
 				start = mid + 1;
 			}
-			System.out.println("c == " + c + ", quarry == " + quarry + ", tableval == " + unicodeTable[mid][0]);
+//			System.out.println("c == " + c + ", quarry == " + quarry + ", tableval == " + unicodeTable[mid][0]);
 			mid = (start + end) / 2;
 		}
-		return displayChar;
+		return s;
 	}
 			
 

@@ -295,18 +295,18 @@ public class TextTrix extends JFrame {
 	removeReturnsButton.setToolTipText(readText("removeReturnsButton.html"));
 
 	// Non-printing-character display
-	Action unicodeViewerAction = new AbstractAction("View non-printing characters", 
-			null) {
+	Action nonPrintingCharViewerAction = new AbstractAction(
+			"View non-printing characters", makeIcon("nonprinting-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-			t.setText(Practical.displayUnicode(t.getText()));
+			t.setText(Practical.showNonPrintingChars(t.getText()));
 		}
 	};
-	setAction(unicodeViewerAction, "View non-printing characters", 'V');
-	toolsMenu.add(unicodeViewerAction);
-	JButton unicodeViewerButton = toolBar.add(unicodeViewerAction);
-	unicodeViewerButton.setBorderPainted(false);
-//	setRollover(unicodeViewerAction, null);
+	setAction(nonPrintingCharViewerAction, "View non-printing characters", 'V');
+	toolsMenu.add(nonPrintingCharViewerAction);
+	JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
+	nonPrintingCharViewerButton.setBorderPainted(false);
+	setRollover(nonPrintingCharViewerButton, "nonprinting-roll-16x16.png");
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
@@ -343,6 +343,7 @@ public class TextTrix extends JFrame {
      */
     public static void main(String[] args) {
 		TextTrix textTrix = new TextTrix();
+		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// make sure still goes through the exit routine if close
 		// window manually
 		textTrix.addWindowListener(new WindowAdapter() {
@@ -472,7 +473,7 @@ public class TextTrix extends JFrame {
 	/**Exits <code>TextTrix</code> by closing each tab individually,
 	 * checking for unsaved text areas in the meantime.
 	 */
-	public static void exitTextTrix() {
+	public static boolean exitTextTrix() {
 		boolean b = true;
 		int i = tabbedPane.getTabCount();
 		// closes each tab individually, using the function that checks
@@ -483,6 +484,7 @@ public class TextTrix extends JFrame {
 		}
 		if (b == true)
 			System.exit(0);
+		return b;
 	}
 	
 	/**Closes a text area.  Checks if the text area is unsaved;
@@ -521,12 +523,16 @@ public class TextTrix extends JFrame {
 				case 0:
 					// bring up "Save as..." dialog if never saved file before
 					if (t.fileExists()) {
-						saveFile(t.getPath());
+						successfulClose = saveFile(t.getPath());
 					} else {
 						// still closes tab if cancel "Save as..." dialog
 						// may need to change in future releases
-						fileSaveDialog();
+						successfulClose = fileSaveDialog();
 					}
+					if (successfulClose) {
+						removeTextArea(tabIndex, textAreas, tabbedPane);
+					}
+					break;
 				// discard the text area's contents
 				case 1:
 					removeTextArea(tabIndex, textAreas, tabbedPane);
@@ -666,8 +672,9 @@ public class TextTrix extends JFrame {
 
 	/**Saves text area contents to a given path.
 	 * @param path file path in which to save
+	 * @return true for a successful save, false if otherwise
 	 */
-	public static void saveFile(String path) {
+	public static boolean saveFile(String path) {
 		try {
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
@@ -679,15 +686,18 @@ public class TextTrix extends JFrame {
 			t.setFile(path);
 			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 					t.getName() + "  ");
+			return true;
 		} catch(IOException exception) {
 			exception.printStackTrace();
+			return false;
 		}
 	}
 
 	/**Evokes a save dialog, with a filter for text files.
 	 * Sets the tabbed pane tab to the saved file name.
+	 * @return true if the approve button is chosen, false if otherwise
 	 */
-	public static void fileSaveDialog() {
+	public static boolean fileSaveDialog() {
 		chooser.setCurrentDirectory(new File(savePath));
 
     	int result = chooser.showSaveDialog(null);
@@ -695,9 +705,10 @@ public class TextTrix extends JFrame {
 			String path = chooser.getSelectedFile().getPath();
 			saveFile(path);
 			setSavePath(path);
-			//tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-			//		chooser.getSelectedFile().getName());
-	    }
+			return true;
+	    } else {
+			return false;
+		}
 	}
 
 	/**Evokes a open file dialog, from which the user can
