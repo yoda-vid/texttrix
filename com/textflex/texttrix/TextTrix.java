@@ -1,6 +1,5 @@
 /*Text Trix
  *a goofy gui editor
- *v.0.1.3pre0
 
  *Copyright (c) 2002, David Young
  *All rights reserved.
@@ -45,18 +44,19 @@ import javax.swing.filechooser.FileFilter;
     and performs the text manipulation.
 */
 public class TextTrix extends JFrame {
-    ArrayList textAreas = new ArrayList();
-    JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-    JFileChooser chooser = new JFileChooser();
-	String openPath = "";
-	String savePath = "";
+    static ArrayList textAreas = new ArrayList();
+    static JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+    static JFileChooser chooser = new JFileChooser();
+	static String openPath = "";
+	static String savePath = "";
+	int fileIndex = 0;
 
     public TextTrix() {
 	setTitle("Text Trix");
 	setSize(500, 600);
-	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	addTextArea(textAreas, tabbedPane, "");
+	addTextArea(textAreas, tabbedPane, makeNewFile());
 
 	JMenuBar menuBar = new JMenuBar();
 	JMenu fileMenu = new JMenu("File");
@@ -66,13 +66,16 @@ public class TextTrix extends JFrame {
 	/* File menu items */
 	JMenuItem newItem = fileMenu.add(new AbstractAction("New") {
 		public void actionPerformed(ActionEvent evt) {
-		    addTextArea(textAreas, tabbedPane, "");
+		    addTextArea(textAreas, tabbedPane, makeNewFile());
 		}
 	    });
-	/* Comment-out until key bindings pref
-	newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+	// Mozilla tabbed-pane key-binding
+	newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
 						      InputEvent.CTRL_MASK));
-	*/
+	/* move to tabs using default Java key-bindings:
+	 * Ctrl-up to tabs
+	 * Lt, rt to switch tabs
+	 * Tab back down to TextPad */
 
 	JMenuItem openItem = new JMenuItem("Open...");
 	fileMenu.add(openItem);
@@ -91,10 +94,10 @@ public class TextTrix extends JFrame {
 
 	JMenuItem saveItem = fileMenu.add(new AbstractAction("Save") {
 		public void actionPerformed(ActionEvent evt) {
-			String path = ((TextPad)textAreas
-				.get(tabbedPane.getSelectedIndex())).getPath();
-			if (path != "")
-				saveFile(path);
+			TextPad t = (TextPad)textAreas
+				.get(tabbedPane.getSelectedIndex());
+			if (t.fileExists())
+				saveFile(t.getPath());
 			else
 				fileSaveDialog();
 		}
@@ -113,14 +116,7 @@ public class TextTrix extends JFrame {
 	
 	JMenuItem exitItem = fileMenu.add(new AbstractAction("Exit") {
 		public void actionPerformed(ActionEvent evt) {
-			boolean b = true;
-			int i = tabbedPane.getTabCount();
-			while (i > 0 && b) {
-				b = closeTextArea(i - 1, textAreas, tabbedPane);
-				i = tabbedPane.getTabCount();
-			}
-			if (b == true)
-				System.exit(0);
+			exitTextTrix();
 		}
 	    });
 	exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
@@ -198,23 +194,17 @@ public class TextTrix extends JFrame {
 		}
 	});
 
+	JMenuItem shortcutsItem = helpMenu.add(new AbstractAction("Shortcuts") {
+		public void actionPerformed(ActionEvent evt) {
+			String path = "shortcuts.txt";
+			displayFile(path);
+		}
+	});
+
 	JMenuItem licenseItem = helpMenu.add(new AbstractAction("License") {
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				BufferedReader reader = new BufferedReader(new
-					InputStreamReader(TextTrix.class.
-						getResourceAsStream("license.txt")));
-				String license = readText(reader);
-				reader.close();
-				// TODO: need to find true path
-				addTextArea(textAreas, tabbedPane, "license.txt");
-				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-				t.setEditable(false);
-				t.setText(license);
-				t.setCaretPosition(0);
-			} catch(IOException exception) {
-				exception.printStackTrace();
-			}
+			String path = "license.txt";
+			displayFile(path);
 		}
 	});
 
@@ -251,27 +241,71 @@ public class TextTrix extends JFrame {
        Creates the <code>TextTrix</code> object and displays it.
      */
     public static void main(String[] args) {
-	TextTrix textTrix = new TextTrix();
-	textTrix.show();
+		TextTrix textTrix = new TextTrix();
+		textTrix.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				exitTextTrix();
+			}
+		});
+		textTrix.show();
     }
 
-	public String getOpenPath() {
+	public static String getOpenPath() {
 		return openPath;
 	}
 
-	public String getSavePath() {
+	public static String getSavePath() {
 		return savePath;
 	}
 
-	public void setOpenPath(String anOpenPath) {
+	public static void setOpenPath(String anOpenPath) {
 		openPath = anOpenPath;
 	}
 
-	public void setSavePath(String aSavePath) {
+	public static void setSavePath(String aSavePath) {
 		savePath = aSavePath;
 	}
 
-	public boolean closeTextArea(int tabIndex, ArrayList textAreas,
+	// okay to return mutable object b/c create it anew here?
+	public File makeNewFile() {
+		File file;
+		do {
+			fileIndex++;
+		} while ((file = new File("NewFile" + fileIndex + ".txt")).exists());
+		return file;
+	}
+	
+	public void displayFile(String path) {
+		try {
+			BufferedReader reader = new BufferedReader(new
+				InputStreamReader(TextTrix.class.
+					getResourceAsStream(path)));
+			String license = readText(reader);
+			reader.close();
+			// TODO: need to find true path
+			addTextArea(textAreas, tabbedPane, new File(path));
+			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			t.setEditable(false);
+			t.setText(license);
+			t.setCaretPosition(0);
+			t.setChanged(false);
+		} catch(IOException exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	public static void exitTextTrix() {
+		boolean b = true;
+		int i = tabbedPane.getTabCount();
+		while (i > 0 && b) {
+			b = closeTextArea(i - 1, textAreas, tabbedPane);
+			i = tabbedPane.getTabCount();
+		}
+		if (b == true)
+			System.exit(0);
+	}
+	
+	public static boolean closeTextArea(int tabIndex, ArrayList textAreas,
 			JTabbedPane tabbedPane) {
 		boolean successfulClose = false;
 		
@@ -290,11 +324,10 @@ public class TextTrix extends JFrame {
 				"Save");
 			switch (choice) {
 				case 0:
-					String path = t.getPath();
-					if (path == "") {
-						fileSaveDialog();
+					if (t.fileExists()) {
+						saveFile(t.getPath());
 					} else {
-						saveFile(path);
+						fileSaveDialog();
 					}
 				case 1:
 					removeTextArea(tabIndex, textAreas, tabbedPane);
@@ -332,18 +365,33 @@ public class TextTrix extends JFrame {
        where <code>n</code> is the tab number.
     */
     public void addTextArea(ArrayList arrayList, 
-			JTabbedPane tabbedPane, String path) {
-		TextPad textPad = new TextPad(30, 20, path);
-		JScrollPane scrollPane = new JScrollPane(textPad);
+			final JTabbedPane tabbedPane, File file) {
+//		try {
+			final TextPad textPad = new TextPad(30, 20, file);
+			JScrollPane scrollPane = new JScrollPane(textPad);
 
-		textPad.setLineWrap(true);
-		textPad.setWrapStyleWord(true);
-		tabbedPane.addTab("NewFile.txt", scrollPane);
-		arrayList.add(textPad);
-		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+			final int i = tabbedPane.getTabCount(); // don't subtract 1 b/c addTab next
+			tabbedPane.addTab(file.getName(), scrollPane);
+			textPad.setLineWrap(true);
+			textPad.setWrapStyleWord(true);
+			textPad.addKeyListener(new KeyAdapter() {
+				public void keyTyped(KeyEvent e) {
+					if (textPad.getChanged()) {
+						String title = tabbedPane.getTitleAt(i);
+						if (!title.endsWith(" *"))
+							tabbedPane.setTitleAt(i, title + " *");
+					}
+				}
+			});
+			arrayList.add(textPad);
+			tabbedPane.setSelectedIndex(i);
+/*		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		*/
 	}
 	
-	public void removeTextArea(int i, ArrayList l, JTabbedPane tp) {
+	public static void removeTextArea(int i, ArrayList l, JTabbedPane tp) {
 		l.remove(i);
 		tp.remove(i);
 	}
@@ -371,7 +419,7 @@ public class TextTrix extends JFrame {
 	getContentPane().add(c, constraints);
     }
 
-	public void saveFile(String path) {
+	public static void saveFile(String path) {
 		try {
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
@@ -380,7 +428,7 @@ public class TextTrix extends JFrame {
 			out.print(t.getText());
 		    out.close();
 			t.setChanged(false);
-			t.setPath(path);
+			t.setFile(path);
 			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 					chooser.getSelectedFile().getName());
 		} catch(IOException exception) {
@@ -388,14 +436,14 @@ public class TextTrix extends JFrame {
 		}
 	}
 
-	public void fileSaveDialog() {
+	public static void fileSaveDialog() {
 		chooser.setCurrentDirectory(new File(savePath));
 	   	final ExtensionFileFilter filter = new ExtensionFileFilter();
 	   	filter.addExtension("txt");
 	   	filter.setDescription("Text files (*.txt)");
 	   	chooser.setFileFilter(filter);
 
-    	int result = chooser.showSaveDialog(TextTrix.this);
+    	int result = chooser.showSaveDialog(null);
     	if (result == JFileChooser.APPROVE_OPTION) {
 			String path = chooser.getSelectedFile().getPath();
 			saveFile(path);
@@ -413,7 +461,7 @@ public class TextTrix extends JFrame {
 	    	filter.setDescription("Text files (*.txt)");
 	    	chooser.setFileFilter(filter);
 
-	    	int result = chooser.showOpenDialog(TextTrix.this);
+	    	int result = chooser.showOpenDialog(null);
 
 	    	if (result == JFileChooser.APPROVE_OPTION) {
 				String path = chooser.getSelectedFile().getPath();
@@ -434,7 +482,7 @@ public class TextTrix extends JFrame {
 		    		if (tabIndex == -1 
 							|| (new StringTokenizer(t.getText()))
 							.hasMoreTokens()) { 
-						addTextArea(textAreas, tabbedPane, path);
+						addTextArea(textAreas, tabbedPane, new File(path));
 						t = (TextPad)textAreas
 							.get(tabbedPane.getSelectedIndex());
 						t.setText(text);
@@ -443,7 +491,7 @@ public class TextTrix extends JFrame {
 		    		}
 					t.setCaretPosition(0);
 					t.setChanged(false);
-					t.setPath(path);
+					t.setFile(path);
 					tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 							chooser.getSelectedFile().getName());
 	
@@ -458,9 +506,9 @@ public class TextTrix extends JFrame {
 	
     private class FileSaveListener implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
-			fileSaveDialog();
+    		fileSaveDialog();
 		}
-    }
+	}
 }
 
 class ExtensionFileFilter extends FileFilter {

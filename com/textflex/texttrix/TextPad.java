@@ -42,21 +42,23 @@ import javax.swing.event.*;
 import javax.swing.undo.*;
 import javax.swing.text.*;
 import javax.swing.Action.*;
+import java.io.*;
 
 /**The writing pad and text manipulator.
    Consists of standard text editing methods
    as well as special, silly ones for true text fun.
 */
 public class TextPad extends JTextArea {
+	File file;
 	boolean changed = false;
 	String path;
 	DocumentListener docListener = new TextPadDocListener();	
 	UndoManager undoManager = new UndoManager();
 	Hashtable actions;
 	
-    public TextPad(int w, int h, String aPath) {
+    public TextPad(int w, int h, File aFile) {
 		super(w, h);
-		path = aPath;
+		file = aFile;
 		getDocument().addDocumentListener(docListener);
 		getDocument().addUndoableEditListener(undoManager);
 		setTabSize(4); // probably add to preferences later
@@ -151,11 +153,24 @@ public class TextPad extends JTextArea {
 	}
 
 	public String getPath() {
-		return path;
+		try {
+			return file.getCanonicalPath();
+		} catch(IOException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 
-	public void setPath(String aPath) {
-		path = aPath;
+	public void setFile(File aFile) {
+		file = aFile;
+	}
+
+	public void setFile(String path) {
+		file = new File(path);
+	}
+
+	public boolean fileExists() {
+		return file.exists();
 	}
 
 	public void undo() {
