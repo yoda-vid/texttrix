@@ -45,7 +45,7 @@ v.0.3.3
 	-port the FindReplace tool to a dialog-based plug-in tool
 -plugin adaptor class to permit unimplemented methods
 -shortcut to switch b/n tabs--ff Mozilla keybindings, except that goes to last-used tab before proceeding in index order; ADDED: "Back" and "Forward" buttons with an unlimited history
--text area focus w/ each JTabbedPane switch; ADDED: requestFocusInWindow() within the tabbed pane stateChaned ChangeListener
+-text area focus w/ each JTabbedPane switch; ADDED: requestFocusInWindow() within a thread that the tabbed pane's stateChanged ChangeListener invokes
 
 v.0.3.2
 -update tab tooltip when rename ./

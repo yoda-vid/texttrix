@@ -71,6 +71,7 @@ public class TextTrix extends JFrame {
     private int tabIndexHistoryIndex = 0; // index of next record
     //    private int currTabIndex = 0; // index of the current tab
     private boolean updateTabIndexHistory = true; // flag to update the record
+    private Focuser focuser = null;
 
     /** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
@@ -91,6 +92,7 @@ public class TextTrix extends JFrame {
 	    tabIndexHistory[i] = -1;
 	// adds a change listener to listen for tab switches and display
 	// the options of the tab's TextPad
+	focuser = new Focuser();
 	tabbedPane.addChangeListener(new ChangeListener() {
 		public void stateChanged(ChangeEvent evt) {
 		    TextPad t = getSelectedTextPad();
@@ -104,7 +106,20 @@ public class TextTrix extends JFrame {
 			    addTabIndexHistory(tabbedPane.getSelectedIndex());
 			    //			    addTabIndexHistory(currTabIndex);
 			}
-			getSelectedTextPad().requestFocusInWindow();
+			focuser.start();
+			/*
+			t.setVisible(true);
+			t.setFocusable(true);
+  			t.requestFocusInWindow();
+			*/
+			/*
+			for (int i = 0; i < 5; i++) {
+			    try { Thread.sleep(50); } catch (Exception e) {}
+			    getSelectedTextPad().requestFocusInWindow();
+			}
+			*/
+			//			try { Thread.sleep(2000); } catch (InterruptedException e) {}
+			//			System.out.println(getFocusOwner().toString());
 			// record the current tab to update the record
 			// after switching to a new one
 			//			currTabIndex = tabbedPane.getSelectedIndex();
@@ -157,6 +172,12 @@ public class TextTrix extends JFrame {
 	Action newAction = new AbstractAction("New") {
 		public void actionPerformed(ActionEvent evt) {
 		    addTextArea(textAreas, tabbedPane, makeNewFile());
+		    /*
+		    for (int i = 0; i < 3; i++) {
+			try { Thread.sleep(1000); } catch (Exception e) {}
+			getSelectedTextPad().requestFocusInWindow();
+		    }
+		    */
 		    //		    transferFocus();
 		    //		    toolsMenu.requestFocusInWindow();
 		    //		    getSelectedTextPad().requestFocusInWindow();
@@ -747,7 +768,12 @@ public class TextTrix extends JFrame {
 		*/
 	    });
 	textTrix.show();
-       	textTrix.getSelectedTextPad().requestFocusInWindow();
+	//       	textTrix.getSelectedTextPad().requestFocusInWindow();
+	/*
+	while(true) {
+	try { Thread.sleep(2000); } catch (InterruptedException e) {}
+	textTrix.getSelectedTextPad().requestFocusInWindow();}
+	*/
     }
 
 
@@ -1076,7 +1102,7 @@ public class TextTrix extends JFrame {
 	    && tabIndexHistory[tabIndexHistoryIndex] != -1)
 	    ++tabIndexHistoryIndex;
 	*/
-	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
+	//	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
 	for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
 	    // shift the records as necessary to move a potential
 	    // duplicate to the front of the history
@@ -1122,12 +1148,12 @@ public class TextTrix extends JFrame {
 	    /*
 	    */
 	}
-
+	/*
 	for (int i = 0; i < tabIndexHistory.length; i++) {
 	    System.out.print("tabIndexHistory[" + i + "]: " + tabIndexHistory[i] + "; ");
 	    System.out.println();
 	}
-
+	*/
 	tabIndexHistoryIndex++;
     }
 
@@ -2280,6 +2306,79 @@ public class TextTrix extends JFrame {
 	}
     }
 
+    /** Solicits user command-line input on an independent thread.
+     */
+    private class Focuser implements Runnable {
+	/* Components within JTabbedPane tabs apparently do not respond to 
+	   requestFocusInWindow() until the tab becomes visible.  
+	   If a JTextArea within a JTabbedPane requests focus via within
+	   the tabbed pane's change listener, for example, the text area
+	   only receives focus sporadically.  Often the cursor merely
+	   blinks once in the area before disappearing.
+	   
+	   The potential solution is to wait for the tab to become 
+	   visible before requesting focus.  The action creating 
+	   the tab seems like a suitable place to wait and make 
+	   the request.  During tests, the component still does 
+	   not receive focus even after a delay, however, possibly because
+	   the action must finish before the GUI updates itself.
+	   The alternative is to start a thread to wait and requests.  
+	   While the thread pauses, the the change listener processor can
+	   come to completion and display the tab before the thread
+	   requests focus.  The thread does not know precisely when the
+	   tab becomes visible, however; the tab is enabled, but 
+	   evidently not yet visible.  Rather than guess how long to
+	   delay, the thread delays for a brief period, request focus, 
+	   and repeats itself as many time as necessary.  Not until
+	   the component reports that it has focus does the thread
+	   stop itself.  Systems may vary in their delay depending on
+	   processing speed and other specs, but the thread will make
+	   as many requests as necessary anyway.
+	   
+	   An apparent JRE bug causes the component's focus
+	   report have a delayed update, so that the text area continues
+	   to say that it is not focused even after the cursor begins
+	   to blink in the area.  Nonetheless, the component
+	   eventually does update its focus report, and the thread can
+	   know to stop.
+	*/
+	private Thread thread = null;
+
+	public Focuser() {
+	}
+
+	/** Starts the thread.
+	*/
+	public void start() {
+	    if (thread == null) {
+		thread = new Thread(this, "Thread");
+		thread.start();
+	    }
+	}
+    
+	/** Requests user command-line input.
+	    Does not exit until the user hits "Return".
+	*/
+	public void run() {
+	    TextPad pad = getSelectedTextPad();
+	    //		    pad.requestFocusInWindow();
+	    while (thread != null && pad != getFocusOwner()) {
+		try {
+		    //		    System.out.println("tab enabled: " + tabbedPane.isEnabledAt(tabbedPane.getSelectedIndex()));
+		    pad.requestFocusInWindow();
+		    Thread.sleep(20);
+		} catch (InterruptedException e) {}
+	    }
+	    //	    System.out.println("...done");
+	    stop();
+	}
+
+	/** Stops the thread and resets the input value.
+	 */
+	public void stop() {
+	    thread = null;
+	}
+    }
     /**Responds to tab changes in the JTabbedPane.
      * Not presently working.
      *
