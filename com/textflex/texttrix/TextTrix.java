@@ -45,7 +45,6 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-//import java.lang.reflect.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -90,127 +89,39 @@ public class TextTrix extends JFrame {
 		// initialize tabIndexHistory
 		for (int i = 0; i < tabIndexHistory.length; i++)
 			tabIndexHistory[i] = -1;
-		// adds a change listener to listen for tab switches and display
-		// the options of the tab's TextPad
-		//		focuser = new Focuser();
 
+		/* adds a change listener to listen for tab switches and display
+		 * the options of the tab's TextPad
+		 */
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
-				/*
-						tabbedPane.addComponentListener(new ComponentAdapter() {
-							public void componentShown(ComponentEvent evt) {
-				*/
-				/*	
-								TextPad t = getSelectedTextPad();
-								if (t != null) {
-									setAutoIndent(t.getAutoIndent());
-									// update the tab index record;
-									// addTabIndexHistory increments the record index;
-									// add the current tab selection now to ensure that
-									// all selections are recorded
-									if (updateTabIndexHistory) {
-										addTabIndexHistory(tabbedPane.getSelectedIndex());
-										//			    addTabIndexHistory(currTabIndex);
-									}
-				//					System.out.println("I'm here");
-				//					t.requestFocusInWindow();
-				
-									new Focuser(t).start();
-								}
-							}
-						});
-				*/
 				final TextPad t = getSelectedTextPad();
-				try {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							if (t != null) {
-								setAutoIndent(t.getAutoIndent());
-								// update the tab index record;
-								// addTabIndexHistory increments the record index;
-								// add the current tab selection now to ensure that
-								// all selections are recorded
-								int i = tabbedPane.getSelectedIndex();
-								if (updateTabIndexHistory) {
-									addTabIndexHistory(i);
-									//			    addTabIndexHistory(currTabIndex);
-								}
-								updateTitle(t.getFilename());
-								//					focuser.start();
-								// doesn't work when creating new tabs via
-								// the keyboard accelerator;
-								// only works when changing between already created
-								// tabs or creating new ones via the menu item
-								t.requestFocusInWindow();
-							}
-						}
-					});
-				} catch (Exception e) {
-				}
-				
-				if (t != null)
-					t.requestFocusInWindow();
-				
-				//focuser();
-				/*
-				try {					
-				EventQueue.invokeAndWait(new Runnable() {
+				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						getSelectedTextPad().requestFocusInWindow();
+						if (t != null) {
+							setAutoIndent(t.getAutoIndent());
+							// update the tab index record;
+							// addTabIndexHistory increments the record index;
+							// add the current tab selection now to ensure that
+							// all selections are recorded
+							int i = tabbedPane.getSelectedIndex();
+							if (updateTabIndexHistory) {
+								addTabIndexHistory(i);
+							}
+							updateTitle(t.getFilename());
+							// doesn't work when creating new tabs via
+							// the keyboard accelerator;
+							// only works when changing between already created
+							// tabs or creating new ones via the menu item
+							t.requestFocusInWindow();
+						}
 					}
 				});
-				} catch (Exception e) {
-				}
-				*/
-			}
-		});
-		/*
-		tabbedPane.addMouseListener(new MouseAdapter() {
-			public void mouseReleased(MouseEvent e) {
-				TextPad t = getSelectedTextPad();
+
 				if (t != null)
 					t.requestFocusInWindow();
 			}
-		})
-		*/;
-
-		/*
-		t.setVisible(true);
-		t.setFocusable(true);
-			t.requestFocusInWindow();
-		*/
-		/*
-		for (int i = 0; i < 10; i++) {
-		    try { Thread.sleep(50); } catch (Exception e) {}
-		    getSelectedTextPad().requestFocusInWindow();
-		}
-		*/
-		//			try { Thread.sleep(2000); } catch (InterruptedException e) {}
-		//			System.out.println(getFocusOwner().toString());
-		// record the current tab to update the record
-		// after switching to a new one
-		//			currTabIndex = tabbedPane.getSelectedIndex();
-
-		/*
-		tabbedPane.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent evt) {
-			    getSelectedTextPad().requestFocusInWindow();
-			}
-		
-			public void focusLost(FocusEvent evt) {
-			}
-		    });
-		*/
-		/*
-		tabbedPane.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent evt) {
-			    getSelectedTextPad().requestFocusInWindow();
-			}
-		
-			public void focusLost(FocusEvent evt) {
-			}
-		    });
-		*/
+		});
 
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
@@ -218,8 +129,7 @@ public class TextTrix extends JFrame {
 		// make menu bar and menus
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		fileMenu.setMnemonic('I');
-		// not 'F' since Alt-f for word-forward
+		fileMenu.setMnemonic('I'); // not 'F' since Alt-f for word-forward
 		JMenu editMenu = new JMenu("Edit");
 		editMenu.setMnemonic('E');
 		JMenu viewMenu = new JMenu("View");
@@ -247,20 +157,6 @@ public class TextTrix extends JFrame {
 		Action newAction = new AbstractAction("New") {
 			public void actionPerformed(ActionEvent evt) {
 				addTextArea(textAreas, tabbedPane, makeNewFile());
-				/*
-				try { Thread.sleep(2000); } catch (Exception e) {}
-				getSelectedTextPad().requestFocusInWindow();
-				*/
-				/*
-				for (int i = 0; i < 3; i++) {
-				try { Thread.sleep(1000); } catch (Exception e) {}
-				getSelectedTextPad().requestFocusInWindow();
-				}
-				*/
-				//		    transferFocus();
-				//		    toolsMenu.requestFocusInWindow();
-				//		    getSelectedTextPad().requestFocusInWindow();
-				//		    System.out.println(getFocusOwner().toString());
 			}
 		};
 		// per Mozilla keybinding
@@ -336,20 +232,15 @@ public class TextTrix extends JFrame {
 				"Save",
 				LibTTx.makeIcon("images/saveicon-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
+				TextPad t = getSelectedTextPad(); //null;
 				// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
-				//	int tabIndex = tabbedPane.getSelectedIndex();
-				TextPad t = getSelectedTextPad();//null;
-				if (t != null) {//tabIndex != -1) {
-				
-				//	t = (TextPad) textAreas.get(tabIndex);
-					// save directly to file if already created one
+				if (t != null) {
 					if (t.fileExists()) {
 						if (!saveFile(t.getPath())) {
 							String msg =
 								t.getPath()
 									+ " couldn't be written.\n"
-									+ "Would you like to try saving it "
-									+ "somewhere else?";
+									+ "Would you like to try saving it somewhere else?";
 							String title = "Couldn't write";
 							if (yesNoDialog(TextTrix.this, msg, title))
 								fileSaveDialog(TextTrix.this);
@@ -403,7 +294,7 @@ public class TextTrix extends JFrame {
 		// (ctrl-z) undo; multiple undos available
 		Action undoAction = new AbstractAction("Undo") {
 			public void actionPerformed(ActionEvent evt) {
-				((TextPad) textAreas.get(tabbedPane.getSelectedIndex())).undo();
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -416,7 +307,7 @@ public class TextTrix extends JFrame {
 		// (ctrl-y) redo; multiple redos available
 		Action redoAction = new AbstractAction("Redo") {
 			public void actionPerformed(ActionEvent evt) {
-				((TextPad) textAreas.get(tabbedPane.getSelectedIndex())).redo();
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -432,7 +323,7 @@ public class TextTrix extends JFrame {
 		// (ctrl-x) cut
 		Action cutAction = new AbstractAction("Cut") {
 			public void actionPerformed(ActionEvent evt) {
-				((TextPad) textAreas.get(tabbedPane.getSelectedIndex())).cut();
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -446,7 +337,7 @@ public class TextTrix extends JFrame {
 		// (ctrl-c) copy
 		Action copyAction = new AbstractAction("Copy") {
 			public void actionPerformed(ActionEvent evt) {
-				((TextPad) textAreas.get(tabbedPane.getSelectedIndex())).copy();
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -460,8 +351,7 @@ public class TextTrix extends JFrame {
 		// (ctrl-v) paste
 		Action pasteAction = new AbstractAction("Paste") {
 			public void actionPerformed(ActionEvent evt) {
-				((TextPad) textAreas.get(tabbedPane.getSelectedIndex()))
-					.paste();
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -478,7 +368,7 @@ public class TextTrix extends JFrame {
 		// select all text in current text area
 		Action selectAllAction = new AbstractAction("Select all") {
 			public void actionPerformed(ActionEvent evt) {
-				((TextPad) textAreas.get(tabbedPane.getSelectedIndex()))
+				((TextPad)textAreas.get(tabbedPane.getSelectedIndex()))
 					.selectAll();
 			}
 		};
@@ -522,7 +412,7 @@ public class TextTrix extends JFrame {
 			new AbstractAction("Auto-indent all current files") {
 			public void actionPerformed(ActionEvent evt) {
 				for (int i = 0; i < textAreas.size(); i++) {
-					TextPad t = (TextPad) textAreas.get(i);
+					TextPad t = (TextPad)textAreas.get(i);
 					if (t != null)
 						t.setAutoIndent(true);
 				}
@@ -551,17 +441,14 @@ public class TextTrix extends JFrame {
 
 		// (ctrl-shift-[) switch back in the tab history
 		Action backTabAction = new AbstractAction("Back") {
+			/* Switch back only up through the first record and  keep from recording
+			 * the past selected tabs as newly selected one.  The current index always 
+			 * refers to the next available position to add selections, while the previous 
+			 * index refers to the current selection.  To go back, the value at two 
+			 * positions back must be checked.
+			 */
 			public void actionPerformed(ActionEvent evt) {
-				// switch back only up through the first record;
-				// keep from recording the past selected tabs
-				// as newly selected one;
-				// the current index always refers to the next
-				// available position to add selections, while
-				// the previous index refers to the current selection;
-				// to go back, the value at two positions back must be 
-				// checked
 				if (--tabIndexHistoryIndex >= 1) {
-					//			&& tabIndexHistoryIndex < tabIndexHistory.length) {
 					// uncouple the tab index history while switching
 					// to the past tabs -- leave the tabs as a
 					// trail until a new tab is chosesn
@@ -570,7 +457,6 @@ public class TextTrix extends JFrame {
 					tabbedPane.setSelectedIndex(
 						tabIndexHistory[tabIndexHistoryIndex - 1]);
 					updateTabIndexHistory = true;
-					//			try { Thread.sleep(1000); } catch (InterruptedException e) {}
 				} else { // reset the index to its orig val, -1
 					++tabIndexHistoryIndex;
 				}
@@ -600,7 +486,6 @@ public class TextTrix extends JFrame {
 					//			System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + i);
 					tabbedPane.setSelectedIndex(i);
 					updateTabIndexHistory = true;
-					//			++tabIndexHistoryIndex;
 				} else {
 					--tabIndexHistoryIndex;
 				}
@@ -702,8 +587,8 @@ public class TextTrix extends JFrame {
 
 		// shortcuts description; opens new tab
 		Action shortcutsAction = new AbstractAction("Shortcuts") {
-			public void actionPerformed(ActionEvent evt) {
 				// reads from "shortcuts.txt" in same dir as this class
+	public void actionPerformed(ActionEvent evt) {
 				String path = "shortcuts.txt";
 				displayFile(path);
 			}
@@ -713,8 +598,8 @@ public class TextTrix extends JFrame {
 
 		// features descriptions; opens new tab
 		Action featuresAction = new AbstractAction("Features descriptions") {
-			public void actionPerformed(ActionEvent evt) {
 				// reads from "features.txt" in same dir as this class
+	public void actionPerformed(ActionEvent evt) {
 				String path = "features.txt";
 				displayFile(path);
 			}
@@ -724,8 +609,8 @@ public class TextTrix extends JFrame {
 
 		// license; opens new tab
 		Action licenseAction = new AbstractAction("License") {
-			public void actionPerformed(ActionEvent evt) {
 				// reads from "license.txt" in same directory as this class
+	public void actionPerformed(ActionEvent evt) {
 				String path = "license.txt";
 				displayFile(path);
 			}
@@ -736,31 +621,9 @@ public class TextTrix extends JFrame {
 		//	toolBar.addSeparator();
 
 		/* Trix and Tools menus */
-		
+
 		// Load plugins; add to appropriate menu	 
 		setupPlugins();
-
-		/*
-		// Find and Replace: fixed tool, not a plugin
-		// (ctrl-shift-F) find and replace Tools feature
-		Action findAction 
-		    = new AbstractAction("Find and replace", 
-					 LibTTx.makeIcon("images/find-16x16.png")) {
-			public void actionPerformed(ActionEvent evt) {
-			    if (findDialog == null) 
-				findDialog = new FindDialog(TextTrix.this);
-			    findDialog.show();
-			}
-		    };
-		// need capital "F" b/c "shift"
-		LibTTx.setAcceleratedAction(findAction, "Find and replace", 'F', 
-			  KeyStroke.getKeyStroke("ctrl shift F")); 
-		toolsMenu.add(findAction);
-		JButton findButton = toolBar.add(findAction);
-		findButton.setBorderPainted(false);
-		LibTTx.setRollover(findButton, "images/find-roll-16x16.png");
-		findButton.setToolTipText(readText("findbutton.html"));
-		*/
 
 		/* Place menus and other UI components */
 
@@ -772,25 +635,6 @@ public class TextTrix extends JFrame {
 		menuBar.add(trixMenu);
 		menuBar.add(toolsMenu);
 		menuBar.add(helpMenu);
-
-		/*	
-		// add components to frame; "add" function to set GridBag parameters
-		Container contentPane = getContentPane();
-		GridBagLayout layout = new GridBagLayout();
-		contentPane.setLayout(layout);
-		
-		GridBagConstraints constraints = new GridBagConstraints();
-		
-		// add toolbar menu
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
-		add(toolBar, constraints, 0, 0, 1, 1, 0, 0);
-		
-		// add tabbed pane
-		constraints.fill = GridBagConstraints.BOTH;
-		constraints.anchor = GridBagConstraints.CENTER;
-		add(tabbedPane, constraints, 0, 2, 1, 1, 100, 100);
-		*/
 
 		Container contentPane = getContentPane();
 		contentPane.add(toolBar, BorderLayout.NORTH);
@@ -830,13 +674,12 @@ public class TextTrix extends JFrame {
 		// TODO: allow dynamic switching in Preferences section
 		try {
 			//	    System.out.println("java ver num: " + System.getProperty("java.vm.version") + ", " + System.getProperty("os.name"));
-			/** GTK+ look and feel for Java v.1.4.2 running on Linux,
-			otherwise the default look and feel, such as the new XP 
-			interface for Microsoft Windows XP systems with Java v.1.4.2.
-			According to http://java.sun.com/j2se/1.4.2/docs/guide/ //
-			swing/1.4/Post1.4.html, UIManager
-			.getSystemLookAndFeelClassName() will return GTK+ by default
-			in Java v.1.5.
+			/* GTK+ look and feel for Java v.1.4.2 running on Linux,
+			 * otherwise the default look and feel, such as the new XP 
+			 * interface for Microsoft Windows XP systems with Java v.1.4.2.
+			 * According to http://java.sun.com/j2se/1.4.2/docs/guide/swing/1.4/Post1.4.html, 
+			 * UIManager.getSystemLookAndFeelClassName() will return GTK+ by default
+			 * in Java v.1.5.
 			*/
 			if (System.getProperty("os.name").equals("Linux")
 				&& System.getProperty("java.vm.version").indexOf("1.4.2") != -1) {
@@ -867,28 +710,14 @@ public class TextTrix extends JFrame {
 			public void windowClosing(WindowEvent e) {
 				exitTextTrix();
 			}
-			/*
-			  public void windowGainedFocus(WindowEvent e) {
-			  TextPad t;
-			  if ((t = getSelectedTextPad()) != null) {
-			  t.requestFocusInWindow();
-			  }
-			  }
-			*/
 		});
 		textTrix.show();
-		//textTrix.getSelectedTextPad().requestFocusInWindow();
 		focuser();
-		/*
-		while(true) {
-		try { Thread.sleep(2000); } catch (InterruptedException e) {}
-		textTrix.getSelectedTextPad().requestFocusInWindow();}
-		*/
 	}
 
 	/**Switches focus synchronously to the selected <code>TextPad</code>,
 	 * if one exists. 
-	 */	
+	 */
 	public static void focuser() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -898,22 +727,34 @@ public class TextTrix extends JFrame {
 			}
 		});
 	}
-	
+
+	/** Updates the main Text Trix frame's heading.
+	 * Window managers often use the title to display in taskbar icons.  The updater is
+	 * useful to display the name of the currently selected file, for example.  This name
+	 * is automatically appended to the front of the text, " - Text Trix".
+	 * @param frame the Text Trix window frame
+	 * @param filename name of given file, such as the currently displayed one
+	 */
 	public static void updateTitle(JFrame frame, String filename) {
 		String titleSuffix = " - Text Trix";
 		frame.setTitle(filename + titleSuffix);
 	}
-	
+
+	/** Updates the main Text Trix frame's heading.
+	 * Window managers often use the title to display in taskbar icons.  The updater is
+	 * useful to display the name of the currently selected file, for example.  This name
+	 * is automatically appended to the front of the text, " - Text Trix".
+	 * @param filename name of given file, such as the currently displayed one
+	 */
 	public void updateTitle(String filename) {
 		String titleSuffix = " - Text Trix";
 		setTitle(filename + titleSuffix);
 	}
-	
-	
+
 	/** Creates a plugin action.
-	Allows the plugin to be invoked from a button or other action-capable
-	interface.
-	@param pl plugin from which to make an action
+	 * Allows the plugin to be invoked from a button or other action-capable
+	 * interface.
+	 * @param pl plugin from which to make an action
 	*/
 	public void makePlugInAction(final PlugIn pl) {
 		String name = pl.getName(); // plugin name
@@ -924,27 +765,11 @@ public class TextTrix extends JFrame {
 		// reader for extended description
 		BufferedReader detailedDescriptionBuf = pl.getDetailedDescription();
 		ImageIcon icon = pl.getIcon(); // icon
-		ImageIcon rollIcon = pl.getRollIcon();
-		// icon for mouse-rollover
-
-		/*
-		// create the action
-		Action runAction = 
-		    new AbstractAction(name, icon) {
-			public void actionPerformed(ActionEvent evt) {
-			    // invoke the plugin's text manipulation on the current
-			    // TextPad's text
-			    textTinker(pl); 
-			}
-		    };
-		
-		pl.LibTTx.setAction(runAction);
-		*/
+		ImageIcon rollIcon = pl.getRollIcon(); // icon for mouse-rollover
 
 		// create the listener to respond to events that the plug in fires
 		PlugInAction listener = new PlugInAction() {
 			public void runPlugIn(PlugInEvent event) {
-				//		    if (evt.getType() == PlugInEvent.COMPLETE)
 				textTinker(pl);
 			}
 		};
@@ -954,9 +779,8 @@ public class TextTrix extends JFrame {
 		// action to start the plug in, such as invoking its options
 		// panel if it has one
 		Action startAction = new AbstractAction(name, icon) {
-			public void actionPerformed(ActionEvent evt) {
-				// invoke the plugin's text manipulation on the current
-				// TextPad's text
+				// invokes the plugin's text manipulation on the current TextPad's text
+	public void actionPerformed(ActionEvent evt) {
 				pl.startPlugIn();
 			}
 		};
@@ -989,13 +813,13 @@ public class TextTrix extends JFrame {
 	}
 
 	/** Run a text-manipulating plug-in on the selected text pad's text.
-	If a given region is selected, the plug-in will only work on that
-	area, unless the plug-in's <code>alwaysEntireText</code> variable
-	is <code>true</code>.  If so, the plug-in will receive the entire
-	body of text as well as the positions of selected text.  The plug-in
-	receives the entire body but only the caret position when no
-	text is selected.
-	@param pl plugin to invoke
+	 * If a given region is selected, the plug-in will only work on that
+	 * area, unless the plug-in's <code>alwaysEntireText</code> variable
+	 * is <code>true</code>.  If so, the plug-in will receive the entire
+	 * body of text as well as the positions of selected text.  The plug-in
+	 * receives the entire body but only the caret position when no
+	 * text is selected.
+	 * @param pl plugin to invoke
 	*/
 	public void textTinker(PlugIn pl) {
 		TextPad t = getSelectedTextPad();
@@ -1011,16 +835,14 @@ public class TextTrix extends JFrame {
 			// only modify the selected text, and make 
 			// the action undoable
 			int start = t.getSelectionStart();
-			int end = t.getSelectionEnd();
-			// at the first unselected character
+			int end = t.getSelectionEnd(); // at the first unselected character
 			PlugInOutcome outcome = null;
 			try {
 				// determines whether a region is selected or not;
 				// if not, works on the text pad's entire text
 				if (start == end || pl.getAlwaysEntireText()) { // no selection
-					text = doc.getText(0, doc.getLength());
-					// all the text
-					//		    System.out.println(text);
+					text = doc.getText(0, doc.getLength()); // all the text
+
 					// invokes the plugin: start and ending selection positions
 					// when "alwaysEntireText" b/c want to both get all of 
 					// the text and show its highlighted portion,
@@ -1029,11 +851,11 @@ public class TextTrix extends JFrame {
 						pl.getAlwaysEntireText()
 							? pl.run(text, start, end)
 							: pl.run(text, end);
+
+					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
-						// remove all the text
-						doc.remove(0, doc.getLength());
-						// insert text
-						doc.insertString(0, outcome.getText(), null);
+						doc.remove(0, doc.getLength()); // remove all the text
+						doc.insertString(0, outcome.getText(), null); // insert text
 					}
 					// approximates the original caret position
 					int i = -1;
@@ -1046,12 +868,11 @@ public class TextTrix extends JFrame {
 						t.setCaretPosition(start);
 					}
 				} else {
-					int len = end - start;
-					// length of selected region
-					text = doc.getText(start, len);
-					// only get the region
-					outcome = pl.run(text, start, end);
-					// invoke the plugin
+					int len = end - start; // length of selected region
+					text = doc.getText(start, len); // only get the region
+					outcome = pl.run(text, start, end); // invoke the plugin
+
+					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						// remove only the region
 						doc.remove(start, len);
@@ -1063,20 +884,26 @@ public class TextTrix extends JFrame {
 					if ((i = outcome.getSelectionStart()) != -1)
 						textSelection(t, start, i, outcome.getSelectionEnd());
 				}
-				//		if (t.getAutoIndent()) t.setIndentTabs(t.getTabSize());
-
 			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
+	
+	/** Selects the given region of text.
+	 * Works on the given text pad.
+	 * @param t given text pad, not necessarily the selected one, though probably only
+	 * relevant if so
+	 * @param baseline starting point from which to measure <code>start</code>
+	 * and <cdoe>end</code>
+	 * @param start beginning point for selection
+	 * @param end end point for selection
+	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
 		if (end != -1) {
 			t.setCaretPosition(baseline + start);
 			t.moveCaretPosition(baseline + end);
-			// to ensure selection visibility
-			t.getCaret().setSelectionVisible(true);
+			t.getCaret().setSelectionVisible(true); // to ensure selection visibility
 		} else {
 			t.setCaretPosition(baseline + start);
 		}
@@ -1240,7 +1067,7 @@ public class TextTrix extends JFrame {
 	public static TextPad getSelectedTextPad() {
 		int i = tabbedPane.getSelectedIndex();
 		if (i != -1) {
-			return (TextPad) textAreas.get(i);
+			return (TextPad)textAreas.get(i);
 		} else {
 			return null;
 		}
@@ -1310,33 +1137,17 @@ public class TextTrix extends JFrame {
 			tabIndexHistory[--tabIndexHistoryIndex] = mostRecent;
 		} else if (tabIndexHistoryIndex >= tabIndexHistory.length) {
 			// increase the array size if necessary
-			tabIndexHistory = (int[]) LibTTx.growArray(tabIndexHistory);
+			tabIndexHistory = (int[])LibTTx.growArray(tabIndexHistory);
 			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
 			for (int i = tabIndexHistoryIndex + 1;
 				i < tabIndexHistory.length;
 				i++)
 				tabIndexHistory[i] = -1;
-			/*
-			--tabIndexHistoryIndex;
-			if (repeat) {
-			System.arraycopy(tabIndexHistory, 1, 
-					 tabIndexHistory, 0, tabIndexHistory.length - 1);
-			tabIndexHistory[tabIndexHistory.length - 1] = mostRecent;
-			}
-			*/
 		} else if (tabIndexHistoryIndex >= 0) {
 			// ensure that the tab during TextTrix's startup has no entry;
 			// otherwise, the 0 tab selection index duplicates
 			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
-			/*
-			*/
 		}
-		/*
-		for (int i = 0; i < tabIndexHistory.length; i++) {
-		    System.out.print("tabIndexHistory[" + i + "]: " + tabIndexHistory[i] + "; ");
-		    System.out.println();
-		}
-		*/
 		tabIndexHistoryIndex++;
 	}
 
@@ -1369,14 +1180,8 @@ public class TextTrix extends JFrame {
 			if (tabIndexHistory[i] > removed) {
 				tabIndexHistory[i] = --tabIndexHistory[i];
 			}
-			/*
-			if (tabIndexHistory[i] == -1)
-			tabIndexHistoryIndex = i;
-			*/
 			//	    System.out.print(tabIndexHistory[i] + ",");
 		}
-		//	System.out.println();
-		//	--tabIndexHistoryIndex;
 	}
 
 	/**Sets the given path as the most recently one used
@@ -1437,12 +1242,11 @@ public class TextTrix extends JFrame {
 			reader = new BufferedReader(new InputStreamReader(in));
 			String text = readText(reader); // retrieve the text
 			addTextArea(textAreas, tabbedPane, new File(path));
-			TextPad t = getSelectedTextPad();//(TextPad) textAreas.get(tabbedPane.getSelectedIndex());
+			TextPad t = getSelectedTextPad();
 			t.setEditable(false); // so appropriate for read-only
 			t.setText(text);
 			t.setChanged(false);
 			updateTabTitle(textAreas, tabbedPane);
-//			updateTitle(t.getFilename());
 			t.setCaretPosition(0);
 			return true;
 		} finally {
@@ -1492,7 +1296,7 @@ public class TextTrix extends JFrame {
 		JTabbedPane tabbedPane) {
 		boolean successfulClose = false;
 
-		TextPad t = (TextPad) textAreas.get(tabIndex);
+		TextPad t = (TextPad)textAreas.get(tabIndex);
 		// check if unsaved text area
 		if (t.getChanged()) {
 			String s = "Please save first.";
@@ -1612,35 +1416,12 @@ public class TextTrix extends JFrame {
 		JTabbedPane tabbedPane,
 		File file) {
 		TextPad textPad = new TextPad(file);
-		/*
-		textPad.addComponentListener(new ComponentAdapter() {
-		public void componentShown(ComponentEvent evt) {			
-		//				TextPad t = getSelectedTextPad();
-			if (textPad != null) {
-				setAutoIndent(textPad.getAutoIndent());
-				// update the tab index record;
-				// addTabIndexHistory increments the record index;
-				// add the current tab selection now to ensure that
-				// all selections are recorded
-				if (updateTabIndexHistory) {
-					addTabIndexHistory(tabbedPane.getSelectedIndex());
-					//			    addTabIndexHistory(currTabIndex);
-				}
-		//					System.out.println("I'm here");
-				textPad.requestFocusInWindow();
-		//					new Focuser(t).start();
-			}
-		}
-		});
-		*/
-		// final variables so can use in inner class;
 
 		JScrollPane scrollPane =
 			new JScrollPane(
 				textPad,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		//			scrollPane.setRequestFocusEnabled(false);
 		DocumentListener listener = new TextPadDocListener();
 
 		// must add to array list before adding scroll pane to tabbed pane
@@ -1649,14 +1430,11 @@ public class TextTrix extends JFrame {
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
-		//		textPad.setLineWrap(true);
-		//		textPad.setWrapStyleWord(true);
 		textPad.getDocument().addDocumentListener(listener);
 		textPad.addMouseListener(new PopupListener());
 		// show " *" in tab title when text changed
 		tabbedPane.setSelectedIndex(i);
 		tabbedPane.setToolTipTextAt(i, textPad.getPath());
-		//	textPad.requestFocusInWindow();
 	}
 
 	/**Changes tabbed pane title to indicate whether the file's changes 
@@ -1671,7 +1449,7 @@ public class TextTrix extends JFrame {
 		ArrayList arrayList,
 		JTabbedPane tabbedPane) {
 		int i = tabbedPane.getSelectedIndex();
-		TextPad textPad = (TextPad) arrayList.get(i);
+		TextPad textPad = (TextPad)arrayList.get(i);
 		//	String title = tabbedPane.getTitleAt(i);
 		String title = textPad.getFilename();
 		// convert to filename; -2 b/c added 2 spaces
@@ -1765,36 +1543,6 @@ public class TextTrix extends JFrame {
 		tp.remove(i);
 	}
 
-	/*Adds a new component to the <code>GridBagLayout</code>
-	 * manager.
-	 * @param c component to add
-	 * @param constraints layout constraints object
-	 * @param x column number
-	 * @param y row number
-	 * @param w number of columns to span
-	 * @param h number of rows to span
-	 * @param wx column weight
-	 * @param wy row weight
-	 *
-	public void add(
-		Component c,
-		GridBagConstraints constraints,
-		int x,
-		int y,
-		int w,
-		int h,
-		int wx,
-		int wy) {
-		constraints.gridx = x;
-		constraints.gridy = y;
-		constraints.gridwidth = w;
-		constraints.gridheight = h;
-		constraints.weightx = wx;
-		constraints.weighty = wy;
-		getContentPane().add(c, constraints);
-	}
-	*/
-
 	/**Saves text area contents to a given path.
 	 * @param path file path in which to save
 	 * @return true for a successful save, false if otherwise
@@ -1810,31 +1558,14 @@ public class TextTrix extends JFrame {
 				   catching exception and either handling it there
 				   or returning signal of the failure
 				 */
-				/*
-				// ensure that the file can be written
-				if (f.canWrite())
-				    System.out.println("can write");
-				else 
-				    System.out.println("can't write");
-				*/
 				// open the stream to write to
 				out = new PrintWriter(new FileWriter(path), true);
 				// write to it
 				out.print(t.getText());
 				t.setChanged(false);
 				t.setFile(path);
-				// the the tab title to indicate that no unsaved changes;
-				// in place of updateTabTitle b/c static context
-				//		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-				//				      t.getName() + " ");
-				//		tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
-				//					    t.getPath());
 				updateTabTitle(textAreas, tabbedPane);
 				return true;
-				/*
-				} else {
-				return false;
-				*/
 			}
 		} catch (IOException e) {
 			//	    e.printStackTrace();
@@ -1865,15 +1596,12 @@ public class TextTrix extends JFrame {
 				reader = new BufferedReader(new FileReader(path));
 
 				// check if tabs exist; get TextPad if true
-				/* t.getText() != null, even if have typed nothing 
-				   in it.
-				   Add tab and set its text if no tabs exist or 
-				   if current tab has tokens; set current tab's 
-				   text otherwise
+				/* t.getText() != null, even if have typed nothing in it. Add tab and set its text 
+				 * if no tabs exist or if current tab has tokens; set current tab's text otherwise.
 				*/
 				if (t == null || !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
-					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
+					t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 					read(t, reader, path);
 				} else { // open file in current, empty pad
 					read(t, reader, path);
@@ -1905,12 +1633,6 @@ public class TextTrix extends JFrame {
 					return false;
 				}
 			}
-			/*
-			} else if (file.isDirectory()) { // directory: can't open
-			System.out.println(path + " is a directory");
-			} else if (!file.exists()) { // non-existent
-			System.out.println(path + " does not exist");
-			*/
 		}
 		return false;
 	}
@@ -2136,18 +1858,7 @@ public class TextTrix extends JFrame {
 						// notify the user which files couldn't be opened
 						msg =
 							"The following files couldn't be opened:\n"
-								+ msg
-								+ "Would you like to try again?";
-						/*
-						String msg = "";
-						for (int j = 0; j < unopenables.length; j++) {
-						    if (j == unopenables - 1) {
-							msg = msg + unopenables[j];
-						    } else {
-						
-						String msg = unopenables + "wasn't
-						+ "found.\nWould you like to try again?";
-						*/
+								+ msg + "Would you like to try again?";
 						// request another chance to open them or other files
 						repeat = yesNoDialog(owner, msg, title);
 					}
@@ -2224,9 +1935,7 @@ public class TextTrix extends JFrame {
 		 * @param e insertion event
 		 */
 		public void insertUpdate(DocumentEvent e) {
-			(
-				(TextPad) textAreas.get(
-					tabbedPane.getSelectedIndex())).setChanged(
+			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(
 				true);
 			updateTabTitle(textAreas, tabbedPane);
 		}
@@ -2235,9 +1944,7 @@ public class TextTrix extends JFrame {
 		 * @param e removal event
 		 */
 		public void removeUpdate(DocumentEvent e) {
-			(
-				(TextPad) textAreas.get(
-					tabbedPane.getSelectedIndex())).setChanged(
+			((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(
 				true);
 			updateTabTitle(textAreas, tabbedPane);
 		}
@@ -2248,167 +1955,32 @@ public class TextTrix extends JFrame {
 		public void changedUpdate(DocumentEvent e) {
 		}
 	}
-
+	
+	/** Listener to pop up a context menu when right-clicking.
+	 * 
+	 * @author davit
+	 */
 	private class PopupListener extends MouseAdapter {
+		/** Press right mouse button.
+		 * 
+		 */
 		public void mousePressed(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 
+		/** Release right mouse button.
+		 * 
+		 */
 		public void mouseReleased(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}
-
-	/* Solicits user command-line input on an independent thread.
-	 *
-	private class Focuser extends Thread {
-		/* Components within JTabbedPane tabs apparently do not respond to 
-		   requestFocusInWindow() until the tab becomes visible.  
-		   If a JTextArea within a JTabbedPane requests focus via within
-		   the tabbed pane's change listener, for example, the text area
-		   only receives focus sporadically.  Often the cursor merely
-		   blinks once in the area before disappearing.
-		   
-		   The potential solution is to wait for the tab to become 
-		   visible before requesting focus.  The action creating 
-		   the tab seems like a suitable place to wait and make 
-		   the request.  During tests, the component still does 
-		   not receive focus even after a delay, however, possibly because
-		   the action must finish before the GUI updates itself.
-		   The alternative is to start a thread to wait and requests.  
-		   While the thread pauses, the the change listener processor can
-		   come to completion and display the tab before the thread
-		   requests focus.  The thread does not know precisely when the
-		   tab becomes visible, however; the tab is enabled, but 
-		   evidently not yet visible.  Rather than guess how long to
-		   delay, the thread delays for a brief period, request focus, 
-		   and repeats itself as many time as necessary.  Not until
-		   the component reports that it has focus does the thread
-		   stop itself.  Systems may vary in their delay depending on
-		   processing speed and other specs, but the thread will make
-		   as many requests as necessary anyway.
-		   
-		   An apparent JRE bug causes the component's focus
-		   report have a delayed update, so that the text area continues
-		   to say that it is not focused even after the cursor begins
-		   to blink in the area.  Nonetheless, the component
-		   eventually does update its focus report, and the thread can
-		   know to stop.
-		*
-		private Thread thread = null;
-		private TextPad pad = null;
-
-		public Focuser(TextPad aPad) {
-			pad = aPad;
-		}
-
-		/** Starts the thread.
-		*
-		public void start() {
-			if (thread == null) {
-				thread = new Thread(this, "Thread");
-				//					System.out.println("I'm here");
-				thread.start();
-			}
-		}
-
-		/** Requests user command-line input.
-		    Does not exit until the user hits "Return".
-		*
-		public void run() {
-			//TextPad pad = getSelectedTextPad();
-			/*
-			try {
-				sleep(100);
-			} catch (InterruptedException e) {
-			}
-			*
-			while (!interrupted() && pad != null && pad != getFocusOwner()) {
-				/*
-				try {
-				//		    System.out.println("tab enabled: " + tabbedPane.isEnabledAt(tabbedPane.getSelectedIndex()));
-					Thread.sleep(100);
-					pad.requestFocusInWindow();
-				//						System.out.println("I'm here");
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-				* 
-				*
-				//		    pad.requestFocusInWindow();
-				try {
-					EventQueue.invokeAndWait(new Runnable() {
-						public void run() {
-							try {
-								//		    System.out.println("tab enabled: " + tabbedPane.isEnabledAt(tabbedPane.getSelectedIndex()));
-								Thread.sleep(100);
-								System.out.println(
-									"request: " + pad.requestFocusInWindow());
-								System.out.println("I'm here");
-							} catch (InterruptedException e) {
-								Thread.currentThread().interrupt();
-							}
-						}
-					});
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				} catch (InvocationTargetException f) {
-					Thread.currentThread().interrupt();
-				}
-
-			}
-			System.out.println("...done");
-			//				thread = null;
-		}
-		
-
-		/** Stops the thread and resets the input value.
-		 
-		public void stop() {
-			thread = null;
-		}
-		*
-	}
-	*/
-	
-	/*Responds to tab changes in the JTabbedPane.
-	 * Not presently working.
-	 *
-	 private class TabSwitchListener implements ChangeListener {
-	 public void stateChanged(ChangeEvent e) {
-	 if (tabbedPane.getTabCount() > 0) {
-	 getSelectedTextPad().requestFocusInWindow();
-	 setPrevTabIndex(getCurrentTabIndex());
-	 setCurrentTabIndex(tabbedPane.getSelectedIndex());
-	 }
-	 }
-	 }
-	*/
-	/*	
-	  private class TextPadTabbedPane extends JTabbedPane {
-	  public TextPadTabbedPane(int tabPlacement) {
-	  super(tabPlacement);
-	  }
-	
-	  public static ChangeListener createChangeListener() {
-	  return new ChangeListener() {
-	  public void stateChanged(ChangeEvent evt) {
-	  System.out.println("I'm here: " + tabbedPane.getSelectedIndex());
-	  TextPad t = null;
-	  if ((t = getSelectedTextPad()) != null) {
-	  t.setVisible(true);
-	  t.requestFocus();
-	  }
-	  }
-	  };
-	  }
-	  }
-	*/
 }
+
 
 /**Filters for files with specific extensions.
  */
@@ -2455,7 +2027,7 @@ class ExtensionFileFilter extends FileFilter {
 		String name = f.getName().toLowerCase();
 
 		for (int i = 0; i < extensions.size(); i++)
-			if (name.endsWith((String) extensions.get(i)))
+			if (name.endsWith((String)extensions.get(i)))
 				return true;
 		return false;
 	}

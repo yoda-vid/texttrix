@@ -51,6 +51,12 @@ v.0.3.3
 	-port the FindReplace tool to a dialog-based plug-in tool; ADDED: "FindReplace" is now "Search"; PlugIn classes can now alter an "alwaysEntireText" variable to specify that the plug-in should receive all of the text despite any highlighting, along w/ highlight positions; plug-ins now return text to highlight as well as altered text
 	-make statistics fns; ADDED: character, word, and line count
 	-fix word search when caret at end of text; FIXED: removed detrimetnal variable in getWord() (formerly part of findWord()) 
+	-add a no-text-change value to PlugInOutcome; ADDED: flag to show that the text has not changed, such as when finding text but not repacing it
+-"Letter Pulse" plugin:
+	-demonstrate as a "trix" plugin; ADDED: sequentially highlights the letters of a given message
+	-demonstrate the options panel; ADDED: follows a similar model as the "Search" plugin
+	-demonstrate multiple updates to the Text Pad; ADDED: repeatedly calls the highlighter to select a different letter with each pulse
+	-demonstrate the no-text-change flag; ADDED: pulse, but no text update
 
 v.0.3.2
 -update tab tooltip when rename ./

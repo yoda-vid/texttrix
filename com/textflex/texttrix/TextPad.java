@@ -41,10 +41,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
-//import javax.swing.event.*;
 import javax.swing.undo.*;
 import javax.swing.text.*;
-//import javax.swing.Action.*;
 import java.io.*;
 
 /**The writing pad and text manipulator.
@@ -57,7 +55,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	private String path;
 	private UndoManager undoManager = new UndoManager();
 	private Hashtable actions;
-	//	private int tabSize = 0;
 	private boolean autoIndent = false;
 	private int tabSize = 4; // default tab size
 
@@ -68,9 +65,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public TextPad(File aFile) {
 		file = aFile;
-		//		tabSize = 4; // set the displayed tab size; add to preferences in the future
-		applyDocumentSettings();
-		// to allow multiple undos and listen for events
+		applyDocumentSettings(); // to allow multiple undos and listen for events
 
 		// for new key-bindings
 		createActionTable(this);
@@ -210,17 +205,16 @@ public class TextPad extends JTextPane implements StateEditable {
 				*/
 			}
 		});
-
-		//       	setDefaultTabs(4);
-		//	System.out.println(getFont().getFontName());
-
 	}
-
+	
+	/** Sets the default displayed tab sizes.
+	 * Only affects the displayed size, since the text itself represents the tab simply
+	 * as "\t".
+	 * @param tabChars number of spaces for the tab to represent
+	 * @see #setNoTabs()
+	 * @see #setIndentTabs(int) 
+	 */
 	public void setDefaultTabs(int tabChars) {
-		//	setFont(new Font("Dialog", Font.PLAIN, 12));
-		//String[] fontFams = 
-		//	for (j = 0; 
-		//	System.out.println(getFont().getFontName());
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
 
@@ -235,10 +229,14 @@ public class TextPad extends JTextPane implements StateEditable {
 			.setParagraphAttributes(0, getDocument().getLength() + 1,
 		// next char
 		attribs, false); // false to preserve default font
-		//	setFont(new Font("Dialog", Font.PLAIN, 12));
-		//	return true;
 	}
 
+	/** Sets the displayed tab size to 0.
+	 * Only affects the displayed size, since the text still represents the tab simply as "\t".
+	 * Useful when representing tabs through other means, such as styled indents.
+	 * @see #setDefaultTabs(int)
+	 * @see #setIndentTabs(int)
+	 */
 	public void setNoTabs() { //int offset, int length) {
 		//	System.out.println("set no tabs at position " + offset + " for " + length + " chars");
 		TabStop[] tabs = new TabStop[1];
@@ -246,27 +244,18 @@ public class TextPad extends JTextPane implements StateEditable {
 		TabSet tabSet = new TabSet(tabs);
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
-		/*
-		getStyledDocument()
-		    .setCharacterAttributes(offset,
-					    length, // next char
-					    attribs,
-					    true); // false to preserve default font
-		*/
 		getStyledDocument()
 			.setParagraphAttributes(0, getDocument().getLength() + 1,
 		// next char
 		attribs, false); // false to preserve default font
-		/*
-		StyleConstants.setBold(attribs, true);
-		getStyledDocument()
-		    .setCharacterAttributes(offset + 1,
-					    length, // next char
-					    attribs,
-					    true); // false to preserve default font
-		*/
 	}
 
+
+	/** Sets the region's displayed indentation. 
+	 * Only affects the displayed size.  Useful to represent tabs as styled indents.
+	 * @see #setDefaultTabs(int)
+	 * @see #setIndentTabs(int)
+	 */
 	public void setIndentTabs(int tabChars) {
 		int i = 0;
 		int j = 0;
@@ -280,47 +269,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 		int tabs = leadingTabsCount(s, i);
 		indent(tabChars, tabs, i, s.length() + 1);
-		//       	setDefaultTabs(4);
-		//	System.out.println(getFont().getFontName());
-
 	}
-	/*
-	public boolean setDefaultTabs(int tabChars) {
-	//	setFont(new Font("Dialog", Font.PLAIN, 12));
-	//String[] fontFams = 
-	//	for (j = 0; 
-	//	System.out.println(getFont().getFontName());
-	int charWidth = getFontMetrics(getFont()).charWidth(' ');
-	int tabWidth = charWidth * tabChars;
 	
-	TabStop[] tabs = new TabStop[30]; // just enough to fit default frame
-	for (int i = 0; i < tabs.length; i++) 
-	    tabs[i] = new TabStop((i + 1) * tabWidth);
-	TabSet tabSet = new TabSet(tabs);
-	SimpleAttributeSet attribs = new SimpleAttributeSet();
-	StyleConstants.setTabSet(attribs, tabSet);
-	getStyledDocument()
-	    .setParagraphAttributes(0,
-				    getDocument().getLength() + 1,
-				    attribs,
-				    false); // false to preserve default font
-	//	setFont(new Font("Dialog", Font.PLAIN, 12));
-	return true;
-	}
-	*/
-
-	/*
-	public void clearIndentTabs() {
-	SimpleAttributeSet attribs = new SimpleAttributeSet();
-	StyleConstants.setLeftIndent(attribs, 0);
-	getStyledDocument()
-	    .setParagraphAttributes(0,
-				    getDocument().getLength() + 1, // next char
-				    attribs,
-				    false); // false to preserve default font
-	}
-	*/
-
+	/** Counts the number of continuous tabs from a given position.
+	 * Useful when determining the number of tabs in the current line to auto-indent
+	 * the same number for the next line, for example.
+	 * @param s text to count for tabs
+	 * @param offset position to start counting
+	 * @return number of continuous tabs from a given position
+	 */
 	public int leadingTabsCount(String s, int offset) {
 		int tabs = 0;
 		for (int i = offset; i < s.length() && s.charAt(i) == '\t'; i++)
@@ -329,6 +286,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		return tabs;
 	}
 
+	/** Indents a paragraph by a given number of tabs and size per tab.
+	 * Indents the entire region, not just the first line, though each tab remains the size of
+	 * one space.
+	 * @param tabChars number of spaces to represent for each tab
+	 * @param tabs number of tabs
+	 * @param offset position in text at which to start indenting
+	 * @param length position in text at which to stop indenting
+	 */
 	public void indent(int tabChars, int tabs, int offset, int length) {
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
@@ -340,36 +305,36 @@ public class TextPad extends JTextPane implements StateEditable {
 		attribs, false); // false to preserve default font
 	}
 
+	/** Indents the current paragraph, no matter where the caret is within it.
+	 * Renders tabs as spaces, but indents the entire region a given number of spaces
+	 * per tab.
+	 * @param tabChars number of spaces for each tab to represent
+	 */
 	public void indentCurrentParagraph(int tabChars) {
 		String s = getAllText();
-		//	int caretPos = getCaretPosition();
 		//	System.out.println("caret pos: " + caretPos);
-		int start = reverseIndexOf(s, "\n", getCaretPosition()) + 1;
+		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
 		int tabs = leadingTabsCount(s, start);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
-		//	setNoTabs(start, 2);
 	}
-
+	
+	/** Reverses the indent on the current paragraph.
+	 * Restores the size of each tab, but also decreases the entire paragraph indentation.
+	 * @param tabChars number of spaces for each tab to represent
+	 */
 	public void unindentCurrentParagraph(int tabChars) {
 		String s = getAllText();
-		//	int caretPos = getCaretPosition();
 		//	System.out.println("caret pos: " + caretPos);
-		int start = reverseIndexOf(s, "\n", getCaretPosition()) + 1;
+		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
 		int tabs = leadingTabsCount(s, start) - 1;
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
-		//	setNoTabs(start, tabs - 1);
 	}
 
-	public int reverseIndexOf(String str, String searchStr, int offset) {
-		int i = offset - 1;
-		//	System.out.println("len: " + searchStr.length());
-		while (i >= 0
-			&& !str.substring(i, i + searchStr.length()).equals(searchStr)) {
-			i--;
-		}
-		return i;
-	}
-
+	/** Determines whether the tab is at the start of a given line.
+	 * The tab must be either at the head of the line or connected to it by a continuous string
+	 * of tabs.  Useful to prevent inner tabs from influencing indents.
+	 * @return <code>true</code> if the tab is a leading tab
+	 */
 	public boolean isLeadingTab() {
 		int i = getCaretPosition() - 1;
 		try {
@@ -427,13 +392,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		return ((dir = file.getParent()) != null) ? dir : "";
 	}
 
-	/**Gets the current tab display size.
-	 * @return tab dispaly size
-	 *
-	 public int getTabSize() {
-	 return tabSize;
-	 }
-	*/
 	/**Gets the auto-indent selection.
 	 * @return <code>true</code> if auto-indent is selected.
 	 */
@@ -466,13 +424,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
-	/**Set the tab display size.
-	 * @param size tab display size, in average character spaces
-	 *
-	 public void setTabSize(int size) {
-	 tabSize = size;
-	 }
-	*/
 	/**Sets the auto-indent selection.
 	 * @param b <code>true</code> to auto-indent
 	 */
@@ -520,13 +471,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			setNoTabs();
 		} else {
 			setDefaultTabs(getTabSize());
-			//	    setDefaultTabs(4);
 		}
-		/* no plain docs in JTextPane
-		   if (doc.getClass() == PlainDocument.class) {
-		   doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(tabSize));
-		   }
-		*/
 	}
 
 	/**Tells whether the pad has any characters in it.
@@ -577,7 +522,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyDocumentSettings();
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit) stateEdit);
-		//       	setDefaultTabs(4);
 	}
 
 	/**Converts the pad to an HTML text view.
@@ -590,10 +534,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		setContentType("text/html");
 		setText(text);
 		applyDocumentSettings();
-		//	replaceAllText(text);
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit) stateEdit);
-		//       	setDefaultTabs(4);
 	}
 
 	/**Converts the pad to an RTF tex view, if possible.
@@ -610,10 +552,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		undoManager.addEdit((UndoableEdit) stateEdit);
 		if (getText() == null) {
 			undo();
-			//	} else {
-			// if placed before the undo, it would undo this command and 
-			// not restore the text w/o another undo
-			//	    setDefaultTabs(4);
 		}
 	}
 
@@ -628,29 +566,12 @@ public class TextPad extends JTextPane implements StateEditable {
 		String delimiters = " .,;:-\\\'\"/_\t\n";
 
 		//	System.out.println(getText());
-		// check that new caret not at start of string; 
-		// skip backward as long as delimiters
-		/*
-		while (newCaretPos > 0
-		       && delimiters.indexOf(getText().charAt(newCaretPos)) != -1) {
-		    newCaretPos--;
-		}
-		*/
 		try {
 			while (newCaretPos > 0
 				&& delimiters.indexOf(getDocument().getText(newCaretPos, 1))
 					!= -1) {
 				newCaretPos--;
 			}
-
-			// check that new caret not at start of string;
-			// now skip backward as long as not delimiters; bring caret to next space, etc
-			/*
-			  while (newCaretPos > 0 
-			  && (delimiters.indexOf(getText().charAt(newCaretPos - 1)) == -1)) {
-			  newCaretPos--;
-			  }
-			*/
 			while (newCaretPos > 0
 				&& (delimiters.indexOf(getDocument().getText(newCaretPos - 1, 1))
 					== -1)) {
@@ -673,20 +594,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		int textLen = getText().length(); // end of text
 		String delimiters = " .,;:-\\\'\"/_\t\n";
 
-		/*		
-		// check that new caret not at end of string; 
-		// skip forward as long as not delimiters
-		while (newCaretPos < textLen
-		       && delimiters.indexOf(getText().charAt(newCaretPos)) == -1) {
-		    newCaretPos++;
-		}
-		// check that new caret not at end of string; 
-		// now skip forward as long as delimiters; bring to next letter, etc
-		while (newCaretPos < textLen
-		       && (delimiters.indexOf(getText().charAt(newCaretPos)) != -1)) {
-		    newCaretPos++;
-		}
-		*/
 		// check that new caret not at end of string; 
 		// skip forward as long as not delimiters
 		try {
@@ -712,16 +619,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	/**Auto-indent to the previous line's tab position.
 	 */
 	public void autoIndent() {
-		/*
-		String text = getText();
-		char c;
-		// go back 2: one for the hard return, one to check the previous character
-		for (int n = getCaretPosition() - 2; n >= 0 && (c = text.charAt(n)) != '\n'; n--) {
-		    if (c == '\t') {
-			tabs++;
-		    }
-		}
-		*/
 		// go back 2 to skip the hard return that makes the new line
 		// requiring indentation
 		try {
