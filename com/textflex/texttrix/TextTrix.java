@@ -107,6 +107,11 @@ public class TextTrix extends JFrame {
 			    //			    addTabIndexHistory(currTabIndex);
 			}
 			focuser.start();
+			// doesn't work when creating new tabs via
+			// the keyboard accelerator;
+			// only works when changing between already created
+			// tabs or creating new ones via the menu item
+			//t.requestFocusInWindow();
 			/*
 			t.setVisible(true);
 			t.setFocusable(true);
@@ -172,6 +177,10 @@ public class TextTrix extends JFrame {
 	Action newAction = new AbstractAction("New") {
 		public void actionPerformed(ActionEvent evt) {
 		    addTextArea(textAreas, tabbedPane, makeNewFile());
+		    /*
+		    try { Thread.sleep(2000); } catch (Exception e) {}
+		    getSelectedTextPad().requestFocusInWindow();
+		    */
 		    /*
 		    for (int i = 0; i < 3; i++) {
 			try { Thread.sleep(1000); } catch (Exception e) {}
