@@ -2,11 +2,31 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-4, Text Flex
+Copyright (c) 2002-5, Text Flex
 http://textflex.com/texttrix
 
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
+
+----v.0.5.0 (1/1/05)----
+
+Text Trix v.0.5.0 represents the culmination of our Feature Series, where Text Trix evolved from a simple editor with a few specialized tool add-ons to a sophisticated "super tool chest for text," complete with unique, integrated features of its own.  Text Trix acts as a text manager text by helping people organize and navigate through their text files.  Tabbed browsing, including forward/back browser-style navigation; wrap-indent, which visually aligns word-wrapped text; multiple keyboard shortcut models; and Line Find, a find-as-you-type navigator for specific lines, are just some of the features that makes managing text easier with Text Trix.  Plus, the specialized tools are more integrated than ever, most including customized option windows to make updating large amounts of text less tedious than ever.
+
+New features include:
+-Wrap-Indent, renewed and reinvigorated: Total Line Align for uniform indentation within each paragraph; section indent by highlighting paragraphs and pressing TAB (Shift-TAB to unindent); and numerous bug fixes
+-Line Find, featuring a permanent text box that navigates directly to the line as it is typed into the box
+-File refresher
+-Plug-ins can choose the region of text to work on
+-Extra Returns Remover plug-in, for reformatting emailed text, has a new options window, including the choice to include reply-region boundary markers, threshold line lengths, and list markers
+-Integrated Windowing Design is highly simplified and simply better to keep all windows, including those from plug-ins, visible at once
+-Build process includes a "configure" script for streamlined customizability, reduced rebuilding redundancy, and expanded build tasks, such as API documentation generation and program installation
+-Several new icons (courtesy of Stephen Liu)
+
+Fixes include:
+-Search plug-in's Replace function follows more standard behavior and fixes a few critical errors, while the plug-in also includes a new "Results" field to summarize what it has done (#1007487)
+-Print function restores the indentation, including wrap-indent, that it apparently had lost (#1067823)
+-Auto-save no longer tries to save now-closed files (#1007497)
+-Faulty plug-ins no longer tear down the entire menu bar creation (#1092036)
 
 -------------------------------------------------------
 ----v.0.3 Series: FEATure Series (FEATS)----

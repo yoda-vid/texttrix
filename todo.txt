@@ -1,6 +1,6 @@
 Text Trix
 the text tinker
-Copyright (c) 2002-4, Text Flex
+Copyright (c) 2002-5, Text Flex
 http://textflex.com/texttrix
 
 Note: "./" is the "check-mark" symbol
@@ -54,8 +54,9 @@ Note: "./" is the "check-mark" symbol
 -TablePad for spreadsheets, including tXtFL player-creation plug-in
 -Wrap-indent
 	-update indents when paste over selected area
--command-line arg not to reopen files
+-command-line arg not to reopen files or for quiet operation
 -check on completeness of $(TARGET_FILES) in cleans
+-pref for hanging indent size
 
 ----Current Work----
 
@@ -112,7 +113,7 @@ v.0.3.6
 	-pkg script should check that build directory exists or successfully created before continuing; FIXED: checks for directory b/c lack of it indicates that the script will not be able to change directories and will instead delete files in the current directory
 	-fix pkg script to allow "./" run calls from within Cygwin; FIXED: remove "./" from prefix of "$0"
 -function to go directly to a line number
-	-Line Finder; ADDED: Line Finder highlights the line number as it's typed into a new text field in the status bar
+	-Line Find; ADDED: Line Finder highlights the line number as it's typed into a new text field in the status bar
 	-more versatile status bar; ADDED: experimenting with new SpringLayout in status bar
 -fix printer indentation loss; FIXED (#1067823): store indent information from the paragraph attributes in a new PrintPadText object for each line
 

@@ -67,7 +67,7 @@ Last updated:
 ##############################
 
 # version number
-VER="0.3.6"
+VER="0.5.0"
 
 # the final destination of the resulting packages
 DEST="/home/share" 

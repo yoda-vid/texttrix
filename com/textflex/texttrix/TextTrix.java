@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-4
+ * Portions created by the Initial Developer are Copyright (C) 2002-5
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -59,53 +59,64 @@ public class TextTrix extends JFrame {
 	/* Constants */
 	private static final String newline = System.getProperty("line.separator");
 	
-	/* GUI components and support variable */
-	private static ArrayList textAreas = new ArrayList(); // all the TextPads
-	private Container contentPane = getContentPane();
-	private JMenuBar menuBar = null;
-	private static JTabbedPane tabbedPane = null; // multiple TextPads
-	private static JPopupMenu popup = null; // make popup menu
-	private static JFileChooser chooser = null; // file dialog
-	private static FileFilter allFilter = null; // TODO: may be unnecessary
-	private static JCheckBoxMenuItem autoIndent = null;
+	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
 	private static String saveDir = ""; // most recently path saved to
 	private static int fileIndex = 0; // for giving each TextPad a unique name
-	private static PlugIn[] plugIns = null; // plugins from jar archives
-	private static Action[] plugInActions = null; // plugin invokers
-	private JMenu trixMenu = null; // trix plugins
-	private JMenu toolsMenu = null; // tools plugins
-	private JToolBar toolBar = null; // icons
 	private String toolsCharsUnavailable = ""; // chars for shorcuts
 	private String trixCharsUnavailable = ""; // chars for shorcuts
 	private int[] tabIndexHistory = new int[10]; // records for back/forward
 	private int tabIndexHistoryIndex = 0; // index of next record
 	private boolean updateTabIndexHistory = true; // flag to update the record
-	private static Prefs prefs = null; // preferences
-	private static Action prefsOkayAction = null;
-	// prefs action signaling to accept
-	private static Action prefsApplyAction = null;
-	// prefs action signaling to immediately accept
-	private static Action prefsCancelAction = null; // prefs action to reject
-	private static boolean updateFileHist = false;
 	// flag to update file history menu entries
-	private static JMenu fileMenu = null; //new JMenu("File");
-	// file menu, which incl file history
-	private static int fileHistStart = -1;
-	// starting position of file history in file menu
-	private MenuBarCreator menuBarCreator = null;
-	// menu and tool bar worker thread
+	private static boolean updateFileHist = false;
 	private FileHist fileHist = null; // file history
-	private boolean tmpActivated = false;
-	private HashPrintRequestAttributeSet printAttributes = new HashPrintRequestAttributeSet();
-	private PageFormat pageFormat = null;
-	private StatusBarCreator statusBarCreator = null;
-	private JPanel statusBarPanel = null;
-	private JLabel statusBar = null;
-	private JTextField lineNumFld = null;
-	//	private NumberFormat statusBarNumFormat = null;
+	// starting position of file history in file menu
+	private static int fileHistStart = -1;
+	
+	/* General GUI components */
+	private static ArrayList textAreas = new ArrayList(); // all the TextPads
+	private Container contentPane = getContentPane();
+	private static JTabbedPane tabbedPane = null; // multiple TextPads
+	private static JPopupMenu popup = null; // make popup menu
+	private static JFileChooser chooser = null; // file dialog
+	private static FileFilter allFilter = null; // TODO: may be unnecessary
+//	private boolean tmpActivated = false;
+	
+	/* Menu bar controls */
+	// menu and tool bar worker thread
+	private MenuBarCreator menuBarCreator = null;
+	private JMenuBar menuBar = null;
+	private static JCheckBoxMenuItem autoIndent = null;
+	private JMenu trixMenu = null; // trix plugins
+	private JMenu toolsMenu = null; // tools plugins
+	private JToolBar toolBar = null; // icons
+	private static JMenu fileMenu = null; // file menu, which incl file history
+	
+	/* Preferences panel controls */
+	private static Prefs prefs = null; // preferences
+	// prefs action signaling to accept
+	private static Action prefsOkayAction = null;
+	// prefs action signaling to immediately accept
+	private static Action prefsApplyAction = null;
+	private static Action prefsCancelAction = null; // prefs action to reject
+	
+	/* Plug-in controls */
 	private JDialog[] plugInDiags = null;
 	private int plugInDiagsIdx = 0;
+	private static PlugIn[] plugIns = null; // plugins from jar archives
+	private static Action[] plugInActions = null; // plugin invokers
+	
+	/* Printer controls */
+	// print request attributes
+	private HashPrintRequestAttributeSet printAttributes = new HashPrintRequestAttributeSet();
+	private PageFormat pageFormat = null; // page formatting
+	
+	/* Status bar */
+	private StatusBarCreator statusBarCreator = null; // worker thread
+	private JPanel statusBarPanel = null; // the panel
+	private JLabel statusBar = null; // the status label; not really a "bar"
+	private JTextField lineNumFld = null; // Line Find
 
 	/**
 	 * Constructs a new <code>TextTrix</code> frame and with
@@ -125,18 +136,6 @@ public class TextTrix extends JFrame {
 				exitTextTrix();
 			}
 		});
-
-		// adds a window listener that focuses all currently open plug-in
-		// windows before re-focusing the main window
-		/*
-		 * addWindowListener(new WindowAdapter() {
-		 *  // focusing operations public void windowActivated(WindowEvent e) {
-		 * if (!getPrefs().getActivateWindowsTogether()) { } else if
-		 * (isTmpActivated()) { // no further focusing the main window if it
-		 * originally // called the focus function } else { focusAllWindows(); } }
-		 *  // prevent further focusing if just focused public void
-		 * windowDeactivated(WindowEvent e) { setTmpActivated(true); } });
-		 */
 
 		/* Load preferences to create prefs panel */
 
@@ -312,7 +311,9 @@ public class TextTrix extends JFrame {
 		// invoke the worker thread to create the initial menu bar;
 		(menuBarCreator = new MenuBarCreator()).start();
 		
-		statusBarPanel = new JPanel();
+		// invoke worker thread to create status bar
+		statusBarPanel = new JPanel(); // worker builds on the panel
+		// other thread interacts with statusBar label, so need to create early
 		statusBar = new JLabel("Welcome to Text Trix, the super text tool chest!");
 		(statusBarCreator = new StatusBarCreator()).start();
 
@@ -329,8 +330,6 @@ public class TextTrix extends JFrame {
 				// adds the panel's compoenents
 				centerPanel.add(tabbedPane, BorderLayout.CENTER);
 				centerPanel.add(statusBarPanel, BorderLayout.SOUTH);
-				//				contentPane.add(statusBar, BorderLayout.SOUTH);
-
 				// adds the panel to the main window, central position
 				contentPane.add(centerPanel, BorderLayout.CENTER);
 
@@ -395,7 +394,9 @@ public class TextTrix extends JFrame {
 			UIManager.getDefaults().put("ToolTipUI",
 					"javax.swing.plaf.basic.BasicToolTipUI");
 
-			/*
+			/* UPDATE: This code appears unnecessary now that JVM v.1.5 has
+			 * been released.
+			 * 
 			 * GTK+ look and feel for Java v.1.4.2 running on Linux, otherwise
 			 * the default look and feel, such as the new XP interface for
 			 * Microsoft Windows XP systems with Java v.1.4.2. According to
@@ -430,14 +431,6 @@ public class TextTrix extends JFrame {
 		}
 		TextTrix textTrix = new TextTrix(args);
 		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		// make sure still goes through the exit routine if close
-		// window manually
-		/*
-		 * textTrix.addWindowListener(new WindowAdapter() { public void
-		 * windowClosing(WindowEvent e) { exitTextTrix(); } });
-		 * 
-		 * textTrix.setTmpActivated(true);
-		 */
 		textTrix.setVisible(true);
 
 		/*
@@ -681,37 +674,11 @@ public class TextTrix extends JFrame {
 			final String filename = pl.getFilename();
 			if (panel != null) {
 				dialog.setContentPane(panel);
-				
-				/*
-				int width = getPrefs().getPlugInWidth(filename);
-				int height = getPrefs().getPlugInHeight(filename);
-				if (width == 0 || height == 0) {
-					dialog.setSize(panel.getSize());
-				} else {
-					dialog.setSize(width, height);
-				}
-				int xLoc = getPrefs().getPlugInXLoc(filename);
-				int yLoc = getPrefs().getPlugInYLoc(filename);
-				if (xLoc != 0 && yLoc != 0) {
-					dialog.setLocation(new Point(xLoc, yLoc));
-				}
-				*/
 				getPrefs().applyPlugInSizeLoc(dialog, filename, 
 					pl.getWindowWidth(), pl.getWindowHeight());
 				dialog.setName(filename);
 				addPlugInDialog(dialog);
-			}/*
-			  * else { WindowAdapter winAdapter = new WindowAdapter() { public
-			  * void windowActivated(WindowEvent e) { if
-			  * (!prefs.getActivateWindowsTogether()) { } else if
-			  * (pl.isTmpActivated()) { } else { focusAllWindows(pl); } } };
-			  * pl.setWindowAdapter(winAdapter); pl.addWindowAdapter();
-			  */
-
-			// restore window size and location
-			//dialog.setSize(, );
-			//dialog.setLocation(new Point(,
-//					));
+			}
 
 			// store window size and location with each movement
 			ComponentListener compListener = new ComponentListener() {
@@ -731,8 +698,6 @@ public class TextTrix extends JFrame {
 				public void componentHidden(ComponentEvent evt) {
 				}
 			};
-			//pl.setWindowComponentListener(compListener);
-			//pl.addWindowComponentListener();
 			dialog.addComponentListener(compListener);
 			WindowAdapter winAdapter = new WindowAdapter() {
 				public void windowClosed(WindowEvent e) {
@@ -740,7 +705,6 @@ public class TextTrix extends JFrame {
 				}
 			};
 			dialog.addWindowListener(winAdapter);
-			//pl.addWindowComponentListener();
 
 		}
 
@@ -789,12 +753,21 @@ public class TextTrix extends JFrame {
 		if (detailedDescriptionBuf != null)
 			button.setToolTipText(LibTTx.readText(detailedDescriptionBuf));
 	}
-
+	
+	/**Adds a plug-in dialog to an array of plug-in dialogs.
+	 * Updates the dialog if a new one is given.
+	 * @param diag the dialog to add
+	*/
 	public void addPlugInDialog(JDialog diag) {
+		// finds the array index for the plug-in's dialog
 		int found = getPlugInDialogIndex(diag.getName());
+		// if the plug-in already has a dialog, it is replaced with the 
+		// given one
 		if (found != -1) {
 			plugInDiags[found] = diag;
 		} else {
+			// added as a new element in the array if plug-in
+			// previously non-existant or had no dialog
 			if (plugInDiagsIdx >= plugInDiags.length) {
 				plugInDiags = (JDialog[]) LibTTx.growArray(plugInDiags);
 			}
@@ -802,7 +775,9 @@ public class TextTrix extends JFrame {
 			sortPlugInDialogs();
 		}
 	}
-
+	
+	/**Sorrts the array of plug-in dialogs by name of plug-in.
+	*/
 	public void sortPlugInDialogs() {
 		int start = 0;
 		int end = 0;
@@ -824,12 +799,21 @@ public class TextTrix extends JFrame {
 
 	}
 	
+	/**Gets a plug-in dialog by name.
+	 * @param name name of plug-in
+	 * @return dialog window that corresponds to the plug-in
+	*/
 	public JDialog getPlugInDialog(String name) {
 		int found = getPlugInDialogIndex(name);
 		return (found != -1) ? plugInDiags[found] : null;
 		
 	}
-
+	
+	/**Gets the index value of the plug-in by name.
+	 * @param name name of the plug-in
+	 * @return index of the corresponding plug-in dialog in the array
+	 * of plug-in dialogs
+	*/
 	public int getPlugInDialogIndex(String name) {
 		if (name == null)
 			return -1;
@@ -840,11 +824,8 @@ public class TextTrix extends JFrame {
 		String s = "";
 		// convert name and later the roster name to lower case in case
 		// user uses capital letters inconsistently
-		//       	name = name.toLowerCase();
-//		System.out.println("plugInDiagsIdx: " + plugInDiagsIdx);
 		while (start <= end && found == -1) {
 			// cycle through the roster and pick by name
-//			System.out.println("looking at: " + plugInDiags[mid].getName());
 			if ((s = plugInDiags[mid].getName()).equalsIgnoreCase(name)) {
 				found = mid;
 			} else if (name.compareToIgnoreCase(s) < 0) {
@@ -853,7 +834,6 @@ public class TextTrix extends JFrame {
 				start = mid + 1;
 			}
 			mid = (start + end) / 2;
-			//	    System.out.println("s name: " + s + ", name: " + name);
 		}
 		return found;
 
@@ -906,11 +886,6 @@ public class TextTrix extends JFrame {
 					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						replaceSection(t, doc, outcome, 0, doc.getLength());
-						/*
-						doc.remove(0, doc.getLength()); // remove all the text
-						doc.insertString(0, outcome.getText(), null);	// insert text
-						autoAutoIndent(t);
-						*/
 					}
 					// approximates the original caret position
 					int i = -1;
@@ -933,13 +908,6 @@ public class TextTrix extends JFrame {
 					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						replaceSection(t, doc, outcome, start, len);
-						/*
-						// remove only the region
-						doc.remove(start, len);
-						// insert text
-						doc.insertString(start, outcome.getText(), null);
-						autoAutoIndent(t);
-						*/
 					}
 					// caret automatically returns to end of selected region
 					int i = -1;
@@ -980,7 +948,6 @@ public class TextTrix extends JFrame {
 		
 		// auto-wrap-indent the new section
 		if (t.isAutoIndent() ) t.indentRegion(start, outcome.getText().length());
-		//autoAutoIndent(t);
 	}
 
 	/**
@@ -1008,97 +975,35 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/**Selection the given region of text, but in reverse order as
+	 * <code>textSelection(TextPad, int, int, int)</code>.
+	 * Useful when the caret should be at the beginning of the text rather
+	 * than at the end.  The same as the normal textSelection function,
+	 * but with <code>start</code> and <code>end</code> given
+	 * in reverse, so that <code>start</code> still refers to th earlier
+	 * portion of the text, while <code>end</code> refers to the latter.
+	 * Note that "loaded plug-in" does not mean that the plug-in is in use,
+	 * but includes both used and ignored plug-ins that Text Trix has
+	 * read and at least prepared for use.
+	 * @param t
+	 *            given text pad, not necessarily the selected one, though
+	 *            probably only relevant if so
+	 * @param baseline
+	 *            starting point from which to measure <code>start</code> and
+	 *            <cdoe>end</code>
+	 * @param start
+	 *            beginning point of selection, relative to baseline
+	 * @param end
+	 *            end point of selection, relative to baseline
+	 */
 	public void textSelectionReverse(TextPad t, int baseline, int start, int end) {
 		textSelection(t, baseline, end, start);
 	}
 
-	/*
-	 * Integrated Windowing Design
-	 * 
-	 * The integrated windowing design brings all the Text Trix windows to the
-	 * front of the desktop when one Text Trix window is focused. Activating one
-	 * window fires a listener that the main Text Trix object to sequentially
-	 * focus all the plug-in windows and finally the main window and returning
-	 * to the originally focused window if necessary. When the originally
-	 * focused window is refocused, it needs to prevent itself from firing the
-	 * focusing mechanism again. The windows each use a flag to signal that they
-	 * have been recently focused. If a focusing mechanism automatically focuses
-	 * them, the flag signals that the window is not merely being focused, but
-	 * refocused, returning the focus to the orignally focused window and
-	 * requiring no more focusing to bring the other windows to the forefront.
-	 * 
-	 * Rather than asking the focusing mechanism to turn off these flags, they
-	 * turn off automatically after a given period of time. On slow systems, the
-	 * window might not fully activate until the focusing mechanism would have
-	 * already turned off the flag, allowing for reactivation and resulting in
-	 * an infinite loop of focusing. A sleep call in the focusing mechanism
-	 * would allow enough time for the window to focus before its flag turns
-	 * off, but each window has to focus after the entire delay. By using its
-	 * own timer to turn off by itself, the flag allows the focusing mechanism
-	 * to move on to the next window while the current window completes its
-	 * activation and subsequently turns off its flag to allow future integrated
-	 * windowing activation.
-	 *  
-	 */
-
-	/**
-	 * Focuses all open Text Trix windows when the user manually focuses one
-	 * plug-in window.
-	 * 
-	 * @param pl
-	 *            the plug-in originally focused
-	 * @see #focusAllWindows()
-	 * 
-	 * public void focusAllWindows(PlugIn pl) { // cycles through all the
-	 * plug-ins for (int i = 0; i < plugIns.length; i++) { // focuses the
-	 * plug-in if has a window and isn't the // originally focuses plug-in,
-	 * which will be refocused at the end if (plugIns[i] != pl && plugIns[i]
-	 * instanceof PlugInWindow) { // flags the plug-in not to invoke this
-	 * method, lest // an infinite loop of focusing occur--gotta keep focused //
-	 * on the task! plugIns[i].setTmpActivated(true);
-	 * plugIns[i].activateWindow(); } } // focuses the main Text Trix window
-	 * setTmpActivated(true); toFront(); // refocuses the plug-in that started
-	 * all this fuss pl.setTmpActivated(true); pl.activateWindow(); }
-	 */
-
-	/**
-	 * Focuses all open Text Trix windows when the user manually focuses the
-	 * main Text Trix window
-	 * 
-	 * @see #focusAllWindows(PlugIn)
-	 * 
-	 * public void focusAllWindows() { // cycles through all the plug-ins for
-	 * (int i = 0; i < plugIns.length; i++) { // focuses the plug-in if has a
-	 * window if (plugIns[i] instanceof PlugInWindow) {
-	 * plugIns[i].setTmpActivated(true); plugIns[i].activateWindow(); } } //
-	 * refocuses the main Text Trix window setTmpActivated(true); toFront(); }
-	 * 
-	 * /**Flags the main Text Trix window as temporarily active to ward off a
-	 * focusing mechanism from calling itself again. The flag automatically
-	 * resets itself to <code>false</code> after 1 s (1000 ms).
-	 * 
-	 * @param b
-	 *            <code>true</code> indicates that the window has been
-	 *            recently activated and should not fire the mechanism to focus
-	 *            all windows
-	 * @see #isTmpActivated()
-	 * 
-	 * private void setTmpActivated(boolean b) { // automatically resets itself
-	 * to false after 500 ms if (tmpActivated = b) { Thread runner = new
-	 * Thread() { public void run() { try { Thread.sleep(1000); tmpActivated =
-	 * false; } catch (InterruptedException e) { } } }; runner.start(); } }
-	 * 
-	 * /**Checks if the main Text Trix window is flagged as recently activated.
-	 * 
-	 * @return <code>true</code> if the window has breen recently focused
-	 * @see #setTmpActivated(boolean)
-	 * 
-	 * private boolean isTmpActivated() { return tmpActivated; }
-	 */
-
 	/**
 	 * Reloads all the plug-ins in the current <code>plugins</code> folder.
-	 * Prepares the preferences panel to offer all available plug-ins.
+	 * Prepares the preferences panel to offer all available plug-ins.  Also
+	 * called when loading applying preferences again.
 	 * 
 	 * @see #getPlugInsFile()
 	 *  
@@ -1123,8 +1028,9 @@ public class TextTrix extends JFrame {
 			// check for extant but unloaded plug-ins files
 			for (int i = 0; i < list.length; i++) {
 				if (!LibTTx.inUnsortedList(list[i], paths)) {
-					//System.out.println("Couldn't find " + list[i]);
-					extraPlugs[extraPlugsInd++] = LibTTx.loadPlugIn(list[i]);
+					// ensure that plug-in loaded properly before adding to array
+					PlugIn pl = LibTTx.loadPlugIn(list[i]);
+					if (pl != null) extraPlugs[extraPlugsInd++] = pl;
 				}
 			}
 			// check for loaded but now missing plug-in files
@@ -1146,31 +1052,22 @@ public class TextTrix extends JFrame {
 				String[] includes = getPrefs().getIncludePlugInsList();
 				JDialog diag = null;
 				for (int i = 0; i < plugIns.length; i++) {
-/*					
-					System.out.println("checking if "
-							+ plugIns[i].getFilename()
-							+ " in includes: "
-							+ LibTTx.inUnsortedList(plugIns[i].getPath(),
-									includes));
-*/
 					if (plugIns[i] instanceof PlugInWindow
 							&& !LibTTx.inUnsortedList(plugIns[i].getPath(),
 									includes)) {
-//						System.out.println("looking for "
-//								+ plugIns[i].getFilename());
 						if ((diag = getPlugInDialog(plugIns[i].getFilename())) != null) {
-//							System.out.println("setting "
-//									+ plugIns[i].getFilename() + " invisible");
 							diag.setVisible(false);//closeWindow();
 						}
 					}
 				}
 			}
-
-			//			getPrefs().updatePlugInsPanel(getPlugInNames());
 		}
 	}
-
+	
+	/**Refreshes the list of available plug-ins.
+	 * "Available plug-ins" are those that are in the "plugins" folder
+	 * and have a <code>.jar</code> extension.
+	*/
 	public void refreshPlugInsPanel() {
 
 		// determine the available plug-ins
@@ -1178,22 +1075,6 @@ public class TextTrix extends JFrame {
 		String[] list = LibTTx.getPlugInPaths(file);
 		getPrefs().updatePlugInsPanel(list);
 	}
-
-	/*
-	 * For some reason this fn sporadically doesn't work; eg stats in Search
-	 * plug-in doesn't give the correct selectionEnd value from TextTrix, and
-	 * find/replace calls runPlugIn twice and entered some sort of infinite loop
-	 * once. My guess is that makePlugInAction somehow creates duplicate actions
-	 * that get called twice. As usual, the first call in Search removes the
-	 * highlighting, causing the second call to occasionally treat the text as
-	 * if it were never highlighted. The actions run in parallel, meaning that
-	 * some actions' second call will miss the highlighting while others are
-	 * fast enough to still see it.
-	 */
-	/*
-	 * public void refreshPlugIns() { reloadPlugIns(); if (plugIns != null) {
-	 * for (int i = 0; i < plugIns.length; i++) { makePlugInAction(plugIns[i]); } } }
-	 */
 
 	/**
 	 * Gets the names of the currently loaded plug-ins. Each plug-in has a
@@ -1214,6 +1095,11 @@ public class TextTrix extends JFrame {
 
 	/**
 	 * Gets the paths of all currently loaded plug-ins.
+	 * These plug-ins may have just been loaded by a call to 
+	 * <code>reloadPlugIns</code>.
+	 * Note that "loaded plug-in" does not mean that the plug-in is in use,
+	 * but includes both used and ignored plug-ins that Text Trix has
+	 * read and at least prepared for use.
 	 * 
 	 * @return array of all the loaded plug-in's paths and length equal to the
 	 *         number of these paths
@@ -1243,7 +1129,6 @@ public class TextTrix extends JFrame {
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
 		plugInDiags = new JDialog[plugIns.length];
 		plugInDiagsIdx = 0;
-		//		getPrefs().updatePlugInsPanel(getPlugInNames());
 		getPrefs().updatePlugInsPanel(getPlugInPaths());
 		if (plugIns != null) {
 			for (int i = 0; i < plugIns.length; i++) {
@@ -3808,7 +3693,8 @@ public class TextTrix extends JFrame {
 					statusBarPanel.setLayout(layout);
 					
 					// makes the status bar
-					JLabel lineNumLbl = new JLabel("GoTo Line Number:");
+					JLabel lineNumLbl = new JLabel("Line Find:");
+					lineNumLbl.setToolTipText("GoTo the line number as it's typed");
 					lineNumFld = new JTextField(5);
 					lineNumFld.addCaretListener(new CaretListener() {
 						public void caretUpdate(CaretEvent e) {
@@ -3835,7 +3721,6 @@ public class TextTrix extends JFrame {
 					statusBarPanel.add(statusBar);
 					statusBarPanel.add(lineNumLbl);
 					statusBarPanel.add(lineNumFld);
-					System.out.println("lay me out!");
 					
 					layout.putConstraint(SpringLayout.WEST, statusBar,
 						5,

@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003-4
+ * Portions created by the Initial Developer are Copyright (C) 2003-5
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -57,6 +57,8 @@ import javax.swing.text.*;
  * @author davit
  */
 public class LibTTx {
+	
+	public static final String NEWLINE = System.getProperty("line.separator");
 
 	/** Constructs the library object, almost never necessary since
 	 * virtually all of its methods are static.
@@ -180,6 +182,7 @@ public class LibTTx {
 				if (pl != null) plugIns[j++] = pl;
 			}
 			plugIns = (PlugIn[]) truncateArray(plugIns, j);
+//			System.out.println("plugIns length: " + j);
 		}
 		return plugIns;
 	}
@@ -200,7 +203,10 @@ public class LibTTx {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("The plug-in, " + name + ", could not be"
+				+ NEWLINE + "loaded.  If you'd like to use it, please"
+				+ NEWLINE + "make sure we can, too.");
+//			e.printStackTrace();
 		}
 		return obj;
 	}
