@@ -48,6 +48,8 @@ public class TextTrix extends JFrame {
     ArrayList textAreas = new ArrayList();
     JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     JFileChooser chooser = new JFileChooser();
+	String openPath = "";
+	String savePath = "";
 
     public TextTrix() {
 	setTitle("Text Trix");
@@ -81,13 +83,9 @@ public class TextTrix extends JFrame {
 	JMenuItem closeItem = fileMenu.add(new AbstractAction("Close") {
 		public void actionPerformed(ActionEvent evt) {
 			int i = tabbedPane.getSelectedIndex();
-			TextPad t = (TextPad)textAreas.get(i);
-			if (t.getChanged()) {
-				String s = "Please save first.";
-				JOptionPane op = new JOptionPane();
-				op.showMessageDialog(op, s);
-			} else
-				removeTextArea(tabbedPane.getSelectedIndex(), textAreas, tabbedPane);
+			closeTextArea(i, textAreas, tabbedPane);
+				//JOptionPane op = new JOptionPane();
+				//op.showMessageDialog(op, s);
 		}
 	});
 
@@ -115,7 +113,14 @@ public class TextTrix extends JFrame {
 	
 	JMenuItem exitItem = fileMenu.add(new AbstractAction("Exit") {
 		public void actionPerformed(ActionEvent evt) {
-		    System.exit(0);
+			boolean b = true;
+			int i = tabbedPane.getTabCount();
+			while (i > 0 && b) {
+				b = closeTextArea(i - 1, textAreas, tabbedPane);
+				i = tabbedPane.getTabCount();
+			}
+			if (b == true)
+				System.exit(0);
 		}
 	    });
 	exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
@@ -206,6 +211,7 @@ public class TextTrix extends JFrame {
 				TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 				t.setEditable(false);
 				t.setText(license);
+				t.setCaretPosition(0);
 			} catch(IOException exception) {
 				exception.printStackTrace();
 			}
@@ -248,6 +254,65 @@ public class TextTrix extends JFrame {
 	TextTrix textTrix = new TextTrix();
 	textTrix.show();
     }
+
+	public String getOpenPath() {
+		return openPath;
+	}
+
+	public String getSavePath() {
+		return savePath;
+	}
+
+	public void setOpenPath(String anOpenPath) {
+		openPath = anOpenPath;
+	}
+
+	public void setSavePath(String aSavePath) {
+		savePath = aSavePath;
+	}
+
+	public boolean closeTextArea(int tabIndex, ArrayList textAreas,
+			JTabbedPane tabbedPane) {
+		boolean successfulClose = false;
+		
+		TextPad t = (TextPad)textAreas.get(tabIndex);
+		if (t.getChanged()) {
+			String s = "Please save first.";
+			tabbedPane.setSelectedIndex(tabIndex);
+			int choice = JOptionPane.showOptionDialog(					
+				null,
+				"This file has not yet been saved.\nWhat would you like me to do with it?",
+				"Save before close",
+				JOptionPane.WARNING_MESSAGE,
+				JOptionPane.DEFAULT_OPTION,
+				null,				
+				new String[] { "Save", "Toss away", "Cancel" },
+				"Save");
+			switch (choice) {
+				case 0:
+					String path = t.getPath();
+					if (path == "") {
+						fileSaveDialog();
+					} else {
+						saveFile(path);
+					}
+				case 1:
+					removeTextArea(tabIndex, textAreas, tabbedPane);
+					successfulClose = true;
+					break;
+				case 2:
+					successfulClose = false;
+					break;
+				default:
+					successfulClose = false;
+					break;
+			}
+		} else {
+			removeTextArea(tabIndex, textAreas, tabbedPane);
+			successfulClose = true;
+		}
+		return successfulClose;
+	}
 
 	public String readText(BufferedReader reader) {
 		String text = "";
@@ -316,13 +381,15 @@ public class TextTrix extends JFrame {
 		    out.close();
 			t.setChanged(false);
 			t.setPath(path);
+			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+					chooser.getSelectedFile().getName());
 		} catch(IOException exception) {
 			exception.printStackTrace();
 		}
 	}
 
 	public void fileSaveDialog() {
-		chooser.setCurrentDirectory(new File("."));
+		chooser.setCurrentDirectory(new File(savePath));
 	   	final ExtensionFileFilter filter = new ExtensionFileFilter();
 	   	filter.addExtension("txt");
 	   	filter.setDescription("Text files (*.txt)");
@@ -332,12 +399,15 @@ public class TextTrix extends JFrame {
     	if (result == JFileChooser.APPROVE_OPTION) {
 			String path = chooser.getSelectedFile().getPath();
 			saveFile(path);
+			setSavePath(path);
+			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+					chooser.getSelectedFile().getName());
 	    }
 	}
 
     private class FileOpenListener implements ActionListener {
 		public void actionPerformed(ActionEvent evt) {
-	    	chooser.setCurrentDirectory(new File("."));
+	    	chooser.setCurrentDirectory(new File(openPath));
 		    final ExtensionFileFilter filter = new ExtensionFileFilter();
 		    filter.addExtension("txt");
 	    	filter.setDescription("Text files (*.txt)");
@@ -374,8 +444,11 @@ public class TextTrix extends JFrame {
 					t.setCaretPosition(0);
 					t.setChanged(false);
 					t.setPath(path);
+					tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+							chooser.getSelectedFile().getName());
 	
 			    	reader.close();
+					setOpenPath(path);
 				} catch(IOException exception) {
 				    exception.printStackTrace();
 				}
