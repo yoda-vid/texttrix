@@ -64,7 +64,7 @@ Copyright:
 	Copyright (c) 2004 Text Flex
 
 Last updated:
-	2004-05-29
+	2004-06-01
 "
 
 #####################
@@ -76,7 +76,10 @@ Last updated:
 JAVA=""
 
 # the chosen plugins
-PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" 
+PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
+
+# the root directory of the source files
+BASE_DIR=""
 
 ####################
 # System setup
@@ -133,7 +136,6 @@ echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
 
 # Source directories
-BASE_DIR=""
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
 	if [ `expr index "$0" "/"` -eq 1 ]
@@ -157,9 +159,9 @@ DIR="com/textflex/texttrix" # src package structure
 cd "$BASE_DIR" # change to work directory
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"javac "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
+	"$JAVA"javac -source 1.4 "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
 else
-	"$JAVA"javac "$TTX_DIR/$DIR/"*.java
+	"$JAVA"javac -source 1.4 "$TTX_DIR/$DIR/"*.java
 fi
 
 #############
@@ -167,7 +169,7 @@ fi
 if [ "$PLUG" = "true" ]
 then
 	echo "Compiling and packaging plug-ins..."
-	sh $TTX_DIR/plug.sh -java "$JAVA" # build the plugins
+	sh "$TTX_DIR/plug.sh" -java "$JAVA" # build the plugins
 fi
 
 #############
@@ -175,7 +177,7 @@ fi
 if [ "$PKG" = "true" ]
 then
 	echo "Creating the Text Trix binary and source packages..."
-	sh $TTX_DIR/pkg.sh -java "$JAVA" # build the packages
+	sh "$TTX_DIR/pkg.sh" -java "$JAVA" # build the packages
 fi
 
 exit 0

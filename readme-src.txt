@@ -11,24 +11,23 @@ Copyright (c) 2002-4, Text Flex
 All rights reserved.
 
 -----------------
-Welcome to the Text Trix[tm] writer!  We're just getting underway here.  
-Please try us out!
+Welcome to the Text Trix[tm] writer!  Text Trix tinkers with text. The text 
+processor houses bunches of practical and goofy tools to mess with text. 
+Make it really right, or wonderfully wrong.
 
 System Req:
--Java[tm] 2 Standard Edition (J2SE) Software Development Kit (SDK), 
-v.1.4+, freely available from Sun Microsystems 
-(http://java.sun.com/j2se/downloads/index.html); also 
-available from IBM (https://www6.software.ibm.com/dl/lxdk/lxdk-p), 
-offering the only major kit for Linux PPC systems (IBM(R) SDK for 32-bit 
-iSeries/pSeries)
+-Java[tm] 2 Standard Edition (J2SE) Software Development Kit (SDK), v.1.4+, 
+freely available from Sun Microsystems 
+(http://java.sun.com/j2se/downloads/index.html); also available from IBM 
+(https://www6.software.ibm.com/dl/lxdk/lxdk-p), offering the only major kit for 
+Linux PPC systems (IBM(R) SDK for 32-bit iSeries/pSeries)
 -To use the build scripts on Windows(R) systems, use the Cygwin 
 environment (http://www.cygwin.com/)
 
 Instructions for compilation:
 -Unzip the Text Trix source package:
 	-Use a graphical unzip program, or
-	-Change to the directory holding the zip file ("cd [zip file path]"), and type 
-	"unzip texttrix-x.y.z-src.zip"
+	-Change to the directory holding the zip file ("cd [zip file path]"), and type "unzip texttrix-x.y.z-src.zip"
 -Compile the Java classes:
 	-Change into the Text Trix directory: "cd texttrix-x.y.z"
 	-Build the Text Trix program and its plug-ins: "sh build.sh --plug --pkg".  
@@ -38,8 +37,8 @@ Instructions for compilation:
 	point to the final destination directory for the packages you are building.  
 	Note: make sure *not* to set "BASE_DIR" to the directory containing 
 	"texttrix-x.y.z-src".
--To make a self-extracting Jar Ajar[tm] package for your newly compiled 
-Text Trix package, download the Jar Ajar packaging suite 
+-To make a self-extracting Jar Ajar[tm] package for your newly compiled Text 
+Trix package, download the Jar Ajar packaging suite 
 (http://textflex.com/jarajar).  Install it, launch its graphical packager, and 
 you'lll be able to fill in the details in no time.
 
@@ -48,8 +47,8 @@ Troubleshooting:
 check, type on a command line, "java -version", and look for output 
 indicating Java version 1.4 or higher.  Next, type "javac" to check for the 
 compiler's presence.  If "java" or "javac" are not in your PATH environment 
-variable, either add the commands directory to PATH or type the full path 
-for each use of the command, such as "[path to java]/java".
+variable, either add the commands directory to PATH or type the full path for 
+each use of the command, such as "[path to java]/java".
 -See "readme.txt" for information on running Text Trix
 -See http://textflex.com/texttrix/faq.html for more details
 

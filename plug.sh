@@ -59,7 +59,7 @@ Copyright:
 	Copyright (c) 2003-4 Text Flex
 
 Last updated:
-	2004-05-28
+	2004-06-01
 "
 
 #####################
@@ -134,9 +134,9 @@ PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" #
 cd "$BASE_DIR"
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"javac "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
+	"$JAVA"javac -source 1.4 "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
 else
-	"$JAVA"javac "$TTX_DIR/$DIR/"*.java
+	"$JAVA"javac -source 1.4 "$TTX_DIR/$DIR/"*.java
 fi
 # change to plugins directory and compile and package each plugin;
 # list the directory names and their corresponding classes in the "for" line;

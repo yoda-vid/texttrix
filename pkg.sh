@@ -66,10 +66,17 @@ Last updated:
 # Check them!
 ##############################
 
-VER="0.3.5" # version info
-DEST="/home/share" # final destination
-JAVA="" # compiler
-BASE_DIR="" # source directories
+# version number
+VER="0.3.5"
+
+# the final destination of the resulting packages
+DEST="/home/share" 
+
+# the path to the compiler binaries
+JAVA=""
+
+# the root directory of the source files
+BASE_DIR=""
 
 ##############################
 # System setup
@@ -166,7 +173,7 @@ cd $BLD_DIR
 cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
 mv texttrix $SRCPKGDIR # copy to source package
-cp $TTX_DIR/plug.sh $TTX_DIR/pkg.sh \
+cp $TTX_DIR/build.sh $TTX_DIR/plug.sh $TTX_DIR/pkg.sh \
 	$TTX_DIR/manifest-additions.mf \
 	$SRCPKGDIR/texttrix # copy scripts to source pkg
 cp $TTX_DIR/plugins/*.jar $PKGDIR/plugins # only want jars in binary package
