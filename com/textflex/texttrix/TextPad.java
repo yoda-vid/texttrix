@@ -44,6 +44,7 @@ import javax.swing.undo.*;
 import javax.swing.text.*;
 import java.io.*;
 import javax.swing.event.*;
+import java.beans.*;
 
 /**The writing pad, complete with keyboard shortcuts, auto-indent
  * functions, and text sytle changes.
@@ -104,7 +105,11 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& isLeadingTab()) {
 					// performs the action after adding the tab
 					indentCurrentParagraph(getTabSize());
-				}/* else if (
+				} /*else if (keyChar == KeyEvent.VK_DELETE) {
+					event.consume();
+					deleteNextChar();
+				}*/
+				/* else if (
 					autoIndent
 						&& keyChar == KeyEvent.VK_BACK_SPACE
 						&& isLeadingTab(JVM_15)) {
@@ -289,9 +294,23 @@ public class TextPad extends JTextPane implements StateEditable {
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_D, Event.CTRL_MASK),
 			"deleteNextChar");
+		/*
 		amap.put(
 			"deleteNextChar",
 			getActionByName(DefaultEditorKit.deleteNextCharAction));
+		*/
+		amap.put(
+			"deleteNextChar",
+			new DeleteNextCharAction());
+			
+			
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
+			"deleteNextChar");
+		amap.put(
+			"deleteNextChar",
+			new DeleteNextCharAction());
+		
 
 		// (alt-b) go to beginning of current word
 		imap.put(
@@ -430,7 +449,8 @@ public class TextPad extends JTextPane implements StateEditable {
 			j = s.indexOf("\n", i);
 			if (j == -1) j = end - 1;
 			int tabs = leadingTabsCount(s, i);
-			if (tabs > 0)
+			//System.out.println("tabs: " + tabs);
+			if (tabs >= 0)
 				indent(tabChars, tabs, i, j - i + 1);
 			i = j + 1;
 		}
@@ -958,6 +978,22 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	public void deleteNextChar() {
+		Document doc = getDocument();
+		int caretPos = getCaretPosition();
+		//System.out.println("i've been called!");
+		if (caretPos < doc.getLength()) {
+			try {
+				doc.remove(caretPos, 1);
+			} catch (BadLocationException badE) {
+				System.out.println("having trouble deleting next char...");
+			}
+			if (isAutoIndent()) {
+				indentCurrentParagraph(getTabSize(), false);
+			}
+		}
+	}
+	
 	/**Starts a compound edit sequence, which tracks multiple edits to
 	 * allow them to be undone in one fell swoop.
 	 * Does nothing if a compound edit is already in progress.
@@ -1125,6 +1161,23 @@ public class TextPad extends JTextPane implements StateEditable {
 		public boolean getIgnoreNextStyleChange() {
 			return ignoreNextStyleChange;
 		}
+	}
+	
+	private class DeleteNextCharAction implements Action {
+	
+		public DeleteNextCharAction() {
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			deleteNextChar();
+		}
+		
+		public void addPropertyChangeListener(PropertyChangeListener listener) { }
+		public Object getValue(String key) { return null; }
+		public boolean isEnabled() { return true; }
+		public void putValue(String key, Object value) { }
+		public void removePropertyChangeListener(PropertyChangeListener listener) { }
+		public void setEnabled(boolean b) { }
 	}
 
 }

@@ -705,6 +705,7 @@ public class TextTrix extends JFrame {
 			if (panel != null) {
 				dialog.setContentPane(panel);
 				
+				/*
 				int width = getPrefs().getPlugInWidth(filename);
 				int height = getPrefs().getPlugInHeight(filename);
 				if (width == 0 || height == 0) {
@@ -717,6 +718,8 @@ public class TextTrix extends JFrame {
 				if (xLoc != 0 && yLoc != 0) {
 					dialog.setLocation(new Point(xLoc, yLoc));
 				}
+				*/
+				getPrefs().applyPlugInSizeLoc(dialog, filename);
 				dialog.setName(filename);
 				addPlugInDialog(dialog);
 			}/*

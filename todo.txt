@@ -58,15 +58,15 @@ v.0.3.6
 	-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure; ADDED: plug-ins provide panels to TextTrix, which attaches them to dialogs that remain in TextTrix's hands; no longer need elaborate focusing mechanism, for the dialogs associate with the main TextTrix frame and automatically focus with it
 	-don't close plug-in windows for plug-ins still included when reloading prefs; ADDED: only close visible dialogs when plug-in no longer included
 	-check whether should remove plugInDiags dialog if remove plug-in; may need to remove in reloadPlugIns() since user may remove the plug-in jar file and add back, but the dialog would no longer correspond to reloaded plug-in; CHECKED: if plug-in dialog with same name already exists in the dialog array, the newly created dialog replaces the old one
-	-removed windows-together pref
+	-remove activate-windows-together pref; REMOVED: no longer necessary
+	-use plugIn panel size for default plugIn dialog size, and use location from TextTrix as owner by default; ADDED: plugIn windows pick up size and location info from panel size and owner location by default
 -prefences panel
 	-prefs panel should also be fit into a JDialog, with TextTrix as the owner; ADDED: prefs panel conforms to new plug-in window model, except that Preferences itself extends JDialog since Preferences remains internalized in the program
-	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval
+	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval; adopts same default size and location as with plugIns
 -tab entire regions
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
--remember prefs panel position
--adjust wrap-indent when user presses delete key or any of its shortcuts
+-adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
 
 ----Past Releases----
 
