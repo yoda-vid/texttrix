@@ -119,7 +119,7 @@ cp -rf $PLGS_DIR $SRCPKGDIR/plugins
 # create binaries
 cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
-if [ "$CGYWIN" = "true" ]
+if [ "$CYGWIN" = "true" ]
 then
 	$JAVA/jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
 else
