@@ -102,7 +102,7 @@ public class TextTrix extends JFrame {
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
 	fileMenu.add(openAction);
-	toolBar.add(newAction);
+	toolBar.add(openAction);
 //	fileMenu.add(openItem);
 //	openItem.addActionListener(new FileOpenListener());
 //	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
@@ -248,13 +248,14 @@ public class TextTrix extends JFrame {
 	helpMenu.add(aboutAction);
 
 	// shortcuts and goofy features description; opens new tab
-	JMenuItem shortcutsItem = helpMenu.add(new AbstractAction("Shortcuts") {
+	Action shortcutsAction = new AbstractAction("Shortcuts") {
 		public void actionPerformed(ActionEvent evt) {
 			// reads from "shortcuts.txt" in same directory as this class
 			String path = "shortcuts.txt";
 			displayFile(path);
 		}
-	});
+	};
+	setAction(shortcutsAction, "Shortcuts", 'S', null);
 
 	// license; opens new tab
 	Action licenseAction = new AbstractAction("License") {
@@ -265,6 +266,7 @@ public class TextTrix extends JFrame {
 		}
 	};
 	setAction(licenseAction, "License", 'L', null);
+	helpMenu.add(licenseAction);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
 	Action removeReturnsAction = new AbstractAction("Remove extra hard returns") {
