@@ -146,9 +146,11 @@ public class TextPad extends JTextArea {
 				"deleteWord");
 		amap.put("deleteWord", new AbstractAction() {
 			public void actionPerformed(ActionEvent evt) {
+				int wordPos = getWordPosition();
 				String text = getText();
-				setText(text.substring(0, getWordPosition())
+				setText(text.substring(0, wordPos)
 					+ text.substring(getCaretPosition()));
+				setCaretPosition(wordPos);
 			}
 		});
 
