@@ -244,6 +244,8 @@ public class TextTrix extends JFrame {
 		txtFilter.setDescription("Text files (*.txt)");
 		chooser.setFileFilter(txtFilter);
 
+		chooser.setFileFilter(allFilter);
+
 		// prepare the file history
 		fileHist = new FileHist();
 
@@ -1894,7 +1896,6 @@ public class TextTrix extends JFrame {
 			//	    System.out.println("dir: " + dir);
 			chooser.setCurrentDirectory(new File(dir));
 			chooser.setSelectedFile(new File(""));
-			chooser.setFileFilter(allFilter);
 			// allows one to open multiple files;
 			// must disable for save dialog
 
