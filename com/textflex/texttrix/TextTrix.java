@@ -897,7 +897,7 @@ public class TextTrix extends JFrame {
 
     /**Sets the given path as the most recently one used
      * to open a file.
-     * @param anOpenPath path to set as last opened location
+     * @param anOpenDir path to set as last opened location
      */
     public static void setOpenDir(String anOpenDir) {
 	openDir = anOpenDir;
@@ -926,7 +926,7 @@ public class TextTrix extends JFrame {
 		
     /**Enable button rollover icon change.
      * @param button <code>JButton</code> to display icon rollover change
-     * @param iconPath location of icon to change to
+     * @param icon location of icon to change to
      */
     public void setRollover(JButton button, ImageIcon icon) {
 	button.setRolloverIcon(icon);
@@ -1139,7 +1139,7 @@ public class TextTrix extends JFrame {
     /**Read in text from a file and return the text as a string.
      * Differs from <code>displayFile(String path)</code> because
      * allows editing.
-     * @param reader text file stream
+     * @param path text file stream
      * @return text from file
      */
     public String readText(String path) {
@@ -1243,7 +1243,7 @@ public class TextTrix extends JFrame {
     /**Adds additional listeners and other settings to a <code>TextPad</code>.
      * Useful to apply on top of the <code>TextPad</code>'s 
      * <code>applyDocumentSettings</code> function.
-     * @param TextPad <code>TextPad</code> requiring applied settings
+     * @param textPad <code>TextPad</code> requiring applied settings
      */
     public void addExtraTextPadDocumentSettings(TextPad textPad) {
 	textPad.getDocument().addDocumentListener(new TextPadDocListener());
@@ -1300,7 +1300,7 @@ public class TextTrix extends JFrame {
      * <code>JTextPane</code>.
      * Reads in a file, applies <code>TextPad</code>'s settings, and
      * finally adds <code>TextTrix</code>-specific settings.
-     * @param TextPad <code>TextPad</code> to read a file into
+     * @param textPad <code>TextPad</code> to read a file into
      * @param in file reader
      * @param desc reader stream description
      */

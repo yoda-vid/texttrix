@@ -98,7 +98,7 @@ public class Tools {
     /**Sorts a 2-dimensional String array according to the first element
      * of each array.
      * Works according to the Shell sort algorithm.
-     * @param array[][] an array of 2-element arrays
+     * @param array an array of 2-element arrays
      */
     public static void sortEquivalencyTable(String[][] array) {
 	int start;
@@ -122,7 +122,7 @@ public class Tools {
 
     /**Displays a string's equivalent string.
      * Works according to the Binary search algorithm.
-     * @param equivalencyTable[][] array of 2-element arrays, each holding 
+     * @param equivalencyTable array of 2-element arrays, each holding 
      * a string and its equivalent string
      * @return equivalent string, the original string if it is not in the table
      */

@@ -154,7 +154,7 @@ public class LibTTx {
     /**Read in text from a file and return the text as a string.
      * Differs from <code>displayFile(String path)</code> because
      * allows editing.
-     * @param reader text file stream
+     * @param path text file stream
      * @return text from file
      */
     public static String readText(String path) {
