@@ -42,6 +42,7 @@ import java.util.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.filechooser.FileFilter;
+import java.net.*;
 
 /** The main <code>TextTrix</code> class.  Sets up the window
     and the <code>TextPad</code>s.
@@ -59,6 +60,9 @@ public class TextTrix extends JFrame {
 	static String savePath = "";
 	// for giving each TextPad a unique name
 	int fileIndex = 0;
+	// url and icon for actions
+	URL url = null;
+	ImageIcon icon = null;
 
 	/**Constructs a new <code>TextTrix</code> frame and
 	 * <code>TextPad</code> to begin with.
@@ -98,7 +102,9 @@ public class TextTrix extends JFrame {
 	 * Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
-	Action openAction = new FileOpenAction("Open", null);
+	url = TextTrix.class.getResource("openicon-16x16.gif");
+	icon = new ImageIcon(url);
+	Action openAction = new FileOpenAction("Open", icon);
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
 	fileMenu.add(openAction);
@@ -109,7 +115,9 @@ public class TextTrix extends JFrame {
 //						       InputEvent.CTRL_MASK));
 
 	// close file; check if saved
-	Action closeAction = new AbstractAction("Close") {
+	url = TextTrix.class.getResource("closeicon-16x16.gif");
+	icon = new ImageIcon(url);
+	Action closeAction = new AbstractAction("Close", icon) {
 		public void actionPerformed(ActionEvent evt) {
 			int i = tabbedPane.getSelectedIndex();
 			closeTextArea(i, textAreas, tabbedPane);
@@ -119,7 +127,9 @@ public class TextTrix extends JFrame {
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
-	Action saveAction = new AbstractAction("Save") {
+	url = TextTrix.class.getResource("saveicon-16x16.gif");
+	icon = new ImageIcon(url);
+	Action saveAction = new AbstractAction("Save", icon) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
@@ -139,7 +149,9 @@ public class TextTrix extends JFrame {
 //				InputEvent.CTRL_MASK));
 
 	// save w/ file save dialog
-	Action saveAsAction = new FileSaveAction("Save as...", null);
+	url = TextTrix.class.getResource("saveasicon-16x16.gif");
+	icon = new ImageIcon(url);
+	Action saveAsAction = new FileSaveAction("Save as...", icon);
 	setAction(saveAsAction, "Save as...", '.', null);
 	fileMenu.add(saveAsAction);
 
