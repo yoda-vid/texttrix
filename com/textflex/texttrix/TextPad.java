@@ -133,7 +133,7 @@ public class TextPad extends JTextPane implements StateEditable{
 
 	// (ctrl-backspace) delete from caret to current word start
 	// First discard JTextComponent's usual dealing with ctrl-backspace.
-	// Auto-indent if Text Trix's option selected.
+	// (enter) Auto-indent if Text Trix's option selected.
 	addKeyListener(new KeyAdapter() {
 		public void keyTyped(KeyEvent event) {
 		    char keyChar = event.getKeyChar();
@@ -156,7 +156,7 @@ public class TextPad extends JTextPane implements StateEditable{
 		    // delete via the document methods rather than building
 		    // string manually, a slow task.  Uses document rather than
 		    // AccessibleJTextComponent in case used for serialization:
-		    // serialized objects of this class won't be compatible w/
+ 		    // Serialized objects of this class won't be compatible w/
 		    // future releases
 		    try {
 			// call getDocument() each time since doc may change
@@ -266,7 +266,7 @@ public class TextPad extends JTextPane implements StateEditable{
      * @return <code>true</code> if auto-indent is selected.
      */
     public boolean getAutoIndent() {
-	return autoIndent;
+  	return autoIndent;
     }
 
     /**Sets the file to a file object.
@@ -415,17 +415,37 @@ public class TextPad extends JTextPane implements StateEditable{
 	int newCaretPos = caretPos - 1; // moving caret position
 	String delimiters = " .,;:-\\\'\"/_\t\n";
 		
+	//	System.out.println(getText());
 	// check that new caret not at start of string; 
 	// skip backward as long as delimiters
+	/*
 	while (newCaretPos > 0
 	       && delimiters.indexOf(getText().charAt(newCaretPos)) != -1) {
 	    newCaretPos--;
 	}
-	// check that new caret not at start of string;
-	// now skip backward as long as not delimiters; bring caret to next space, etc
-	while (newCaretPos > 0 
-	       && (delimiters.indexOf(getText().charAt(newCaretPos - 1)) == -1)) {
-	    newCaretPos--;
+	*/
+	try {
+	    while (newCaretPos > 0
+		   && delimiters.indexOf(getDocument()
+					 .getText(newCaretPos, 1)) != -1) {
+		newCaretPos--;
+	    }
+
+	    // check that new caret not at start of string;
+	    // now skip backward as long as not delimiters; bring caret to next space, etc
+	    /*
+	      while (newCaretPos > 0 
+	      && (delimiters.indexOf(getText().charAt(newCaretPos - 1)) == -1)) {
+	      newCaretPos--;
+	      }
+	    */
+	    while (newCaretPos > 0 
+		   && (delimiters.indexOf(getDocument()
+					  .getText(newCaretPos - 1, 1)) == -1)) {
+		newCaretPos--;
+	    }
+	} catch (BadLocationException e) {
+	    System.out.println("Ack!  Can't find the beginning of the word.");
 	}
 
 	return (newCaretPos <= 0) ? 0 : newCaretPos;
@@ -441,7 +461,8 @@ public class TextPad extends JTextPane implements StateEditable{
 	int newCaretPos = caretPos; // moving caret position
 	int textLen = getText().length(); // end of text
 	String delimiters = " .,;:-\\\'\"/_\t\n";
-		
+
+	/*		
 	// check that new caret not at end of string; 
 	// skip forward as long as not delimiters
 	while (newCaretPos < textLen
@@ -454,6 +475,25 @@ public class TextPad extends JTextPane implements StateEditable{
 	       && (delimiters.indexOf(getText().charAt(newCaretPos)) != -1)) {
 	    newCaretPos++;
 	}
+	*/
+	// check that new caret not at end of string; 
+	// skip forward as long as not delimiters
+	try {
+	    while (newCaretPos < textLen
+		   && delimiters.indexOf(getDocument()
+					 .getText(newCaretPos, 1)) == -1) {
+		newCaretPos++;
+	    }
+	    // check that new caret not at end of string; 
+	    // now skip forward as long as delimiters; bring to next letter, etc
+	    while (newCaretPos < textLen
+		   && (delimiters.indexOf(getDocument()
+					  .getText(newCaretPos, 1)) != -1)) {
+		newCaretPos++;
+	    }
+	} catch (BadLocationException e) {
+	    System.out.println("Arrgh!  Can't find the beginning of the word.");
+	}
 
 	return newCaretPos;
     }
@@ -461,7 +501,7 @@ public class TextPad extends JTextPane implements StateEditable{
     /**Auto-indent to the previous line's tab position.
      */
     public void autoIndent() {
-	int tabs = 0;
+	/*
 	String text = getText();
 	char c;
 	// go back 2: one for the hard return, one to check the previous character
@@ -470,13 +510,24 @@ public class TextPad extends JTextPane implements StateEditable{
 		tabs++;
 	    }
 	}
-	// construct a string of all the tabs
-	StringBuffer tabStr = new StringBuffer(tabs);
-	for (int i = 0; i < tabs; i++) {
-	    tabStr.append('\t');
-	}
-	// add the tabs
+	*/
+	// go back 2 to skip the hard return that makes the new line
+	// requiring indentation
 	try {
+	    int n = 0;
+	    int tabs = 0;
+	    for (n = getCaretPosition() - 2; n >= 0 
+		     && !getDocument().getText(n, 1).equals("\n"); n--);
+	    if (n == 0) n = -1;
+	    for (tabs = 0; getDocument().getText(++n, 1).equals("\t"); 
+		 tabs++);
+	    
+	    // construct a string of all the tabs
+	    StringBuffer tabStr = new StringBuffer(tabs);
+	    for (int i = 0; i < tabs; i++) {
+		tabStr.append('\t');
+	    }
+	    // add the tabs
 	    getDocument().insertString(getCaretPosition(), tabStr.toString(), null);
 	} catch(BadLocationException e) {
 	    System.out.println("Insert location " + getCaretPosition() + " does not exist");
