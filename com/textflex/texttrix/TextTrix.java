@@ -1276,6 +1276,10 @@ public class TextTrix extends JFrame {
 		updateTitle(textAreas, tabbedPane);
 		reader.close();
 		setOpenDir(file.getParent());
+		//		String parentFilePath = file.getParent();
+		if (getOpenDir() == null) 
+		    setOpenDir(System.getProperty("user.dir"));
+		//		System.out.println("path: " + path + ", openDir: " + file.getParent());
 		return true;
 	    } catch(IOException exception) {
 		exception.printStackTrace();
@@ -1346,8 +1350,9 @@ public class TextTrix extends JFrame {
 	    // File("") evidently brings file dialog to last path, 
 	    // whether last saved or opened path
 	    String dir = openDir;
-	    if (t != null && (dir = t.getDir()) == "") 
+	    if (t != null && (dir = t.getDir()).equals("")) 
 		dir = openDir;
+	    //	    System.out.println("openDir: " + openDir + ", dir: " + dir);
 	    chooser.setCurrentDirectory(new File(dir));
 	    chooser.setMultiSelectionEnabled(true); // allow opening multiple files
 	    
