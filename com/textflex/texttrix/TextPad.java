@@ -57,6 +57,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	private Hashtable actions;
 	private boolean autoIndent = false;
 	private int tabSize = 4; // default tab size
+	private InputMap imap = null;
+	private ActionMap amap = null;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -68,10 +70,102 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyDocumentSettings(); // to allow multiple undos and listen for events
 
 		// for new key-bindings
+		imap = getInputMap(JComponent.WHEN_FOCUSED);
+		amap = getActionMap();
 		createActionTable(this);
-		InputMap imap = getInputMap(JComponent.WHEN_FOCUSED);
-		ActionMap amap = getActionMap();
 
+		
+		//partialEmacsShortcuts();
+		// (ctrl-backspace) delete from caret to current word start
+		// First discard JTextComponent's usual dealing with ctrl-backspace.
+		// (enter) Auto-indent if Text Trix's option selected.
+		addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent event) {
+				char keyChar = event.getKeyChar();
+				if (event.isControlDown()
+					&& keyChar == KeyEvent.VK_BACK_SPACE) {
+					event.consume();
+				} else if (autoIndent && keyChar == KeyEvent.VK_ENTER) {
+					autoIndent();
+				} else if (
+					autoIndent
+						&& keyChar == KeyEvent.VK_TAB
+						&& isLeadingTab()) {
+					// performs the action after adding the tab
+					//			System.out.println("autoIndent: " + autoIndent + ", char: " + keyChar + ", leading tab: " + isLeadingTab());
+					indentCurrentParagraph(getTabSize());
+				} else if (
+					autoIndent
+						&& keyChar == KeyEvent.VK_BACK_SPACE
+						&& isLeadingTab()) {
+					// performs the action before deleting the char
+					unindentCurrentParagraph(getTabSize());
+				}
+			}
+		});
+		
+		//universalShortcuts();
+		//partialEmacsShortcuts();
+		hybridKeybindings();
+
+	}
+		
+	public void standardKeybindings() {
+		createActionTable(this);
+		universalShortcuts();
+	}
+	
+	/** Uses Emacs shortcuts for most single line or character navigation,
+	 * but standard shortcuts for everything else.
+	 *
+	 */
+	public void hybridKeybindings() {
+		createActionTable(this);
+		universalShortcuts();
+		partialEmacsShortcuts();
+	}
+	
+	public void emacsKeybindings() {
+		// TODO: create more keybindings; defaults to hybrid keybindings for now
+		hybridKeybindings();
+	}
+	
+	private void universalShortcuts() {
+		// Next apply own action
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
+			"deleteWord");
+		amap.put("deleteWord", new AbstractAction() {
+			public void actionPerformed(ActionEvent evt) {
+				int wordPos = getWordPosition();
+				// delete via the document methods rather than building
+				// string manually, a slow task.  Uses document rather than
+				// AccessibleJTextComponent in case used for serialization:
+				// Serialized objects of this class won't be compatible w/
+				// future releases
+				try {
+					// call getDocument() each time since doc may change
+					// with call to viewPlain, viewHTML, or viewRTF
+					getDocument().remove(wordPos, getCaretPosition() - wordPos);
+					setCaretPosition(wordPos);
+				} catch (BadLocationException b) {
+					System.out.println("Deletion out of range.");
+				}
+				/* Alternate method, essentially same as document except
+				 * using the AccessibleJTextComponent class, whose serializable
+				 * objects may not be compatible w/ future releases access the 
+				 * text component itself to tell it to perform the deletions rather 
+				 * than building string manually, a slow task
+				 */
+				 /*
+				 (new JTextComponent.AccessibleJTextComponent())
+				 .delete(wordPos, getCaretPosition());
+				*/
+			}
+		});
+	}
+	
+	private void partialEmacsShortcuts() {
 		// (ctrl-f) advance a character
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK),
@@ -88,17 +182,17 @@ public class TextPad extends JTextPane implements StateEditable {
 			"backwardChar",
 			getActionByName(DefaultEditorKit.backwardAction));
 
-		// (ctrl-p) go up a line
-		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK),
-			"upChar");
-		amap.put("upChar", getActionByName(DefaultEditorKit.upAction));
-
 		// (ctrl-n) advance a line
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK),
 			"downChar");
 		amap.put("downChar", getActionByName(DefaultEditorKit.downAction));
+
+		// (ctrl-p) go up a line
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_P, Event.CTRL_MASK),
+			"upChar");
+		amap.put("upChar", getActionByName(DefaultEditorKit.upAction));
 
 		// (ctrl-a) go to the beginning of the line
 		imap.put(
@@ -144,66 +238,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 		});
 
-		// (ctrl-backspace) delete from caret to current word start
-		// First discard JTextComponent's usual dealing with ctrl-backspace.
-		// (enter) Auto-indent if Text Trix's option selected.
-		addKeyListener(new KeyAdapter() {
-			public void keyTyped(KeyEvent event) {
-				char keyChar = event.getKeyChar();
-				if (event.isControlDown()
-					&& keyChar == KeyEvent.VK_BACK_SPACE) {
-					event.consume();
-				} else if (autoIndent && keyChar == KeyEvent.VK_ENTER) {
-					autoIndent();
-				} else if (
-					autoIndent
-						&& keyChar == KeyEvent.VK_TAB
-						&& isLeadingTab()) {
-					// performs the action after adding the tab
-					//			System.out.println("autoIndent: " + autoIndent + ", char: " + keyChar + ", leading tab: " + isLeadingTab());
-					indentCurrentParagraph(getTabSize());
-				} else if (
-					autoIndent
-						&& keyChar == KeyEvent.VK_BACK_SPACE
-						&& isLeadingTab()) {
-					// performs the action before deleting the char
-					unindentCurrentParagraph(getTabSize());
-				}
-			}
-		});
-
-		// Next apply own action
-		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
-			"deleteWord");
-		amap.put("deleteWord", new AbstractAction() {
-			public void actionPerformed(ActionEvent evt) {
-				int wordPos = getWordPosition();
-				// delete via the document methods rather than building
-				// string manually, a slow task.  Uses document rather than
-				// AccessibleJTextComponent in case used for serialization:
-				// Serialized objects of this class won't be compatible w/
-				// future releases
-				try {
-					// call getDocument() each time since doc may change
-					// with call to viewPlain, viewHTML, or viewRTF
-					getDocument().remove(wordPos, getCaretPosition() - wordPos);
-					setCaretPosition(wordPos);
-				} catch (BadLocationException b) {
-					System.out.println("Deletion out of range.");
-				}
-				/* Alternate method, essentially same as document except
-				 * using the AccessibleJTextComponent class, whose serializable
-				 * objects may not be compatible w/ future releases access the 
-				 * text component itself to tell it to perform the deletions rather 
-				 * than building string manually, a slow task
-				 */
-				 /*
-				 (new JTextComponent.AccessibleJTextComponent())
-				 .delete(wordPos, getCaretPosition());
-				*/
-			}
-		});
 	}
 	
 	/** Sets the default displayed tab sizes.
@@ -650,6 +684,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param txtComp <code>Java Swing</code> text component
 	 */
 	private void createActionTable(JTextComponent txtComp) {
+		imap.clear();
+		amap.clear();
 		actions = new Hashtable();
 		Action actionsArray[] = txtComp.getActions();
 		for (int i = 0; i < actionsArray.length; i++) {

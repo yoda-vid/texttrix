@@ -39,7 +39,7 @@ package com.textflex.texttrix;
 import javax.swing.*;
 import java.util.prefs.*;
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 
 public class Prefs extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
@@ -48,18 +48,18 @@ public class Prefs extends JFrame {
 	// main prefs
 
 	/* Panel-specific prefs */
-	private Preferences prefsPanelPrefs = prefs.node("prefsPanel");
+	private Preferences internalPrefs = prefs.node("Internal");
 	private static final String PREFS_WIDTH = "prefsWidth"; // panel width
 	private static final String PREFS_HEIGHT = "prefsHeight"; // panel height
-
-	/* General preferences */
-	private Preferences generalPrefs = prefs.node("General");
 	private static final String PRGM_WIDTH = "prgmWidth"; // program width
 	private static final String PRGM_HEIGHT = "prgmHeight"; // program height
 	private static final String PRGM_X_LOC = "prgmXLoc";
 	// program horizontal location
 	private static final String PRGM_Y_LOC = "prgmYLoc";
 	// program vertical location
+
+	/* General preferences */
+	private Preferences generalPrefs = prefs.node("General");
 
 	//	open tabs left last session
 	private static final String REOPEN_TABS = "reopenTabs";
@@ -81,6 +81,15 @@ public class Prefs extends JFrame {
 	private static final String AUTO_INDENT_EXT = "autoIndentExt";
 	private JTextField autoIndentExtFld = null; // input list
 
+	private Preferences shortsPrefs = prefs.node("Shorts");
+	private static final String KEYBINDINGS = "keybindings";
+	private static final String STD_KEYBINDINGS_MDL = "Standard";
+	private static final String HYBRID_KEYBINDINGS_MDL = "Hybrid";
+	private static final String EMACS_KEYBINDINGS_MDL = "Emacs";
+	private static final String[] KEYBINDINGS_MDLS =
+		{ STD_KEYBINDINGS_MDL, HYBRID_KEYBINDINGS_MDL, EMACS_KEYBINDINGS_MDL };
+	private JComboBox keybindingsCombo = null;
+
 	/** Constructs a preferences interface.
 	 * Loads its previous size settings.  Relies on the calling function to
 	 * supply an action that generally "okays," or stores, the preferences,
@@ -91,11 +100,13 @@ public class Prefs extends JFrame {
 	 * @param cancelAction action that generally rejects the changes by
 	 * destroying the object
 	 */
-	public Prefs(Action okAction, Action cancelAction) {
-		int width = prefsPanelPrefs.getInt(PREFS_WIDTH, 500); // panel width
-		int height = prefsPanelPrefs.getInt(PREFS_HEIGHT, 300); // panel height
+	public Prefs(Action okAction, Action applyAction, Action cancelAction, PreferenceChangeListener prefsListener) {
+		int width = internalPrefs.getInt(PREFS_WIDTH, 500); // panel width
+		int height = internalPrefs.getInt(PREFS_HEIGHT, 300); // panel height
 		setSize(width, height);
 		setTitle("You've Got Options");
+		generalPrefs.addPreferenceChangeListener(prefsListener);
+		shortsPrefs.addPreferenceChangeListener(prefsListener);
 		//		System.out.println("fileHistCount: " + fileHistCount);
 
 		// sets up the tabbed pane
@@ -106,21 +117,8 @@ public class Prefs extends JFrame {
 			createGeneralPanel(),
 			"In general...");
 
-		// creates an action that could store preferences from individual panels;
-		// the class, not the calling function, creates the action b/c no need to report
-		// back to the calling function;
-		// contrast "cancelAction", which requires the calling function to both dispose of
-		// and destroy the object 
-		Action applyAction = new AbstractAction("Apply now", null) {
-			public void actionPerformed(ActionEvent evt) {
-				storePrefs();
-			}
-		};
-		LibTTx.setAcceleratedAction(
-			applyAction,
-			"Apply the current tabs settings immediately",
-			'A',
-			KeyStroke.getKeyStroke("alt A"));
+		tabbedPane.addTab("Shorts", null, createShortsPanel(), "Shortcuts...");
+
 
 		// adds the components to the panel
 		Container contentPane = getContentPane();
@@ -279,22 +277,44 @@ public class Prefs extends JFrame {
 		return panel;
 	}
 
+	private JPanel createShortsPanel() {
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.anchor = GridBagConstraints.CENTER;
+		JPanel panel = new JPanel();
+
+		JLabel keybindingsLbl = new JLabel("Keybindings model");
+		String keybindingsTipTxt =
+			"\'Standard\' shortcuts are the ones found on most desktops."
+			+ "\n\'Hybrid\' refers to Emacs shortcuts for all single line and character navigation."
+			+ "\n\'Emacs\'is for hard-core Emacs fans.";
+		keybindingsLbl.setToolTipText(keybindingsTipTxt);
+		keybindingsCombo = new JComboBox(KEYBINDINGS_MDLS);
+		keybindingsCombo.setSelectedItem(getKeybindings());
+		
+		LibTTx.addGridBagComponent(keybindingsLbl, constraints, 0, 0, 1, 1, 100, 0, panel);
+		LibTTx.addGridBagComponent(keybindingsCombo, constraints, 1, 0, 1, 1, 100, 0, panel);
+
+		return panel;
+	}
+
 	/** Front-end to storing all the preferences at once.
 	 * Includes the panel-specific preferences.
 	 *
 	 */
 	public void storePrefs() {
-		storePrefsPanelPrefs();
+		storeInternalPrefs();
 		storeGeneralPrefs();
+		storeShortsPrefs();
 	}
 
-	/** Stores the panel-specific preferences.
-	 * 
+	/** Stores the program's internal preferences.
+	 * Does not store program size or location information.
 	 *
 	 */
-	public void storePrefsPanelPrefs() {
-		prefsPanelPrefs.putInt(PREFS_WIDTH, getWidth());
-		prefsPanelPrefs.putInt(PREFS_HEIGHT, getHeight());
+	public void storeInternalPrefs() {
+		internalPrefs.putInt(PREFS_WIDTH, getWidth());
+		internalPrefs.putInt(PREFS_HEIGHT, getHeight());
 	}
 
 	/** Stores the General preferences.
@@ -307,6 +327,10 @@ public class Prefs extends JFrame {
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
 	}
+	
+	public void storeShortsPrefs() {
+		shortsPrefs.put(KEYBINDINGS, (String)keybindingsCombo.getSelectedItem());
+	}
 
 	/** Stores the program window size.
 	 * Size values correspond to <code>java.awt.window.getWidth()</code>
@@ -315,8 +339,8 @@ public class Prefs extends JFrame {
 	 * @param height program window height
 	 */
 	public void storeSize(int width, int height) {
-		generalPrefs.putInt(PRGM_WIDTH, width);
-		generalPrefs.putInt(PRGM_HEIGHT, height);
+		internalPrefs.putInt(PRGM_WIDTH, width);
+		internalPrefs.putInt(PRGM_HEIGHT, height);
 	}
 
 	/** Stores the program's window location.
@@ -325,8 +349,8 @@ public class Prefs extends JFrame {
 	 * corner of the screen
 	 */
 	public void storeLocation(Point p) {
-		generalPrefs.putInt(PRGM_X_LOC, (int)p.getX());
-		generalPrefs.putInt(PRGM_Y_LOC, (int)p.getY());
+		internalPrefs.putInt(PRGM_X_LOC, (int)p.getX());
+		internalPrefs.putInt(PRGM_Y_LOC, (int)p.getY());
 	}
 
 	/** Stores whether the program should reopen tabs automatically.
@@ -429,20 +453,53 @@ public class Prefs extends JFrame {
 		}
 		return files;
 	}
+	
+	
+	
+	
+	
+	
+	public boolean isGeneralPrefs(Preferences p) {
+		return p == generalPrefs;
+	}
+	
+	public boolean isShortsPrefs(Preferences p) {
+		return p == shortsPrefs;
+	}
+	
+	public boolean isStandardKeybindings() {
+		return getKeybindings().equals(STD_KEYBINDINGS_MDL);
+	}
+
+	public boolean isHybridKeybindings() {
+		return getKeybindings().equals(HYBRID_KEYBINDINGS_MDL);
+	}
+
+	public boolean isEmacsKeybindings() {
+		return getKeybindings().equals(EMACS_KEYBINDINGS_MDL);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/** Gets the stored width for the program.
 	 * 
 	 * @return width
 	 */
 	public int getPrgmWidth() {
-		return generalPrefs.getInt(PRGM_WIDTH, 500);
+		return internalPrefs.getInt(PRGM_WIDTH, 500);
 	}
 	/** Gets the stored height for the program.
 	 * 
 	 * @return height
 	 */
 	public int getPrgmHeight() {
-		return generalPrefs.getInt(PRGM_HEIGHT, 600);
+		return internalPrefs.getInt(PRGM_HEIGHT, 600);
 	}
 	/** Gets the stored vertical location for the program.
 	 * 
@@ -450,7 +507,7 @@ public class Prefs extends JFrame {
 	 * relative to the upper-left corner of the screen
 	 */
 	public int getPrgmXLoc() {
-		return generalPrefs.getInt(PRGM_X_LOC, 0);
+		return internalPrefs.getInt(PRGM_X_LOC, 0);
 	}
 	/** Gets the stored vertical location for the program.
 	 * 
@@ -458,7 +515,7 @@ public class Prefs extends JFrame {
 	 * relative to the upper-left corner of the screen
 	 */
 	public int getPrgmYLoc() {
-		return generalPrefs.getInt(PRGM_Y_LOC, 0);
+		return internalPrefs.getInt(PRGM_Y_LOC, 0);
 	}
 	/** Gets the stored flag for re-opening tabs.
 	 * 
@@ -502,5 +559,9 @@ public class Prefs extends JFrame {
 	 */
 	public String getAutoIndentExt() {
 		return generalPrefs.get(AUTO_INDENT_EXT, "");
+	}
+
+	public String getKeybindings() {
+		return shortsPrefs.get(KEYBINDINGS, "");
 	}
 }

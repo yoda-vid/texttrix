@@ -45,6 +45,7 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+import java.util.prefs.*;
 
 /**The main Text Trix class.
  * Takes care of all basic graphical user interface operations, such as 
@@ -72,7 +73,10 @@ public class TextTrix extends JFrame {
 	private boolean updateTabIndexHistory = true; // flag to update the record
 	private static Prefs prefs = null;
 	private static Action prefsOkayAction = null;
+	private static Action prefsApplyAction = null;
 	private static Action prefsCancelAction = null;
+	private static PrefsListener prefsListener = null;
+	private static boolean respondToPrefsListener = false;
 	private static JMenu fileMenu = new JMenu("File");
 	private static int fileHistCount = 0;
 
@@ -85,7 +89,9 @@ public class TextTrix extends JFrame {
 
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
+				respondToPrefsListener = true;
 				getPrefs().storePrefs();
+				respondToPrefsListener = false;
 				getPrefs().dispose();
 			}
 		};
@@ -94,6 +100,25 @@ public class TextTrix extends JFrame {
 			"Okay",
 			'O',
 			KeyStroke.getKeyStroke("alt O"));
+			
+
+		// creates an action that could store preferences without closing the window;
+		// the class, not the calling function, creates the action b/c no need to report
+		// back to the calling function;
+		// contrast "cancelAction", which requires the calling function to both dispose of
+		// and destroy the object 
+		prefsApplyAction = new AbstractAction("Apply now", null) {
+			public void actionPerformed(ActionEvent evt) {
+				respondToPrefsListener = true;
+				getPrefs().storePrefs();
+				respondToPrefsListener = false;
+			}
+		};
+		LibTTx.setAcceleratedAction(
+			prefsApplyAction,
+			"Apply the current tabs settings immediately",
+			'A',
+			KeyStroke.getKeyStroke("alt A"));
 
 		prefsCancelAction = new AbstractAction("No way", null) {
 			public void actionPerformed(ActionEvent evt) {
@@ -107,11 +132,13 @@ public class TextTrix extends JFrame {
 			'N',
 			KeyStroke.getKeyStroke("alt C"));
 		//prefs = new Prefs(prefsOkayAction, prefsCancelAction);
+		prefsListener = new PrefsListener();
 		getPrefs();
 
 		// pre-set window size
 		setSize(getPrefs().getPrgmWidth(), getPrefs().getPrgmHeight());
-		setLocation(new Point(getPrefs().getPrgmXLoc(), getPrefs().getPrgmYLoc()));
+		setLocation(
+			new Point(getPrefs().getPrgmXLoc(), getPrefs().getPrgmYLoc()));
 		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
 		// set frame icon
 		if (im != null) {
@@ -131,13 +158,10 @@ public class TextTrix extends JFrame {
 			public void componentHidden(ComponentEvent evt) {
 			}
 		});
-		
 
 		//Point loc = getLocation();
 		//getPrefs().storeSizeAndLocation(getWidth(), getHeight(), loc.getX(), loc.getY());	
-			
-			
-			
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		// keep the tabs the same width when substituting chars
 		tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -343,7 +367,7 @@ public class TextTrix extends JFrame {
 		fileMenu.add(quitAction);
 
 		fileMenu.addSeparator();
-
+		System.out.println("About to create the menu entries");
 		createFileHist(fileMenu);
 
 		/* Edit menu items */
@@ -436,6 +460,7 @@ public class TextTrix extends JFrame {
 			KeyStroke.getKeyStroke("ctrl L"));
 		editMenu.add(selectAllAction);
 		popup.add(selectAllAction);
+		
 
 		// edit menu preferences separator
 		editMenu.addSeparator();
@@ -707,7 +732,8 @@ public class TextTrix extends JFrame {
 		}
 		if (getPrefs().getReopenTabs()) {
 			//System.out.println("Reopening tabs...");
-			StringTokenizer tokenizer = new StringTokenizer(getPrefs().getReopenTabsList(), ",");
+			StringTokenizer tokenizer =
+				new StringTokenizer(getPrefs().getReopenTabsList(), ",");
 			while (tokenizer.hasMoreElements()) {
 				openInitialFile(tokenizer.nextToken());
 			}
@@ -766,7 +792,7 @@ public class TextTrix extends JFrame {
 		textTrix.show();
 		focuser();
 	}
-	
+
 	private void openInitialFile(String path) {
 		if (!openFile(new File(path))) {
 			String msg =
@@ -837,10 +863,35 @@ public class TextTrix extends JFrame {
 		};
 		return act;
 	}
-	
+
 	public static Prefs getPrefs() {
-		return (prefs == null) ? prefs = new Prefs(prefsOkayAction, prefsCancelAction) : prefs;
-	} 
+		return (prefs == null) ? prefs =
+			new Prefs(
+				prefsOkayAction,
+				prefsApplyAction,
+				prefsCancelAction,
+				prefsListener) : prefs;
+	}
+
+	public void applyGeneralPrefs() {
+		updateFileHist(fileMenu);
+	}
+
+	public void applyShortsPrefs() {
+		if (prefs.isStandardKeybindings()) {
+			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+				getTextPadAt(i).standardKeybindings();
+			}
+		} else if (prefs.isHybridKeybindings()) {
+			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+				getTextPadAt(i).hybridKeybindings();
+			}
+		} else if (prefs.isEmacsKeybindings()) {
+			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+				getTextPadAt(i).emacsKeybindings();
+			}
+		}
+	}
 
 	/*
 	public void updateFileHist(JMenu menu, String file) {
@@ -1189,6 +1240,11 @@ public class TextTrix extends JFrame {
 			return null;
 		}
 	}
+	
+	public static TextPad getTextPadAt(int i) {
+		if (i < -1 || i >= tabbedPane.getTabCount()) return null;
+		return (TextPad)(textAreas.get(i));
+	}
 
 	/**Gets whether the auto-indent function is selected.
 	 * @return <code>true</code> if auto-indent is selected
@@ -1386,7 +1442,8 @@ public class TextTrix extends JFrame {
 			if (reopenTabs) {
 				if (getSelectedTextPad().fileExists()) {
 					if (!openedPaths.equals("")) {
-						openedPaths = openedPaths + "," + getSelectedTextPad().getPath();
+						openedPaths =
+							openedPaths + "," + getSelectedTextPad().getPath();
 					} else {
 						openedPaths = getSelectedTextPad().getPath();
 					}
@@ -1792,7 +1849,7 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-	
+
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
 		if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
@@ -1800,16 +1857,19 @@ public class TextTrix extends JFrame {
 			t.setAutoIndent(true);
 		}
 	}
-	
+
 	public boolean isAutoIndentExt(String path) {
 		int extIndex = LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
-		if (extIndex < 0 || extIndex >= path.length()) return false;
+		if (extIndex < 0 || extIndex >= path.length())
+			return false;
 		String ext = path.substring(extIndex);
 		//System.out.println("Ext: " + ext);
-		StringTokenizer tokenizer = new StringTokenizer(getPrefs().getAutoIndentExt(), " ,.");
+		StringTokenizer tokenizer =
+			new StringTokenizer(getPrefs().getAutoIndentExt(), " ,.");
 		String token = "";
 		while (tokenizer.hasMoreTokens()) {
-			if (tokenizer.nextElement().equals(ext)) return true;
+			if (tokenizer.nextElement().equals(ext))
+				return true;
 		}
 		return false;
 	}
@@ -2240,6 +2300,20 @@ public class TextTrix extends JFrame {
 		public void mouseReleased(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+	}
+
+	private class PrefsListener implements PreferenceChangeListener {
+		public void preferenceChange(PreferenceChangeEvent evt) {
+			if (respondToPrefsListener) {
+				if (prefs.isGeneralPrefs(evt.getNode())) {
+					System.out.println(
+						"Updating the general prefs: " + evt.getKey());
+					applyGeneralPrefs();
+				} else if (prefs.isShortsPrefs(evt.getNode())) {
+					applyShortsPrefs();
+				}
 			}
 		}
 	}
