@@ -68,7 +68,7 @@ public class Tools {
 	 * @param s the full text from which to strip extra hard returns
 	 * @return stripped text
 	 */
-    public static String removeExtraHardReturns(String s, int start, int end) {
+	public static String removeExtraHardReturns(String s, int start, int end) {
 		/* This function works by generally checking the characters afer
 		 * a hard return to determine whether to keep it or not.
 		 * To strip inline message reply characters, the function must also
@@ -99,14 +99,15 @@ public class Tools {
 		while (n < end) {
 			int inlineReply = 0; // eg ">" or "<" from inline email msg replies
 			int nextInlineReply = 0; // inline replies on next line
-	    	int singleReturn = s.indexOf("\n", n); // next hard return occurrence
+			int singleReturn = s.indexOf("\n", n); // next hard return occurrence
 			boolean isDoubleReturn = false; // double hard return flag
-		    boolean isDash = false; // dash flag
-	    	boolean isAsterisk = false; // asterisk flag
+			boolean isDash = false; // dash flag
+	    		boolean isAsterisk = false; // asterisk flag
 			boolean isNumber = false; // number flag
+			boolean isLetterList = false; // lettered list flag
 			boolean isTab = false; // tab flag
-	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag
-		    int endPre = s.indexOf("</pre>", n); // next cloisng pre tag
+	 		int startPre = s.indexOf("<pre>", n); // next opening pre tag
+			int endPre = s.indexOf("</pre>", n); // next cloisng pre tag
 			
 			// check the character after a hard return
 			if (singleReturn != -1) {
@@ -128,8 +129,19 @@ public class Tools {
 					isTab = s.startsWith("\t", afterInlineReply);
 					isDash = s.startsWith("-", afterInlineReply);
 					isAsterisk = s.startsWith("*", afterInlineReply);
+					String listDelimiters = ").";
 					String numbers = "1234567890";
-					isNumber = (numbers.indexOf(s.charAt(afterInlineReply)) != -1) 
+					int potentialListPos = 0;
+					for (potentialListPos = afterInlineReply; 
+						potentialListPos < s.length() && Character.isDigit(s.charAt(potentialListPos));
+						potentialListPos++);
+					isNumber = ((potentialListPos != afterInlineReply) 
+						&& listDelimiters.indexOf(s.charAt(potentialListPos)) != -1) 
+						? true : false;
+//					System.out.println("potentialListPos: " + potentialListPos);
+					isLetterList = (Character.isLetter(s.charAt(afterInlineReply)) 
+						&& (potentialListPos = afterInlineReply + 1) < s.length()
+						&& listDelimiters.indexOf(s.charAt(potentialListPos)) != -1) 
 						? true : false;
 				}					
 			}
@@ -182,7 +194,7 @@ public class Tools {
 				n = singleReturn + inlineReply + 2 + nextInlineReply; // skip over processed rets
 			// preserve separate lines for lines starting w/
 			// dashes, asterisks, numbers, or tabs, as in lists
-		    } else if (isDash || isAsterisk || isNumber || isTab) {
+		    } else if (isDash || isAsterisk || isNumber || isLetterList || isTab) {
 				// + 2 to pick up the dash
 				stripped.append(s.substring(n, singleReturn + 1));
 				n = singleReturn + inlineReply + 1;
