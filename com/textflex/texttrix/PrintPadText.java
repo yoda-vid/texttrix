@@ -36,17 +36,32 @@
 
 package com.textflex.texttrix;
 
+/**Stores the text and its on-screen formatting for copying to printer paper.
+ * By creating an array of these objects, one <code>PrintPadText</code>
+ * object per visible, displayed line of text, the contents of the 
+ * <code>TextPad</code> can be reproduced according to their layout
+ * on the screen, rather than compressed or expanded according to paper
+ * size.
+*/
 public class PrintPadText {
 	
-	String text = "";
-	float indent = 0;
+	String text = ""; // the line of text
+	float indent = 0; // horizontal, left-side indent
 	
+	/**Creates an object from the text and its left-side indentation.
+	*/
 	public PrintPadText(String aText, float aIndent) {
 		text = aText;
 		indent = aIndent;
 	}
 	
+	/**Gets the text.
+	 * @return text
+	*/
 	public String getText() { return text; }
+	/**Gets the left-side indent.
+	 * @return left-side indent
+	*/
 	public float getIndent() { return indent; }
 	
 }

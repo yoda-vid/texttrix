@@ -566,6 +566,9 @@ public class LibTTx {
 	 * @return an array of the visible lines, with each element consisting
 	 * of one line from the display, whether the line terminates in a hard
 	 * or a soft return
+	 * @deprecated replaced by <code>getPrintableLines(JTextPane)</code>,
+	 * which constructs an array of <code>PrintPadText</code> to store
+	 * both text and its formatting
 	 */
 	public static String[] getVisibleLines(JTextComponent c) {
 		String[] lines = new String[100]; // defaults to 100 lines
@@ -590,6 +593,20 @@ public class LibTTx {
 		return (String[]) truncateArray(lines, linesIdx);
 	}
 	
+	/**Gets the text displayed in a <code>JTextPane</code> as 
+	 * displayed on-screen, including formatting for the text.
+	 * Useful for printing text directly from the screen.
+	 * Lines are demarcated not by hard returns, but the soft return
+	 * that the <code>JTextPane</code> inserts.  Expanding or 
+	 * widening the screen can alter the line divisions and yields
+	 * a new array of printable lines.
+	 * 
+	 * @param c the text display, almost always with multiple lines
+	 * @return an array of the displayed lines and their formatting, with each 
+	 * element consisting
+	 * of one line from the display, whether the line terminates in a hard
+	 * or a soft return
+	 */
 	public static PrintPadText[] getPrintableLines(JTextPane c) {
 		
 		PrintPadText[] lines = new PrintPadText[100]; // defaults to 100 lines
@@ -601,6 +618,8 @@ public class LibTTx {
 		PrintPadText line = null;
 		Element paragraph = null;
 		try {
+		
+			// cylce through the paragraphs
 			while (offset < len) {
 				paragraph = doc.getParagraphElement(offset);
 				int paragraphEnd = paragraph.getEndOffset();
@@ -608,18 +627,22 @@ public class LibTTx {
 				boolean firstLine = true;
 				//System.out.println("offset: " + offset + ", paraEnd: " + paragraphEnd);
 				//System.out.println("left indent: " + StyleConstants.getLeftIndent(paragraphAttr));
+				
+				// cycle through the lines within each paragraph
 				while (offset < paragraphEnd) {
+					// find the end of the row, or line
 					end = Utilities.getRowEnd(c, offset) + 1;
+					// find the indentation of the line
 					float indent = StyleConstants.getLeftIndent(paragraphAttr);
+					// store the line and its formatting
 					line = new PrintPadText(
 						doc.getText(offset, end - offset),
 						indent);
 				
-					// grows the array if full
+					// grow the array if full and add the line
 					if (linesIdx >= lines.length) {
 						lines = (PrintPadText[]) growArray(lines);
 					}
-					// adds the line
 					lines[linesIdx++] = line;
 					offset = end;
 				}

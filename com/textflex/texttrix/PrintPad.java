@@ -110,6 +110,9 @@ public class PrintPad implements Printable {
 	 * which can in turn be drawn onto a printer, a <code>PrintPadPreview</code>
 	 * object, or other graphical devices.  The font is specified during
 	 * <code>PrintPad</code> construction or via <code>setFont(Font)</code>.
+	 * Text is read from <code>PrintPadText</code> array, which contains the text
+	 * along with formatting information, such as indentation.  This array can be
+	 * set during class creation or through constructor methods.
 	 * @param g2D the graphics component on which to draw
 	 * @param pf the page format specification
 	 * @param page the current page number; only the text for the current
@@ -129,17 +132,22 @@ public class PrintPad implements Printable {
 		TextLayout txtLayout = null;
 		// writes text line-by-line, advancing the pen position between
 		// each line
-		float penY = 0;
-		float penX = 0;
+		float penX = 0; // indent position
+		float penY = 0; // line position
 		for (int i = page * linesPerPage; i < page * linesPerPage + linesPerPage 
 				&& i < printText.length; i++) {
 			// creates a new TextLayout object for each line
 			txtLayout = new TextLayout(printText[i].getText(), font, fontContext);
+			
 			// advance the pen;
 			// move the pen before even the first writing to ensure that the first
 			// line doesn't get cut off
+			
+			// horizontal adjustment for indentation
 			penX = printText[i].getIndent();
 			//System.out.println("penX: " + penX);
+			
+			// vertical advancement for line position
 			penY += txtLayout.getAscent() + txtLayout.getDescent() + txtLayout.getLeading();
 			txtLayout.draw(g2D, penX, penY);
 		}
