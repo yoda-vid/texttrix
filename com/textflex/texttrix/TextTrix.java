@@ -247,7 +247,7 @@ public class TextTrix extends JFrame {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			// may need to add original text to history buffer
 			// before making the change
-		    t.setText(t.stripExtraHardReturns(t.getText()));
+		    t.setText(Practical.removeExtraHardReturns(t.getText()));
 		}
 	    });
 

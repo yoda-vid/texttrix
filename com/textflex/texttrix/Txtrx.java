@@ -46,17 +46,42 @@ public class Txtrx {
 	public static void main(String[] args) {
 		if (args.length > 1) {
 			applyCmds(args);
-		} else if (args.length == 1) {
-			System.out.println("Please supply one or more files");
+		} else if (args.length == 1 && args[0].indexOf("-") == 0) {
+			System.out.println("Please supply files to goof with.");
 		} else {
 			// likely want to replace by automatically calling --help
 			System.out.println("Type \"txtrx --help\" for more information.");
 		}
 	}
 
+	/**Applies the selected commands to the given files.
+	 * Commands are preceded by a dash, "-", and files come afterware.
+	 * Specifying no commands defaults to the "v" command, "verbose" operation.
+	 * @param args array of commands and files.  Commands are optional
+	 * and come before the filenames.  Assumes that args specifies at least
+	 * one file.
+	 */
 	public static void applyCmds(String[] args) {
-		for (i = args.length - 1; i > 0; i++) {
-			String path = args[i];
+		String cmds = args[0];
+		String cmd;
+		boolean verbose = false;
+		int fileIndex = 1;
+		
+		// one or more args: files
+		if (cmds.indexOf("-") != 0) {
+			verbose = true;
+			cmd = "v";
+			fileIndex = 0;
+		// one or more args: commands that include "v", files
+		} else if (cmds.indexOf("v") != -1) {
+			verbose = true;
+			cmds.replace("-", "");
+			cmds.replace("v", "");
+		}
+	
+		for (fileIndex; fileIndex < args.length; fileIndex++) {
+			String path = args[fileIndex];
+			String text;
 			/** prob not necessary since prob does automatically
 			if (path.charAt(0) == "/") {
 				path = args[i];
@@ -64,7 +89,7 @@ public class Txtrx {
 				path = "./" + args[i];
 			}
 			*/
-
+			
 			try {
 				BufferedReader reader =
 					new BufferedReader(new FileReader(path));
@@ -72,7 +97,32 @@ public class Txtrx {
 			} catch(IOException e) {
 				System.out.println(path + " is not a file");
 			}
+			
+			if (cmd == "v") {
+				displayText(text);
+			} else if (cmds != null) {
+				text = applyCmd(cmds.substring(0, 1), text);
+				cmds = cmds.substring(1);
+				if (verbose)
+					displayText(text);
+				writeFile(text);
+			}			
+		}
+	}
 
+	/**Applies a single command to a given string.
+	 * @param cmd goofy or practical command to apply:
+	 * "r" is the Extra Hard Return Remover (practical function),
+	 * "h" is the HTML tag replacer (practical function).
+	 * @param text text to modify
+	 */
+	public String applyCmd(String cmd, String text) {
+		if (cmd == "r") {
+			return Practical.removeExtraHardReturns(text);
+		} else if (cmd == "h") {
+			return Practical.replaceHTMLTags(text);
+		} else {
+			return text;
 		}
 	}
 	
@@ -88,5 +138,8 @@ public class Txtrx {
 			System.out.println(path + " is apparently not a text file");
 			return text;
 		}
+	}
+
+	public static void writeFile(String text) {
 	}
 }
