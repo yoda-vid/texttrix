@@ -39,7 +39,8 @@ package com.textflex.texttrix;
 import javax.swing.*;
 import java.util.prefs.*;
 import java.awt.*;
-//import java.awt.event.*;
+import java.awt.event.*;
+import javax.swing.event.*;
 
 public class Prefs extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
@@ -60,6 +61,9 @@ public class Prefs extends JFrame {
 
 	/* General preferences */
 	private Preferences generalPrefs = prefs.node("General");
+	//private JPanel generalPanel = null;
+	private static final int GENERAL_PANEL_INDEX = 0;
+	private CreateGeneralPanel createGeneralPanel = new CreateGeneralPanel();
 
 	//	open tabs left last session
 	private static final String REOPEN_TABS = "reopenTabs";
@@ -82,6 +86,8 @@ public class Prefs extends JFrame {
 	private JTextField autoIndentExtFld = null; // input list
 
 	private Preferences shortsPrefs = prefs.node("Shorts");
+	private static final int SHORTS_PANEL_INDEX = 1;
+	private CreateShortsPanel createShortsPanel = new CreateShortsPanel();
 	private static final String KEYBINDINGS = "keybindings";
 	private static final String STD_KEYBINDINGS_MDL = "Standard";
 	private static final String HYBRID_KEYBINDINGS_MDL = "Hybrid";
@@ -89,6 +95,17 @@ public class Prefs extends JFrame {
 	private static final String[] KEYBINDINGS_MDLS =
 		{ STD_KEYBINDINGS_MDL, HYBRID_KEYBINDINGS_MDL, EMACS_KEYBINDINGS_MDL };
 	private JComboBox keybindingsCombo = null;
+
+	private Preferences plugInsPrefs = prefs.node("PlugIns");
+	private static final int PLUG_INS_PANEL_INDEX = 2;
+	private CreatePlugInsPanel createPlugInsPanel = new CreatePlugInsPanel();
+	private static final String ALL_PLUG_INS = "allPlugIns";
+	private JCheckBox allPlugInsChk = null;
+	private JList includePlugInsList = null;
+	private JList ignorePlugInsList = null;
+	private String[] plugInsList = null;
+	private static final String INCLUDE_PLUG_INS = "includePlugIns";
+	private static final String IGNORE_PLUG_INS = "ignorePlugIns";
 
 	/** Constructs a preferences interface.
 	 * Loads its previous size settings.  Relies on the calling function to
@@ -111,20 +128,35 @@ public class Prefs extends JFrame {
 
 		// sets up the tabbed pane
 		tabbedPane.setTabPlacement(JTabbedPane.LEFT);
-		tabbedPane.addTab(
+		tabbedPane.insertTab(
 			"General",
 			null,
-			createGeneralPanel(),
-			"In general...");
+			null,
+			"In general...",
+			GENERAL_PANEL_INDEX);
+		//tabbedPane.setComponentAt(0, createGeneralPanel());
+		createGeneralPanel.start();
 
-		tabbedPane.addTab("Shorts", null, createShortsPanel(), "Shortcuts...");
+		tabbedPane.insertTab(
+			"Shorts",
+			null,
+			null,
+			"Shortcuts...",
+			SHORTS_PANEL_INDEX);
+		createShortsPanel.start();
 
+		tabbedPane.insertTab(
+			"Plug-Ins",
+			null,
+			null,
+			"Don't get electricuted...",
+			PLUG_INS_PANEL_INDEX);
 
 		// adds the components to the panel
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.HORIZONTAL;
+		constraints.fill = GridBagConstraints.BOTH;
 
 		// anchor to the top of the panel in case don't have enough optons
 		// to fill the tab; otherwise the entire JTabbedPane would become
@@ -154,6 +186,7 @@ public class Prefs extends JFrame {
 			contentPane);
 
 		// immediately stores the preferences in the given tab
+		constraints.fill = GridBagConstraints.HORIZONTAL;
 		JButton applyBtn = new JButton(applyAction);
 		LibTTx.addGridBagComponent(
 			applyBtn,
@@ -180,122 +213,9 @@ public class Prefs extends JFrame {
 			contentPane);
 	}
 
-	/** Makes a panel for the "General" preferences tab.
-	 * Displays options related to the program as a whole.
-	 * @return the panel
-	 */
-	private JPanel createGeneralPanel() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.CENTER;
-		JPanel panel = new JPanel();
-
-		// re-opens the tabs left open during the previous session
-		String reopenTabsTxt = "Reopen tabs from last session";
-		String reopenTabsTipTxt =
-			"<html>Reopen the files left open the last time<br> you used the program.</html>";
-		reopenTabsChk = new JCheckBox(reopenTabsTxt, getReopenTabs());
-		reopenTabsChk.setToolTipText(reopenTabsTipTxt);
-
-		// keeps the given number of last-opened files in memory for quick re-opening
-		JLabel fileHistCountLbl =
-			new JLabel("Number of files in history area:");
-		String fileHistCountTipTxt =
-			"<html>The number of files to include in the File menu"
-				+ "<br>history area to quickly open recent files.</html>";
-		fileHistCountLbl.setToolTipText(fileHistCountTipTxt);
-		fileHistCountMdl =
-			new SpinnerNumberModel(getFileHistCount(), 0, 100, 1);
-		fileHistCountSpinner = new JSpinner(fileHistCountMdl);
-
-		// automatically auto-indents files whose extensions match any of those in
-		// the customizable list
-		String autoIndentTxt = "Auto-indent file types:";
-		String autoIndentTipTxt =
-			"<html>Auto-indent files with the following extensions."
-				+ "<br>Including the period and space is optional,"
-				+ "<br>but be sure to separate each extension with a comma.</html>";
-		autoIndentChk = new JCheckBox(autoIndentTxt, getAutoIndent());
-		autoIndentChk.setToolTipText(autoIndentTipTxt);
-		// default list of extension
-		String autoIndentExt = ".java, .c, .cpp, .html, .css, .shtml, .xhtml";
-		autoIndentExtFld = new JTextField(autoIndentExt, 30);
-
-		// add components to a grid-bag layout
-		panel.setLayout(new GridBagLayout());
-
-		LibTTx.addGridBagComponent(
-			reopenTabsChk,
-			constraints,
-			0,
-			0,
-			1,
-			1,
-			100,
-			0,
-			panel);
-		LibTTx.addGridBagComponent(
-			fileHistCountLbl,
-			constraints,
-			0,
-			1,
-			1,
-			1,
-			100,
-			0,
-			panel);
-		LibTTx.addGridBagComponent(
-			fileHistCountSpinner,
-			constraints,
-			1,
-			1,
-			1,
-			1,
-			100,
-			0,
-			panel);
-		LibTTx.addGridBagComponent(
-			autoIndentChk,
-			constraints,
-			0,
-			2,
-			1,
-			1,
-			100,
-			0,
-			panel);
-		LibTTx.addGridBagComponent(
-			autoIndentExtFld,
-			constraints,
-			1,
-			2,
-			1,
-			1,
-			100,
-			0,
-			panel);
-		return panel;
-	}
-
-	private JPanel createShortsPanel() {
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.CENTER;
-		JPanel panel = new JPanel();
-
-		JLabel keybindingsLbl = new JLabel("Keybindings model");
-		String keybindingsTipTxt =
-			"\'Standard\' shortcuts are the ones found on most desktops."
-			+ "\n\'Hybrid\' refers to Emacs shortcuts for all single line and character navigation."
-			+ "\n\'Emacs\'is for hard-core Emacs fans.";
-		keybindingsLbl.setToolTipText(keybindingsTipTxt);
-		keybindingsCombo = new JComboBox(KEYBINDINGS_MDLS);
-		keybindingsCombo.setSelectedItem(getKeybindings());
-		
-		LibTTx.addGridBagComponent(keybindingsLbl, constraints, 0, 0, 1, 1, 100, 0, panel);
-		LibTTx.addGridBagComponent(keybindingsCombo, constraints, 1, 0, 1, 1, 100, 0, panel);
-
-		return panel;
+	public void updatePlugInsPanel(String[] list) {
+		setPlugInsList(list);
+		createPlugInsPanel.start();
 	}
 
 	/** Front-end to storing all the preferences at once.
@@ -327,9 +247,11 @@ public class Prefs extends JFrame {
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
 	}
-	
+
 	public void storeShortsPrefs() {
-		shortsPrefs.put(KEYBINDINGS, (String)keybindingsCombo.getSelectedItem());
+		shortsPrefs.put(
+			KEYBINDINGS,
+			(String)keybindingsCombo.getSelectedItem());
 	}
 
 	/** Stores the program window size.
@@ -379,7 +301,9 @@ public class Prefs extends JFrame {
 		int oldCount = generalPrefs.getInt(FILE_HIST_COUNT, newCount);
 		if (newCount < oldCount) {
 			for (int i = newCount; i < oldCount; i++) {
-				System.out.println("Removing file history entry: " + generalPrefs.get(FILE_HIST + i, ""));
+				System.out.println(
+					"Removing file history entry: "
+						+ generalPrefs.get(FILE_HIST + i, ""));
 				generalPrefs.remove(FILE_HIST + i);
 			}
 		}
@@ -453,20 +377,15 @@ public class Prefs extends JFrame {
 		}
 		return files;
 	}
-	
-	
-	
-	
-	
-	
+
 	public boolean isGeneralPrefs(Preferences p) {
 		return p == generalPrefs;
 	}
-	
+
 	public boolean isShortsPrefs(Preferences p) {
 		return p == shortsPrefs;
 	}
-	
+
 	public boolean isStandardKeybindings() {
 		return getKeybindings().equals(STD_KEYBINDINGS_MDL);
 	}
@@ -478,14 +397,10 @@ public class Prefs extends JFrame {
 	public boolean isEmacsKeybindings() {
 		return getKeybindings().equals(EMACS_KEYBINDINGS_MDL);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	public void setPlugInsList(String[] s) {
+		plugInsList = s;
+	}
 
 	/** Gets the stored width for the program.
 	 * 
@@ -563,5 +478,369 @@ public class Prefs extends JFrame {
 
 	public String getKeybindings() {
 		return shortsPrefs.get(KEYBINDINGS, "");
+	}
+
+	public boolean getAllPlugIns() {
+		return plugInsPrefs.getBoolean(ALL_PLUG_INS, false);
+	}
+
+	public String getIncludePlugIns() {
+		return plugInsPrefs.get(INCLUDE_PLUG_INS, "");
+	}
+
+	public String getIgnorePlugIns() {
+		return plugInsPrefs.get(IGNORE_PLUG_INS, "");
+	}
+
+	private class CreateGeneralPanel extends Thread {
+
+		public void start() {
+			(new Thread(this, "thread")).start();
+		}
+
+		/** Makes a panel for the "General" preferences tab.
+			 * Displays options related to the program as a whole.
+			 * @return the panel
+			 */
+		public void run() {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					GridBagConstraints constraints = new GridBagConstraints();
+					constraints.fill = GridBagConstraints.HORIZONTAL;
+					constraints.anchor = GridBagConstraints.NORTH;
+					JPanel panel = new JPanel();
+
+					// re-opens the tabs left open during the previous session
+					String reopenTabsTxt = "Reopen tabs from last session";
+					String reopenTabsTipTxt =
+						"<html>Reopen the files left open the last time<br> you used the program.</html>";
+					reopenTabsChk =
+						new JCheckBox(reopenTabsTxt, getReopenTabs());
+					reopenTabsChk.setToolTipText(reopenTabsTipTxt);
+
+					// keeps the given number of last-opened files in memory for quick re-opening
+					JLabel fileHistCountLbl =
+						new JLabel("Number of files in history area:");
+					String fileHistCountTipTxt =
+						"<html>The number of files to include in the File menu"
+							+ "<br>history area to quickly open recent files.</html>";
+					fileHistCountLbl.setToolTipText(fileHistCountTipTxt);
+					fileHistCountMdl =
+						new SpinnerNumberModel(getFileHistCount(), 0, 100, 1);
+					fileHistCountSpinner = new JSpinner(fileHistCountMdl);
+
+					// automatically auto-indents files whose extensions match any of those in
+					// the customizable list
+					String autoIndentTxt = "Auto-indent file types:";
+					String autoIndentTipTxt =
+						"<html>Auto-indent files with the following extensions."
+							+ "<br>Including the period and space is optional,"
+							+ "<br>but be sure to separate each extension with a comma.</html>";
+					autoIndentChk =
+						new JCheckBox(autoIndentTxt, getAutoIndent());
+					autoIndentChk.setToolTipText(autoIndentTipTxt);
+					// default list of extension
+					String autoIndentExt =
+						".java, .c, .cpp, .html, .css, .shtml, .xhtml";
+					autoIndentExtFld = new JTextField(autoIndentExt, 30);
+
+					// add components to a grid-bag layout
+					panel.setLayout(new GridBagLayout());
+
+					LibTTx.addGridBagComponent(
+						reopenTabsChk,
+						constraints,
+						0,
+						0,
+						2,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						fileHistCountLbl,
+						constraints,
+						0,
+						1,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						fileHistCountSpinner,
+						constraints,
+						1,
+						1,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						autoIndentChk,
+						constraints,
+						0,
+						2,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						autoIndentExtFld,
+						constraints,
+						1,
+						2,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					//generalPanel = panel;
+					tabbedPane.setComponentAt(GENERAL_PANEL_INDEX, panel);
+				}
+			});
+		}
+	}
+
+	private class CreateShortsPanel extends Thread {
+		public void start() {
+			(new Thread(this, "thread")).start();
+		}
+
+		public void run() {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					GridBagConstraints constraints = new GridBagConstraints();
+					constraints.fill = GridBagConstraints.HORIZONTAL;
+					constraints.anchor = GridBagConstraints.NORTH;
+					JPanel panel = new JPanel();
+
+					JLabel keybindingsLbl = new JLabel("Keybindings model");
+					String keybindingsTipTxt =
+						"\'Standard\' shortcuts are the ones found on most desktops."
+							+ "\n\'Hybrid\' refers to Emacs shortcuts for all single line and character navigation."
+							+ "\n\'Emacs\'is for hard-core Emacs fans.";
+					keybindingsLbl.setToolTipText(keybindingsTipTxt);
+					keybindingsCombo = new JComboBox(KEYBINDINGS_MDLS);
+					keybindingsCombo.setSelectedItem(getKeybindings());
+
+					LibTTx.addGridBagComponent(
+						keybindingsLbl,
+						constraints,
+						0,
+						0,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						keybindingsCombo,
+						constraints,
+						1,
+						0,
+						1,
+						1,
+						100,
+						0,
+						panel);
+
+					tabbedPane.setComponentAt(SHORTS_PANEL_INDEX, panel);
+				}
+			});
+
+		}
+	}
+
+	private class CreatePlugInsPanel extends Thread {
+		public void start() {
+			(new Thread(this, "thread")).start();
+		}
+
+		public void run() {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					JPanel panel = new JPanel();
+					GridBagConstraints constraints = new GridBagConstraints();
+					constraints.fill = GridBagConstraints.HORIZONTAL;
+					constraints.anchor = GridBagConstraints.NORTH;
+
+					String allPlugInsTxt = "Include all the plug-ins";
+					allPlugInsChk =
+						new JCheckBox(allPlugInsTxt, getAllPlugIns());
+					LibTTx.addGridBagComponent(
+						allPlugInsChk,
+						constraints,
+						0,
+						0,
+						2,
+						1,
+						100,
+						0,
+						panel);
+
+					String[] includes = LibTTx.createArray(getIncludePlugIns());
+					String[] ignores = LibTTx.createArray(getIgnorePlugIns());
+					String[] updatedIncludes = new String[plugInsList.length];
+					int updatedInclInd = 0;
+					String[] updatedIgnores = new String[plugInsList.length];
+					int updatedIgnInd = 0;
+					for (int i = 0; i < plugInsList.length; i++) {
+						System.out.print("plugInsList[" + i + "]: " + plugInsList[i] + "...");
+						if (LibTTx.inUnsortedList(plugInsList[i], ignores)) {
+							updatedIgnores[updatedIgnInd++] = plugInsList[i];
+						} else {
+							updatedIncludes[updatedInclInd++] = plugInsList[i];
+							System.out.println("included");
+						}
+					}
+
+					DefaultListModel includeListModel = new DefaultListModel();
+					//JList includeList = null;
+					includePlugInsList =
+						createList(includeListModel, updatedIncludes);
+					JScrollPane includeListPane =
+						new JScrollPane(includePlugInsList);
+					includeListPane.setPreferredSize(new Dimension(250, 80));
+
+					DefaultListModel ignoreListModel = new DefaultListModel();
+					ignorePlugInsList =
+						createList(ignoreListModel, updatedIgnores);
+					JScrollPane ignoreListPane =
+						new JScrollPane(ignorePlugInsList);
+					ignoreListPane.setPreferredSize(new Dimension(250, 80));
+
+					JButton moveToIgnoresBtn = null;
+					String moveToIgnoresTxt = "Blow it off";
+					Action moveToIgnoresAction =
+						createMoveAction(
+							includePlugInsList,
+							moveToIgnoresBtn,
+							moveToIgnoresTxt,
+							ignorePlugInsList);
+					moveToIgnoresBtn = new JButton(moveToIgnoresAction);
+					addEnabledListener(includePlugInsList, moveToIgnoresBtn);
+					moveToIgnoresBtn.setEnabled(includeListModel.getSize() != 0);
+
+					JButton moveToIncludesBtn = null;
+					String moveToIncludesTxt = "I like";
+					Action moveToIncludesAction =
+						createMoveAction(
+							ignorePlugInsList,
+							moveToIncludesBtn,
+							moveToIncludesTxt,
+							includePlugInsList);
+					moveToIncludesBtn = new JButton(moveToIncludesAction);
+					addEnabledListener(ignorePlugInsList, moveToIncludesBtn);
+					moveToIncludesBtn.setEnabled(ignoreListModel.getSize() != 0);
+					//System.out.println("ignoreListModel.getSize(): " + ignoreListModel.getSize());
+
+					JLabel plugInsSelectionLbl =
+						new JLabel("Which plug-ins do you want?");
+					LibTTx.addGridBagComponent(
+						plugInsSelectionLbl,
+						constraints,
+						0,
+						1,
+						2,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						includeListPane,
+						constraints,
+						0,
+						2,
+						2,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						moveToIgnoresBtn,
+						constraints,
+						0,
+						3,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						moveToIncludesBtn,
+						constraints,
+						1,
+						3,
+						1,
+						1,
+						100,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						ignoreListPane,
+						constraints,
+						0,
+						4,
+						2,
+						1,
+						100,
+						0,
+						panel);
+					tabbedPane.setComponentAt(PLUG_INS_PANEL_INDEX, panel);
+				}
+			});
+		}
+
+		private JList createList(DefaultListModel listMdl, String[] listElts) {
+			String addElt = null;
+			for (int i = 0; i < listElts.length && (addElt = listElts[i]) != null; i++) {
+				listMdl.addElement(addElt);
+			}  
+			JList list = new JList(listMdl);
+			list.setSelectionMode(
+				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			list.setLayoutOrientation(JList.VERTICAL);
+			list.setVisibleRowCount(-1);
+			return list;
+		}
+
+		private Action createMoveAction(
+			final JList fromList,
+			final JButton btn,
+			String txt,
+			final JList toList) {
+			Action action = new AbstractAction(txt, null) {
+				public void actionPerformed(ActionEvent evt) {
+					Object[] selected = fromList.getSelectedValues();
+					DefaultListModel fromListModel =
+						(DefaultListModel)fromList.getModel();
+					for (int i = 0; i < selected.length; i++) {
+						fromListModel.removeElement(selected[i]);
+					}
+					for (int i = 0; i < selected.length; i++) {
+						((DefaultListModel)toList.getModel()).addElement(
+							selected[i]);
+					}
+					/*
+					if (fromListModel.getSize() == 0) {
+						btn.setEnabled(false);
+					}
+					*/
+				}
+			};
+			return action;
+		}
+		
+		private void addEnabledListener(JList list, final JButton btn) {
+			final DefaultListModel mdl = (DefaultListModel)list.getModel();
+			list.addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent evt) {
+					btn.setEnabled(mdl.getSize() != 0);
+				}
+			});
+		}
 	}
 }

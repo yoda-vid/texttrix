@@ -42,6 +42,7 @@ import java.io.*;
 import java.net.*;
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
 
 /** Library class to act as a tool chest for Text Trix functions.
  * Most <code>LibTTx</code> functions are potentially relevant to multiple
@@ -134,6 +135,27 @@ public class LibTTx {
 			e.printStackTrace();
 		}
 		return obj;
+	}
+	
+	public static String[] createArray(String s) {
+		String[] array = new String[10];
+		int arrayInd = 0;
+		StringTokenizer tokenizer = new StringTokenizer(s, ",");
+		while (tokenizer.hasMoreTokens()) {
+			if (arrayInd >= array.length) {
+				array = (String[])growArray(array);
+			}
+			array[arrayInd++] = tokenizer.nextToken();
+		}
+		return (String[])truncateArray(array, arrayInd);
+	}
+	
+	public static boolean inUnsortedList(String find, String[] list) {
+		String check = null;
+		for (int i = 0; i < list.length && (check = list[i]) != null; i++) {
+			if (check.equals(find)) return true;
+		}
+		return false;
 	}
 
 	/** Increases arrays to accomodate 10% + 10 more elements.

@@ -449,7 +449,7 @@ public class TextTrix extends JFrame {
 			*/
 		if (prefs.isHybridKeybindings()) {
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-				getTextPadAt(i).standardKeybindings();
+				getTextPadAt(i).hybridKeybindings();
 			}
 		} else if (prefs.isEmacsKeybindings()) {
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
@@ -483,6 +483,7 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
+	
 
 	/** Creates a plugin action.
 	 * Allows the plugin to be invoked from a button or other action-capable
@@ -647,17 +648,22 @@ public class TextTrix extends JFrame {
 			t.setCaretPosition(baseline + start);
 		}
 	}
+	
 
-	/** Loads and set up the plugins.
-	Retrieves them from the "plugins" directory, located in the same
-	directory as the executable JAR for TextTrix.class or the 
-	"com" directory in the "com/textflex/texttrix" sequence holding
-	TextTrix.class.
-	TODO: also search the user's home directory or user determined
-	locations, such as ones a user specifies via a preferences panel.
-	*/
-	public void setupPlugins() {
-
+	public boolean refreshPlugIns() {
+		File file = getPlugInsFile();
+		return file.list().length == plugIns.length;
+	}
+	
+	public String[] getPlugInsNames() {
+		String[] names = new String[plugIns.length];
+		for (int i = 0; i < names.length; i++) {
+			names[i] = plugIns[i].getName();
+		}
+		return names;
+	}
+	
+	private File getPlugInsFile() {
 		/* The code has a relatively elaborate mechanism to locate
 		   the plugins folder and its JAR files.  Why not use
 		   the URL that the Text Trix class supplies?
@@ -740,23 +746,23 @@ public class TextTrix extends JFrame {
 		*/
 		/*
 		baseDir = new File(baseDir.toString().replaceAll("%20", " "));
-		File pluginsFile = new File(baseDir, "plugins");
+		File plugInsFile = new File(baseDir, "plugins");
 		*/
 
 		// plugins directory;
 		// considered nonexistent since baseDir's path in URL syntax
-		File pluginsFile = new File(strBaseDir, "plugins");
-		String pluginsPath = pluginsFile.getPath();
+		File plugInsFile = new File(strBaseDir, "plugins");
+		String plugInsPath = plugInsFile.getPath();
 
 		// directory path given as URL; need to parse into normal syntax
 		String protocol = "file:";
-		int pathStart = pluginsPath.indexOf(protocol);
+		int pathStart = plugInsPath.indexOf(protocol);
 		// check if indeed given as URL;
 		// if so, delete protocol and any preceding info
 		if (pathStart != -1)
-			pluginsPath = pluginsPath.substring(pathStart + protocol.length());
-		// pluginsPath now in normal syntax
-		pluginsFile = new File(pluginsPath); // the actual file
+			plugInsPath = plugInsPath.substring(pathStart + protocol.length());
+		// plugInsPath now in normal syntax
+		plugInsFile = new File(plugInsPath); // the actual file
 
 		/* A possible workaround for an apparent JRE v.1.4 bug that
 		   fails to open files with spaces in their paths.
@@ -766,24 +772,38 @@ public class TextTrix extends JFrame {
 		   "PROGRA~1", which some systems might map to the intended file.
 		*/
 		/*
-		if (!pluginsFile.exists()) {
-		    String seg = "";
-		    StringTokenizer tok = new StringTokenizer(pluginsPath, "/\\");
-		    StringBuffer buf = new StringBuffer(pluginsPath.length());
-		    for (int i = 0; tok.hasMoreTokens(); i++) {
+		if (!plugInsFile.exists()) {
+			String seg = "";
+			StringTokenizer tok = new StringTokenizer(plugInsPath, "/\\");
+			StringBuffer buf = new StringBuffer(plugInsPath.length());
+			for (int i = 0; tok.hasMoreTokens(); i++) {
 			seg = tok.nextToken();
 			if (seg.length() > 8) 
-			    seg = seg.substring(0, 6).toUpperCase() + "~1";
+				seg = seg.substring(0, 6).toUpperCase() + "~1";
 			buf.append(File.separator + seg);
-		    }
-		    pluginsPath = buf.toString();
-		    pluginsFile = new File(pluginsPath); // the actual file
-		    //	    System.out.println(pluginsPath);
+			}
+			plugInsPath = buf.toString();
+			plugInsFile = new File(plugInsPath); // the actual file
+			//	    System.out.println(plugInsPath);
 		}
 		*/
+		return plugInsFile;
+	}
+
+
+	/** Loads and set up the plugins.
+	Retrieves them from the "plugins" directory, located in the same
+	directory as the executable JAR for TextTrix.class or the 
+	"com" directory in the "com/textflex/texttrix" sequence holding
+	TextTrix.class.
+	TODO: also search the user's home directory or user determined
+	locations, such as ones a user specifies via a preferences panel.
+	*/
+	public void setupPlugins() {
+		File plugInsFile = getPlugInsFile();
 
 		// load the plugins and create actions for them
-		plugIns = LibTTx.loadPlugIns(pluginsFile);
+		plugIns = LibTTx.loadPlugIns(plugInsFile);
 		if (plugIns != null) {
 			for (int i = 0; i < plugIns.length; i++) {
 				makePlugInAction(plugIns[i]);
@@ -2252,6 +2272,8 @@ public class TextTrix extends JFrame {
 					Action prefsAction =
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
+							refreshPlugIns();
+							getPrefs().updatePlugInsPanel(getPlugInsNames());
 							getPrefs().show();
 						}
 					};
