@@ -62,9 +62,9 @@ public class TextTrix extends JFrame {
 	private static JCheckBoxMenuItem autoIndent 
 		= new JCheckBoxMenuItem("Auto-indent");
 	// most recently path opened to
-	private static String openPath = "";
+	private static String openDir = "";
 	// most recently path saved to
-//	private static String savePath = "";
+	private static String saveDir = "";
 	// for giving each TextPad a unique name
 	private static int fileIndex = 0;
 	// find dialog
@@ -157,14 +157,17 @@ public class TextTrix extends JFrame {
 		Action saveAction = new AbstractAction("Save", makeIcon("images/saveicon-16x16.png")) {
 			public void actionPerformed(ActionEvent evt) {
 				// can't use tabbedPane.getSelectedComponent() b/c returns JScrollPane
-				TextPad t = (TextPad)textAreas
-					.get(tabbedPane.getSelectedIndex());
-				// save directly to file if already created one
-				if (t.fileExists())
-					saveFile(t.getPath());
-				// otherwise, request filename for new file
-				else
-					fileSaveDialog(TextTrix.this);
+				int tabIndex = tabbedPane.getSelectedIndex();
+				TextPad t = null;
+				if (tabIndex != -1) {
+					t = (TextPad)textAreas.get(tabIndex);
+					// save directly to file if already created one
+					if (t.fileExists())
+						saveFile(t.getPath());
+					// otherwise, request filename for new file
+					else
+						fileSaveDialog(TextTrix.this);
+				}
 			}
 		};
 		setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
@@ -512,17 +515,16 @@ public class TextTrix extends JFrame {
 	/**Gets the last path for opening a file.
 	 * @return most recent path for opening a file
 	 */
-	public static String getOpenPath() {
-		return openPath;
+	public static String getOpenDir() {
+		return openDir;
 	}
 
 	/**Gets the last path for saving a file.
 	 * @return most recent path for saving a file
-	 *
-	public static String getSavePath() {
-		return savePath;
+	 */
+	public static String getSaveDir() {
+		return saveDir;
 	}
-	*/
 
 	/**Gets the currently selected <code>TextPad</code>
 	 * @return <code>TextPad</code> whose tab is currently selected
@@ -544,18 +546,17 @@ public class TextTrix extends JFrame {
 	 * to open a file.
 	 * @param anOpenPath path to set as last opened location
 	 */
-	public static void setOpenPath(String anOpenPath) {
-		openPath = anOpenPath;
+	public static void setOpenDir(String anOpenDir) {
+		openDir = anOpenDir;
 	}
 
 	/**Sets the given path as the most recently one used
 	 * to save a file.
-	 * @param aSavePath path to set as last saved location.
-	 *
-	public static void g(String aSavePath) {
-		savePath = aSavePath;
+	 * @param aSaveDir path to set as last saved location.
+	 */
+	public static void setSaveDir (String aSaveDir) {
+		saveDir = aSaveDir;
 	}
-	*/
 
 	public static void setAutoIndent(boolean b) {
 		autoIndent.setSelected(b);
@@ -852,20 +853,25 @@ public class TextTrix extends JFrame {
 	 * @return true for a successful save, false if otherwise
 	 */
 	public static boolean saveFile(String path) {
-		try {
-			TextPad t = (TextPad)textAreas
-				.get(tabbedPane.getSelectedIndex());
-			PrintWriter out = new 
-			PrintWriter(new FileWriter(path), true);
-			out.print(t.getText());
-		    out.close();
-			t.setChanged(false);
-			t.setFile(path);
-			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-					t.getName() + "  ");
-			return true;
-		} catch(IOException exception) {
-			exception.printStackTrace();
+		TextPad t = null;
+		int tabIndex = tabbedPane.getSelectedIndex();
+		if (tabIndex != -1) {
+			try {
+				t = (TextPad)textAreas.get(tabIndex);
+				PrintWriter out = new 
+				PrintWriter(new FileWriter(path), true);
+				out.print(t.getText());
+				out.close();
+				t.setChanged(false);
+				t.setFile(path);
+				tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+						t.getName() + "  ");
+				return true;
+			} catch(IOException exception) {
+				exception.printStackTrace();
+				return false;
+			}
+		} else {
 			return false;
 		}
 	}
@@ -875,22 +881,28 @@ public class TextTrix extends JFrame {
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public static boolean fileSaveDialog(JFrame owner) {
-		TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-		if (t.fileExists()) {
-//		chooser.setCurrentDirectory(new File(t.getDir()));
-			// save to file's current location
-			chooser.setSelectedFile(new File(t.getPath()));
-		} else {
-			chooser.setCurrentDirectory(new File(""));
-		}
+		int tabIndex = tabbedPane.getSelectedIndex();
+		if (tabIndex != -1) {
+			TextPad t = (TextPad)textAreas.get(tabIndex);
+			if (t.fileExists()) {
+				chooser.setCurrentDirectory(new File(t.getDir()));
+				// save to file's current location
+				chooser.setSelectedFile(new File(t.getPath()));
+			} else {
+				chooser.setCurrentDirectory(new File(saveDir));
+//				chooser.setSelectedFile(new File(saveDir));
+			}
 
-    	int result = chooser.showSaveDialog(owner);
-    	if (result == JFileChooser.APPROVE_OPTION) {
-			String path = chooser.getSelectedFile().getPath();
-			saveFile(path);
-//			setSavePath(path);
-			return true;
-	    } else {
+    			int result = chooser.showSaveDialog(owner);
+    			if (result == JFileChooser.APPROVE_OPTION) {
+				String path = chooser.getSelectedFile().getPath();
+				saveFile(path);
+				setSaveDir(chooser.getSelectedFile().getParent());
+				return true;
+			} else {
+				return false;
+			}
+		} else {
 			return false;
 		}
 	}
@@ -916,7 +928,11 @@ public class TextTrix extends JFrame {
 				t = (TextPad)textAreas.get(tabIndex);
 			// File("") evidently brings file dialog to last path, 
 			// whether last saved or opened path
-	    		chooser.setCurrentDirectory((t != null) ? new File(t.getDir()) : new File(""));
+			String dir = openDir;
+			if (t != null && (dir = t.getDir()) == "") 
+				dir = openDir;
+	    		chooser.setCurrentDirectory(new File(dir));
+//			chooser.setSelectedFile(new File(""));
 
 		    	int result = chooser.showOpenDialog(owner);
 
@@ -946,7 +962,7 @@ public class TextTrix extends JFrame {
 							chooser.getSelectedFile().getName());
 	
 					reader.close();
-					setOpenPath(path);
+					setOpenDir(chooser.getSelectedFile().getParent());
 				} catch(IOException exception) {
 					exception.printStackTrace();
 				}
