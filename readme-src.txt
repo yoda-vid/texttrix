@@ -1,4 +1,4 @@
-readme.txt
+readme-src.txt
 
 Text Trix
 the text tinker
@@ -26,16 +26,19 @@ Instructions for compilation:
 -Compile the Java classes:
 	-Change into the Text Trix directory: "cd texttrix-x.y.z"
 	-The easiest way to compile is running the shell script: 
-	"sh pkg.sh," which works on Linux and Cygwin systems.  Be sure 
-	to change its variables to point to your desired locations.
+	Update the variables in "texttrix/pkg.sh" to point to your desired locations.
+	The default ones almost certainly will not work!  Next, run 
+	"sh texttrix/pkg.sh," which works on Linux and Cygwin systems.
 	-Without the script, first compile the main Text Trix classes:
-	"javac com/textflex/texttrix/*.java", and next
-	-compile each plugin: "cd plugins", 
-	"javac -classpath ..:[plugin folder] [plugin 
+	"cd texttrix", "javac com/textflex/texttrix/*.java", and next
+	-compile each plugin: "cd ../plugins", 
+	"javac -classpath ..:[plugin folder] [plugin /
 	folder]/com/textflex/texttrix/*.java"
--Package the plugins into uncompressed JARs: in the plugins folder, type for 
+-Package the plugins into uncompressed JARs: in the "plugins" folder, type for 
 each plugin, "cd [plugin folder]", "jar -cvf0 [plugin name, using upper case
 characters identically to that in the plugin .java file] com"
+-Create a Text Trix JAR file: in the "texttrix" folder, type "jar cvfm TextTrix.jar 
+manifest-additions.mf com"
 -See "readme.txt" for information on running Text Trix
 
 Troubleshooting:
@@ -45,7 +48,7 @@ Java version 1.4 or higher.  Next, type "javac" to check for the compiler's
 presence.  If "java" or "javac" are not in your PATH envrionment variable, 
 either add the commands' directory to PATH or type the full path for each use 
 of the command, such as "[path to the java]/java".
--Note that the script "pkg-jaj.sh" has not worked under all tested 
+-Note that the script "pkg-jaj.sh" has not yet worked under all tested 
 environments
 -See http://textflex.com/texttrix/faq.html for more details
 

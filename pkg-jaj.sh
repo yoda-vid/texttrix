@@ -43,7 +43,6 @@
 ####################
 # Change for your particular setup
 ####################
-# replace w/ "." or $PWD for current directory
 WKDIR="$HOME/src/jarajar" # Jar Ajar build script directory
 TTXDIR="$HOME/myworkspace/TextTrix/texttrix" # Text Trix build script directory
 DEST="/home/share" # Text Trix build destination

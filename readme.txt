@@ -41,7 +41,7 @@ MIME type is both supported and executes the command, "java -jar" on the file
 	"java -jar texttrix-x.y.z-jarajar-extractor.jar"
 	-After file extraction, move into the TextTrix folder: 
 	"cd texttrix-x.y.z"
-	-Start Text Trix: "java -jar TextTrix-x.y.z.jar"
+	-Start Text Trix: "java -jar TextTrix.jar"
 -See http://textflex.com/texttrix/faq.html for more details
 
 Run...away?

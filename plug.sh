@@ -9,7 +9,6 @@ BASE_DIR="$HOME/myworkspace/TextTrix" # work directory
 TTX_DIR="$BASE_DIR/texttrix"
 PLGS_DIR="$BASE_DIR/plugins"
 DIR="com/textflex/texttrix" # src package structure
-#PLUGINS=( "nonprintingchars NonPrintingChars" "extrareturnsremover ExtraReturnsRemover" "htmlreplacer HTMLReplacer" ) # the chosen plugins
 PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" # the chosen plugins
 # CYGWIN USERS: change the first argument to "javac -classpath"
 # below from "..:$plugin_dir" to "`cygpath -p -w ..:$plugin_dir`" 

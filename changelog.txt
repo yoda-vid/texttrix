@@ -12,21 +12,39 @@ plans for future ones.)
 ----v.0.3 Series: FEATure Series (FEATS)----
 --------------------------------------
 
-----v.0.3.3 (6/30/03)----
+----v.0.3.3 (7/01/03)----
 
-Ever tried to indent HTML and wished that all the lines would line up?  Programs for text creation often wrap lines back to the left margin, not to the indentation.  Even earlier Text Trix versions did that, but no longer.  The latest version sports a bolstered auto-indent function to automatically line up all the text, without adding any extra tabs or returns.
+Ever tried to indent HTML and wished that all the lines would line up?  
+Programs for text creation often wrap lines back to the left margin, not to the 
+indentation.  Earlier Text Trix versions also did, but no longer.  The latest 
+version sports a bolstered auto-indent function to automatically indent 
+wrapped lines, without adding any extra tabs or returns.
 
-The auto-indent feature works for any type of source code, not just HTML.  Similarly, the Forward/Back function works any time one edits multiple documents at once, such as code spanning several files.  Rather than hunt for the correct tab, press Ctrl-Shift-[ to shift Back to the most recently displayed text pad.  Continue to even earlier text pads, or press Ctrl-Shfit-] to shift Forward to the original pad.
+The auto-indent feature works for any type of source code, not just HTML.  
+Similarly, the Forward/Back function works whenever one edits multiple 
+documents together, such as code spanning several files.  Rather than hunt 
+for the correct tab, press Ctrl-Shift-[ to move Back to the most recently 
+displayed text pad.  Continue to even earlier text pads, or press Ctrl-Shfit-] 
+to move Forward to a later pad.
 
-Plug-ins give options.  Install only the desired plug-ins.  Select options for each plug-in.  Previous versions of Text Trix began to fulfill the first goal.  As for the second, now each plug-in can flash a window for users to choose their options.  The first "trix," or goofy, non-serious plug-in, provides a window for users to type in a message for a friend and select a time interval.  The plug-in highlights the message letter-by-letter in the current text pad.
+Plug-ins give options.  Install only the desired plug-ins.  Select preferences 
+for each plug-in.  Previous versions of Text Trix began to fulfill the first goal.  
+As for the second, now each plug-in can flash a window for users to choose 
+their options.  The first "trix," or goofy, non-serious plug-in, provides a 
+window for users to type in a message for a friend and select a time interval.  
+The plug-in highlights the message letter-by-letter in the current text pad.
 
 New features include:
--Tab sizes are more reasonable and can indent non-wrapped lines when auto-indent is on
--Forward/Back-style text pad navigation
+-Indented wrapped lines when auto-indent is on (Alt-Shift-I)
+-Forward/Back-style text pad navigation (Ctrl-Shift-]/[)
 -Plug-ins with options windows
--Statistics feature counts the characters, words, and lines in a chosen section
+-More reasonable tab sizes
+-Statistics feature counts the characters, words, and lines in the selected 
+section
 -Filenames display in the window's title bar
--Letter Pulse plug-in demonstrates the flexibility to update the text multiple times and incorporate options from a window
+-The first "trix" from "Text Trix": the Letter Pulse goofy plug-in demonstrates 
+the flexibility to update the text multiple times and incorporate options from 
+a window
 
 Bug fixes include:
 -Plug-ins load correctly in JRE v.1.4.2

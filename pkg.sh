@@ -72,8 +72,9 @@ sh $TTX_DIR/plug.sh # build the plugins
 rm -rf $PKGDIR $PKG $SRCPKGDIR $SRCPKG
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
-cp -rf $TTX_DIR/com $TTX_DIR/readme.txt $TTX_DIR/readme-src.txt $TTX_DIR/todo.txt \
-	$TTX_DIR/changelog.txt $TTX_DIR/$DIR/license.txt $PKGDIR
+cp -rf $TTX_DIR/com $TTX_DIR/readme.txt $TTX_DIR/readme-src.txt \
+	$TTX_DIR/todo.txt $TTX_DIR/changelog.txt \
+	$TTX_DIR/$DIR/license.txt $PKGDIR
 
 cd $PKGDIR
 # remove unnecessary files and directories
@@ -87,7 +88,8 @@ cp -rf $PKGDIR texttrix
 rm $PKGDIR/readme-src.txt
 mkdir $SRCPKGDIR # copy to source package
 mv texttrix $SRCPKGDIR
-cp $TTX_DIR/plug.sh $TTX_DIR/pkg.sh $TTX_DIR/pkg-jaj.sh $TTX_DIR/manifest-additions.mf \
+cp $TTX_DIR/plug.sh $TTX_DIR/pkg.sh $TTX_DIR/pkg-jaj.sh \
+	$TTX_DIR/manifest-additions.mf \
 	$SRCPKGDIR/texttrix # copy scripts to source pkg
 cp $TTX_DIR/plugins/*.jar $PKGDIR/plugins # only want jars in binary package
 cp -rf $PLGS_DIR $SRCPKGDIR/plugins
@@ -104,7 +106,9 @@ rm -rf texttrix/$DIR/*.class
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins
 rm -rf plugins/CVS plugins/*/CVS plugins/*/com/CVS plugins/*/com/textflex/CVS \
-	plugins/*/$DIR/CVS plugins/*/$DIR/*.class plugins/*/$DIR/*~
+	plugins/*/$DIR/CVS plugins/*/$DIR/*.class plugins/*/$DIR/*~ \
+	plugins/*.jar
+mv texttrix/*.txt .
 
 # zip up and move to destination
 cd $BLD_DIR
