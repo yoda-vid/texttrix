@@ -72,7 +72,7 @@ public class TextTrix extends JFrame {
     /**Constructs a new <code>TextTrix</code> frame and starting 
      * <code>TextPad</code>.
      */
-    public TextTrix() {
+    public TextTrix(String[] paths) {
 	setTitle("Text Trix");
 	// pre-set window size
 	setSize(500, 600); // TODO: adjust to user's screen size
@@ -647,6 +647,12 @@ public class TextTrix extends JFrame {
 	constraints.anchor = GridBagConstraints.CENTER;
 	add(tabbedPane, constraints, 0, 2, 1, 1, 100, 100);
 
+	if (paths != null) {
+	    for (int i = 0; i < paths.length; i++) {
+		openFile(new File(paths[i]));
+	    }
+	}
+
     }
 	
 
@@ -664,7 +670,7 @@ public class TextTrix extends JFrame {
      * @param args command-line arguments; not yet used
      */
     public static void main(String[] args) {
-	TextTrix textTrix = new TextTrix();
+	TextTrix textTrix = new TextTrix(args);
 	textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 	// make sure still goes through the exit routine if close
 	// window manually
@@ -1239,6 +1245,46 @@ public class TextTrix extends JFrame {
 	}
     }
 
+    public boolean openFile(File file) {
+	if (file.exists()) {
+	    TextPad t = getSelectedTextPad();
+	    String path = file.getPath();
+	    try {
+		BufferedReader reader = 
+		    new BufferedReader(new FileReader(path));
+		    
+		// check if tabs exist; get TextPad if true
+		/* t.getText() != null, even if have typed nothing 
+		   in it.
+		   Add tab and set its text if no tabs exist or 
+		   if current tab has tokens; set current tab's 
+		   text otherwise
+		*/
+		if (t == null || !t.isEmpty()) { 
+		    addTextArea(textAreas, tabbedPane, file);
+		    t = (TextPad)textAreas.get(tabbedPane
+					       .getSelectedIndex());
+		    read(t, reader, path);
+		} else {
+		    read(t, reader, path);
+		}
+		t.setCaretPosition(0);
+		t.setChanged(false);
+		t.setFile(path);
+		//			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+		//	      files[i].getName());
+		updateTitle(textAreas, tabbedPane);
+		reader.close();
+		setOpenDir(file.getParent());
+		return true;
+	    } catch(IOException exception) {
+		exception.printStackTrace();
+	    }
+	}
+	return false;
+    }
+
+
     /**Evokes a save dialog, with a filter for text files.
      * Sets the tabbed pane tab to the saved file name.
      * @return true if the approve button is chosen, false if otherwise
@@ -1290,10 +1336,13 @@ public class TextTrix extends JFrame {
 	}
 	
 	public void actionPerformed(ActionEvent evt) {
+	    /*
 	    TextPad t = null;
 	    int tabIndex = tabbedPane.getSelectedIndex();
 	    if (tabIndex != -1) 
 		t = (TextPad)textAreas.get(tabIndex);
+	    */
+	    TextPad t = getSelectedTextPad();
 	    // File("") evidently brings file dialog to last path, 
 	    // whether last saved or opened path
 	    String dir = openDir;
@@ -1306,37 +1355,9 @@ public class TextTrix extends JFrame {
 	    if (result == JFileChooser.APPROVE_OPTION) {
 		File[] files = chooser.getSelectedFiles();
 		for (int i = 0; i < files.length; i++) {
-		    String path = files[i].getPath();
-		    try {
-			BufferedReader reader = 
-			    new BufferedReader(new FileReader(path));
-		    
-			// check if tabs exist; get TextPad if true
-			/* t.getText() != null, even if have typed nothing 
-			   in it.
-			   Add tab and set its text if no tabs exist or 
-			   if current tab has tokens; set current tab's 
-			   text otherwise
-			*/
-			if (tabIndex == -1 || !t.isEmpty()) { 
-			    addTextArea(textAreas, tabbedPane, files[i]);
-			    t = (TextPad)textAreas.get(tabbedPane
-						       .getSelectedIndex());
-			    read(t, reader, path);
-			} else {
-			    read(t, reader, path);
-			}
-			t.setCaretPosition(0);
-			t.setChanged(false);
-			t.setFile(path);
-			//			tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-			//	      files[i].getName());
-			updateTitle(textAreas, tabbedPane);
-			reader.close();
-			setOpenDir(chooser.getSelectedFile().getParent());
-		    } catch(IOException exception) {
-			exception.printStackTrace();
-		    }
+		    //		    String path = files[i].getPath();
+		    //		    if (files[i].exists())
+		    openFile(files[i]);
 		}
 	    }
 	}
