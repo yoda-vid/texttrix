@@ -74,6 +74,8 @@ v.0.3.6
 -stop auto-save thread when close file; FIXED: removing tab stops the timer
 -refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
 -drag-n-drop files to open them in Text Trix
+-new build process
+	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
 
 ----Past Releases----
 

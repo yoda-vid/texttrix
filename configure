@@ -272,9 +272,20 @@ PKG_DIR="com/textflex/texttrix"
 srcFiles='SRC_FILES=$(wildcard $(BASE_DIR)/texttrix/$(PKG_DIR)/*.java)'
 targetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SRC_FILES))'
 
-ttxRule='texttrix: $(TARGET_FILES)'
+ttxBaseDir='$(BASE_DIR)/texttrix'
+ttxBasePkgDir="$ttxBaseDir"'/$(PKG_DIR)'
+
+ttxRule='TextTrix texttrix: TextTrix_setup $(TARGET_FILES)'
+
+ttxSetupRule='TextTrix_setup: '
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! -e texttrix/"'$(PKG_DIR) ]; then mkdir -p texttrix/$(PKG_DIR); fi'
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! -e texttrix/plugins ]; then mkdir -p texttrix/plugins; fi"
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/*.txt texttrix/"'$(PKG_DIR); fi'
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! -e texttrix/"'$(PKG_DIR)/images ]; then mkdir -p texttrix/$(PKG_DIR)/images; fi'
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/images/*.png"' texttrix/$(PKG_DIR)/images; fi'
+
+
 ttxClassRule='texttrix/$(PKG_DIR)/%.class: $(BASE_DIR)/texttrix/$(PKG_DIR)/%.java'
-ttxClassRule="$ttxClassRule""\n\t"'if [ ! -e texttrix/$(PKG_DIR) ]; then mkdir -p texttrix/$(PKG_DIR); fi'
 if [ $CYGWIN = true ]
 then
 	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.3 -sourcepath $(shell cygpath -wp $(BASE_DIR)/texttrix) -classpath $(shell cygpath -wp texttrix) $(shell cygpath -wp $?) -d $(shell cygpath -wp texttrix)'
@@ -286,6 +297,7 @@ PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
 plgTargetFiles=""
 plgRules=""
+plgSetupRules=""
 plgClassRules=""
 for plg in $PLGS
 do
@@ -300,17 +312,24 @@ do
 	
 	plgSrcpath='$(BASE_DIR)/texttrix:$(BASE_DIR)/plugins/'"$plgDir"
 	plgClasspath=texttrix:plugins/"$plgDir"
+	plgBaseDir='$(BASE_DIR)/plugins/'"$plgDir"
+	plgBasePkgDir="$plgBaseDir"'/$(PKG_DIR)'
 	
-	plgRules="$plgRules""\n$plgDir"': texttrix $('"$plgTargetFilesVar"')'"\n"
+	plgRules="$plgRules""\n$plg"": texttrix $plg"'_setup $('"$plgTargetFilesVar"')'"\n"
 	
+	plgSetupRules="$plgSetupRules""\n$plg"'_setup:'
+	plgSetupRules="$plgSetupRules""\n\tif [ ! -e plugins/$plgDir/"'$(PKG_DIR) ]; then mkdir -p plugins/'"$plgDir"'/$(PKG_DIR); fi'
+	plgSetupRules="$plgSetupRules""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$plgBasePkgDir/*.html $plgBasePkgDir/*.png plugins/$plgDir/"'$(PKG_DIR); fi'"\n"
+		
 	plgClassRules="$plgClassRules""\nplugins/$plgDir"'/$(PKG_DIR)/%.class: $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/%.java'
-	plgClassRules="$plgClassRules""\n\tif [ ! -e plugins/$plgDir/"'$(PKG_DIR) ]; then mkdir -p plugins/'"$plgDir"'/$(PKG_DIR); fi'
 	if [ $CYGWIN = true ]
 	then
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -wp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -wp '"$plgClasspath)'"' $(shell cygpath -wp $?) -d $(shell cygpath -wp plugins/'"$plgDir"')'
 	else
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath"' -classpath '"$plgSrcpath"' $? -d plugins/'"$plgDir"
 	fi
+	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; jar -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
+	plgClassRules="$plgClassRules""\n\tmv plugins/$plg/$plg.jar texttrix/plugins"
 	plgClassRules="$plgClassRules""\n"
 done
 # common macros collections
@@ -345,9 +364,12 @@ install: instal_java
 
 $ttxRule
 
+$ttxSetupRule
+
 $ttxClassRule
 
 $plgRules
+$plgSetupRules
 $plgClassRules
 
 all: texttrix $PLGS
