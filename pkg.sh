@@ -140,11 +140,6 @@ then
 fi
 cd $BLD_DIR # base of operations
 
-#############
-# Plug-in building
-echo "Compiling the Text Trix program and its plug-ins..."
-sh $TTX_DIR/plug.sh -java "$JAVA" # build the plugins
-
 ##########
 # Packaging
 
@@ -214,6 +209,9 @@ then
 	rm -rf $DEST/$PKGDIR*
 	mv $ALL $DEST
 	cd $DEST
+	echo "Packages output to $DEST"
+else
+	echo "Packages output to $BLD_DIR"
 fi
 ls -l $ALL
 #sh $WIN_MOUNT

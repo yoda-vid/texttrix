@@ -357,7 +357,6 @@ public class TextTrix extends JFrame {
 						openInitialFile(tokenizer.nextToken());
 					}
 				}
-				//System.out.println("Adding files just opened");
 
 				// make the file history menu entries and set the auto-indent check box
 				syncMenus();
@@ -439,7 +438,6 @@ public class TextTrix extends JFrame {
 		});
 		*/
 		textTrix.setTmpActivated(true);
-		//textTrix.show(); DEPRECATED as of JVM v.1.5.0
 		textTrix.setVisible(true);
 
 		/* Something apparently grabs focus after he tabbed pane ChangeListener
@@ -546,7 +544,6 @@ public class TextTrix extends JFrame {
 		applyGeneralPrefs();
 		applyShortsPrefs();
 		menuBarCreator.start();
-		//		getPrefs().setPlugInsPrefsChanged(false);
 	}
 
 	/** Applies preferences from the General tab in the preferences panel.
@@ -575,27 +572,40 @@ public class TextTrix extends JFrame {
 	 *
 	 */
 	public void applyShortsPrefs() {
-		//System.out.println("Applying shorts...");
+		// applies shortcuts according to user choice in preferences
 		if (prefs.isHybridKeybindings()) {
+			// mix of standard + Emacs-style shortcuts
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				getTextPadAt(i).hybridKeybindings();
 			}
 		} else if (prefs.isEmacsKeybindings()) {
+			// Emacs-style shortcuts
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				getTextPadAt(i).emacsKeybindings();
 			}
 		} else {
+			// standard shortcuts
 			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 				getTextPadAt(i).standardKeybindings();
 			}
 		}
 	}
-
+	
+	/**Asks the user whether to continue updating the preferences.
+	 * Updating the preferences may close some plug-in windows,
+	 * which the user may choose to avoid by canceling the update.
+	 * 
+	 * @return <code>true</code> if the user opts to continue with
+	 * the update
+	 */
 	public boolean continuePrefsUpdate() {
-
-		//		if (getPrefs().getPlugInsPrefsChanged()) {
+		// cycles through the plug-ins to check if any has a visible window;
+		// stops at the first such plug-in, queries the user, and returns
+		// the user's response
 		for (int i = 0; i < plugIns.length; i++) {
+			// checks if plug-in has open window
 			if (plugIns[i].isWindowVisible()) {
+				// found open window--will query user
 				int choice =
 					JOptionPane.showConfirmDialog(
 						getPrefs(),
@@ -603,6 +613,7 @@ public class TextTrix extends JFrame {
 						"Electricity...",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.WARNING_MESSAGE);
+				// returns user's response, exiting plug-in cycling
 				if (choice == JOptionPane.YES_OPTION) {
 					return true;
 				} else {
@@ -610,6 +621,7 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
+		// assumes true if no open plug-in window
 		return true;
 	}
 
@@ -619,24 +631,18 @@ public class TextTrix extends JFrame {
 	 * @param pl plugin from which to make an action
 	*/
 	public void makePlugInAction(final PlugIn pl) {
+		
+		// checks that user has chosen to include the plug-in
+		
 		// assumes prefs' includes is udpated
-		/*
-				String[] includes = getPrefs().getIncludePlugInsNames();
-				if (!getPrefs().getAllPlugIns()
-					&& !LibTTx.inUnsortedList(pl.getName(), includes))
-					return;
-		*/
 		String[] includes = getPrefs().getIncludePlugInsList();
-		/*
-				for (int i = 0; i < includes.length; i++) {
-					System.out.println("includes[" + i + "]: " + includes[i]);
-				}
-		*/
+		// exits if plug-in ignored
 		if (!getPrefs().getAllPlugIns()
 			&& !LibTTx.inUnsortedList(pl.getPath(), includes)) {
-			//			System.out.println(pl.getPath());
 			return;
 		}
+		
+		// retrieves the plug-in information
 		String name = pl.getName(); // plugin name
 		String category = pl.getCategory();
 		// plugin category, for menu adding
@@ -655,34 +661,19 @@ public class TextTrix extends JFrame {
 		};
 		// register the listener so the plug in knows to fire it
 		pl.addPlugInListener(listener);
-
+		
+		// sets up a plug-in window for PlugInWindow objects
 		if (pl instanceof PlugInWindow) {
 			WindowAdapter winAdapter = new WindowAdapter() {
 				public void windowActivated(WindowEvent e) {
 					if (!prefs.getActivateWindowsTogether()) {
 					} else if (pl.isTmpActivated()) {
-						/*
-						//						pl.setTmpActivated(false);
-												Thread runner = new Thread() {
-													public void run() {
-														try {
-						//									System.out.println("or here");
-															Thread.sleep(100);
-															pl.setTmpActivated(false);
-														} catch(InterruptedException e) {
-														}
-													}
-												};
-												runner.start();
-						*/
 					} else {
-						//						System.out.println("here");
 						focusAllWindows(pl);
 					}
 				}
 			};
 			pl.setWindowAdapter(winAdapter);
-			//			System.out.println(pl.getName());
 			pl.addWindowAdapter();
 
 			// restore window size and location
@@ -777,7 +768,6 @@ public class TextTrix extends JFrame {
 			// the action undoable
 			int start = t.getSelectionStart();
 			int end = t.getSelectionEnd(); // at the first unselected character
-			//System.out.println("selectionStart: " + start + ", selectionEnd: " + end);
 			PlugInOutcome outcome = null;
 			try {
 				// determines whether a region is selected or not;
@@ -856,21 +846,6 @@ public class TextTrix extends JFrame {
 			t.setCaretPosition(baseline + start);
 		}
 	}
-
-	/*
-	public void activatePlugInWindow(final PlugIn pl) {
-		try {
-			EventQueue.invokeAndWait(new Runnable() {
-				public void run() {
-					pl.activateWindow();
-				} 
-			});
-		} catch(InterruptedException e) {
-		} catch(java.lang.reflect.InvocationTargetException e) {
-		}
-		
-	}
-	*/
 
 	public void focusAllWindows(PlugIn pl) {
 		//		if (pl.isActivated()) return;
@@ -1064,7 +1039,7 @@ public class TextTrix extends JFrame {
 	}
 
 	/** Gets the <code>plugins</code> folder file.
-	 * TODO: Add preferences mechanism to specify alternative or additional
+	 * TODO: Add preferences option to specify alternative or additional
 	 * <code>plugins</code> folder location, such as a permanent storage place
 	 * to reuse plug-ins after installing a new version of Text Trix.
 	 * @return <code>plugins</code> folder
@@ -1380,46 +1355,6 @@ public class TextTrix extends JFrame {
 		return file;
 	}
 
-	/** Displays a read-only file in a <code>Text Pad</code>.  
-	Assumes the file exists and can be read as text.
-	TODO: May change name to <code>readDocumentation</code> for 
-	consistency with <code>readText</code>.
-	@param path read-only text file's path.  Can also display
-	non-read-only text files, but can't edit them.
-	@return true if the file displays, false if otherwise
-	 *
-	public boolean displayFile(String path) {
-		InputStream in = null;
-		BufferedReader reader = null;
-		try {
-			// uses getResourceAsStream to ensure future usability as an applet
-			in = TextTrix.class.getResourceAsStream(path);
-			// TODO: notify user if file doesn't exist
-			if (in == null)
-				return false;
-			reader = new BufferedReader(new InputStreamReader(in));
-			String text = readText(reader); // retrieve the text
-			addTextArea(textAreas, tabbedPane, new File(path));
-			TextPad t = getSelectedTextPad();
-			t.setEditable(false); // so appropriate for read-only
-			t.setText(text);
-			t.setChanged(false);
-			updateTabTitle(textAreas, tabbedPane);
-			t.setCaretPosition(0);
-			return true;
-		} finally { // stream closure operations
-			try {
-				if (reader != null)
-					reader.close();
-				if (in != null)
-					in.close();
-			} catch (IOException e) {
-				return false;
-			}
-		}
-	}
-	*/
-
 	/**Exits <code>TextTrix</code> by closing each tab individually,
 	 * checking for unsaved text areas in the meantime.
 	 */
@@ -1549,9 +1484,10 @@ public class TextTrix extends JFrame {
 		return successfulClose;
 	}
 
-	/**Read in text from a file and return the text as a string.
-	 * Differs from <code>displayFile(String path)</code> because
-	 * allows editing.
+	/**Reads in text from a file and return the text as a string.
+	 * Uses <code>Class.getResourcesAsStream</code> so can read from
+	 * JAR files; the <code>path</code> is relative to the given class.
+	 * 
 	 * @param path text file stream
 	 * @return text from file
 	 */
@@ -1561,7 +1497,6 @@ public class TextTrix extends JFrame {
 		BufferedReader reader = null;
 		try {
 			in = TextTrix.class.getResourceAsStream(path);
-			// TODO: notify user if file doesn't exist
 			if (in == null)
 				return "";
 			reader = new BufferedReader(new InputStreamReader(in));
@@ -1584,26 +1519,6 @@ public class TextTrix extends JFrame {
 		}
 		return text;
 	}
-
-	/**Read in text from a file and return the text as a string.
-	 * Differs from <code>displayFile(String)</code> because
-	 * allows editing.
-	 * @param reader text file stream
-	 * @return text from file
-	 *
-	public String readText(BufferedReader reader) {
-		String text = "";
-		String line;
-		try {
-			while ((line = reader.readLine()) != null)
-				text = text + line + "\n";
-		} catch (IOException exception) {
-			exception.printStackTrace();
-		}
-		// no stream closure operations b/c assume calling function takes care of them
-		return text;
-	}
-	*/
 
 	/**Creates a new <code>TextPad</code> object, a text area 
 	 * for writing, and gives it a new tab.  Can call for
@@ -1877,26 +1792,28 @@ public class TextTrix extends JFrame {
 		String path = file.getPath();
 		// ensures that the file exists and is not a directory
 		if (file.canRead() || resource) { // readable file
-			//			System.out.println("I'm here");
 			TextPad t = getSelectedTextPad();
 			BufferedReader reader = null;
 			try {
 				if (resource) {
-					reader =
-						new BufferedReader(
-							new InputStreamReader(
-								TextTrix.class.getResourceAsStream(path)));
+					InputStream in = TextTrix.class.getResourceAsStream(path);
+					if (in != null) {
+						reader = new BufferedReader(new InputStreamReader(in));
+					} else {
+						return false;
+					}
 				} else {
+					// assumes can read file b/c of earler if condition
 					reader = new BufferedReader(new FileReader(path));
 				}
 
 				// check if tabs exist; get TextPad if true
-				/* t.getText() != null, even if have typed nothing in it. Add tab and set its text 
-				 * if no tabs exist or if current tab has tokens; set current tab's text otherwise.
+				/* t.getText() != null, even if have typed nothing in it. 
+				 * Add tab and set its text if no tabs exist or if current tab 
+				 * has tokens; set current tab's text otherwise.
 				*/
 				if (t == null || !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
-					//					t = (TextPad) textAreas.get(tabbedPane.getSelectedIndex());
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				} else { // open file in current, empty pad
@@ -1924,6 +1841,13 @@ public class TextTrix extends JFrame {
 				return true;
 			} catch (IOException exception) {
 				//		exception.printStackTrace();
+				JOptionPane.showMessageDialog(
+					getThis(),
+					"Hm, I can't seem to find\n" 
+					+ file.getPath() 
+					+ "\n...really sorry 'bout that.",
+					"Sorry, but I couldn't find that",
+					JOptionPane.INFORMATION_MESSAGE);
 				return false;
 			} finally {
 				try {
@@ -2349,14 +2273,11 @@ public class TextTrix extends JFrame {
 	 * @see #getSavePath(TextPad, JFrame)
 	 */
 	public void startTextPadAutoSaveTimer(TextPad pad) {
-		// TextPads store the timer as a Thread object since the timer's
-		// class is private
+		// retrieves stored timer in given TextPad
 		StoppableThread timer = pad.getAutoSaveTimer();
-		//		TextPadAutoSaveTimer textTimer = null;
 		// creates a new timer if it doesn't exist, the case when auto-save 
 		// hasn't started, or stopTextPadAutoSaveTimer has stopped it;
 		// if try to restart, get ThreadStateException for some reason
-		// TODO: find out how to restart thread
 
 		if (timer == null) {
 			pad.setAutoSaveTimer(timer = new TextPadAutoSaveTimer(pad));
@@ -2364,13 +2285,6 @@ public class TextTrix extends JFrame {
 		} else if (timer.isStopped()) {
 			timer.start();
 		}
-
-		/* else if (timer instanceof TextPadAutoSaveTimer 
-					&& !(textTimer = (TextPadAutoSaveTimer) timer).isAlive()) {//.isStopped()) {
-					// only restarts if stopped; otherwise would continually
-					// call the timer to start when it is already running
-					textTimer.start();
-				}*/
 
 	}
 
@@ -2441,6 +2355,18 @@ public class TextTrix extends JFrame {
 		//		System.out.println("percentage: " + percentage);
 		statusBar.setText(
 			lineNum + ", " + totLines + " " + "(" + percentage + "%)");
+	}
+	
+	private void displayMissingResourceDialog(String path) {
+		JOptionPane.showMessageDialog(
+			getThis(),
+			"Hm, I can't seem to find \"" + path + "\""
+			+ "\n...really sorry 'bout that.  You might find it at"
+			+ "\nhttp://textflex.com/texttrix, and in the meantime,"
+			+ "\nwe invite you to drop us a line so that we can "
+			+ "\ninclude the file in the next release.  Thanks!",
+			"Really sorry, but I couldn't find that",
+			JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**Evokes a open file dialog, from which the user can
@@ -2725,15 +2651,9 @@ public class TextTrix extends JFrame {
 		 * disables the auto-save function until the next save.
 		 */
 		public void run() {
-			// TODO: need interrupt check methods?  May only need to 
-			// stop by destroying timer
 			interrupted(); // clears any interrupt during a previous run
-			//			stopped = false;
-			//			while (getPrefs().getAutoSave() && !interrupted()) {
 			try {
-//				System.out.println("Waiting to save...");
 				sleep(getPrefs().getAutoSaveInterval() * 60000);
-//				System.out.println("...saving...");
 				// don't need getPrefs().getAutoSave() && b/c only start
 				// timer if auto-save pref set, and interrupt already called
 				// if unset while timer running
@@ -2764,7 +2684,6 @@ public class TextTrix extends JFrame {
 										JOptionPane.YES_NO_OPTION,
 										JOptionPane.QUESTION_MESSAGE);
 								if (choice == JOptionPane.NO_OPTION) {
-									//							stopped = true;
 									return;
 								}
 							}
@@ -2772,7 +2691,6 @@ public class TextTrix extends JFrame {
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
 								saveFile(textPad);
-//								System.out.println("now saved!");
 							} else {
 								// asks users whether they would like to supply a file 
 								// path rather than diving immediately and cryptically
@@ -2793,13 +2711,11 @@ public class TextTrix extends JFrame {
 										JOptionPane.QUESTION_MESSAGE);
 								// exit immediately if users cancel the save
 								if (choice == JOptionPane.NO_OPTION) {
-									//							stopped = true;
 									return;
 								}
 								// solicits users for a file name;
 								// main prgm as dialog owner
 								fileSaveDialog(textPad, getThis());
-//								System.out.println("now saved!");
 							}
 						}
 					});
@@ -3193,7 +3109,8 @@ public class TextTrix extends JFrame {
 					editMenu.add(redoAction);
 
 					// Begin Cut, Copy, Paste entries;
-					// create here instead of within TextPad so can use as menu entries
+					// create here instead of within TextPad so can use as 
+					// menu entries
 					editMenu.addSeparator();
 
 					// cut
@@ -3458,7 +3375,15 @@ public class TextTrix extends JFrame {
 							"About...",
 							LibTTx.makeIcon("images/minicon-16x16.png")) {
 						public void actionPerformed(ActionEvent evt) {
-							String text = readText("about.txt");
+							String path = "about.txt";
+							String text = readText(path);
+							if (text == "") {
+								text = "Text Trix"
+									+ "\nthe text tinker"
+									+ "\nCopyright (c) 2002-4, Text Flex"
+									+ "\nhttp://textflex.com/texttrix";
+								displayMissingResourceDialog(path);
+							}
 							String iconPath = "images/texttrixsignature.png";
 							JOptionPane.showMessageDialog(
 								getThis(),
@@ -3471,48 +3396,31 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(aboutAction, "About...", 'A');
 					helpMenu.add(aboutAction);
 
-					// TODO: add dialog to point to web doc files if local ones missing
-
 					// shortcuts description; opens new tab;
 					// reads from "shortcuts.txt" in same dir as this class
 					Action shortcutsAction = new AbstractAction("Shortcuts") {
 						public void actionPerformed(ActionEvent evt) {
 							String path = "shortcuts.txt";
-							//displayFile(path);
 							// ArrayIndexOutOfBoundsException while opening file from
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642) 
-							openFile(new File(path), false, true);
+							if (!openFile(new File(path), false, true)) {
+								displayMissingResourceDialog(path);
+							}
 						}
 					};
 					LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 					helpMenu.add(shortcutsAction);
-
-					/*
-					// features descriptions; opens new tab;
-					// reads from "features.txt" in same dir as this class
-					Action featuresAction =
-						new AbstractAction("Features descriptions") {
-						public void actionPerformed(ActionEvent evt) {
-							String path = "features.txt";
-							displayFile(path);
-						}
-					};
-					LibTTx.setAction(
-						featuresAction,
-						"Features descriptions",
-						'F');
-					helpMenu.add(featuresAction);
-					*/
 
 					// license; opens new tab;
 					// reads from "license.txt" in same directory as this class
 					Action licenseAction = new AbstractAction("License") {
 						public void actionPerformed(ActionEvent evt) {
 							String path = "license.txt";
-							//displayFile(path);
 							// ArrayIndexOutOfBoundsException while opening file from
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642) 
-							openFile(new File(path), false, true);
+							if (!openFile(new File(path), false, true)) {
+								displayMissingResourceDialog(path);
+							}
 						}
 					};
 					LibTTx.setAction(licenseAction, "License", 'L');

@@ -38,11 +38,11 @@
 # Text Trix Plug-In Packager
 
 HELP="
-Compiles Text Trix plug-ins and the Text Trix code, which the plug-ins
-extend.
+Builds the Text Trix program and its packages.
 
 Syntax:
-	plug.sh [ --java java-compiler-binaries-path ] [ --help ]
+	build.sh [ --java java-compiler-binaries-path ] [ --plug ]
+	[ --pkg ] [ --help ]
 (\"sh \" might need to precede the command on the same line, in case
 the file pkg.sh does not have executable permissions.)
 
@@ -53,13 +53,18 @@ Parameters:
 	to specify the path, which would override any command-line 
 	specification.
 	
+	--plug: Compiles and packages the plug-ins after compiling the
+	Text Trix program.
+	
+	--pkg: Creates the Text Trix binary and source packages.
+	
 	--help: Lends a hand by displaying yours truly.
 	
 Copyright:
-	Copyright (c) 2003-4 Text Flex
+	Copyright (c) 2004 Text Flex
 
 Last updated:
-	2004-05-28
+	2004-05-29
 "
 
 #####################
@@ -75,15 +80,18 @@ JAVA="" # compiler location
 
 SYSTEM=`uname -s`
 CYGWIN="false"
+PLUG="false"
+PKG="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
 fi
 
+echo "Set to compile the Text Trix program"
 READ_PARAMETER=0
 for arg in "$@"
 do
-	# echo "arg: $arg"
+	# checks whether to read the option following an argument
 	if [ $READ_PARAMETER -eq 1 ]
 	then
 		if [ "x$JAVA" = "x" ]
@@ -92,13 +100,24 @@ do
 		fi
 		READ_PARAMETER=0
 	fi
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ]
+	
+	# reads arguments
+	
+	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
 		echo "$HELP"
 		exit 0
-	elif [ "x$arg" = "x--java" ]
+	elif [ "x$arg" = "x--java" ] # Java path
 	then
 		READ_PARAMETER=1
+	elif [ "x$arg" = "x--pkg" ] # create packages
+	then
+		PKG="true"
+		echo "Set to create packages"
+	elif [ "x$arg" = "x--plug" ] # create plug-ins
+	then
+		PLUG="true"
+		echo "Set to compile and create plug-in packages"
 	fi
 done
 
@@ -119,7 +138,7 @@ then
 	else
 		BASE_DIR="$PWD/$0"
 	fi
-	BASE_DIR="${BASE_DIR%/texttrix/plug.sh}" # assumes the script's name is plug.sh
+	BASE_DIR="${BASE_DIR%/texttrix/build.sh}" # assumes the script's name is plug.sh
 	#BASE_DIR="${BASE_DIR%/}"
 fi
 TTX_DIR="$BASE_DIR/texttrix" # texttrix folder within main dir
@@ -138,30 +157,21 @@ then
 else
 	"$JAVA"javac "$TTX_DIR/$DIR/"*.java
 fi
-# change to plugins directory and compile and package each plugin;
-# list the directory names and their corresponding classes in the "for" line;
-# the jars must have the same name and caps as their classes
-cd "$PLGS_DIR"
-if [ ! -d "$TTX_DIR/plugins" ]
-then
-	mkdir "$TTX_DIR/plugins"
-fi
-for plugin in $PLUGINS
-do
-	plugin_dir=`echo "$plugin" | tr "[:upper:]" "[:lower:]"`
-	# extends the PlugIn or PlugInWindow classes of the Text Trix package
-	if [ "$CYGWIN" = "true" ]
-	then
-		"$JAVA"javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" "`cygpath -p -w $plugin_dir/$DIR`"/*.java
-	else
-		"$JAVA"javac -classpath "$TTX_DIR":"$plugin_dir" "$plugin_dir/$DIR/"*.java
-	fi
-	cd "$plugin_dir"
-	"$JAVA"jar -0cvf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
-	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
-	cd ..
-done
 
-echo "Plug-ins created and stored in $PLGS_DIR"
+#############
+# Plug-in building
+if [ "$PLUG" = "true" ]
+then
+	echo "Compiling the Text Trix program and its plug-ins..."
+	sh $TTX_DIR/plug.sh -java "$JAVA" # build the plugins
+fi
+
+#############
+# Packaging
+if [ "$PKG" = "true" ]
+then
+	echo "Compiling the Text Trix program and its plug-ins..."
+	sh $TTX_DIR/pkg.sh -java "$JAVA" # build the plugins
+fi
 
 exit 0

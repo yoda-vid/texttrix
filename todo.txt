@@ -69,17 +69,18 @@ v.0.3.5
 -auto-indent fixes
 	-fix auto-indent over-indentation when running in JVM v.1.5; FIXED (#895315): the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM ver at startup ./
 	-refresh after paste; FIXED (#766257): overrides paste method to auto-indent the entire pasted region if necessary ./
--file type filters update; ADDED: added *.js and *.sh to the programming file type filter and *.js to the Web filter
 -main interface updates
 	-button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers ./
 	-fix bold file menu font; FIXED (#911283): moved file menu object creation from class variable declaration area to TextTrix constructor ./
 	-align the "About" option pane with the main window; ADDED: now opens on top of the center of the main window ./
 	-main window title should update after user closes a tab; FIXED (#962436): for some reason, tabbed pane change listener not invoked when close tab, so need to update title manually when closing tabs
+	-file type filters update; ADDED: added *.js and *.sh to the programming file type filter and *.js to the Web filter
+	-enable shift-backspace as normal backspace; FIXED (#961922): added as action in TextPad ./
+	-point user to texttrix website if missing any documentation; ADDED: missing file JOptionPane dialog ./
 -help menu items update
 	-remove "Features Descriptions" menu item and document; FIXED (#799565): removed to focus on the plug-in tool tips, displayed dynamically for loaded plug-ins ./
 	-open help documents in blank Text Pad if active; FIXED (#799563): same mechanism to open the help documents as to open regular files, except that the mechanism renders the help documents uneditable ./
 -add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window ./
--enable shift-backspace as normal backspace; FIXED (#961922): added as action in TextPad ./
 -build scripts update
 	-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to specify path manually ./
 	-option to output help documentation; ADDED: helps docs output via "-h" command-line argument ./
