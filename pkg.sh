@@ -153,7 +153,7 @@ cd $BLD_DIR # base of operations
 echo "Packaging the files..."
 
 # remove old build packages and set up new ones
-rm -rf $PKGDIR $PKG $SRCPKGDIR $SRCPKG
+rm -rf $ALL
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf $TTX_DIR/com $TTX_DIR/readme.txt $TTX_DIR/readme-src.txt \
@@ -214,9 +214,11 @@ zip -r $SRCPKG $SRCPKGDIR
 echo ""
 if [ -d "$DEST" ]
 then
-	rm -rf $DEST/$PKGDIR*
-	mv $ALL $DEST
-	cd $DEST
+	cd "$DEST"
+	rm -rf $ALL # removes any lingering Text Trix build pkgs in dest dir
+	cd "$BLD_DIR"
+	mv $ALL "$DEST" # moves pkgs to dest
+	cd "$DEST"
 	echo "Packages output to $DEST"
 else
 	echo "Packages output to $BLD_DIR"
