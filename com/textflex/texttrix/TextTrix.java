@@ -684,6 +684,11 @@ public class TextTrix extends JFrame {
 		*/
 
 		// TODO: add additional plugins on the fly
+		// -when scanning already-filled plugIn array, simply ensure that it conforms to 
+		// the user-defined plug-in load list
+		// -move plugin-folder-location code to separate fn to also run when creating
+		// the list from which users select plug-ins to ignore or employ
+		
 		// this class's location
 		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
 		URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
@@ -1006,8 +1011,6 @@ public class TextTrix extends JFrame {
 	 * checking for unsaved text areas in the meantime.
 	 */
 	public static boolean exitTextTrix() {
-		boolean b = true;
-		int i = tabbedPane.getTabCount();
 		// closes each tab individually, using the function that checks
 		// for unsaved changes
 		String openedPaths = "";
@@ -1015,20 +1018,24 @@ public class TextTrix extends JFrame {
 		//if (i <= 0 && reopenTabs) {
 		getPrefs().storeReopenTabsList("");
 		//}
-		while (i > 0 && b) {
+		//int i = 0;
+		boolean b = true;
+		int totTabs = tabbedPane.getTabCount();
+		while (totTabs > 0 && b) {
 			if (reopenTabs) {
-				if (getSelectedTextPad().fileExists()) {
+				TextPad t = getTextPadAt(0);
+				if (t.fileExists()) {
 					if (!openedPaths.equals("")) {
 						openedPaths =
-							openedPaths + "," + getSelectedTextPad().getPath();
+							openedPaths + "," + t.getPath();
 					} else {
-						openedPaths = getSelectedTextPad().getPath();
+						openedPaths = t.getPath();
 					}
 				}
 				getPrefs().storeReopenTabsList(openedPaths);
 			}
-			b = closeTextArea(i - 1, textAreas, tabbedPane);
-			i = tabbedPane.getTabCount();
+			b = closeTextArea(0, textAreas, tabbedPane);
+			totTabs = tabbedPane.getTabCount();
 		}
 		if (b == true)
 			System.exit(0);
