@@ -97,6 +97,7 @@ public class TextTrix extends JFrame {
 
 		prefsCancelAction = new AbstractAction("No way", null) {
 			public void actionPerformed(ActionEvent evt) {
+				prefs.dispose();
 				prefs = null;
 			}
 		};
@@ -471,7 +472,7 @@ public class TextTrix extends JFrame {
 				getPrefs().show();
 			}
 		};
-		LibTTx.setAction(prefsAction, "It's your preferences", 'P');
+		LibTTx.setAction(prefsAction, "It's your preference...", 'P');
 		editMenu.add(prefsAction);
 
 		/* View menu items */
@@ -701,15 +702,14 @@ public class TextTrix extends JFrame {
 		// load files specified at start from command-line
 		if (paths != null) {
 			for (int i = 0; i < paths.length; i++) {
-				if (!openFile(new File(paths[i]))) {
-					String msg =
-						"Sorry, but "
-							+ paths[i]
-							+ " can't be read.\n"
-							+ "Is it a directory?  Does it have the right "
-							+ "permsissions for reading?";
-					System.out.println(msg);
-				}
+				openInitialFile(paths[i]);
+			}
+		}
+		if (getPrefs().getReopenTabs()) {
+			//System.out.println("Reopening tabs...");
+			StringTokenizer tokenizer = new StringTokenizer(getPrefs().getReopenTabsList(), ",");
+			while (tokenizer.hasMoreElements()) {
+				openInitialFile(tokenizer.nextToken());
 			}
 		}
 
@@ -765,6 +765,18 @@ public class TextTrix extends JFrame {
 		});
 		textTrix.show();
 		focuser();
+	}
+	
+	private void openInitialFile(String path) {
+		if (!openFile(new File(path))) {
+			String msg =
+				"Sorry, but "
+					+ path
+					+ " can't be read.\n"
+					+ "Is it a directory?  Does it have the right "
+					+ "permsissions for reading?";
+			System.out.println(msg);
+		}
 	}
 
 	/**Switches focus synchronously to the selected <code>TextPad</code>,
@@ -1365,7 +1377,22 @@ public class TextTrix extends JFrame {
 		int i = tabbedPane.getTabCount();
 		// closes each tab individually, using the function that checks
 		// for unsaved changes
+		String openedPaths = "";
+		boolean reopenTabs = getPrefs().getReopenTabs();
+		//if (i <= 0 && reopenTabs) {
+		getPrefs().storeReopenTabsList("");
+		//}
 		while (i > 0 && b) {
+			if (reopenTabs) {
+				if (getSelectedTextPad().fileExists()) {
+					if (!openedPaths.equals("")) {
+						openedPaths = openedPaths + "," + getSelectedTextPad().getPath();
+					} else {
+						openedPaths = getSelectedTextPad().getPath();
+					}
+				}
+				getPrefs().storeReopenTabsList(openedPaths);
+			}
 			b = closeTextArea(i - 1, textAreas, tabbedPane);
 			i = tabbedPane.getTabCount();
 		}
@@ -1772,7 +1799,7 @@ public class TextTrix extends JFrame {
 		int extIndex = LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
 		if (extIndex < 0 || extIndex >= path.length()) return false;
 		String ext = path.substring(extIndex);
-		System.out.println("Ext: " + ext);
+		//System.out.println("Ext: " + ext);
 		StringTokenizer tokenizer = new StringTokenizer(getPrefs().getAutoIndentExt(), " ,.");
 		String token = "";
 		while (tokenizer.hasMoreTokens()) {
