@@ -38,10 +38,8 @@
 
 package com.textflex.texttrix;
 
-//import java.lang.*;
 import java.io.*;
 import java.util.*;
-//import java.net.*;
 
 /**The text tools for <code>Text Trix</code>.
  * These tools generally manipulate text at the user's will
@@ -50,6 +48,8 @@ import java.util.*;
  * This class provides the static methods that both the graphical 
  * <code>Text Trix</code> and its command-line version, <code>Txtrx</code>, 
  * use to tweak text.
+ * @deprecated The functions in this class have been moved to either
+ * <code>LibTTx</code> or individual plug-ins.
  */
 public class Tools {
 

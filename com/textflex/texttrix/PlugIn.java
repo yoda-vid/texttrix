@@ -61,7 +61,8 @@ public abstract class PlugIn extends JComponent {
 	private String category = null; // plugin category, eg "tools"
 	private String path = null; // plugin JAR's path
 	private JarFile jar = null; // plugin's JAR
-	private EventListenerList listenerList = null; // list of listeners to notify
+	private EventListenerList listenerList = null;
+	// list of listeners to notify
 	// flag to retrieve the entire text, not just the selected region
 	private boolean alwaysEntireText = false;
 
@@ -80,7 +81,7 @@ public abstract class PlugIn extends JComponent {
 		String aDetailedDescriptionPath,
 		String aIconPath,
 		String aRollIconPath) {
-			
+
 		name = aName;
 		category = aCategory;
 		description = aDescription;
@@ -109,7 +110,7 @@ public abstract class PlugIn extends JComponent {
 
 	/** Runs the plugin on a given section of the text.
 	 * To use, must override or else the function will simply call <code>run(s)</code>.
-	 * @param s
+	 * @param s text to manipulate
 	 * @param selectionStart
 	 * @param selectionEnd
 	 * @return object containing the updated text; selection start position, or <code>-1</code>
@@ -118,13 +119,21 @@ public abstract class PlugIn extends JComponent {
 	public PlugInOutcome run(String s, int selectionStart, int selectionEnd) {
 		return run(s);
 	}
-		
+
+	/** Runs the plugin on all the given text.
+	 * 
+	 * @param s text to manipulate
+	 * @return object containing the updated text; selection start position, or <code>-1</code>
+	 * if the text should not be highlighted; and selection end position
+	 */
 	public abstract PlugInOutcome run(String s);
 
 	/** Runs the plugin over all the given text.
 	 * To use, must override or else the function will simply call <code>run(s)</code>.
 	 * @param s text to manipulate
 	 * @param caretPosition caret position
+	 * @return object containing the updated text; selection start position, or <code>-1</code>
+	 * if the text should not be highlighted; and selection end position
 	*/
 	public PlugInOutcome run(String s, int caretPosition) {
 		return run(s);
@@ -150,7 +159,7 @@ public abstract class PlugIn extends JComponent {
 			EventListener[] listeners =
 				listenerList.getListeners(PlugInListener.class);
 			for (int i = 0; i < listeners.length; i++)
-				 ((PlugInListener)listeners[i]).runPlugIn((PlugInEvent)event);
+				((PlugInListener) listeners[i]).runPlugIn((PlugInEvent) event);
 		} else {
 			super.processEvent(event);
 		}
@@ -229,10 +238,8 @@ public abstract class PlugIn extends JComponent {
 	@param iconPath icon's path
 	*/
 	public ImageIcon getImageIcon(String iconPath) {
-		/*
+		/* NON-WORKAROUND:
 		URL url = cl.getResource(path);
-		//	System.out.println(path);
-		//	System.out.println(url.toString());
 		return new ImageIcon(url);
 		*/
 		/* A bug in JRE v.1.4 prevents loading of PNG/GIF images
@@ -252,14 +259,15 @@ public abstract class PlugIn extends JComponent {
 		*/
 		byte[] bytes = null;
 		try {
+			// assume that the resource is located within the given file structure
 			iconPath = "com/textflex/texttrix/" + iconPath;
-			//	    System.out.println((new File(path)).exists());
+			// access a JAR file
 			if (jar == null)
 				jar = new JarFile(new File(path));
 			JarEntry entry = jar.getJarEntry(iconPath);
-			//	    System.out.println(entry.getName());
 			if (entry == null)
 				return null;
+			// read the file
 			InputStream in = jar.getInputStream(entry);
 			bytes = new byte[in.available()];
 			in.read(bytes);
@@ -267,10 +275,8 @@ public abstract class PlugIn extends JComponent {
 			e.printStackTrace();
 		}
 		return new ImageIcon(bytes);
-		//System.out.println("created icon: " + (imgicon != null));
 	}
-	
-	
+
 	/** Gets the default icon and stores it in <code>icon</code>
 	 * 
 	 * @param path path to the icon, relative to the plug-in's class file
@@ -305,7 +311,7 @@ public abstract class PlugIn extends JComponent {
 	 * @return the icon
 	 */
 	public abstract ImageIcon getRollIcon();
-	
+
 	/** Gets the detailed description file from the given path.
 	 * Each plug-in needs to call this function from <code>getDetailedDescription()</code>
 	 * so that the plug-in can supply its own <code>descPath</code>, which this
@@ -328,21 +334,34 @@ public abstract class PlugIn extends JComponent {
 		   into a JarFile properly loads the JAR.
 		*/
 		BufferedReader reader = null;
+		InputStreamReader in = null;
 		try {
+			// assume that the resource is located within the given file structure
 			descPath = "com/textflex/texttrix/" + descPath;
-			//	    System.out.println((new File(path)).exists());
+			// access a JAR file
 			if (jar == null)
 				jar = new JarFile(new File(path));
 			JarEntry entry = jar.getJarEntry(descPath);
 			if (entry == null)
 				return null;
-			//	    System.out.println(entry.getName());
-			InputStreamReader in =
-				new InputStreamReader(jar.getInputStream(entry));
+			// read the file
+			in = new InputStreamReader(jar.getInputStream(entry));
 			reader = new BufferedReader(in);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		/* Closing the stream within the finally block somehow still closes the stream
+		 * when it still needs to be accessed.
+		 */
+		/* finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch(IOException e) {
+			}
+		}
+		*/
 		return reader;
 	}
 
@@ -363,8 +382,12 @@ public abstract class PlugIn extends JComponent {
 		return detailedDescriptionPath;
 	}
 	
+	/** Gets the path to the plug-in.
+	 * 
+	 * @return the path
+	 */
 	public String getPath() {
 		return path;
 	}
-	
+
 }

@@ -220,7 +220,7 @@ public class Prefs extends JFrame {
 		updatePlugInsList(list);
 		createPlugInsPanel.start();
 	}
-	
+
 	private void updatePlugInsList(String[] list) {
 
 		includes = LibTTx.createArrayFromString(getIncludePlugIns());
@@ -276,29 +276,28 @@ public class Prefs extends JFrame {
 	public void storeShortsPrefs() {
 		shortsPrefs.put(
 			KEYBINDINGS,
-			(String)keybindingsCombo.getSelectedItem());
+			(String) keybindingsCombo.getSelectedItem());
 	}
-	
+
 	public void storePlugInsPrefs() {
 		plugInsPrefs.putBoolean(ALL_PLUG_INS, allPlugInsChk.isSelected());
 		plugInsPrefs.put(INCLUDE_PLUG_INS, getListAsString(includePlugInsList));
 		plugInsPrefs.put(IGNORE_PLUG_INS, getListAsString(ignorePlugInsList));
 	}
-	
+
 	public String getListAsString(JList list) {
 		String s = "";
-		DefaultListModel mdl = (DefaultListModel)list.getModel();
+		DefaultListModel mdl = (DefaultListModel) list.getModel();
 		Object[] elts = mdl.toArray();
 		for (int i = 0; i < elts.length; i++) {
 			if (i == 0) {
-				s = (String)elts[i];
+				s = (String) elts[i];
 			} else {
-				s = s + "," + (String)elts[i];
+				s = s + "," + (String) elts[i];
 			}
 		}
 		return s;
 	}
-		
 
 	/** Stores the program window size.
 	 * Size values correspond to <code>java.awt.window.getWidth()</code>
@@ -317,8 +316,8 @@ public class Prefs extends JFrame {
 	 * corner of the screen
 	 */
 	public void storeLocation(Point p) {
-		internalPrefs.putInt(PRGM_X_LOC, (int)p.getX());
-		internalPrefs.putInt(PRGM_Y_LOC, (int)p.getY());
+		internalPrefs.putInt(PRGM_X_LOC, (int) p.getX());
+		internalPrefs.putInt(PRGM_Y_LOC, (int) p.getY());
 	}
 
 	/** Stores whether the program should reopen tabs automatically.
@@ -418,32 +417,65 @@ public class Prefs extends JFrame {
 			//System.out.println("files[" + i + "]: " + files[i]);
 			if (files[i] == "") {
 				// ensure that every array element is occuped by a path
-				return (String[])LibTTx.truncateArray(files, i);
+				return (String[]) LibTTx.truncateArray(files, i);
 			}
 		}
 		return files;
 	}
 
+	/** Checks whether the the given preferences are the set of
+	 * "General" preferences, or holistic settings for Text Trix.
+	 * @param p
+	 * @return <code>true</code> if the preferences are the set of
+	 * "General" ones
+	 */
 	public boolean isGeneralPrefs(Preferences p) {
 		return p == generalPrefs;
 	}
 
+	/** Checks whether the the given preferences are the set of
+	 * Shorts preferences, or shortcut settings for Text Trix.
+	 * @param p
+	 * @return <code>true</code> if the preferences are the set of
+	 * Shorts ones
+	 */
 	public boolean isShortsPrefs(Preferences p) {
 		return p == shortsPrefs;
 	}
 
+	/** Checks whether the keybindings are set for the "Standard" shortcuts,
+	 * or those in applications on most desktop systems.
+	 * @return <code>true</code> if the keybindings are the set of
+	 * "Standard" ones
+	 */
 	public boolean isStandardKeybindings() {
 		return getKeybindings().equals(STD_KEYBINDINGS_MDL);
 	}
 
+	/** Checks whether the keybindings are set for the "Hybrid" shortcuts,
+	 * or a mesh of "Standard" shortcuts and those of Emacs single character
+	 * and line navigation, where the Emacs shortcuts take precedence.
+	 * @return <code>true</code> if the keybindings are the set of
+	 * "Hybrid" ones
+	 */
 	public boolean isHybridKeybindings() {
 		return getKeybindings().equals(HYBRID_KEYBINDINGS_MDL);
 	}
 
+	/** Checks whether the keybindings are set for the "Emacs" shortcuts,
+	 * or typical Emacs single key shortcuts layered on top of the "Hybrid" shortcuts. 
+	 * @return <code>true</code> if the keybindings are the set of
+	 * "Emacs" ones
+	 */
 	public boolean isEmacsKeybindings() {
 		return getKeybindings().equals(EMACS_KEYBINDINGS_MDL);
 	}
 
+	/** Sets the list of plug-ins to the given list to display in the plug-ins
+	 * choice box.
+	 * 
+	 * @param s array of plug-ins
+	 */
 	public void setPlugInsList(String[] s) {
 		plugInsList = s;
 	}
@@ -521,41 +553,61 @@ public class Prefs extends JFrame {
 	public String getAutoIndentExt() {
 		return generalPrefs.get(AUTO_INDENT_EXT, "");
 	}
-
+	/** Gets the stored keybindings preference.
+	 * 
+	 * @return the keybindings preference
+	 */
 	public String getKeybindings() {
 		return shortsPrefs.get(KEYBINDINGS, "");
 	}
-
+	/** Gets the preference to include all the plug-ins.
+	 * 
+	 * @return <code>true</code> if all the plug-ins should be included
+	 */
 	public boolean getAllPlugIns() {
 		return plugInsPrefs.getBoolean(ALL_PLUG_INS, true);
 	}
-
 	public String getIncludePlugIns() {
 		return plugInsPrefs.get(INCLUDE_PLUG_INS, "");
 	}
-
+	/** Gets the stored list of plug-ins to include.
+	 * 
+	 * @return the list of plug-ins to make usable in Text Trix
+	 */
 	public String[] getIncludePlugInsNames() {
 		return includes;
 	}
-
+	/** Gets the stored list of plug-ins to ignore.
+	 * The plug-ins will still be loaded, but not used.
+	 * 
+	 * @return the list of plug-ins to ignore in Text Trix
+	 */
 	public String getIgnorePlugIns() {
 		return plugInsPrefs.get(IGNORE_PLUG_INS, "");
 	}
-	
+	/*
 	public String[] getIgnorePlugInsNames() {
 		return ignores;
 	}
+	*/
 
+	/** Worker thread to create the preferences panel.
+	 * 
+	 * @author davit
+	 */
 	private class CreateGeneralPanel extends Thread {
 
+		/** Starts the thread.
+		 * 
+		 */
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
 
 		/** Makes a panel for the "General" preferences tab.
-			 * Displays options related to the program as a whole.
-			 * @return the panel
-			 */
+		 * Displays options related to the program as a whole.
+		 * @return the panel
+		 */
 		public void run() {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -652,18 +704,27 @@ public class Prefs extends JFrame {
 						0,
 						0,
 						panel);
-					//generalPanel = panel;
 					tabbedPane.setComponentAt(GENERAL_PANEL_INDEX, panel);
 				}
 			});
 		}
 	}
 
+	/** Worker thread to create the "Shorts" panel of shortcuts options.
+	 * 
+	 * @author davit
+	 */
 	private class CreateShortsPanel extends Thread {
+		/** Starts the thread.
+		 * 
+		 */
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
 
+		/** Creates the panel.
+		 * 
+		 */
 		public void run() {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -673,15 +734,18 @@ public class Prefs extends JFrame {
 					JPanel panel = new JPanel();
 					panel.setLayout(new GridBagLayout());
 
+					// Keybindings models selector
 					JLabel keybindingsLbl = new JLabel("Keybindings model");
 					String keybindingsTipTxt =
 						"<html>\'Standard\' shortcuts are the ones found on most desktops."
 							+ "<br>\'Hybrid\' refers to Emacs shortcuts for all single line and character navigation."
-							+ "<br>\'Emacs\' adds more single-key Emacs shortcuts for hard-core Emacs fans.</html>";
+							+ "<br>\'Emacs\' adds more single-key Emacs shortcuts for hard-core Emacs fans."
+							+ "<br>See <i>Help &gt; Shortcuts</i> for a table of the keybindings.</html>";
 					keybindingsLbl.setToolTipText(keybindingsTipTxt);
 					keybindingsCombo = new JComboBox(KEYBINDINGS_MDLS);
 					keybindingsCombo.setSelectedItem(getKeybindings());
 
+					// Add the components to the panel
 					LibTTx.addGridBagComponent(
 						keybindingsLbl,
 						constraints,
@@ -710,18 +774,27 @@ public class Prefs extends JFrame {
 		}
 	}
 
+	/** Worker thread to create the "PlugIns" panel of plug-in options.
+	 * 
+	 * @author davit
+	 */
 	private class CreatePlugInsPanel extends Thread {
 		JButton moveToIgnoresBtn = null;
 		JButton moveToIncludesBtn = null;
-		JLabel plugInsSelectionLbl =
-			new JLabel("Which plug-ins do you want?");
-		
+		JLabel plugInsSelectionLbl = new JLabel("Which plug-ins do you want?");
+
+		/** Starts the thread.
+		 * 
+		 */
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
 
+		/** Creates the panel.
+		 * 
+		 */
 		public void run() {
-			
+
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					JPanel panel = new JPanel();
@@ -730,14 +803,73 @@ public class Prefs extends JFrame {
 					constraints.anchor = GridBagConstraints.NORTH;
 					panel.setLayout(new GridBagLayout());
 
+					// Option to include all the plug-ins, which disables the plug-in
+					// selection components
 					String allPlugInsTxt = "Include all the plug-ins";
 					allPlugInsChk =
 						new JCheckBox(allPlugInsTxt, getAllPlugIns());
 					allPlugInsChk.addChangeListener(new ChangeListener() {
 						public void stateChanged(ChangeEvent evet) {
-							setPlugInsSelectorsEnabled(!allPlugInsChk.isSelected());
+							setPlugInsSelectorsEnabled(
+								!allPlugInsChk.isSelected());
 						}
 					});
+
+					// Plug-in selectors
+
+					// list of plug-ins to include
+					DefaultListModel includeListModel = new DefaultListModel();
+					includePlugInsList = createList(includeListModel, includes);
+					JScrollPane includeListPane =
+						new JScrollPane(includePlugInsList);
+					includeListPane.setPreferredSize(new Dimension(250, 80));
+
+					// list of plug-ins to ignore
+					DefaultListModel ignoreListModel = new DefaultListModel();
+					ignorePlugInsList = createList(ignoreListModel, ignores);
+					JScrollPane ignoreListPane =
+						new JScrollPane(ignorePlugInsList);
+					ignoreListPane.setPreferredSize(new Dimension(250, 80));
+
+					// button to ignore the selected plug-ins from the list of included plug-ins
+					String moveToIgnoresTxt = "Ignore";
+					Action moveToIgnoresAction =
+						createMoveAction(
+							includePlugInsList,
+							moveToIgnoresBtn,
+							moveToIgnoresTxt,
+							ignorePlugInsList,
+							"images/arrow-down.png");
+					moveToIgnoresBtn = new JButton(moveToIgnoresAction);
+					String moveToIgnoresTip =
+						"Move the selected plug-ins to the list of those to ignore, below";
+					moveToIgnoresBtn.setToolTipText(moveToIgnoresTip);
+					addEnabledListener(includePlugInsList, moveToIgnoresBtn);
+					moveToIgnoresBtn.setEnabled(
+						includeListModel.getSize() != 0);
+
+					// button to include the selected plug-ins from the list of ignored plug-ins
+					String moveToIncludesTxt = "Include";
+					Action moveToIncludesAction =
+						createMoveAction(
+							ignorePlugInsList,
+							moveToIncludesBtn,
+							moveToIncludesTxt,
+							includePlugInsList,
+							"images/arrow-up.png");
+					moveToIncludesBtn = new JButton(moveToIncludesAction);
+					String moveToIncludesTip =
+						"Move the selected plug-ins to the list of those to include, above";
+					moveToIncludesBtn.setToolTipText(moveToIncludesTip);
+					addEnabledListener(ignorePlugInsList, moveToIncludesBtn);
+					moveToIncludesBtn.setEnabled(
+						ignoreListModel.getSize() != 0);
+
+					// initial setting to disable the plug-in selectors if the option 
+					//to incluce all plug-ins is checked
+					setPlugInsSelectorsEnabled(!allPlugInsChk.isSelected());
+
+					// add the components to the panel
 					LibTTx.addGridBagComponent(
 						allPlugInsChk,
 						constraints,
@@ -748,48 +880,6 @@ public class Prefs extends JFrame {
 						100,
 						0,
 						panel);
-
-
-					DefaultListModel includeListModel = new DefaultListModel();
-					//JList includeList = null;
-					includePlugInsList =
-						createList(includeListModel, includes);
-					JScrollPane includeListPane =
-						new JScrollPane(includePlugInsList);
-					includeListPane.setPreferredSize(new Dimension(250, 80));
-
-					DefaultListModel ignoreListModel = new DefaultListModel();
-					ignorePlugInsList =
-						createList(ignoreListModel, ignores);
-					JScrollPane ignoreListPane =
-						new JScrollPane(ignorePlugInsList);
-					ignoreListPane.setPreferredSize(new Dimension(250, 80));
-
-					String moveToIgnoresTxt = "Blow it off";
-					Action moveToIgnoresAction =
-						createMoveAction(
-							includePlugInsList,
-							moveToIgnoresBtn,
-							moveToIgnoresTxt,
-							ignorePlugInsList);
-					moveToIgnoresBtn = new JButton(moveToIgnoresAction);
-					addEnabledListener(includePlugInsList, moveToIgnoresBtn);
-					moveToIgnoresBtn.setEnabled(includeListModel.getSize() != 0);
-
-					String moveToIncludesTxt = "I like";
-					Action moveToIncludesAction =
-						createMoveAction(
-							ignorePlugInsList,
-							moveToIncludesBtn,
-							moveToIncludesTxt,
-							includePlugInsList);
-					moveToIncludesBtn = new JButton(moveToIncludesAction);
-					addEnabledListener(ignorePlugInsList, moveToIncludesBtn);
-					moveToIncludesBtn.setEnabled(ignoreListModel.getSize() != 0);
-					//System.out.println("ignoreListModel.getSize(): " + ignoreListModel.getSize());
-					
-					setPlugInsSelectorsEnabled(!allPlugInsChk.isSelected());
-
 					LibTTx.addGridBagComponent(
 						plugInsSelectionLbl,
 						constraints,
@@ -810,7 +900,6 @@ public class Prefs extends JFrame {
 						0,
 						0,
 						panel);
-					//constraints.fill = GridBagConstraints.NONE;
 					LibTTx.addGridBagComponent(
 						moveToIgnoresBtn,
 						constraints,
@@ -818,7 +907,7 @@ public class Prefs extends JFrame {
 						3,
 						1,
 						1,
-						0,
+						100,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
@@ -828,10 +917,9 @@ public class Prefs extends JFrame {
 						3,
 						1,
 						1,
-						0,
+						100,
 						0,
 						panel);
-					//constraints.fill = GridBagConstraints.HORIZONTAL;
 					LibTTx.addGridBagComponent(
 						ignoreListPane,
 						constraints,
@@ -846,20 +934,34 @@ public class Prefs extends JFrame {
 				}
 			});
 		}
-		
+
+		/** Enables or disables the plug-ins boxes and buttons.
+		 * 
+		 * @param b <code>true</code> to enable all of the boxes and buttons,
+		 * necessary to pick individual plug-ins when the check box to include all 
+		 * plug-ins is unchecked.
+		 */
 		private void setPlugInsSelectorsEnabled(boolean b) {
 			plugInsSelectionLbl.setEnabled(b);
-				includePlugInsList.setEnabled(b);
-				ignorePlugInsList.setEnabled(b);
-				moveToIgnoresBtn.setEnabled(b);
-				moveToIncludesBtn.setEnabled(b);
-			}
+			includePlugInsList.setEnabled(b);
+			ignorePlugInsList.setEnabled(b);
+			moveToIgnoresBtn.setEnabled(b);
+			moveToIncludesBtn.setEnabled(b);
+		}
 
+		/** Creates the list of plug-ins.
+		 * 
+		 * @param listMdl display list model
+		 * @param listElts names of plug-ins to include
+		 * @return the list
+		 */
 		private JList createList(DefaultListModel listMdl, String[] listElts) {
 			String addElt = null;
-			for (int i = 0; i < listElts.length && (addElt = listElts[i]) != null; i++) {
+			for (int i = 0;
+				i < listElts.length && (addElt = listElts[i]) != null;
+				i++) {
 				listMdl.addElement(addElt);
-			}  
+			}
 			JList list = new JList(listMdl);
 			list.setSelectionMode(
 				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -868,35 +970,45 @@ public class Prefs extends JFrame {
 			return list;
 		}
 
+		/** Creates an action to move a list item from one list to another.
+		 * 
+		 * @param fromList source list
+		 * @param btn
+		 * @param txt
+		 * @param toList
+		 * @return
+		 */
 		private Action createMoveAction(
 			final JList fromList,
 			final JButton btn,
 			String txt,
-			final JList toList) {
-			Action action = new AbstractAction(txt, null) {
+			final JList toList,
+			String iconPath) {
+			Action action =
+				new AbstractAction(txt, LibTTx.makeIcon(iconPath)) {
 				public void actionPerformed(ActionEvent evt) {
 					Object[] selected = fromList.getSelectedValues();
 					DefaultListModel fromListModel =
-						(DefaultListModel)fromList.getModel();
+						(DefaultListModel) fromList.getModel();
 					for (int i = 0; i < selected.length; i++) {
 						fromListModel.removeElement(selected[i]);
 					}
 					for (int i = 0; i < selected.length; i++) {
-						((DefaultListModel)toList.getModel()).addElement(
+						((DefaultListModel) toList.getModel()).addElement(
 							selected[i]);
 					}
-					/*
-					if (fromListModel.getSize() == 0) {
-						btn.setEnabled(false);
-					}
-					*/
 				}
 			};
 			return action;
 		}
-		
+
+		/** Adds a listener to enable a button once an empty list is gains
+		 * an item.
+		 * @param list the list
+		 * @param btn the button
+		 */
 		private void addEnabledListener(JList list, final JButton btn) {
-			final DefaultListModel mdl = (DefaultListModel)list.getModel();
+			final DefaultListModel mdl = (DefaultListModel) list.getModel();
 			list.addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent evt) {
 					btn.setEnabled(mdl.getSize() != 0);
