@@ -607,20 +607,23 @@ public class Tools {
 	int n = start;
 	int end = start + 1;
 	int len = text.length();
+	//	System.out.println(text);
 	while (n < len) {
 	    // skip over non-letters/non-digits
-	    while (!Character.isLetterOrDigit(text.charAt(n)))
+	    while (n < len && !Character.isLetterOrDigit(text.charAt(n)))
 		n++;
 	    // progress to the end of a word
+	    end = n + 1;
 	    while (end < len && Character.isLetterOrDigit(text.charAt(end)))
 		end++;
 	    // compare the word with the quarry to see if they match
-	    if (end <= len && text.substring(n, end).equals(quarry)) {
+	    //	    System.out.println("n: " + n + ", end: " + end);
+	    if (end < len && text.substring(n, end).equals(quarry)) {
 		return n;
 		// continue search with next word if no match yet
 	    } else {
 		n = end;
-		end++;
+		//		end++;
 	    }
 	}
 	return -1;
@@ -704,4 +707,13 @@ public class Tools {
 	    return text;
 	}
     }
+
+    public static String findReplace(String text, String quarry, 
+				     String replacement, boolean word, 
+				     boolean all, boolean wrap, 
+				     boolean ignoreCase) {
+	return findReplace(text, quarry, replacement, 0, text.length(), word,
+			   all, wrap, ignoreCase);
+    }
+
 }
