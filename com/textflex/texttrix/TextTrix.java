@@ -95,7 +95,7 @@ public class TextTrix extends JFrame {
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
 					//respondToPrefsListener = true;
-	System.out.println("Storing the prefs...");
+	//System.out.println("Storing the prefs...");
 				getPrefs().storePrefs();
 				applyPrefs();
 				//respondToPrefsListener = false;
@@ -116,7 +116,7 @@ public class TextTrix extends JFrame {
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
 					//respondToPrefsListener = true;
-	System.out.println("Storing the prefs...");
+	//System.out.println("Storing the prefs...");
 				getPrefs().storePrefs();
 				//respondToPrefsListener = false;
 			}
@@ -1939,9 +1939,9 @@ public class TextTrix extends JFrame {
 						exitActionTxt = "Exit";
 						exitActionMnemonic = 'X';
 						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
-						selectAllActionMnemonic = 'A';
+						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
-							KeyStroke.getKeyStroke("ctrl A");
+							KeyStroke.getKeyStroke("ctrl L");
 						//} else if (prefs.isEmacsKeybindings()) { // TODO: implement Emacs-keybindings
 					} else {
 						fileMenuMnemonic = 'F';
@@ -1950,9 +1950,9 @@ public class TextTrix extends JFrame {
 						exitActionTxt = "Exit";
 						exitActionMnemonic = 'X';
 						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
-						selectAllActionMnemonic = 'L';
+						selectAllActionMnemonic = 'A';
 						selectAllActionShortcut =
-							KeyStroke.getKeyStroke("ctrl L");
+							KeyStroke.getKeyStroke("ctrl A");
 					}
 
 					if (menuBar != null) {

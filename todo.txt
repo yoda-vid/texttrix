@@ -37,6 +37,8 @@ Note: "./" is the "check-mark" symbol
 -auto-indent:
 	-refresh after paste
 	-adjust when single word spans multiple lines, including when hit enter in the middle
+-truncate filenames on tabs
+-automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
 
 ----Current Work----
 
@@ -60,6 +62,7 @@ v.0.3.4
 -fix incorrectly labeled icon shortcut keys; FIXED: removed tool tip shortcuts
 -close files from left to right; RFE: allows tab restoration to easily open files in the same order that they were at closing
 -clear default name when saving new file
+-fix StringIndexOutOfBoundsError when running most plug-ins on selected text; FIXED: TextTrix.textTinker passed in only the selected region, but the plug-ins treated it as if they received the whole text; revised PlugIn spec so that default to run(String) rather than making all run methods abstract; plug-ins w/ alwaysEntireText == true need to override run(String, int, int) to respond to selection boundaries
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./

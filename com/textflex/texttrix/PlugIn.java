@@ -304,7 +304,15 @@ public abstract class PlugIn extends JComponent {
 	 * @return the icon
 	 */
 	public abstract ImageIcon getRollIcon();
-
+	
+	/** Gets the detailed description file from the given path.
+	 * Each plug-in needs to call this function from <code>getDetailedDescription()</code>
+	 * so that the plug-in can supply its own <code>descPath</code>, which this
+	 * superclass cannot access by itself.
+	 * @param descPath the path to the plug-in's detailed description documentation
+	 * @return reader stream to the documentation file
+	 * @see #getDetailedDescription()
+	 */
 	public BufferedReader getDetailedDescription(String descPath) {
 		/*
 		  // cl is the plugin's class loader
@@ -339,7 +347,10 @@ public abstract class PlugIn extends JComponent {
 
 	/** Gets a detailed description to display as a tool tip from 
 	the plug-in's icon.
+	Abstract to ensure that the subclass passes its path into 
+	<code>getDetailedDescription(String)</code>.
 	@return reader for the path
+	@see #getDetailedDescription(String)
 	*/
 	public abstract BufferedReader getDetailedDescription();
 
