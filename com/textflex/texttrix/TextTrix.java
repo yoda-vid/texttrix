@@ -335,6 +335,7 @@ public class TextTrix extends JFrame {
 		// check exisiting files to ensure unique name
 		} while ((file = new File("NewFile" + fileIndex + ".txt")).exists());
 		// okay to return mutable file since created it anew in this fn?
+		// true--prob only unwise if accessor, which gives instance field
 		return file;
 	}
 
@@ -475,7 +476,7 @@ public class TextTrix extends JFrame {
 			
 			// 1 more than highest tab index since will add tab
 			final int i = tabbedPane.getTabCount();
-			tabbedPane.addTab(file.getName(), scrollPane);
+			tabbedPane.addTab(file.getName() + "  ", scrollPane);
 			textPad.setLineWrap(true);
 			textPad.setWrapStyleWord(true);
 			// show " *" in tab title when text changed
@@ -483,6 +484,8 @@ public class TextTrix extends JFrame {
 				public void keyTyped(KeyEvent e) {
 					if (textPad.getChanged()) {
 						String title = tabbedPane.getTitleAt(i);
+						// convert to filename; -3 b/c added 2 spaces
+						title = title.subString(0, title.length() - 3);
 						if (!title.endsWith(" *"))
 							tabbedPane.setTitleAt(i, title + " *");
 					}
