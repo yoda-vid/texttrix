@@ -245,7 +245,7 @@ public class TextPad extends JTextArea {
 		if (undoManager.canRedo())
 			undoManager.redo();
 	}
-
+	
 	/**Gets the index of the current word's first character.
 	 * @return string index of either the current word or the previous
 	 * word if only delimiters intervene between the word and
@@ -272,6 +272,7 @@ public class TextPad extends JTextArea {
 		return (newCaretPos <= 0) ? 0 : newCaretPos;
 	}
 
+
 	/**Gets the index of the next word's first character.
 	 * @return string index of the next word's beginning, past
 	 * any delimiters
@@ -297,7 +298,6 @@ public class TextPad extends JTextArea {
 
 		return newCaretPos;
 	}
-	
 	/**Fills an array with the component's possible actions.
 	 * @param txtComp <code>Java Swing</code> text component
 	 */

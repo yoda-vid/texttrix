@@ -284,7 +284,7 @@ public class TextTrix extends JFrame {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			// may need to add original text to history buffer
 			// before making the change
-		    t.setText(Practical.removeExtraHardReturns(t.getText()));
+		    t.setText(Tools.removeExtraHardReturns(t.getText()));
 		}
 	};
 	setAction(removeReturnsAction, "Remove extra hard returns", 'R');
@@ -299,7 +299,7 @@ public class TextTrix extends JFrame {
 			"View non-printing characters", makeIcon("nonprinting-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-			t.setText(Practical.showNonPrintingChars(t.getText()));
+			t.setText(Tools.showNonPrintingChars(t.getText()));
 		}
 	};
 	setAction(nonPrintingCharViewerAction, "View non-printing characters", 'V');
@@ -307,6 +307,20 @@ public class TextTrix extends JFrame {
 	JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
 	nonPrintingCharViewerButton.setBorderPainted(false);
 	setRollover(nonPrintingCharViewerButton, "nonprinting-roll-16x16.png");
+	nonPrintingCharViewerButton.setToolTipText(readText("nonPrintingButton.html"));
+
+	// HTML replacement
+	Action htmlReplacementAction = new AbstractAction(
+			"Replace HTML tags", null) {
+		public void actionPerformed(ActionEvent evt) {
+			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			t.setText(Tools.htmlReplacement(t.getText()));
+		}
+	};
+	setAction(htmlReplacementAction, "Replace HTML tags", 'H');
+	toolsMenu.add(htmlReplacementAction);
+	JButton htmlReplacementButton = toolBar.add(htmlReplacementAction);
+	htmlReplacementButton.setBorderPainted(false);
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
