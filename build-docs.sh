@@ -38,8 +38,16 @@
 # Text Trix document builder
 # Copyright (c) 2003, Text Flex
 
-WK_DIR="/home/davit/src/texttrix"
+BASE_DIR="$HOME/myworkspace/TextTrix"
+TTX_DIR="$BASE_DIR/texttrix"
 JAVA="/usr/java/j2sdk1.4.2/bin"
+API_DIR="$BASE_DIR/docs/api"
 
-cd $WK_DIR
-$JAVA/javadoc -d docs/api -link "http://java.sun.com/j2se/1.4.2/docs/api" -overview "overview.html" "com.textflex.texttrix"
+if [ ! -d "$API_DIR" ]
+then
+	echo "$API_DIR does not exist.  Please create it or set \"API_DIR\""
+	echo "in $0 to a different location."
+	exit 1
+fi
+cd $TTX_DIR
+$JAVA/javadoc -d $API_DIR -link "http://java.sun.com/j2se/1.4.2/docs/api" -overview "overview.html" "com.textflex.texttrix"

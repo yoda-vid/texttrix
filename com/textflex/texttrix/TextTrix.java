@@ -75,7 +75,6 @@ public class TextTrix extends JFrame {
 	/** Constructs a new <code>TextTrix</code> frame and with
 	<code>TextPad</code>s for each of the specified paths or at least
 	one <code>TextPad</code>.
-	<<<<<<< TextTrix.java
 	 */
 	public TextTrix(String[] paths) {
 		setTitle("Text Trix");

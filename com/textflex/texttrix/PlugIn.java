@@ -106,15 +106,15 @@ public abstract class PlugIn extends JComponent {
 
     /** Runs the plugin on a given section of the text.
 	@param s text to manipulate
-	@param x index at which to start
-	@param y first index at which to no longer work
+	@param selectionStart index of the first highlighted character
+	@param selectionEnd first index of the first unhighlighted character
     */
     public abstract PlugInOutcome run(String s, int selectionStart, 
 				      int selectionEnd) ;
 
     /** Runs the plugin over all the given text.
 	@param s text to manipulate
-	@param x caret position
+	@param caretPosition caret position
     */
     public abstract PlugInOutcome run(String s, int caretPosition);
 
@@ -174,7 +174,9 @@ public abstract class PlugIn extends JComponent {
      */
     public void setPath(String aPath) { path = aPath; }
     /** Sets the plugin's selection status.
-	@param aIgnoreSelection
+	 * @param aAlwaysEntireText if <code>true</code>, the plug-in requests
+	 * the entire body of text from the <code>TextPad</code>, even if a section
+	 * is highlighted. 
      */
     public void setAlwaysEntireText(boolean aAlwaysEntireText) { 
 	alwaysEntireText = aAlwaysEntireText; 

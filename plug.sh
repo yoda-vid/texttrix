@@ -35,6 +35,7 @@ do
 	# CYGWIN USERS: uncomment the following line, and comment the next:
 	#$JAVA/javac -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir`" $plugin_dir/$DIR/*.java
 	$JAVA/javac -classpath $TTX_DIR:$plugin_dir $plugin_dir/$DIR/*.java
+	cd $plugin_dir
 	$JAVA/jar -0cvf $plugin.jar $DIR/*.class $DIR/*.png \
 	$DIR/*.html && mv $plugin.jar $TTX_DIR/plugins 
 	cd ..
