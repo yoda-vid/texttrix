@@ -88,11 +88,8 @@ do
 	then
 		if [ "x$JAVA" = "x" ]
 		then
-			# no output b/c assuming plug.sh will be called
 			JAVA=$arg
 		fi
-		echo "Using the Java binary directory at [defaults to PATH]:"
-		echo "$JAVA"
 		READ_PARAMETER=0
 	fi
 	if [ "x$arg" = "x-help" -o "x$arg" = "x-h" ]
@@ -109,6 +106,8 @@ if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
 then
 	JAVA="$JAVA"/
 fi
+echo "Using the Java binary directory at [defaults to PATH]:"
+echo "$JAVA"
 
 # Source directories
 BASE_DIR=""

@@ -45,9 +45,8 @@ import javax.swing.text.*;
 import java.io.*;
 import javax.swing.event.*;
 
-/**The writing pad and text manipulator.
- * Consists of practical text editing tools
- * as well as trix for true text fun.
+/**The writing pad, complete with keyboard shortcuts, auto-indent
+ * functions, and text sytle changes.
  */
 public class TextPad extends JTextPane implements StateEditable {
 	private File file; // the file that the pad displays
@@ -90,6 +89,7 @@ public class TextPad extends JTextPane implements StateEditable {
 				char keyChar = event.getKeyChar();
 				if (event.isControlDown()
 					&& keyChar == KeyEvent.VK_BACK_SPACE) {
+					// TODO: may not be necessary, at least w/ JVM => v.1.4.2
 					event.consume();
 				} else if (autoIndent && keyChar == KeyEvent.VK_ENTER) {
 					autoIndent();

@@ -44,6 +44,9 @@ Note: "./" is the "check-mark" symbol
 -Java Web Start compatibility
 -option to remember which specific files used auto-indent
 -group tabs in separate tabbed panes
+-when have multiple files with same filename, add more of path to tab titles
+-enable shift-backspace as normal backspace
+-tab groupings: open sets of files at once
 
 ----Current Work----
 
