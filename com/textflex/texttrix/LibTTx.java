@@ -1,4 +1,4 @@
-/* TextTrix.java    
+/* LibTTx.java    
    Text Trix
    the text tinker
    http://textflex.com/texttrix

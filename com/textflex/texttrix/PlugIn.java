@@ -1,4 +1,4 @@
-/* TextTrix.java    
+/* PlugIn.java    
    Text Trix
    the text tinker
    http://textflex.com/texttrix
@@ -118,17 +118,16 @@ public abstract class PlugIn {
 
     public BufferedReader getDetailedDescription(String descPath) {
 	/*
-	URL url = cl.getResource(path);
-	//	URLConnection uc = url.openConnection();
-	System.out.println(url.toString());
-	//	InputStream in = cl.getResourceAsStream(path);
-	InputStreamReader in = null;
-	try {
-	    in = new InputStreamReader(url.openStream());
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
-	return new BufferedReader(in);//new InputStreamReader(in));
+	  // cl is the plugin's class loader
+	  InputStream in = cl.getResourceAsStream(path);
+	  return new BufferedReader(new InputStreamReader(in));
+	*/
+	/* Workaround for an apparent bug preventing the getResourceAsStream's
+	   URL via getResource from accessing an external JAR, despite
+	   the successful loading from the class loader.  Evidently
+	   some systems try to interpret "C:" in "file:/C:/..."
+	   as a network host.  Somehow loading a normal path representation
+	   into a JarFile properly loads the JAR.
 	*/
 	BufferedReader reader = null;
 	try {
@@ -139,7 +138,8 @@ public abstract class PlugIn {
 	    JarEntry entry = jar.getJarEntry(descPath);
 	    if (entry == null) return null;
 	    //	    System.out.println(entry.getName());
-	    InputStreamReader in = new InputStreamReader(jar.getInputStream(entry));
+	    InputStreamReader in 
+		= new InputStreamReader(jar.getInputStream(entry));
 	    reader = new BufferedReader(in);
 	} catch (IOException e) {
 	    e.printStackTrace();

@@ -1434,35 +1434,40 @@ public class TextTrix extends JFrame {
     private class FileOpenAction extends AbstractAction {
 	JFrame owner;
 	
+	/** Constructs the file open action
+	    @param aOwner the parent frame
+	    @param name the action's name
+	    @param icon the action's icon
+	*/
 	public FileOpenAction(JFrame aOwner, String name, Icon icon) {
 	    owner = aOwner;
 	    putValue(Action.NAME, name);
 	    putValue(Action.SMALL_ICON, icon);
 	}
-	
+
+	/** Displays a file open chooser when the action is invoked.
+	    Defaults to the directory from which the last file was
+	    opened or, if no files have been opened, to the user's home
+	    directory.
+	    @param evt action invocation
+	*/
 	public void actionPerformed(ActionEvent evt) {
-	    /*
-	    TextPad t = null;
-	    int tabIndex = tabbedPane.getSelectedIndex();
-	    if (tabIndex != -1) 
-		t = (TextPad)textAreas.get(tabIndex);
-	    */
 	    TextPad t = getSelectedTextPad();
 	    // File("") evidently brings file dialog to last path, 
 	    // whether last saved or opened path
 	    String dir = openDir;
 	    if (t != null && (dir = t.getDir()).equals("")) 
 		dir = openDir;
-	    //	    System.out.println("openDir: " + openDir + ", dir: " + dir);
 	    chooser.setCurrentDirectory(new File(dir));
-	    chooser.setMultiSelectionEnabled(true); // allow opening multiple files
+	    // allows one to open multiple files;
+	    // must disable for save dialog
+	    chooser.setMultiSelectionEnabled(true); 
 	    
+	    // displays the dialog and opens all files selected
 	    int result = chooser.showOpenDialog(owner);
 	    if (result == JFileChooser.APPROVE_OPTION) {
 		File[] files = chooser.getSelectedFiles();
 		for (int i = 0; i < files.length; i++) {
-		    //		    String path = files[i].getPath();
-		    //		    if (files[i].exists())
 		    openFile(files[i]);
 		}
 	    }
@@ -1474,12 +1479,21 @@ public class TextTrix extends JFrame {
     private class FileSaveAction extends AbstractAction {
 	JFrame owner;
 		
+	/** Constructs the file open action
+	    @param aOwner the parent frame
+	    @param name the action's name
+	    @param icon the action's icon
+	*/
 	public FileSaveAction(JFrame aOwner, String name, Icon icon) {
 	    owner = aOwner;
 	    putValue(Action.NAME, name);
 	    putValue(Action.SMALL_ICON, icon);
 	}
 		
+	/** Displays a file save chooser when the action is invoked.
+	    @param evt action invocation
+	    @see #fileSaveDialog(JFrame)
+	*/
 	public void actionPerformed(ActionEvent evt) {
 	    fileSaveDialog(owner);
 	}
@@ -1510,6 +1524,7 @@ public class TextTrix extends JFrame {
 	    GridBagConstraints constraints = new GridBagConstraints();
 	    constraints.fill = GridBagConstraints.HORIZONTAL;
 	    constraints.anchor = GridBagConstraints.CENTER;
+	    String msg = "";
 			
 	    // search expression input
 	    add(new JLabel("Find:"), constraints, 0, 0, 1, 1, 100, 0);
@@ -1535,31 +1550,38 @@ public class TextTrix extends JFrame {
 	    add(word = new JCheckBox("Whole word only"), 
 		constraints, 0, 2, 1, 1, 100, 0);
 	    word.setMnemonic(KeyEvent.VK_N);
-	    word.setToolTipText("Search for the expression as a separate word");
+	    msg = "Search for the expression as a separate word";
+	    word.setToolTipText(msg);
 			
 	    // wrap search through start of text if necessary
 	    add(wrap = new JCheckBox("Wrap"), constraints, 2, 2, 1, 1, 100, 0);
 	    wrap.setMnemonic(KeyEvent.VK_A);
-	    wrap.setToolTipText("Start searching from the cursor and wrap back to it");
+	    msg = "Start searching from the cursor and wrap back to it";
+	    wrap.setToolTipText(msg);
 			
 	    // replace all instances within highlighted section
 	    add(selection = new JCheckBox("Replace within selection"), 
 		constraints, 1, 2, 1, 1, 100, 0);
 	    selection.setMnemonic(KeyEvent.VK_S);
-	    selection.setToolTipText("Search and replace text within the entire highlighted section");
+	    msg = "Search and replace text within the entire "
+		+ "highlighted section";
+	    selection.setToolTipText(msg);
 			
 	    // replace all instances from cursor to end of text unless 
 	    // combined with wrap, where replace all instances in whole text
 	    add(replaceAll = new JCheckBox("Replace all"), 
 		constraints, 0, 3, 1, 1, 100, 0);
 	    replaceAll.setMnemonic(KeyEvent.VK_L);
-	    replaceAll.setToolTipText("Replace all instances of the expression");
+	    msg = "Replace all instances of the expression";
+	    replaceAll.setToolTipText(msg);
 			
 	    // ignore upper/lower case while searching
 	    add(ignoreCase = new JCheckBox("Ignore case"), 
 		constraints, 1, 3, 1, 1, 100, 0);
 	    ignoreCase.setMnemonic(KeyEvent.VK_I);
-	    ignoreCase.setToolTipText("Search for both lower and upper case versions of the expression");
+	    msg = "Search for both lower and upper case versions "
+		+ "of the expression";
+	    ignoreCase.setToolTipText(msg);
 
 	    // find action, using the appropriate options above
 	    Action findAction = new AbstractAction("Find", null) {
@@ -1568,20 +1590,20 @@ public class TextTrix extends JFrame {
 		    }
 		};
 	    setAcceleratedAction(findAction, "Find", 'F', 
-				 KeyStroke.getKeyStroke("alt F"));//KeyEvent.VK_F, 
-	    //					     InputEvent.ALT_MASK));
+				 KeyStroke.getKeyStroke("alt F"));
 	    add(new JButton(findAction), constraints, 0, 4, 1, 1, 100, 0);
 
 	    // find and replace action, using appropriate options above
-	    Action findReplaceAction = new AbstractAction("Find and Replace", null) {
+	    Action findReplaceAction 
+		= new AbstractAction("Find and Replace", null) {
 		    public void actionPerformed(ActionEvent e) {
 			findReplace();
 		    }
 		};
 	    setAcceleratedAction(findReplaceAction, "Find and replace", 'R', 
-				 KeyStroke.getKeyStroke("alt R"));//KeyEvent.VK_R,
-	    //					     InputEvent.ALT_MASK));
-	    add(new JButton(findReplaceAction), constraints, 1, 4, 1, 1, 100, 0);
+				 KeyStroke.getKeyStroke("alt R"));
+	    add(new JButton(findReplaceAction), 
+		constraints, 1, 4, 1, 1, 100, 0);
 	}
 
 		
@@ -1628,7 +1650,8 @@ public class TextTrix extends JFrame {
 		if (n != -1) {
 		    t.setCaretPosition(n);
 		    t.moveCaretPosition(n + findText.length());
-		    t.getCaret().setSelectionVisible(true); // to ensure selection visibility
+		    // to ensure selection visibility
+		    t.getCaret().setSelectionVisible(true); 
 		}
 	    }
 	}
@@ -1649,7 +1672,6 @@ public class TextTrix extends JFrame {
 		try {
 		    if (selection.isSelected()) {
 			int len = end - start;
-			//			System.out.println("start: " + start + ", end: " + end);
 			text = doc.getText(start, len);
 			text = Tools.findReplace(text, findText, replaceText,
 						 word.isSelected(), 
@@ -1658,16 +1680,6 @@ public class TextTrix extends JFrame {
 						 ignoreCase.isSelected());
 			doc.remove(start, len);
 			doc.insertString(start, text, null);
-			/*
-			  t.setUndoableText(Tools.findReplace(text, findText, 
-							replaceText,
-							start, 
-							, 
-							word.isSelected(), 
-							true, false, 
-							ignoreCase
-							.isSelected()));
-			*/
 			// if no range is chosen, works within the whole text
 		    } else {
 			text = doc.getText(0, doc.getLength());
@@ -1686,12 +1698,6 @@ public class TextTrix extends JFrame {
 			} else {
 			    t.setCaretPosition(start);
 			}
-			/*
-			t.setUndoableText(Tools.findReplace(text, findText, replaceText,
-							    t.getCaretPosition(), text.length(), 
-							    word.isSelected(), replaceAll.isSelected(), 
-							    wrap.isSelected(), ignoreCase.isSelected()));
-			*/
 		    }
 		} catch (BadLocationException e) {
 		    e.printStackTrace();
@@ -1709,7 +1715,8 @@ public class TextTrix extends JFrame {
 	 * @param e insertion event
 	 */
 	public void insertUpdate(DocumentEvent e) {
-	    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(true);
+	    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex()))
+		.setChanged(true);
 	    updateTitle(textAreas, tabbedPane);
 	}
 
@@ -1717,7 +1724,8 @@ public class TextTrix extends JFrame {
 	 * @param e removal event
 	 */
 	public void removeUpdate(DocumentEvent e) {
-	    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).setChanged(true);
+	    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex()))
+		.setChanged(true);
 	    updateTitle(textAreas, tabbedPane);
 	}
 
