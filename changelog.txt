@@ -12,23 +12,23 @@ plans for future ones.)
 ----v.0.3 Series: FEATure Series (FEATS)----
 --------------------------------------
 
-----v.0.3.4 (8/23/03)----
+----v.0.3.4 (8/26/03)----
 
-What's your preference?  Text Trix will take your order.  The text tinkering tool 
-sports a new Preferences panel for users to customize their tinkering 
-experience.  If you would like, Text Trix can provide quick access to recently 
-opened files or reopen them automatically at start-up.  Users can also choose 
-which set of shortcuts they want, including ones that shorten finger-reach and 
-speed up typing.  It's your preference.
+What's your preference?  The Text Trix writer will take your order.  The text 
+tinkering tool sports a new Preferences panel to remember how you 
+customize the writer.  If you would like, it can provide quick access to 
+recently opened files or reopen them automatically at start-up.  You can also 
+choose which set of shortcuts you want, including ones that shorten 
+finger-reach and speed up typing.  It's your preference.
 
 As the set of Text Trix plug-ins grows, people might not want to use every 
-plug-in they installed.  Now they can select which ones to ignore--or 
+plug-in they have installed.  Now they can select which ones to ignore--or 
 re-include them on the fly if desired.
 
-Text Trix continues to work toward providing an on-the-go experience.  With 
-the new file history and preferences functions, users no longer have to 
+The Text Trix writer continues to work to provide an on-the-go experience.  
+With the new file history and preferences functions, users no longer have to 
 manually reopen files or restore settings every time they start the program.  
-Those settings include features unique to Text Trix, such as the 
+Those settings include features unique to the writer, such as the 
 auto-wrap-indent for particular types of files.  They also include Text Trix 
 development, always on-the-go.
 

@@ -14,27 +14,33 @@ All rights reserved.
 Welcome to Text Trix!  We're just getting underway here.  Please try us out!
 
 System Reqs:
--Java[tm] 2 Runtime Environment (http://www.java.com/en/index.jsp) or Software Development Kit 1.4+ (http://java.sun.com/j2se/1.4.2/download.html), 
-freely available from Sun Microsystems(TM)
+-Java[tm] 2 Runtime Environment (http://www.java.com/en/index.jsp) or 
+Software Development Kit, v.1.4+ 
+(http://java.sun.com/j2se/1.4.2/download.html), 
+freely available from Sun Microsystems(TM); also available from IBM 
+(https://www6.software.ibm.com/dl/lxdk/lxdk-p), the only major kit for 
+Linux PPC systems (IBM SDK for 32-bit iSeries/pSeries)
 
 Instructions for use:
--Unzip the Text Trix[tm] package by double-clicking on the Jar Ajar[tm] self-extracting file, 
-"texttrix-x.y.z-jarajar-extractor.jar".  Follow the instructions to unpack the 
-file.
+-Unzip the Text Trix[tm] package by double-clicking on the Jar Ajar[tm] 
+self-extracting file, "texttrix-x.y.z-jarajar-extractor.jar".  Follow the 
+instructions to unpack the file.
 -Double-click on "TextTrix.jar" in the directory that you unpacked
 
 Troubleshooting:
--Ensure that the Java 2 Runtime Environment, v.1.4+, is installed.  Point your 
-browser to http://java.sun.com/getjava/index.html and click on the Download 
-banner to check.  Even if the browser does not indicate that the Environment is 
-installed, however, it may be.  To check, try opening a command prompt, 
-typing "java -version", and looking for output displaying version 1.4 or higher.  
-See http://textflex.com/texttrix/faq.html#jre for more details.
+-Ensure that the Java 2 Runtime Environment, v.1.4+, is installed.  To check, 
+point your browser to http://java.sun.com/getjava/index.html and click on 
+the Download banner to check.  Even if the browser does not indicate that 
+the Environment is installed, however, it may be.  Check by opening a 
+command prompt, typing "java -version", and looking for output displaying 
+version 1.4 or higher.  See http://textflex.com/texttrix/faq.html#jre for more 
+details.
 -For use on Windows(R) systems: check that the desktop is set to use "javaw" 
 for ".jar" programs
 -For use on Linux(R) or MacOS(R) X system: check that the application/x-jar 
-MIME type is both supported and executes the command, "java -jar" on the file
--If necessary, try unzipping and running Text Trix via the command line:
+MIME type is both supported and executes the command, "java -jar" on the 
+file
+-If necessary, try unzip and run Text Trix via the command line:
 	-Move into the folder holding "texttrix-x.y.z-jarajar-extractor.jar" 
 	by typing: "cd [folder holding the jarajar package]"
 	-Run the package and follow its instructions: 
@@ -58,3 +64,5 @@ Linux is a registered trademark of Linus Torvalds.
 Microsoft and Windows are registered trademarks of Microsoft Corporation in 
 the United States and/or other countries.
 Apple is a registered trademark of Apple Computer, Inc.
+IBM is a trademark of International Business Machines Corporation in the 
+United States, other countries, or both.
