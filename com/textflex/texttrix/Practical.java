@@ -96,9 +96,10 @@ public class Practical {
 			int nextInlineReply = 0; // inline replies on next line
 	    	int singleReturn = s.indexOf("\n", n); // next hard return occurrence
 			boolean isDoubleReturn = false; // double hard return flag
-		    int dash = -1; // next dash occurrence 
-	    	int asterisk = -1; // next asterisk occurrence
-			int tab = -1; // next tab occurence
+		    boolean isDash = false; // next dash occurrence 
+	    	boolean isAsterisk = false; // next asterisk occurrence
+			boolean isNumber = false;
+			boolean isTab = false; // next tab occurence
 	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag occurrence
 		    int endPre = s.indexOf("</pre>", n); // next cloisng pre tag occurrence
 			
@@ -115,9 +116,16 @@ public class Practical {
 					nextInlineReply = containingSeq(s, afterSingRet + inlineReply + 1,
 							searchChars, inlineReplySigns);
 				}
-				tab = s.indexOf("\t", singleReturn + 1);
-				dash = s.indexOf("-", singleReturn + 1);
-				asterisk = s.indexOf("*", singleReturn + 1);
+				int afterInlineReply = singleReturn + inlineReply + 1;
+				if (afterInlineReply < s.length()) {
+					isTab = s.startsWith("\t", afterInlineReply);
+					isDash = s.startsWith("-", afterInlineReply);
+					isAsterisk = s.startsWith("*", afterInlineReply);
+					String numbers = "1234567890";
+					isNumber = (numbers.indexOf(s.charAt(afterInlineReply)) != -1) 
+						? true : false;
+				}
+					
 			}
 			isNextLineReply = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 			
@@ -163,14 +171,9 @@ public class Practical {
 				stripped.append(s.substring(n, singleReturn) + "\n\n");
 				n = singleReturn + inlineReply + 2 + nextInlineReply; // skip over processed rets
 			// preserve separate lines for lines starting w/
-			// dashes or asterisks or spaces before them
-		    } else if (dash == singleReturn + 1 + inlineReply
-			    	   || asterisk == singleReturn + 1 + inlineReply) {
+			// dashes, asterisks, numbers, or tabs, as in lists
+		    } else if (isDash || isAsterisk || isNumber || isTab) {
 				// + 2 to pick up the dash
-				stripped.append(s.substring(n, singleReturn + 2));
-				n = singleReturn + inlineReply + 2;
-			// preserve separate lines for ones starting with tabs
-			} else if (tab == singleReturn + 1 + inlineReply) {
 				stripped.append(s.substring(n, singleReturn + 1));
 				n = singleReturn + inlineReply + 1;
 			// join the tail-end of the text

@@ -111,9 +111,11 @@ public class TextTrix extends JFrame {
 	 * Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
+	/*
 	url = TextTrix.class.getResource("openicon-16x16.png");
 	icon = new ImageIcon(url);
-	Action openAction = new FileOpenAction("Open", icon);
+	*/
+	Action openAction = new FileOpenAction("Open", makeIcon("openicon-16x16.png"));
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
 	fileMenu.add(openAction);
@@ -126,9 +128,7 @@ public class TextTrix extends JFrame {
 //						       InputEvent.CTRL_MASK));
 
 	// close file; check if saved
-	url = TextTrix.class.getResource("closeicon-16x16.png");
-	icon = new ImageIcon(url);
-	Action closeAction = new AbstractAction("Close", icon) {
+	Action closeAction = new AbstractAction("Close", makeIcon("closeicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			int i = tabbedPane.getSelectedIndex();
 			closeTextArea(i, textAreas, tabbedPane);
@@ -138,9 +138,7 @@ public class TextTrix extends JFrame {
 	fileMenu.add(closeAction);
 
 	// (ctrl-s) save file; no dialog if file already created
-	url = TextTrix.class.getResource("saveicon-16x16.png");
-	icon = new ImageIcon(url);
-	Action saveAction = new AbstractAction("Save", icon) {
+	Action saveAction = new AbstractAction("Save", makeIcon("saveicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas
 				.get(tabbedPane.getSelectedIndex());
@@ -162,9 +160,8 @@ public class TextTrix extends JFrame {
 //				InputEvent.CTRL_MASK));
 
 	// save w/ file save dialog
-	url = TextTrix.class.getResource("saveasicon-16x16.png");
-	icon = new ImageIcon(url);
-	Action saveAsAction = new FileSaveAction("Save as...", icon);
+	Action saveAsAction = new FileSaveAction("Save as...", 
+			makeIcon("saveasicon-16x16.png"));
 	setAction(saveAsAction, "Save as...", '.');
 	fileMenu.add(saveAsAction);
 
@@ -254,21 +251,11 @@ public class TextTrix extends JFrame {
 	// about Text Trix, incl copyright notice and version number
 	Action aboutAction = new AbstractAction("About...") {
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				// uses "about.txt" in same directory as this class
-				BufferedReader reader = new BufferedReader(new
-					InputStreamReader(TextTrix.class.
-						getResourceAsStream("about.txt")));
-				String about = readText(reader);
-				reader.close();
-				// displays in an message dialog
-				JOptionPane.showMessageDialog(null, about, "About Text Trix", 
-						JOptionPane.PLAIN_MESSAGE, 
-						new ImageIcon(
-							TextTrix.class.getResource("texttrixsignature.png")));
-			} catch(IOException exception) {
-				exception.printStackTrace();
-			}
+			String text = "";
+			text = readText("about.txt");
+			JOptionPane.showMessageDialog(null, text, "About Text Trix", 
+					JOptionPane.PLAIN_MESSAGE, 
+					makeIcon("texttrixsignature.png"));
 		}
 	};
 	setAction(aboutAction, "About...", 'A');
@@ -297,9 +284,8 @@ public class TextTrix extends JFrame {
 	helpMenu.add(licenseAction);
 
 	// Text Trix's first "goofy" function! (it's actually a practical one)
-	url = TextTrix.class.getResource("returnicon-16x16.png");
-	icon = new ImageIcon(url);
-	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", icon) {
+	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
+			makeIcon("returnicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
 			// may need to add original text to history buffer
@@ -394,7 +380,7 @@ public class TextTrix extends JFrame {
 	 * @param iconPath location of icon to change to
 	 */
 	public void setRollover(JButton button, String iconPath) {
-		button.setRolloverIcon(new ImageIcon(TextTrix.class.getResource(iconPath)));
+		button.setRolloverIcon(makeIcon(iconPath));
 		button.setRolloverEnabled(true);
 	}
 		
@@ -420,6 +406,11 @@ public class TextTrix extends JFrame {
 	public void setAction(Action action, String description, char mnemonic) {
 		action.putValue(Action.SHORT_DESCRIPTION, description);
 		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
+	}
+
+	public ImageIcon makeIcon(String path) {
+		URL iconURL = TextTrix.class.getResource(path);
+		return (iconURL != null) ? new ImageIcon(iconURL) : null;
 	}
 
 	/**Makes new file with next non-existent file of name format,
