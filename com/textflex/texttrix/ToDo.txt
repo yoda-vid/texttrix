@@ -1,0 +1,16 @@
+Edword ToDo
+
+;----SourceForge app----
+App desc:
+Edword gives users a text editor with practical but unusual frills.  The first special feature that emerges is the hard return remover, stripping unformatted text of inserted hard returns on each non-paragraph line.  The bane of many emails, these inserted hard returns need an accessible, intuitive utility to effect their elimination.
+
+"Unusual" is the name of the game, focusing on features that may seem too trivial to the practicing programmer but unreachable or inconvenient to the average end-user.  By combining these features in one package, Edword gives end-users one-stop convenience to a variety of text manipulation tools.
+
+SourceForge would help bring Edword to the public at large.  Special frills imply that users could add whatever fancies their hearts: SourceForge's emphasis on open source development makes this freedom feasible.
+
+Public desc:
+Edword provides one-stop access to a slew of practical text manipulation frills.  Tired of removing hard returns from unformatted emails?  Deleting by hand is tedious, but programming a solution might be impossible except to the programmer.  With Edword, the layman and programmer alike have access to this solution and more without having to hunt for separate utilities or bust out programming "if" statements.  There's no "if"'s with Edword.
+
+-check linefeed vs. carriage return
+-final token
+-sequence of 4 cases for strip
