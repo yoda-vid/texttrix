@@ -95,8 +95,8 @@ public class TextTrix extends JFrame {
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
 					//respondToPrefsListener = true;
-	//System.out.println("Storing the prefs...");
-				getPrefs().storePrefs();
+		//System.out.println("Storing the prefs...");
+	getPrefs().storePrefs();
 				applyPrefs();
 				//respondToPrefsListener = false;
 				getPrefs().dispose();
@@ -116,8 +116,8 @@ public class TextTrix extends JFrame {
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
 					//respondToPrefsListener = true;
-	//System.out.println("Storing the prefs...");
-				getPrefs().storePrefs();
+		//System.out.println("Storing the prefs...");
+	getPrefs().storePrefs();
 				//respondToPrefsListener = false;
 			}
 		};
@@ -256,7 +256,7 @@ public class TextTrix extends JFrame {
 		}
 		*/
 
-		(menuBarCreator = new MenuBarCreator()).start();
+		 (menuBarCreator = new MenuBarCreator()).start();
 		//toolBarCreator.start();
 
 		EventQueue.invokeLater(new Runnable() {
@@ -361,14 +361,13 @@ public class TextTrix extends JFrame {
 		textTrix.show();
 		focuser();
 	}
-	
+
 	public void syncMenus() {
 		if (fileHistStart != -1) {
 			fileHist.start(fileMenu);
 		}
 		setAutoIndent();
 	}
-		
 
 	/*
 	private void createToolBar() {
@@ -432,8 +431,10 @@ public class TextTrix extends JFrame {
 	}
 
 	public void applyPrefs() {
+		reloadPlugIns(); // no applyPlugInsPrefs b/c CreateMenuPanel takes care of GUI updates
 		applyGeneralPrefs();
 		applyShortsPrefs();
+		menuBarCreator.start();
 	}
 
 	public void applyGeneralPrefs() {
@@ -461,12 +462,12 @@ public class TextTrix extends JFrame {
 			}
 		}
 		//createToolBar();
-		menuBarCreator.start();
 		/*
 			}
 		});
 		*/
 	}
+	
 
 	/*
 	public void updateFileHist(JMenu menu, String file) {
@@ -483,7 +484,6 @@ public class TextTrix extends JFrame {
 		}
 	}
 	*/
-	
 
 	/** Creates a plugin action.
 	 * Allows the plugin to be invoked from a button or other action-capable
@@ -491,6 +491,9 @@ public class TextTrix extends JFrame {
 	 * @param pl plugin from which to make an action
 	*/
 	public void makePlugInAction(final PlugIn pl) {
+		// assumes prefs' includes is udpated
+		String[] includes = getPrefs().getIncludePlugInsNames();
+		if (!getPrefs().getAllPlugIns() && !LibTTx.inUnsortedList(pl.getName(), includes)) return;
 		String name = pl.getName(); // plugin name
 		String category = pl.getCategory();
 		// plugin category, for menu adding
@@ -607,9 +610,10 @@ public class TextTrix extends JFrame {
 				} else {
 					int len = end - start; // length of selected region
 					text = doc.getText(start, len); // only get the region
-					
+
 					// start and end only 
-					outcome = pl.run(text);//, start, end); // invoke the plugin
+					outcome = pl.run(text);
+					//, start, end); // invoke the plugin
 
 					// if the plug-in flags that it has not changed the text, don't even try to do so
 					if (!outcome.getNoTextChange()) {
@@ -648,21 +652,87 @@ public class TextTrix extends JFrame {
 			t.setCaretPosition(baseline + start);
 		}
 	}
-	
 
-	public boolean refreshPlugIns() {
+	public void reloadPlugIns() {
 		File file = getPlugInsFile();
-		return file.list().length == plugIns.length;
+		String[] list = LibTTx.getPlugInPaths(file);
+		if (list == null)
+			return;
+		String[] paths = getPlugInPaths();
+		PlugIn[] extraPlugs = null;
+		int extraPlugsInd = 0;
+		//System.out.println("paths[0]: " + paths[0]);
+		if (plugIns == null || plugIns.length == 0) {
+			setupPlugins();
+		} else if (paths != null) {
+			extraPlugs = new PlugIn[list.length + plugIns.length];
+			for (int i = 0; i < list.length; i++) {
+				if (!LibTTx.inUnsortedList(list[i], paths)) {
+					System.out.println("Couldn't find " + list[i]); 
+					extraPlugs[extraPlugsInd++] = LibTTx.loadPlugIn(list[i]);
+				}
+			}
+			for (int i = 0; i < plugIns.length; i++) {
+				if (LibTTx.inUnsortedList(plugIns[i].getPath(), list)) { 
+					extraPlugs[extraPlugsInd++] = plugIns[i];
+				}
+			}
+			plugIns = (PlugIn[])LibTTx.truncateArray(extraPlugs, extraPlugsInd);
+			getPrefs().updatePlugInsPanel(getPlugInNames());
+		}
 	}
-	
-	public String[] getPlugInsNames() {
+
+	public void refreshPlugIns() {
+		reloadPlugIns();
+		if (plugIns != null) {
+			for (int i = 0; i < plugIns.length; i++) {
+				makePlugInAction(plugIns[i]);
+			}
+		}
+	}
+
+	public String[] getPlugInNames() {
+		if (plugIns == null)
+			return null;
 		String[] names = new String[plugIns.length];
 		for (int i = 0; i < names.length; i++) {
 			names[i] = plugIns[i].getName();
 		}
 		return names;
 	}
-	
+
+	public String[] getPlugInPaths() {
+		if (plugIns == null)
+			return null;
+		String[] paths = new String[plugIns.length];
+		for (int i = 0; i < paths.length; i++) {
+			paths[i] = plugIns[i].getPath();
+		}
+		return paths;
+	}
+
+	/** Loads and set up the plugins.
+	Retrieves them from the "plugins" directory, located in the same
+	directory as the executable JAR for TextTrix.class or the 
+	"com" directory in the "com/textflex/texttrix" sequence holding
+	TextTrix.class.
+	TODO: also search the user's home directory or user determined
+	locations, such as ones a user specifies via a preferences panel.
+	*/
+	public void setupPlugins() {
+		File plugInsFile = getPlugInsFile(); //refreshPlugIns();
+
+		// load the plugins and create actions for them
+		plugIns = LibTTx.loadPlugIns(plugInsFile);
+		getPrefs().updatePlugInsPanel(getPlugInNames());
+		if (plugIns != null) {
+			System.out.println("Loading them all up!  plugIns.length: " + plugIns.length);
+			for (int i = 0; i < plugIns.length; i++) {
+				makePlugInAction(plugIns[i]);
+			}
+		}
+	}
+
 	private File getPlugInsFile() {
 		/* The code has a relatively elaborate mechanism to locate
 		   the plugins folder and its JAR files.  Why not use
@@ -698,7 +768,7 @@ public class TextTrix extends JFrame {
 		// the user-defined plug-in load list
 		// -move plugin-folder-location code to separate fn to also run when creating
 		// the list from which users select plug-ins to ignore or employ
-		
+
 		// this class's location
 		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
 		URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
@@ -788,27 +858,6 @@ public class TextTrix extends JFrame {
 		}
 		*/
 		return plugInsFile;
-	}
-
-
-	/** Loads and set up the plugins.
-	Retrieves them from the "plugins" directory, located in the same
-	directory as the executable JAR for TextTrix.class or the 
-	"com" directory in the "com/textflex/texttrix" sequence holding
-	TextTrix.class.
-	TODO: also search the user's home directory or user determined
-	locations, such as ones a user specifies via a preferences panel.
-	*/
-	public void setupPlugins() {
-		File plugInsFile = getPlugInsFile();
-
-		// load the plugins and create actions for them
-		plugIns = LibTTx.loadPlugIns(plugInsFile);
-		if (plugIns != null) {
-			for (int i = 0; i < plugIns.length; i++) {
-				makePlugInAction(plugIns[i]);
-			}
-		}
 	}
 
 	/**Gets the last path for opening a file.
@@ -962,7 +1011,7 @@ public class TextTrix extends JFrame {
 	}
 
 	public static void setAutoIndent() {
-		
+
 		TextPad t = getSelectedTextPad();
 		/*
 		if (t != null) {
@@ -1050,8 +1099,7 @@ public class TextTrix extends JFrame {
 				TextPad t = getTextPadAt(0);
 				if (t.fileExists()) {
 					if (!openedPaths.equals("")) {
-						openedPaths =
-							openedPaths + "," + t.getPath();
+						openedPaths = openedPaths + "," + t.getPath();
 					} else {
 						openedPaths = t.getPath();
 					}
@@ -1795,7 +1843,7 @@ public class TextTrix extends JFrame {
 						repeat = yesNoDialog(owner, msg, title);
 					}
 					fileHist.start(fileMenu);
-						setAutoIndent();
+					setAutoIndent();
 					/* Original workaround.
 					   Utilizes the fact that getSelectedFiles() returns an 
 					   array of length 0, which getSelectedFile() returns the
@@ -1935,7 +1983,7 @@ public class TextTrix extends JFrame {
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
-		
+
 		// probably shouldn't be a Thread since creates the objects that 
 		// many other methods depend on
 		public void run() {
@@ -1978,6 +2026,7 @@ public class TextTrix extends JFrame {
 					if (menuBar != null) {
 						//contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");
+						contentPane.remove(toolBar);
 						//fileHistCount = 0;
 					}
 					// make menu bar and menus
@@ -2272,8 +2321,8 @@ public class TextTrix extends JFrame {
 					Action prefsAction =
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
-							refreshPlugIns();
-							getPrefs().updatePlugInsPanel(getPlugInsNames());
+							reloadPlugIns();
+							//refreshPlugIns();
 							getPrefs().show();
 						}
 					};
@@ -2497,8 +2546,12 @@ public class TextTrix extends JFrame {
 
 					/* Trix and Tools menus */
 
-					// Load plugins; add to appropriate menu	 
-					setupPlugins();
+					// Load plugins; add to appropriate menu
+					if (plugIns == null) {
+						setupPlugins();
+					} else {
+						refreshPlugIns();
+					}
 
 					/* Place menus and other UI components */
 					// must add tool bar before set menu bar lest tool bar shortcuts 

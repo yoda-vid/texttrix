@@ -65,6 +65,85 @@ public class LibTTx {
 	public LibTTx() {
 	}
 
+	public static PlugIn loadPlugIn(String path) {
+		// loader corresponding to the given plugin's location
+		ClassLoader loader = null;
+		int nameStart = path.lastIndexOf(File.separator) + 1;
+		String plugInName = path.substring(nameStart);
+		/* Beginning with JRE v.1.4.2, the URL must be created
+		   by first making a File object from the path and then
+		   converting it to a URL.  Manually parsing "file://"
+		   to the head of the path and converting the resulting
+		   String into a URL no longer works.
+		*/
+		try {
+			URL url = new File(path).toURL();
+			//		    System.out.println(url.toString());
+			loader = new URLClassLoader(new URL[] { url });
+			//		    System.out.println(url.toString());
+		} catch (MalformedURLException e) {
+		}
+		// all plugins are in the package, com.textflex.texttrix
+		String name =
+			"com.textflex.texttrix."
+				+ plugInName.substring(
+					0,
+					plugInName.indexOf(".jar"));
+		PlugIn plugIn = (PlugIn) createObject(name, loader);
+		plugIn.setPath(path);
+		return plugIn;
+	}
+	
+	
+	public static PlugIn loadPlugIn(File plugInDir, String plugInName) {
+		// loader corresponding to the given plugin's location
+		ClassLoader loader = null;
+		String path = null;
+		/* Beginning with JRE v.1.4.2, the URL must be created
+		   by first making a File object from the path and then
+		   converting it to a URL.  Manually parsing "file://"
+		   to the head of the path and converting the resulting
+		   String into a URL no longer works.
+		*/
+		try {
+			path =
+				plugInDir.toString() + File.separator + plugInName;
+			URL url = new File(path).toURL();
+			//		    System.out.println(url.toString());
+			loader = new URLClassLoader(new URL[] { url });
+			//		    System.out.println(url.toString());
+		} catch (MalformedURLException e) {
+		}
+		// all plugins are in the package, com.textflex.texttrix
+		String name =
+			"com.textflex.texttrix."
+				+ plugInName.substring(
+					0,
+					plugInName.indexOf(".jar"));
+		PlugIn plugIn = (PlugIn) createObject(name, loader);
+		plugIn.setPath(path);
+		return plugIn;
+	}
+	
+	public static String[] getPlugInList(File plugInDir) {
+		// get a list of files ending with ".jar"
+		String endsWith = ".jar"; // only list files ending w/ team.txt
+		EndsWithFileFilter filter = new EndsWithFileFilter();
+		filter.add(endsWith);
+		String[] plugInList = plugInDir.list(filter);
+		return plugInList;
+	}
+	
+	public static String[] getPlugInPaths(File plugInDir) {
+		String[] list = getPlugInList(plugInDir);
+		for (int i = 0; i < list.length; i++) {
+			list[i] = plugInDir.toString() + File.separator + list[i];
+		}
+		return list;
+	}
+		
+		
+
 	/** Loads all the plugins from a given directory.
 	Assumes that all files ending in "<code>.jar</code>" are plugins.
 	Creates an array of plugin objects from the files.
@@ -72,11 +151,14 @@ public class LibTTx {
 	@return array of plugins
 	*/
 	public static PlugIn[] loadPlugIns(File plugInDir) {
+		/*
 		// get a list of files ending with ".jar"
 		String endsWith = ".jar"; // only list files ending w/ team.txt
 		EndsWithFileFilter filter = new EndsWithFileFilter();
 		filter.add(endsWith);
 		String[] plugInList = plugInDir.list(filter);
+		*/
+		String[] plugInList = getPlugInList(plugInDir);
 
 		// create objects from each plugin in the list
 		PlugIn[] plugIns = null; // array of PlugIn's to return
@@ -84,6 +166,7 @@ public class LibTTx {
 		if (plugInList != null) {
 			plugIns = new PlugIn[plugInList.length];
 			for (int i = 0; i < plugInList.length; i++) {
+				/*
 				// loader corresponding to the given plugin's location
 				ClassLoader loader = null;
 				String path = null;
@@ -92,7 +175,7 @@ public class LibTTx {
 				   converting it to a URL.  Manually parsing "file://"
 				   to the head of the path and converting the resulting
 				   String into a URL no longer works.
-				*/
+				*
 				try {
 					path =
 						plugInDir.toString() + File.separator + plugInList[i];
@@ -110,6 +193,8 @@ public class LibTTx {
 							plugInList[i].indexOf(".jar"));
 				plugIns[i] = (PlugIn) createObject(name, loader);
 				plugIns[i].setPath(path);
+				*/
+				plugIns[i] = loadPlugIn(plugInDir, plugInList[i]);
 			}
 		}
 		return plugIns;
@@ -137,7 +222,7 @@ public class LibTTx {
 		return obj;
 	}
 	
-	public static String[] createArray(String s) {
+	public static String[] createArrayFromString(String s) {
 		String[] array = new String[10];
 		int arrayInd = 0;
 		StringTokenizer tokenizer = new StringTokenizer(s, ",");

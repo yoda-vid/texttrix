@@ -362,4 +362,8 @@ public abstract class PlugIn extends JComponent {
 		return detailedDescriptionPath;
 	}
 	
+	public String getPath() {
+		return path;
+	}
+	
 }

@@ -104,6 +104,8 @@ public class Prefs extends JFrame {
 	private JList includePlugInsList = null;
 	private JList ignorePlugInsList = null;
 	private String[] plugInsList = null;
+	private String[] includes = null;
+	private String[] ignores = null;
 	private static final String INCLUDE_PLUG_INS = "includePlugIns";
 	private static final String IGNORE_PLUG_INS = "ignorePlugIns";
 
@@ -215,7 +217,29 @@ public class Prefs extends JFrame {
 
 	public void updatePlugInsPanel(String[] list) {
 		setPlugInsList(list);
+		updatePlugInsList(list);
 		createPlugInsPanel.start();
+	}
+	
+	private void updatePlugInsList(String[] list) {
+
+		includes = LibTTx.createArrayFromString(getIncludePlugIns());
+		ignores = LibTTx.createArrayFromString(getIgnorePlugIns());
+		String[] updatedIncludes = new String[list.length];
+		int updatedInclInd = 0;
+		String[] updatedIgnores = new String[list.length];
+		int updatedIgnInd = 0;
+		for (int i = 0; i < list.length; i++) {
+			System.out.print("list[" + i + "]: " + list[i] + "...");
+			if (LibTTx.inUnsortedList(list[i], ignores)) {
+				updatedIgnores[updatedIgnInd++] = list[i];
+			} else {
+				updatedIncludes[updatedInclInd++] = list[i];
+				System.out.println("included");
+			}
+		}
+		includes = updatedIncludes;
+		ignores = updatedIgnores;
 	}
 
 	/** Front-end to storing all the preferences at once.
@@ -226,6 +250,7 @@ public class Prefs extends JFrame {
 		storeInternalPrefs();
 		storeGeneralPrefs();
 		storeShortsPrefs();
+		storePlugInsPrefs();
 	}
 
 	/** Stores the program's internal preferences.
@@ -253,6 +278,27 @@ public class Prefs extends JFrame {
 			KEYBINDINGS,
 			(String)keybindingsCombo.getSelectedItem());
 	}
+	
+	public void storePlugInsPrefs() {
+		plugInsPrefs.putBoolean(ALL_PLUG_INS, allPlugInsChk.isSelected());
+		plugInsPrefs.put(INCLUDE_PLUG_INS, getListAsString(includePlugInsList));
+		plugInsPrefs.put(IGNORE_PLUG_INS, getListAsString(ignorePlugInsList));
+	}
+	
+	public String getListAsString(JList list) {
+		String s = "";
+		DefaultListModel mdl = (DefaultListModel)list.getModel();
+		Object[] elts = mdl.toArray();
+		for (int i = 0; i < elts.length; i++) {
+			if (i == 0) {
+				s = (String)elts[i];
+			} else {
+				s = s + "," + (String)elts[i];
+			}
+		}
+		return s;
+	}
+		
 
 	/** Stores the program window size.
 	 * Size values correspond to <code>java.awt.window.getWidth()</code>
@@ -481,15 +527,23 @@ public class Prefs extends JFrame {
 	}
 
 	public boolean getAllPlugIns() {
-		return plugInsPrefs.getBoolean(ALL_PLUG_INS, false);
+		return plugInsPrefs.getBoolean(ALL_PLUG_INS, true);
 	}
 
 	public String getIncludePlugIns() {
 		return plugInsPrefs.get(INCLUDE_PLUG_INS, "");
 	}
 
+	public String[] getIncludePlugInsNames() {
+		return includes;
+	}
+
 	public String getIgnorePlugIns() {
 		return plugInsPrefs.get(IGNORE_PLUG_INS, "");
+	}
+	
+	public String[] getIgnorePlugInsNames() {
+		return ignores;
 	}
 
 	private class CreateGeneralPanel extends Thread {
@@ -655,11 +709,17 @@ public class Prefs extends JFrame {
 	}
 
 	private class CreatePlugInsPanel extends Thread {
+		JButton moveToIgnoresBtn = null;
+		JButton moveToIncludesBtn = null;
+		JLabel plugInsSelectionLbl =
+			new JLabel("Which plug-ins do you want?");
+		
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
 
 		public void run() {
+			
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					JPanel panel = new JPanel();
@@ -670,6 +730,11 @@ public class Prefs extends JFrame {
 					String allPlugInsTxt = "Include all the plug-ins";
 					allPlugInsChk =
 						new JCheckBox(allPlugInsTxt, getAllPlugIns());
+					allPlugInsChk.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent evet) {
+							setPlugInsSelectorsEnabled(!allPlugInsChk.isSelected());
+						}
+					});
 					LibTTx.addGridBagComponent(
 						allPlugInsChk,
 						constraints,
@@ -681,38 +746,22 @@ public class Prefs extends JFrame {
 						0,
 						panel);
 
-					String[] includes = LibTTx.createArray(getIncludePlugIns());
-					String[] ignores = LibTTx.createArray(getIgnorePlugIns());
-					String[] updatedIncludes = new String[plugInsList.length];
-					int updatedInclInd = 0;
-					String[] updatedIgnores = new String[plugInsList.length];
-					int updatedIgnInd = 0;
-					for (int i = 0; i < plugInsList.length; i++) {
-						System.out.print("plugInsList[" + i + "]: " + plugInsList[i] + "...");
-						if (LibTTx.inUnsortedList(plugInsList[i], ignores)) {
-							updatedIgnores[updatedIgnInd++] = plugInsList[i];
-						} else {
-							updatedIncludes[updatedInclInd++] = plugInsList[i];
-							System.out.println("included");
-						}
-					}
 
 					DefaultListModel includeListModel = new DefaultListModel();
 					//JList includeList = null;
 					includePlugInsList =
-						createList(includeListModel, updatedIncludes);
+						createList(includeListModel, includes);
 					JScrollPane includeListPane =
 						new JScrollPane(includePlugInsList);
 					includeListPane.setPreferredSize(new Dimension(250, 80));
 
 					DefaultListModel ignoreListModel = new DefaultListModel();
 					ignorePlugInsList =
-						createList(ignoreListModel, updatedIgnores);
+						createList(ignoreListModel, ignores);
 					JScrollPane ignoreListPane =
 						new JScrollPane(ignorePlugInsList);
 					ignoreListPane.setPreferredSize(new Dimension(250, 80));
 
-					JButton moveToIgnoresBtn = null;
 					String moveToIgnoresTxt = "Blow it off";
 					Action moveToIgnoresAction =
 						createMoveAction(
@@ -724,7 +773,6 @@ public class Prefs extends JFrame {
 					addEnabledListener(includePlugInsList, moveToIgnoresBtn);
 					moveToIgnoresBtn.setEnabled(includeListModel.getSize() != 0);
 
-					JButton moveToIncludesBtn = null;
 					String moveToIncludesTxt = "I like";
 					Action moveToIncludesAction =
 						createMoveAction(
@@ -736,9 +784,9 @@ public class Prefs extends JFrame {
 					addEnabledListener(ignorePlugInsList, moveToIncludesBtn);
 					moveToIncludesBtn.setEnabled(ignoreListModel.getSize() != 0);
 					//System.out.println("ignoreListModel.getSize(): " + ignoreListModel.getSize());
+					
+					setPlugInsSelectorsEnabled(!allPlugInsChk.isSelected());
 
-					JLabel plugInsSelectionLbl =
-						new JLabel("Which plug-ins do you want?");
 					LibTTx.addGridBagComponent(
 						plugInsSelectionLbl,
 						constraints,
@@ -793,6 +841,14 @@ public class Prefs extends JFrame {
 				}
 			});
 		}
+		
+		private void setPlugInsSelectorsEnabled(boolean b) {
+			plugInsSelectionLbl.setEnabled(b);
+				includePlugInsList.setEnabled(b);
+				ignorePlugInsList.setEnabled(b);
+				moveToIgnoresBtn.setEnabled(b);
+				moveToIncludesBtn.setEnabled(b);
+			}
 
 		private JList createList(DefaultListModel listMdl, String[] listElts) {
 			String addElt = null;
