@@ -231,7 +231,7 @@ public class Tools {
 	 * @param text text from which to remove HTML tags
 	 * @return text with HTML tags removed
 	 */
-	public static String htmlReplacement(String text) {
+	public static String htmlReplacer(String text) {
 		String lowerCase = text.toLowerCase();
 		int len = text.length();
 		StringBuffer s = new StringBuffer(len);
@@ -266,6 +266,14 @@ public class Tools {
 		return s.toString();
 	}
 
+	/**Checks whether any of the strings in an array are at the start
+	 * of another string.
+	 * @param s string to check
+	 * @param strs[] array of strings that may be at the beginning of <code>s</code>
+	 * @param offset index to start checking in <code>s</code>
+	 * @return <code>true</code> if any of the array's strings start <code>s</code>, 
+	 * <code>false</code> if otherwise
+	 */
 	public static boolean startsWithAny(String s, String strs[], int offset) {
 		for (int i = 0; i < strs.length; i++) {
 			if (s.startsWith(strs[i], offset)) {

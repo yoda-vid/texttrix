@@ -310,17 +310,19 @@ public class TextTrix extends JFrame {
 	nonPrintingCharViewerButton.setToolTipText(readText("nonPrintingButton.html"));
 
 	// HTML replacement
-	Action htmlReplacementAction = new AbstractAction(
-			"Replace HTML tags", null) {
+	Action htmlReplacerAction = new AbstractAction(
+			"Replace HTML tags", makeIcon("htmlreplacer-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
-			t.setText(Tools.htmlReplacement(t.getText()));
+				t.setText(Tools.htmlReplacer(t.getText()));
 		}
 	};
-	setAction(htmlReplacementAction, "Replace HTML tags", 'H');
-	toolsMenu.add(htmlReplacementAction);
-	JButton htmlReplacementButton = toolBar.add(htmlReplacementAction);
-	htmlReplacementButton.setBorderPainted(false);
+	setAction(htmlReplacerAction, "Replace HTML tags", 'H');
+	toolsMenu.add(htmlReplacerAction);
+	JButton htmlReplacerButton = toolBar.add(htmlReplacerAction);
+	htmlReplacerButton.setBorderPainted(false);
+	setRollover(htmlReplacerButton, "htmlreplacer-roll-16x16.png");
+	htmlReplacerButton.setToolTipText(readText("htmlreplacer.html"));
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
