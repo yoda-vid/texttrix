@@ -230,13 +230,31 @@ public class Practical {
 	 * if available.  Otherwise, simply removes the tag.
 	 * Function not yet functional.
 	 * @param aText text from which to remove HTML tags
+	 * @return text with HTML tags removed
 	 */
 	public static String replaceHTMLTags(String aText) {
 		String text = aText;
 		return text;
 	}
 
+	/**Displays String representations in place of given Unicode characters.
+	 * @param text text to convert
+	 * @return text with String representations in place of given Unicode characters
+	 */
 	public static String displayUnicode(String text) {
+		StringBuffer s = new StringBuffer(text.length());
+		String charText;
+		char c;
+		String unicodeTable[][] = loadUnicodeArray("unicodetable.txt");
+		for (int i = 0; i < text.length(); i++) {
+			c = text.charAt(i);
+			charText = unicodeDisplay(unicodeTable, c);
+			if (charText != null) 
+				s.append(charText);
+			else
+				s.append(c);
+		}
+		return s.toString();
 	}
 
 	/**Load a two-column table of non-printing Unicode characters 
@@ -245,6 +263,11 @@ public class Practical {
 	 * The second columns hold the corresponding "escape sequences."
 	 * Eg, Col. 1 might contain <code>\u000a</code>, while Col. 2 would contain
 	 * <code>"\n"</code>.
+	 * @param path file path to Unicode table, with lines of the form: 
+	 * <code><i>UnicodeChar</i> = <i>StringRepresentationOfUnicodeChar</i></code>; 
+	 * a space or bar also separates the two variables
+	 * @return an array of 2-element arrays, each consisting of the Unicode character 
+	 * and its String representation
 	 */
 	public static String[][] loadUnicodeArray(String path) {
 		try {
@@ -266,11 +289,50 @@ public class Practical {
 				unicode[i][0] = (String)unicodeChars.get(i);
 				unicode[i][1] = (String)unicodeEsc.get(i);
 			}
+			sort2DStrArray(unicode);
 			return unicode;
 		} catch(IOException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**Sorts a 2-dimensional String array according to the first element
+	 * of each array.
+	 * Useful for sorting unicode tables, the method compares 
+	 * the first character of each array.
+	 * @param array[][] an array of 2-element arrays
+	 */
+	public static void sort2DStrArray(String[][] array) {
+		int start;
+		int end;
+		int gap;
+		int n = array.length;
+		String tmp[];
+		for (gap = n / 2; gap > 0; gap /= 2) {
+			for (end = gap; end < n; end++) {
+				for (start = end - gap; start >= 0 
+						&& array[start][0].charAt(0) > array[start + gap][0].charAt(0); 
+						start -= gap) {
+					tmp = array[start];
+					array[start] = array[start + gap];
+					array[start + gap] = tmp;
+				}
+			}
+		}
+	}
+
+	/**Displays the appropriate String representation of a Unicode character.
+	 * Allows the Unicode character to be displayed visibly as its code in 
+	 * place of the character itself.
+	 * @param unicodeTable[][] array of 2-element arrays, each holding 
+	 * the Unicode character and its string representation
+	 * @param c Unicode character whose String representation will be retrieved
+	 * @return appropriate String representation, null if none is in the table
+	 */
+	public static String unicodeDisplay(String[][] unicodeTable, char c) {
+		String displayChar = new String(); // should assign later
+		return displayChar;
 	}
 			
 
