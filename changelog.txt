@@ -8,33 +8,33 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-------------------------------
-v.0.3 Series: FEATure Series (FEATS)
-------------------------------
+--------------------------------------
+----v.0.3 Series: FEATure Series (FEATS)----
+--------------------------------------
 
----------------
-v.0.3.2 (2/28/03)
+----v.0.3.2 (3/15/03)------
+
 Text Trix, the text tinkering tool, now has a plugin architecture to easily add new tools or trix.  Not everyone wants the same text manipulators; now each person can pick and choose.  What's left is to build a repertoire of plugins.
 
-The main impediment to recent Text Trix development had been getting over the plugin hump.  The idea of adding tiny, self-sufficient packages for each new tinkerer proved attractive, but methods to load and use them proved quite the opposite.  With the major football season rolling around, too, work on tXtFL (http://textflex.com/txtfl), the text-based football game, became increasingly enticing.
+The main impediment to recent Text Trix development had been getting over the plugin hump.  The idea of adding tiny, self-sufficient packages for each new tinkerer proved attractive, but methods to load and use them proved quite the opposite.  Also, with the major football season rolling around, work on another text project (tXtFL (http://textflex.com/txtfl) became increasingly enticing.
 
-But the football season is over for now; it's time for school and work again.  Bus stopping the tinkerers from working on one popular operating system gave extra motivation to get going with the plugins.  Text Trix v.0.3.2 has come, and its new plugin architecture awaits contibutions for new tools and trix!
+But the football season is over for now; it's time for school and work again.  Discovery of bugs that stopped the tinkerers from working on one popular operating system gave extra motivation to get going with the plugins.  Text Trix v.0.3.2 has come, and its new plugin architecture awaits contibutions for new tools and trix!
 
 New features include:
 -Plugin architecture to allow users to selet the particular tools and trix they want
 -Open multiple files at once
--Open files from the command-line at startup; try using Text Trix as the default program to open up files
+-Open files from the command-line at startup; try using Text Trix as the default program to open files
 -Carets now return approximately to their original location after using text tools or trix
--Dialog windows provide options when opening or saving to unpermitted files
+-Dialog windows provide alternative options when opening or saving to unpermitted locations
 
 Bug fixes include:
 -Text tools now work consistently and in all tested platforms (691520)
 -The function to find whole words now finds them (699860)
--Popup menus work, and do so consistently across tested platforms (696328)
+-Popup menus work also consistently across tested platforms (696328)
 -Tabbed pane tool tips update to show the new file name after saving a file for the first time (699865)
 
----------------
-v.0.3.1 (8/26/02)
+----v.0.3.1 (8/26/02)----
+
 One might miss out on many trix if Text Trix lacked support for 
 colored text, different fonts, and images.  Let the situation remain 
 hypothetical, for Text Trix now offers HTML and RTF formatted 
@@ -54,8 +54,8 @@ replaces some common character entities, such as "&nbsp;"
 -Text pad popup menu, including copy/paste menu items
 -Various bug fixes
 
----------------
-v.0.3.0 (7/23/02)
+----v.0.3.0 (7/23/02)----
+
 The feature craze has begun!  With the beginnings of an HTML tag 
 replacer, a non-printing-character display, and a fully featured 
 find/replace tool, the "Trix" in Text Trix is bearing fruit.  A few 
@@ -75,12 +75,12 @@ dialogs prevent the exit
 -open/save boxes now attached to main Text Trix window
 -equivalency string tables in preparation for preferences feature
 
-------------------------------------
-v.0.1 Series: Basic User Graphics Series (BUGS)
-------------------------------------
+----------------------------------------------
+----v.0.1 Series: Basic User Graphics Series (BUGS)----
+----------------------------------------------
 
----------------
-v.0.1.5 (6/26/02)
+----v.0.1.5 (6/26/02)----
+
 The basic user interface portion of Text Trix is nearing completion.
 This release focuses on large structural changes and text 
 tools.  Structural work prepares for the Txtrx command-
@@ -98,8 +98,8 @@ as well as more efficient processing
 movement
 -file-changed indicator update: no delay
 
----------------
-v.0.1.4 (4/27/01)
+----v.0.1.4 (4/27/01)----
+
 -modified-yet-unsaved files show a " *"
 -basic Emacs shortcut keys
 -can use tabs in hard return list
@@ -114,21 +114,21 @@ v.0.1.4 (4/27/01)
 -switched file input to getResourceAsStream for possible
 applet use in future
 
----------------
-v.0.1.3 (3/24/02)
+----v.0.1.3 (3/24/02)----
+
 -file open and save as options
 -check for file modification when closing
 -enhanced superfluous hard return checK: now ignores spaces
 before dashes or asterisks when checking to allow listed
 items to have their own line
 
----------------
-v.0.1.2 (3/16/02)
+----v.0.1.2 (3/16/02)----
+
 -switched open source license from GPL to BSD
 -multiple text areas
 -tabbed pane for each new text area
 -menu bar, including accelerators
 
-------
-v.0.1.1
+----v.0.1.1----
+
 -everthing's new!

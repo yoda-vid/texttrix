@@ -38,6 +38,7 @@ mv about.txt shortcuts.txt features.txt $DIR
 cp license.txt $DIR
 cd $WKDIR
 cp -rf $PKGDIR $SRCPKGDIR # copy to source package
+cp plug.sh pkg.sh pkg-jaj.sh $SRCPKGDIR # copy scripts to source pkg
 cp plugins/*.jar $PKGDIR/plugins # only want jars in binary package
 cp -rf plugins/* $SRCPKGDIR/plugins # will later delete jars from source pkg
 
