@@ -1,7 +1,7 @@
 license.txt
 
 Text Trix
-Meaningful Mistakes
+the text tinker
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix
 This software is OSI Certified Open Source Software.

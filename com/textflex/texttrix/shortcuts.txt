@@ -1,7 +1,7 @@
 shortcuts.txt
 
 Text Trix
-Meaningful Mistakes
+the text tinker
 Copyright (c) 2002, David Young
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix

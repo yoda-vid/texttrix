@@ -20,7 +20,7 @@ Extra Hard Return Remover: removes all hard returns, except between multiply-spa
 -To write a list without losing its hard returns, keep all the elements in a given block single-spaced, and use dashes or asterisks at the start of each line after the first; note that indents with tabs are a-ok
 -Text enclosed in <pre></pre> tags will be preserved; each tag should be placed on its own line and will be removed
 -Lines beginning with ">", such as those in email replies, will be removed along with any spaces surrounding them; "---Original Message----" will be added before the region, and "-------------" will come afterward
--Select the text to modify, or leave completely unhighlighted to work on the whole text
+-Select the text to modify, or leave it completely unhighlighted to work on the whole text
 -If necessary, undo the change through as many Undo commands as necessary (Edit > Undo, or Ctrl-z)
 
 ------------
@@ -28,13 +28,13 @@ HTML Replacer: Replace HTML tags with their plain-text equivalent
 
 -All HTML tags get removed.  Where appropriate, their plain-text equivalents are substituted
 -E.g., "&#060;b&#062;" becomes "*"
--Select the text to modify, or leave completely unhighlighted to work on the whole text
+-Select the text to modify, or leave it completely unhighlighted to work on the whole text
 
 --------------------------
 Non-Printing-Character Viewer: Add visual identification of non-printing characters
 
 -In the current text, the viewer writes "\n" before every hard return, and "\t" before every tab
--Select the text to modify, or leave completely unhighlighted to work on the whole text
+-Select the text to modify, or leave it completely unhighlighted to work on the whole text
 -To remove the characters, Undo (ctrl-z) at least twice
 
 ----------
