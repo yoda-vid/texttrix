@@ -411,7 +411,11 @@ public class Tools {
 		return -1;
 	}
 		
-	public static int find(String text, String quarry, int n, boolean word) {
+	public static int find(String text, String quarry, int n, boolean word, boolean ignoreCase) {
+		if (ignoreCase) {
+			text = text.toLowerCase();
+			quarry = quarry.toLowerCase();
+		}
 		return word ? findWord(text, quarry, n) : find(text, quarry, n);
 	}
 
@@ -434,9 +438,8 @@ public class Tools {
 		return -1;
 	}
 	
-	public static String findReplace(String aText, String quarry, 
-			String replacement, int start, int end, boolean word, boolean all, boolean wrap) {
-		String text = aText;
+	public static String findReplace(String text, String quarry, 
+			String replacement, int start, int end, boolean word, boolean all, boolean wrap, boolean ignoreCase) {
 		StringBuffer s = new StringBuffer(text.length());
 		int n = start;
 		int prev;
@@ -444,7 +447,7 @@ public class Tools {
 			s.append(text.substring(0, n));
 			while (n < end && n != -1) {
 				prev = n;
-				n = find(text, quarry, n, word);
+				n = find(text, quarry, n, word, ignoreCase);
 				if (n != -1) {
 					s.append(text.substring(prev, n) + replacement);
 					n += quarry.length();
@@ -459,20 +462,20 @@ public class Tools {
 			}
 			if (wrap) {
 				text = findReplace(text, quarry, replacement, 0, start - 1,
-						word, all, false);
+						word, all, false, ignoreCase);
 			}
 			return text;
 				
 		} else {
 			if (n < end) {
-				n = find(text, quarry, n, word);
+				n = find(text, quarry, n, word, ignoreCase);
 				if (n != -1) {
 					text = (text.substring(0, n) + replacement
 						+ text.substring(n + quarry.length()));
 				} else {
 					if (wrap) {
-						text = findReplace(aText, quarry, replacement, 
-								0, start - 1, word, all, false);
+						text = findReplace(text, quarry, replacement, 
+								0, start - 1, word, all, false, ignoreCase);
 					}
 				}
 			}

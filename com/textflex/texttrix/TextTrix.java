@@ -125,12 +125,20 @@ public class TextTrix extends JFrame {
 	openButton.setBorderPainted(false);
 	setRollover(openButton, "images/openicon-roll-16x16.png");
 
-	// set "*.txt" file filter for open/save dialog boxes
-	final ExtensionFileFilter filter = new ExtensionFileFilter();
-	filter.addExtension("txt");
-	filter.setDescription("Text files (*.txt)");
-	chooser.setFileFilter(filter);
+	// set "*.txt" and "*.html" file filters for open/save dialog boxes
+	final ExtensionFileFilter webFilter = new ExtensionFileFilter();
+	webFilter.addExtension("html");
+	webFilter.addExtension("htm");
+	webFilter.addExtension("xhtml");
+	webFilter.addExtension("shtml");
+	webFilter.setDescription("Web files (*.html, *.htm, *.xhtml, *.shtml)");
+	chooser.setFileFilter(webFilter);
 
+	final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
+	txtFilter.addExtension("txt");
+	txtFilter.setDescription("Text files (*.txt)");
+	chooser.setFileFilter(txtFilter);
+	
 	// close file; check if saved
 	Action closeAction = new AbstractAction("Close", makeIcon("images/closeicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
@@ -867,6 +875,7 @@ public class TextTrix extends JFrame {
 		JCheckBox wrap;
 		JCheckBox selection;
 		JCheckBox replaceAll;
+		JCheckBox ignoreCase;
 		
 		public FindDialog(JFrame owner) {
 			super(owner, "Find and Replace", false);
@@ -880,26 +889,40 @@ public class TextTrix extends JFrame {
 			add(find = new JTextField(20), constraints, 1, 0, 2, 1, 100, 0);
 			add(new JLabel("Replace:"), constraints, 0, 1, 1, 1, 100, 0);
 			add(replace = new JTextField(20), constraints, 1, 1, 2, 1, 100, 0);
-			add(word = new JCheckBox("Find Word"), constraints, 0, 2, 1, 1, 100, 0);
+			add(word = new JCheckBox("Find word"), constraints, 0, 2, 1, 1, 100, 0);
+			word.setMnemonic(KeyEvent.VK_N);
+			word.setToolTipText("Search for the expression as a separate word");
 			add(wrap = new JCheckBox("Wrap"), constraints, 2, 2, 1, 1, 100, 0);
+			wrap.setMnemonic(KeyEvent.VK_A);
+			wrap.setToolTipText("Start searching from the cursor and wrap back to it");
 			add(selection = new JCheckBox("Replace within selection"), constraints, 1, 2, 1, 1, 100, 0);
+			selection.setMnemonic(KeyEvent.VK_S);
+			selection.setToolTipText("Search and replace text within the entire highlighted section");
 			add(replaceAll = new JCheckBox("Replace all"), constraints, 0, 3, 1, 1, 100, 0);
+			replaceAll.setMnemonic(KeyEvent.VK_L);
+			replaceAll.setToolTipText("Replace all instances of the expression");
+			add(ignoreCase = new JCheckBox("Ignore case"), constraints, 1, 3, 1, 1, 100, 0);
+			ignoreCase.setMnemonic(KeyEvent.VK_I);
+			ignoreCase.setToolTipText("Search for both lower and upper case versions of the expression");
 
 			Action findAction = new AbstractAction("Find", null) {
 				public void actionPerformed(ActionEvent e) {
 					TextPad t = getSelectedTextPad();
 					String findText = find.getText();
 					int n = t.getCaretPosition();
-					n = Tools.find(t.getText(), findText, n, word.isSelected());
+					n = Tools.find(t.getText(), findText, n, word.isSelected(), ignoreCase.isSelected());
 					if (n != -1) {
 						if (wrap.isSelected()) {
-							n = Tools.find(t.getText(), findText, 0, word.isSelected());
+							n = Tools.find(t.getText(), findText, 0, word.isSelected(), ignoreCase.isSelected());
 						}
 						t.setSelectionStart(n);
 						t.setSelectionEnd(n + findText.length());
 					}
 				}
 			};
+			setAction(findAction, "Find", 'F', 
+					KeyStroke.getKeyStroke(KeyEvent.VK_F, 
+						InputEvent.ALT_MASK));
 			add(new JButton(findAction), constraints, 0, 4, 1, 1, 100, 0);
 
 			Action findReplaceAction = new AbstractAction("Find and Replace", null) {
@@ -912,15 +935,18 @@ public class TextTrix extends JFrame {
 						t.setText(Tools.findReplace(text, findText, replaceText,
 								t.getSelectionStart(), 
 								t.getSelectionEnd(), word.isSelected(), true,
-								false));
+								false, ignoreCase.isSelected()));
 					} else {
 						t.setText(Tools.findReplace(text, findText, replaceText,
 								t.getCaretPosition(), text.length(), 
 								word.isSelected(), replaceAll.isSelected(), 
-								wrap.isSelected()));
+								wrap.isSelected(), ignoreCase.isSelected()));
 					}
 				}
 			};
+			setAction(findReplaceAction, "Find and replace", 'R', 
+					KeyStroke.getKeyStroke(KeyEvent.VK_R,
+						InputEvent.ALT_MASK));
 			add(new JButton(findReplaceAction), constraints, 1, 4, 1, 1, 100, 0);
 		}
 
