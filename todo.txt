@@ -64,6 +64,7 @@ v.0.5.0
 
 -from v.0.5.0rc1
 	-fix failure to reuse initial tab; FIXED: updated openFile(File) to reuse unused tab by default, while the main openFile now ensures that the tab has not been changed before reusing it for a newly opened file, even if the tab is blank
+	-LineFind shouldn't go to line if just click in box when it already has a number; FIXED: advances to line each time user types in new number, not if just clicks in box, or if type Enter
 -auto-wrap-indent additions and fixes
 	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with Shift+TAB
 	-decrement line's tab with Shift+TAB; ADDED: if no text selected, current line loses one leading tab if auto indent mode and line indented
