@@ -1281,6 +1281,7 @@ public class TextTrix extends JFrame {
     public static boolean saveFile(String path) {
 	//	System.out.println("printing");
 	TextPad t = getSelectedTextPad();
+	PrintWriter out = null;
 	try {
 	    if (t != null) {
 		File f = new File(path);
@@ -1296,24 +1297,27 @@ public class TextTrix extends JFrame {
 		    System.out.println("can't write");
 		*/
 		// open the stream to write to
-		PrintWriter out = new 
+		out = new 
 		    PrintWriter(new FileWriter(path), true);
 		// write to it
 		out.print(t.getText());
-		out.close();
 		t.setChanged(false);
 		t.setFile(path);
 		// the the tab title to indicate that no unsaved changes
 		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
 				      t.getName() + "  ");
 		return true;
+		/*
 	    } else {
 		return false;
+		*/
 	    }
 	} catch(IOException e) {
 	    //	    e.printStackTrace();
-	    return false;
+	} finally {
+	    if (out != null) out.close();
 	}
+	return false;
     }
 
     /** Opens a file into a text pad.
@@ -1330,9 +1334,9 @@ public class TextTrix extends JFrame {
 	// ensures that the file exists and is not a directory
 	if (file.canRead()) { // readable file
 	    TextPad t = getSelectedTextPad();
+	    BufferedReader reader = null;
 	    try {
-		BufferedReader reader = 
-		    new BufferedReader(new FileReader(path));
+		reader = new BufferedReader(new FileReader(path));
 		    
 		// check if tabs exist; get TextPad if true
 		/* t.getText() != null, even if have typed nothing 
@@ -1353,7 +1357,6 @@ public class TextTrix extends JFrame {
 		t.setChanged(false);
 		t.setFile(path);
 		updateTitle(textAreas, tabbedPane);
-		reader.close();
 		// set the path to the last opened directory
 		setOpenDir(file.getParent());
 		// file.getParent() returns null when opening file
@@ -1363,6 +1366,10 @@ public class TextTrix extends JFrame {
 		return true;
 	    } catch(IOException exception) {
 		exception.printStackTrace();
+	    } finally {
+		try { 
+		    if (reader != null) reader.close();
+		} catch (IOException e) { e.printStackTrace(); }
 	    }
 	    /*
 	} else if (file.isDirectory()) { // directory: can't open
