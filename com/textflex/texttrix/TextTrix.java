@@ -1607,6 +1607,12 @@ public class TextTrix extends JFrame {
 		popup.show(e.getComponent(), e.getX(), e.getY());
 	    }
 	}
+
+	public void mouseReleased(MouseEvent e) {
+	    if (e.isPopupTrigger()) {
+		popup.show(e.getComponent(), e.getX(), e.getY());
+	    }
+	}
     }
 
     /**Responds to tab changes in the JTabbedPane.
