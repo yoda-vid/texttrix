@@ -190,11 +190,20 @@ public class TextTrix extends JFrame {
 		    if (tabIndex != -1) {
 			t = (TextPad)textAreas.get(tabIndex);
 			// save directly to file if already created one
-			if (t.fileExists())
-			    saveFile(t.getPath());
+			if (t.fileExists()) {
+			    if (!saveFile(t.getPath())) {
+				String msg = t.getPath() 
+				    + " couldn't be written.\n"
+				    + "Would you like to try saving it "
+				    + "somewhere else?";
+				String title = "Couldn't write";
+				if (yesNoDialog(TextTrix.this, msg, title))
+				    fileSaveDialog(TextTrix.this);
+			    }
 			// otherwise, request filename for new file
-			else
+			} else {
 			    fileSaveDialog(TextTrix.this);
+			}
 		    }
 		}
 	    };
@@ -1271,13 +1280,15 @@ public class TextTrix extends JFrame {
     public static boolean saveFile(String path) {
 	//	System.out.println("printing");
 	TextPad t = getSelectedTextPad();
-	if (t != null) {
-	    try {
+	try {
+	    if (t != null) {
 		File f = new File(path);
+		/*
 		if (f.canWrite())
 		    System.out.println("can write");
 		else 
 		    System.out.println("can't write");
+		*/
 		// open the stream to write to
 		PrintWriter out = new 
 		    PrintWriter(new FileWriter(path), true);
@@ -1292,8 +1303,8 @@ public class TextTrix extends JFrame {
 	    } else {
 		return false;
 	    }
-	} catch(IOException exception) {
-	    //	    exception.printStackTrace();
+	} catch(IOException e) {
+	    //	    e.printStackTrace();
 	    return false;
 	}
     }
