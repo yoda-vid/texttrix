@@ -63,7 +63,7 @@ v.0.3.6
 		-fix replace-all fn to not exceed the selection boundaries; FIXED: replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
 		-make selected-area-only and wrap boxes alternate choices; ADDED: since the two options are mutually exclusive, turning on one turns off the other, while both can also be unchecked simultaneously
 		-replace fn should follow convention of selecting found text before replacing it; ADDED: if selected text equals the text to find, replaces it; otherwise, employs find fn to select the next instance of the text to find, allowing the next call to replace fn will replace the text; Note: differs from convention by checking selected text before replacing it
-		-add summary field
+		-add summary field; ADDED: "Results: " label summarizes the find/replace findings
 	-HTMLReplacer plug-in comprehensiveness
 		-fix HTMLReplacer tool tip now that no longer need double undos; FIXED: removed obsolete advice
 -streamline integrated windowing design
