@@ -81,7 +81,7 @@ public class TextTrix extends JFrame {
 	if (im !=null) 
 	    setIconImage(im.getImage());
 	// keep the tabs the same width when substituting chars
-	tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 10));
+	tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
 	// make first tab and text area
 	addTextArea(textAreas, tabbedPane, makeNewFile());
 	// adds a change listener to listen for tab switches and display
@@ -1179,7 +1179,7 @@ public class TextTrix extends JFrame {
      * tabbed pane displays
      * @param tabbedPane tabbed pane to update
      */
-    public void updateTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
+    public static void updateTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
 	int i = tabbedPane.getSelectedIndex();
 	TextPad textPad = (TextPad)arrayList.get(i);
 	//	String title = tabbedPane.getTitleAt(i);
@@ -1326,9 +1326,13 @@ public class TextTrix extends JFrame {
 		out.print(t.getText());
 		t.setChanged(false);
 		t.setFile(path);
-		// the the tab title to indicate that no unsaved changes
-		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
-				      t.getName() + " ");
+		// the the tab title to indicate that no unsaved changes;
+		// in place of updateTitle b/c static context
+		//		tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), 
+		//				      t.getName() + " ");
+		//		tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
+		//					    t.getPath());
+		updateTitle(textAreas, tabbedPane);
 		return true;
 		/*
 	    } else {
@@ -1380,6 +1384,8 @@ public class TextTrix extends JFrame {
 		t.setCaretPosition(0);
 		t.setChanged(false);
 		t.setFile(path);
+		tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), 
+					    t.getPath());
 		updateTitle(textAreas, tabbedPane);
 		// set the path to the last opened directory
 		setOpenDir(file.getParent());
