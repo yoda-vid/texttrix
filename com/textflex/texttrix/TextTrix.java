@@ -77,7 +77,7 @@ public class TextTrix extends JFrame {
 	setTitle("Text Trix");
 	// pre-set window size
 	setSize(500, 600); // TODO: adjust to user's screen size
-	ImageIcon im = makeIcon("images/minicon-16x16.png"); // set frame icon
+	ImageIcon im = makeIcon("images/minicon-32x32.png"); // set frame icon
 	if (im !=null) 
 	    setIconImage(im.getImage());		
 	// make first tab and text area
@@ -1314,7 +1314,8 @@ public class TextTrix extends JFrame {
 	    }
 	} catch(IOException e) {
 	    //	    e.printStackTrace();
-	} finally {
+	    return false;
+	} finally { // release system resources from stream
 	    if (out != null) out.close();
 	}
 	return false;
@@ -1365,11 +1366,15 @@ public class TextTrix extends JFrame {
 		    setOpenDir(System.getProperty("user.dir"));
 		return true;
 	    } catch(IOException exception) {
-		exception.printStackTrace();
+		//		exception.printStackTrace();
+		return false;
 	    } finally {
 		try { 
 		    if (reader != null) reader.close();
-		} catch (IOException e) { e.printStackTrace(); }
+		} catch (IOException e) { 
+		    //    e.printStackTrace(); 
+		    return false;
+		}
 	    }
 	    /*
 	} else if (file.isDirectory()) { // directory: can't open
