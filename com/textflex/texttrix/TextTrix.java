@@ -297,8 +297,9 @@ public class TextTrix extends JFrame {
 		prgmFilter.addExtension("cpp");
 		prgmFilter.addExtension("c");
 		prgmFilter.addExtension("sh");
+		prgmFilter.addExtension("js");
 		prgmFilter.setDescription(
-			"Programming source code (*.java, *.cpp, *.c, *.sh)");
+			"Programming source code (*.java, *.cpp, *.c, *.sh, *.js)");
 		chooser.setFileFilter(prgmFilter);
 
 		// Text! filters

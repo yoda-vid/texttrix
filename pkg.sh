@@ -102,6 +102,11 @@ do
 	fi
 done
 
+if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+then
+	JAVA="$JAVA"/
+fi
+
 # Determine the base dir if not specified above
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
@@ -176,9 +181,9 @@ cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	$JAVA/jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+	"$JAVA"jar -cvfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
 else
-	$JAVA/jar -cvfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+	"$JAVA"jar -cvfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png
 fi
 rm -rf com
 
