@@ -55,8 +55,7 @@ public class TextTrix extends JFrame {
 	= new JTabbedPane(JTabbedPane.TOP); // multiple TextPads
     private static JPopupMenu popup = new JPopupMenu(); // make popup menu
     private static JFileChooser chooser = new JFileChooser(); // file dialog
-    private static JCheckBoxMenuItem autoIndent 
-	= new JCheckBoxMenuItem("Auto-indent"); // auto-indent
+    private static JCheckBoxMenuItem autoIndent = null;
     private static String openDir = ""; // most recently path opened to
     private static String saveDir = ""; // most recently path saved to
     private static int fileIndex = 0; // for giving each TextPad a unique name
@@ -64,7 +63,8 @@ public class TextTrix extends JFrame {
     //	private static int tabSize = 0; // user-defined tab display size
     private static PlugIn[] plugIns = null; // plugins from jar archives
     private static Action[] plugInActions = null; // plugin invokers
-    private static String charsUnavailable = ""; // chars for shorcuts
+    private static String toolsCharsUnavailable = ""; // chars for shorcuts
+    private static String trixCharsUnavailable = ""; // chars for shorcuts
     private JMenu trixMenu = new JMenu("Trix"); // trix plugins
     private JMenu toolsMenu = new JMenu("Tools"); // tools plugins
     private JToolBar toolBar = new JToolBar("Trix and Tools"); // icons
@@ -307,17 +307,25 @@ public class TextTrix extends JFrame {
 
 	// options sub-menu
 	JMenu optionsMenu = new JMenu("Options");
+	optionsMenu.setMnemonic('O');
 	editMenu.add(optionsMenu);
 
 	// auto-indent
 	// apply the selection to the current TextPad
-	autoIndent.addActionListener(new AbstractAction() {
+	Action autoIndentAction 
+	    = new AbstractAction("Auto indent the selected file") {
 		public void actionPerformed(ActionEvent evt) {
 		    TextPad t = getSelectedTextPad();
 		    if (t != null) 
 			t.setAutoIndent(autoIndent.isSelected());
 		}
-	    });
+	    };
+	setAcceleratedAction(autoIndentAction, 
+			     "Automatically repeat tabs with the next line",
+			     'I', 
+			     KeyStroke.getKeyStroke("ctrl shift I"));
+	//	autoIndent.addActionListener(autoIndentAction);
+	autoIndent = new JCheckBoxMenuItem(autoIndentAction); // auto-indent
 	optionsMenu.add(autoIndent);
 
 	Action autoIndentAllAction = 
@@ -331,6 +339,7 @@ public class TextTrix extends JFrame {
 		    setAutoIndent(true);
 		}
 	    };
+	setAction(autoIndentAllAction, "Auto indent all files", 'A');
 	optionsMenu.add(autoIndentAllAction);
 		
 
@@ -378,6 +387,7 @@ public class TextTrix extends JFrame {
 		    viewPlain();
 		}
 	    };
+	setAction(togglePlainViewAction, "View as plain text", 'P');
 	viewMenu.add(togglePlainViewAction);
 
 	// view as HTML formatted text
@@ -386,6 +396,7 @@ public class TextTrix extends JFrame {
 		    viewHTML();
 		}
 	    };
+	setAction(toggleHTMLViewAction, "View as HTML", 'H');
 	viewMenu.add(toggleHTMLViewAction);
 	
 	// view as RTF formatted text
@@ -394,6 +405,7 @@ public class TextTrix extends JFrame {
 		    viewRTF();
 		}
 	    };
+	setAction(toggleRTFViewAction, "View as RTF", 'R');
 	viewMenu.add(toggleRTFViewAction);
 		
 	/* Help menu items */
@@ -566,6 +578,7 @@ public class TextTrix extends JFrame {
 
     public void makePlugInAction(final PlugIn pl) {
 	String name = pl.getName();
+	//	System.out.println("action name: " + name);
 	String category = pl.getCategory();
 	String description = pl.getDescription();
 	BufferedReader detailedDescriptionBuf = pl.getDetailedDescription();
@@ -620,10 +633,11 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAction(action, name);
 	if (category.equalsIgnoreCase("tools")) {
+	    setAction(action, name, description, toolsCharsUnavailable);
 	    toolsMenu.add(action);
 	} else {
+	    setAction(action, name, description, trixCharsUnavailable);
 	    trixMenu.add(action);
 	}
 	JButton button = toolBar.add(action);
@@ -847,24 +861,27 @@ public class TextTrix extends JFrame {
     }
 
     /**Sets an action's properties.
+       Assumes that the action has a name.
      * @param action action to set
      * @param description tool tip
-     * @param mnemonic menu shortcut
      */
-    public void setAction(Action action, String description) {
+    public void setAction(Action action, String name, String description,
+			  String charsUnavailable) {
 	char mnemonic = 0;
 	int i = 0;
-	for (i = 0; i < description.length()
+	//	String name = (String)action.getValue("NAME");
+	//	System.out.println("name: " + name);
+	for (i = 0; i < name.length()
 		 && charsUnavailable
-		 .indexOf((mnemonic = description.charAt(i)))
+		 .indexOf((mnemonic = name.charAt(i)))
 		 != -1;
 	     i++);
-	action.putValue(Action.SHORT_DESCRIPTION, description);
 	// otherwise haven't found a suitable char
-	if (i < description.length()) { 
+	if (i < name.length()) { 
 	    action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
 	    charsUnavailable += mnemonic;
 	}
+	action.putValue(Action.SHORT_DESCRIPTION, description);
     }
 
     /**Creates an image icon.
