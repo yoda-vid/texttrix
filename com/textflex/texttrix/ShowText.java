@@ -6,12 +6,6 @@
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
  *
- * The Java-Runtime-Environment-independent version of Txtrx uses 
- * libgcj, a library under the GNU General Public License and the
- * libgcc exception.  See gpl.txt and LIBGCJ_LICENSE in the
- * version's packages for a copy of the license and exception.
- * 
- * Copyright (c) 2002, David Young
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -103,12 +97,6 @@ public class ShowText {
 			+ "OSI Certified is a certification mark of the\n"
 			+ "Open Source Initiative.\n\n"
 			
-			+ "The Java-Runtime-Environment-independent version of\n"
-			+ "Txtrx uses libgcj, a library under the\n"
-			+ "GNU General Public license with the libgcc exception.\n"
-			+ "See gpl.txt and LIBGCJ_LICENSE in the version's packages\n"
-			+ "for a copy of the license and exception.\n\n"
-
 			+ "Copyright (c) 2002, David Young\n"
 			+ "All rights reserved.\n\n"
 
@@ -156,7 +144,7 @@ public class ShowText {
 	 * Uses hard-coded text.
 	 */
 	public static void showVersion() {
-		System.out.println("Txtrx, v.0.1.4-3");
+		System.out.println("Txtrx, v.0.1.5");
 	}
 
 	/**Prints the version information to the screen.

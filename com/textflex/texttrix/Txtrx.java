@@ -5,11 +5,6 @@
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
  *
- * The Java-Runtime-Environment independent version of Txtrx uses 
- * libgcj, a library under the GNU General Public License and the
- * libgcc exception.  See gpl.txt and LIBGCJ_LICENSE for a copy
- * of the license and exception.
- * 
  * Copyright (c) 2002, David Young
  * All rights reserved.
  *
@@ -111,10 +106,13 @@ public class Txtrx {
 		// one or more args: commands that include "v", files
 		} else if (cmds.indexOf("v") != -1) {
 			verbose = true;
-			cmds = removeSubstring(cmds, "-");
-			cmds = removeSubstring(cmds, "v");
+//			cmds = removeSubstring(cmds, "-");
+//			cmds = removeSubstring(cmds, "v");
+			cmds = cmds.replace('-', '\0');
+			cmds = cmds.replace('v', '\0');
 		} else {
-			cmds = removeSubstring(cmds, "-");
+			cmds = cmds.replace('-', '\0');
+//			cmds = removeSubstring(cmds, "-");
 		}
 	
 		for (int i = fileIndex; i < args.length; i++) {
@@ -148,7 +146,7 @@ public class Txtrx {
 							writeFile(text, path);
 							if (verbose) {
 								System.out.println(text);
-								System.out.println(path
+								System.out.println('\n' + path
 										+ "has been backed up to " 
 										+ bakPath);
 							}
@@ -165,49 +163,7 @@ public class Txtrx {
 		}
 	}
 
-	/* moved to ShowText.java
-	public static void showText(String path) {
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(path));
-			String line = "";
-
-			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
-			}
-		} catch(IOException e) {
-			System.out.println("Please see the Txtrx package for this documentation");
-		}
-	}
-	*/
-
-	/**Removes a given string from another string.
-	 * For example, removes each command from the command list
-	 * after the command's execution.
-	 * @param aString string from which to remove a substring
-	 * @param aSubstrint the substring to remove
-	 * @return the substring-removed string
-	 */
-	public static String removeSubstring(String aString, String aSubstring) {
-		String string = aString;
-		int l = aSubstring.length();
-		int i;
-		
-		while (string != null 
-				&& l != 0 
-				&& (i = string.indexOf(aSubstring)) != -1) {
-			if (string.equals(aSubstring)) {
-				string = null;
-			} else if (i == 0) {
-				string = string.substring(l);
-			} else if (i + l == string.length()) {
-				string = string.substring(0, i);
-			} else {
-				string = string.substring(0, i) + string.substring(i + l);
-			}
-		}
-		return string;
-	}
-
+	
 	/**Applies a single command to a given string.
 	 * @param cmd goofy or practical command to apply:
 	 * "r" is the Extra Hard Return Remover (practical function),
