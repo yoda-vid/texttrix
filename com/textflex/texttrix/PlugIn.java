@@ -116,16 +116,16 @@ public abstract class PlugIn extends JComponent {
 	
 	public void activateWindow() {
 	}
-	/*
+	
 	public boolean isWindowVisible() {
 		return false;
 	}
 	
-	public void reloadWindow(){
+	public void closeWindow(){
 	}
 	public void removeWindowAdapter() {
 	}
-	*/
+	
 	
 	public boolean isTmpActivated() {
 		return tmpActivated;

@@ -42,6 +42,8 @@ import java.util.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.filechooser.FileFilter;
+
+//import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -106,9 +108,11 @@ public class TextTrix extends JFrame {
 		// create the accept action
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
-				getPrefs().storePrefs();
-				applyPrefs();
-				getPrefs().dispose();
+				if (continuePrefsUpdate()) {
+					getPrefs().storePrefs();
+					applyPrefs();
+					getPrefs().dispose();
+				}
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -124,8 +128,10 @@ public class TextTrix extends JFrame {
 		// and destroy the object 
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
-				getPrefs().storePrefs();
-				applyPrefs();
+				if (continuePrefsUpdate()) {
+					getPrefs().storePrefs();
+					applyPrefs();
+				}
 			}
 		};
 		LibTTx.setAcceleratedAction(
@@ -384,6 +390,27 @@ public class TextTrix extends JFrame {
 		 */
 		focuser();
 	}
+	
+	public boolean continuePrefsUpdate() {
+
+//		if (getPrefs().getPlugInsPrefsChanged()) {
+		for (int i = 0; i < plugIns.length; i++) {
+			if (plugIns[i].isWindowVisible()) {
+				int choice = JOptionPane.showConfirmDialog(
+					this,
+					"Some plug-in windows may be closed if I store plug-in prefs.  Keep on going?",
+					"Electricity...",
+					JOptionPane.WARNING_MESSAGE,
+					JOptionPane.YES_NO_OPTION);
+				if (choice == JOptionPane.YES_OPTION) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	/** Synchronizes the menus with the current text pad settings.
 	 * Creates the file history menu entries in the File menu
@@ -482,6 +509,7 @@ public class TextTrix extends JFrame {
 		applyGeneralPrefs();
 		applyShortsPrefs();
 		menuBarCreator.start();
+//		getPrefs().setPlugInsPrefsChanged(false);
 	}
 
 	/** Applies preferences from the General tab in the preferences panel.
@@ -522,10 +550,21 @@ public class TextTrix extends JFrame {
 	*/
 	public void makePlugInAction(final PlugIn pl) {
 		// assumes prefs' includes is udpated
+/*
 		String[] includes = getPrefs().getIncludePlugInsNames();
 		if (!getPrefs().getAllPlugIns()
 			&& !LibTTx.inUnsortedList(pl.getName(), includes))
 			return;
+*/
+		String[] includes = getPrefs().getIncludePlugInsList();
+		for (int i = 0; i < includes.length; i++) {
+			System.out.println("includes[" + i + "]: " + includes[i]);
+		}
+		if (!getPrefs().getAllPlugIns()
+			&& !LibTTx.inUnsortedList(pl.getPath(), includes)) {
+			System.out.println(pl.getPath());
+			return;
+		}
 		String name = pl.getName(); // plugin name
 		String category = pl.getCategory();
 		// plugin category, for menu adding
@@ -736,6 +775,13 @@ public class TextTrix extends JFrame {
 		for (int i = 0; i < plugIns.length; i++) {
 //			System.out.println("plugIn[" + i + "]");
 			plugIns[i].setTmpActivated(true);
+			/*
+			try {
+				System.out.println("sleeping...");
+				Thread.sleep(500);
+			} catch (Exception e) {
+			}
+			*/
 			plugIns[i].activateWindow();
 		}
 		setTmpActivated(true);
@@ -790,8 +836,19 @@ public class TextTrix extends JFrame {
 			 * rather than adding the extraPlugs to the official, active plugIns group.
 			 */
 			plugIns = (PlugIn[])LibTTx.truncateArray(extraPlugs, extraPlugsInd);
-			getPrefs().updatePlugInsPanel(getPlugInNames());
+			for (int i = 0; i < plugIns.length; i++) {
+				plugIns[i].closeWindow();
+			}
+//			getPrefs().updatePlugInsPanel(getPlugInNames());
 		}
+	}
+	
+	public void refreshPlugInsPanel() {
+
+		// determine the available plug-ins
+		File file = getPlugInsFile();
+		String[] list = LibTTx.getPlugInPaths(file);
+		getPrefs().updatePlugInsPanel(list);
 	}
 
 	/* For some reason this fn sporadically doesn't work;
@@ -861,7 +918,8 @@ public class TextTrix extends JFrame {
 
 		// load the plugins and create actions for them
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
-		getPrefs().updatePlugInsPanel(getPlugInNames());
+//		getPrefs().updatePlugInsPanel(getPlugInNames());
+		getPrefs().updatePlugInsPanel(getPlugInPaths());
 		if (plugIns != null) {
 			for (int i = 0; i < plugIns.length; i++) {
 //				plugIns[i].removeWindowAdapter();
@@ -2534,7 +2592,8 @@ public class TextTrix extends JFrame {
 					Action prefsAction =
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
-							reloadPlugIns();
+//							reloadPlugIns();
+							refreshPlugInsPanel();
 							getPrefs().setVisible(true);//show();
 						}
 					};
@@ -2774,11 +2833,6 @@ public class TextTrix extends JFrame {
 					// Load plugins; add to appropriate menu
 					setupPlugIns();
 /*
-					for (int i = 0; i < plugIns.length; i++) {
-						if (plugIns[i].isWindowVisible()) {
-							plugIns[i].reloadWindow();
-						}
-					}
 */					
 					
 					
@@ -2805,6 +2859,26 @@ public class TextTrix extends JFrame {
 					syncMenus();
 					//System.out.println("Validating the menu bar...");
 					validate();
+					/*
+					for (int i = 0; i < plugIns.length; i++) {
+						System.out.println("I'm here: " + i);
+						final PlugIn pl = plugIns[i];
+						try {
+						EventQueue.invokeAndWait(new Runnable() {
+							public void run() {
+
+									if (pl.isWindowVisible()) {
+										pl.reloadWindow();
+									}
+							}
+							
+						});
+						} catch(InvocationTargetException e) {
+							
+						} catch(InterruptedException e) {
+						}
+					}
+					*/
 				}
 			});
 		}

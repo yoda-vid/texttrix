@@ -57,6 +57,7 @@ public class Prefs extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	// main prefs
 	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class);
+	private boolean plugInsPrefsChanged = false;
 
 
 
@@ -196,6 +197,15 @@ public class Prefs extends JFrame {
 			null,
 			"Don't get electricuted...",
 			PLUG_INS_PANEL_INDEX);
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (tabbedPane.getSelectedIndex() == PLUG_INS_PANEL_INDEX) {
+					setPlugInsPrefsChanged(true);
+					System.out.println("I'm changed!");
+				}
+			}
+						
+		});
 
 		// adds the components to the panel
 		Container contentPane = getContentPane();
@@ -551,6 +561,10 @@ public class Prefs extends JFrame {
 	public void setPlugInsList(String[] s) {
 		plugInsList = s;
 	}
+	
+	public void setPlugInsPrefsChanged(boolean b) {
+		plugInsPrefsChanged = b;
+	}
 
 	/** Gets the stored width for the program.
 	 * 
@@ -649,7 +663,7 @@ public class Prefs extends JFrame {
 	 * 
 	 * @return the list of plug-ins to make usable in Text Trix
 	 */
-	public String[] getIncludePlugInsNames() {
+	public String[] getIncludePlugInsList() {
 		return includes;
 	}
 	/** Gets the stored list of plug-ins to ignore.
@@ -665,6 +679,10 @@ public class Prefs extends JFrame {
 		return ignores;
 	}
 	*/
+	
+	public boolean getPlugInsPrefsChanged() {
+		return plugInsPrefsChanged;
+	}
 
 	/** Worker thread to create the preferences panel.
 	 * 
@@ -897,6 +915,7 @@ public class Prefs extends JFrame {
 					constraints.fill = GridBagConstraints.HORIZONTAL;
 					constraints.anchor = GridBagConstraints.NORTH;
 					panel.setLayout(new GridBagLayout());
+					
 
 					// Option to include all the plug-ins, which disables the plug-in
 					// selection components
