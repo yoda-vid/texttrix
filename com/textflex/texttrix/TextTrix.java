@@ -104,6 +104,7 @@ public class TextTrix extends JFrame {
 			    addTabIndexHistory(tabbedPane.getSelectedIndex());
 			    //			    addTabIndexHistory(currTabIndex);
 			}
+			getSelectedTextPad().requestFocusInWindow();
 			// record the current tab to update the record
 			// after switching to a new one
 			//			currTabIndex = tabbedPane.getSelectedIndex();
@@ -410,6 +411,7 @@ public class TextTrix extends JFrame {
 			tabbedPane.setSelectedIndex(tabIndexHistory
 						    [tabIndexHistoryIndex - 1]);
 			updateTabIndexHistory = true;
+			//			try { Thread.sleep(1000); } catch (InterruptedException e) {}
 		    } else { // reset the index to its orig val, -1
 			++tabIndexHistoryIndex;
 		    }
@@ -630,8 +632,11 @@ public class TextTrix extends JFrame {
 	//	contentPane.add(new TextArea(10, 5), BorderLayout.SOUTH);
 
 
-	// make first tab and text area
+	// make first tab and text area;
+	// can only create after making several other user interface
+	// components, such as the autoIndent check menu item
 	addTextArea(textAreas, tabbedPane, makeNewFile());
+
 	// load files specified at start from command-line
 	if (paths != null) {
 	    for (int i = 0; i < paths.length; i++) {
