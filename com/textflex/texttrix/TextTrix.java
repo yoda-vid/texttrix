@@ -61,82 +61,50 @@ public class TextTrix extends JFrame {
 	
 	/* GUI components and support variable */
 	private static ArrayList textAreas = new ArrayList(); // all the TextPads
-
 	private Container contentPane = getContentPane();
-
 	private JMenuBar menuBar = null;
-
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
-
 	private static JPopupMenu popup = null; // make popup menu
-
 	private static JFileChooser chooser = null; // file dialog
-
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
-
 	private static JCheckBoxMenuItem autoIndent = null;
-
 	private static String openDir = ""; // most recently path opened to
-
 	private static String saveDir = ""; // most recently path saved to
-
 	private static int fileIndex = 0; // for giving each TextPad a unique name
-
 	private static PlugIn[] plugIns = null; // plugins from jar archives
-
 	private static Action[] plugInActions = null; // plugin invokers
-
 	private JMenu trixMenu = null; // trix plugins
-
 	private JMenu toolsMenu = null; // tools plugins
-
 	private JToolBar toolBar = null; // icons
-
 	private String toolsCharsUnavailable = ""; // chars for shorcuts
-
 	private String trixCharsUnavailable = ""; // chars for shorcuts
-
 	private int[] tabIndexHistory = new int[10]; // records for back/forward
-
 	private int tabIndexHistoryIndex = 0; // index of next record
-
 	private boolean updateTabIndexHistory = true; // flag to update the record
-
 	private static Prefs prefs = null; // preferences
-
 	private static Action prefsOkayAction = null;
-
 	// prefs action signaling to accept
 	private static Action prefsApplyAction = null;
-
 	// prefs action signaling to immediately accept
 	private static Action prefsCancelAction = null; // prefs action to reject
-
 	private static boolean updateFileHist = false;
-
 	// flag to update file history menu entries
 	private static JMenu fileMenu = null; //new JMenu("File");
-
 	// file menu, which incl file history
 	private static int fileHistStart = -1;
-
 	// starting position of file history in file menu
 	private MenuBarCreator menuBarCreator = null;
-
 	// menu and tool bar worker thread
 	private FileHist fileHist = null; // file history
-
 	private boolean tmpActivated = false;
-
 	private HashPrintRequestAttributeSet printAttributes = new HashPrintRequestAttributeSet();
-
 	private PageFormat pageFormat = null;
-
+	private StatusBarCreator statusBarCreator = null;
+	private JPanel statusBarPanel = null;
 	private JLabel statusBar = null;
-
+	private JTextField lineNumFld = null;
 	//	private NumberFormat statusBarNumFormat = null;
 	private JDialog[] plugInDiags = null;
-
 	private int plugInDiagsIdx = 0;
 
 	/**
@@ -343,6 +311,10 @@ public class TextTrix extends JFrame {
 
 		// invoke the worker thread to create the initial menu bar;
 		(menuBarCreator = new MenuBarCreator()).start();
+		
+		statusBarPanel = new JPanel();
+		statusBar = new JLabel("Welcome to Text Trix, the super text tool chest!");
+		(statusBarCreator = new StatusBarCreator()).start();
 
 		// open the initial files and create the status bar;
 		// must make sure that all of the operations do not require anything
@@ -354,12 +326,9 @@ public class TextTrix extends JFrame {
 				// fit into the center position of the main window
 				JPanel centerPanel = new JPanel(new BorderLayout());
 
-				// makes the status bar
-				statusBar = new JLabel("Welcome to the Text Trix writer!");
-
 				// adds the panel's compoenents
 				centerPanel.add(tabbedPane, BorderLayout.CENTER);
-				centerPanel.add(statusBar, BorderLayout.SOUTH);
+				centerPanel.add(statusBarPanel, BorderLayout.SOUTH);
 				//				contentPane.add(statusBar, BorderLayout.SOUTH);
 
 				// adds the panel to the main window, central position
@@ -1024,9 +993,9 @@ public class TextTrix extends JFrame {
 	 *            starting point from which to measure <code>start</code> and
 	 *            <cdoe>end</code>
 	 * @param start
-	 *            beginning point for selection
+	 *            beginning point of selection, relative to baseline
 	 * @param end
-	 *            end point for selection
+	 *            end point of selection, relative to baseline
 	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
 		if (end != -1) {
@@ -1037,6 +1006,10 @@ public class TextTrix extends JFrame {
 		} else {
 			t.setCaretPosition(baseline + start);
 		}
+	}
+	
+	public void textSelectionReverse(TextPad t, int baseline, int start, int end) {
+		textSelection(t, baseline, end, start);
 	}
 
 	/*
@@ -2700,6 +2673,22 @@ public class TextTrix extends JFrame {
 	public int getTotalLineNumber(TextPad pad) {
 		return pad.getDocument().getDefaultRootElement().getElementCount();
 	}
+	
+	public Point getPositionFromLineNumber(TextPad pad, int line) {
+		line--;
+		Element elt = pad.getDocument().getDefaultRootElement();
+		int len = pad.getDocument().getLength();
+		if (line < 0) {
+			return new Point(0, 0);
+		} else if (line >= elt.getElementCount()) {
+			int i = len;
+			return new Point(i, i);
+		}
+		Element lineElt = elt.getElement(line);
+		int end = lineElt.getEndOffset();
+		if (end >= len) end--;
+		return new Point(lineElt.getStartOffset(), end);
+	}
 
 	/**
 	 * Updates the status bar with the latest line number information.
@@ -3788,6 +3777,106 @@ public class TextTrix extends JFrame {
 					fileHistStart = fileMenu.getItemCount();
 					syncMenus();
 					//System.out.println("Validating the menu bar...");
+					validate();
+				}
+			});
+		}
+	}
+	
+	private class StatusBarCreator implements Runnable { //extends Thread {
+	
+
+		/**
+		 * Begins creating the bars.
+		 *  
+		 */
+		public void start() {
+			(new Thread(this, "thread")).start();
+		}
+
+		/**
+		 * Performs the menu and associated bars' creation.
+		 *  
+		 */
+		public void run() {
+			// start creating the components after others methods that might use
+			// the components have finalized their tasks
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					
+					SpringLayout layout = new SpringLayout();
+					statusBarPanel.setLayout(layout);
+					
+					// makes the status bar
+					JLabel lineNumLbl = new JLabel("GoTo Line Number:");
+					lineNumFld = new JTextField(5);
+					lineNumFld.addCaretListener(new CaretListener() {
+						public void caretUpdate(CaretEvent e) {
+							TextPad t = getSelectedTextPad();
+							if (t != null) {
+								String lineStr = lineNumFld.getText();
+								int line = 0;
+								if (!lineStr.equals("")) {
+									line = Integer.parseInt(lineStr);
+									Point p = getPositionFromLineNumber(t, line);
+									textSelectionReverse(t, (int) p.getX(), 0, (int) p.getY() - (int) p.getX());
+								}
+							}
+						}
+					});
+					lineNumFld.addKeyListener(new KeyAdapter() {
+						public void keyTyped(KeyEvent evt) {
+							char keyChar = evt.getKeyChar();
+							if (!Character.isDigit(keyChar)) {
+								evt.consume();
+							}
+						}
+					});
+					statusBarPanel.add(statusBar);
+					statusBarPanel.add(lineNumLbl);
+					statusBarPanel.add(lineNumFld);
+					System.out.println("lay me out!");
+					
+					layout.putConstraint(SpringLayout.WEST, statusBar,
+						5,
+						SpringLayout.WEST, statusBarPanel);
+					layout.putConstraint(SpringLayout.NORTH, statusBar,
+						2,
+						SpringLayout.NORTH, statusBarPanel);
+					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
+						2,
+						SpringLayout.SOUTH, statusBar);
+					
+					/*
+					layout.putConstraint(SpringLayout.WEST, lineNumLbl,
+						50,
+						SpringLayout.EAST, statusBar);
+					*/
+					layout.putConstraint(SpringLayout.NORTH, lineNumLbl,
+						2,
+						SpringLayout.NORTH, statusBarPanel);
+					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
+						2,
+						SpringLayout.SOUTH, lineNumFld);
+					
+					layout.putConstraint(SpringLayout.EAST, lineNumLbl,
+						-2,
+						SpringLayout.WEST, lineNumFld);
+					/*
+					layout.putConstraint(SpringLayout.WEST, lineNumFld,
+						5,
+						SpringLayout.EAST, lineNumLbl);
+					*/
+					layout.putConstraint(SpringLayout.EAST, lineNumFld,
+						5,
+						SpringLayout.EAST, statusBarPanel);
+					layout.putConstraint(SpringLayout.NORTH, lineNumFld,
+						0,
+						SpringLayout.NORTH, statusBarPanel);
+					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
+						0,
+						SpringLayout.SOUTH, lineNumFld);
+					
 					validate();
 				}
 			});

@@ -76,6 +76,7 @@ v.0.3.6
 		-option for plug-in to specify the region to replace; ADDED: when the plug-in wants to replace only a section of the text it has received, the plug-in can specify this region along with the text to replace it; TextTrix uses Document and indentRegion controls for speedy, specific updates
 		-re-highlight text after opening new plug-in dialog window; FIXED: no longer lose highlight when opening plug-in dialogs
 		-get default window size from plug-in for first-time usage of the plug-in; FIXED: gets size from plug-in rather than from dialog
+		-plug-in load failure shouldn't tear down the entire menu bar creation; FIXED (#1092036): checks for null plug-ins and prevents their addition to the plug-in array
 	-Search plug-in fixes
 		-fix replace-all fn to not exceed the selection boundaries; FIXED (#1007487): replace-all used to exceed boundaries by a few characters, but now no longer appears to do so; replace-all now replaces only within the selected area when selected-area-only option chosen; searches and replaces within the entire text when wrap option chosen; otherwise, only works from the cursor position
 		-Selected-Area-Only and Wrap check boxes should reflect their mutual exclusivity; ADDED: since the two options opose one another, turning on one turns off the other, while both can also be unchecked simultaneously
@@ -101,7 +102,6 @@ v.0.3.6
 	-prefs panel should also be fit into a JDialog, with TextTrix as the owner; ADDED: prefs panel conforms to new plug-in window model, except that Preferences itself extends JDialog since Preferences remains internalized in the program
 	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval; adopts same default size and location as with plugIns
 	-reorganize to compact unnecessarily large fields; ADDED: divided general prefs panel from 2 to 3 columns
--plug-in load failure shouldn't tear down the entire menu bar creation
 -update icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -stop auto-save thread when close file; FIXED (#1007497): removing tab stops the timer
 -refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
@@ -112,6 +112,8 @@ v.0.3.6
 	-pkg script should check that build directory exists or successfully created before continuing; FIXED: checks for directory b/c lack of it indicates that the script will not be able to change directories and will instead delete files in the current directory
 	-fix pkg script to allow "./" run calls from within Cygwin; FIXED: remove "./" from prefix of "$0"
 -function to go directly to a line number
+	-Line Finder; ADDED: Line Finder highlights the line number as it's typed into a new text field in the status bar
+	-more versatile status bar; ADDED: experimenting with new SpringLayout in status bar
 -fix printer indentation loss; FIXED (#1067823): store indent information from the paragraph attributes in a new PrintPadText object for each line
 
 ----Past Releases----

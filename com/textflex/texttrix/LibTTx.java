@@ -92,6 +92,7 @@ public class LibTTx {
 			"com.textflex.texttrix."
 				+ plugInName.substring(0, plugInName.indexOf(".jar"));
 		PlugIn plugIn = (PlugIn) createObject(name, loader);
+		if (plugIn == null) return null;
 		plugIn.setPath(path);
 		return plugIn;
 	}
@@ -124,6 +125,7 @@ public class LibTTx {
 			"com.textflex.texttrix."
 				+ plugInName.substring(0, plugInName.indexOf(".jar"));
 		PlugIn plugIn = (PlugIn) createObject(name, loader);
+		if (plugIn == null) return null;
 		plugIn.setPath(path);
 		return plugIn;
 	}
@@ -171,9 +173,13 @@ public class LibTTx {
 		// traverse /teams dir, listing names w/o the ending
 		if (plugInList != null) {
 			plugIns = new PlugIn[plugInList.length];
+			int j = 0;
+			PlugIn pl = null;
 			for (int i = 0; i < plugInList.length; i++) {
-				plugIns[i] = loadPlugIn(plugInDir, plugInList[i]);
+				pl = loadPlugIn(plugInDir, plugInList[i]);
+				if (pl != null) plugIns[j++] = pl;
 			}
+			plugIns = (PlugIn[]) truncateArray(plugIns, j);
 		}
 		return plugIns;
 	}
