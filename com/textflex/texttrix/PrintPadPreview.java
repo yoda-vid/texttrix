@@ -52,7 +52,7 @@ public class PrintPadPreview extends JDialog {
 	
 	private Book book = null;
 	
-	public PrintPadPreview(Frame frame, Book aBook) {
+	public PrintPadPreview(Frame frame, Book aBook, Action printAction) {
 		super(frame, "Print Preview", true);
 		book = aBook;
 		setSize(300, 400);
@@ -110,13 +110,25 @@ public class PrintPadPreview extends JDialog {
 			100,
 			0,
 			contentPane);
+			
+		JButton printButton = new JButton(printAction);
+		LibTTx.addGridBagComponent(
+			printButton,
+			constraints,
+			2,
+			0,
+			1,
+			1,
+			100,
+			0,
+			contentPane);
 
 		LibTTx.addGridBagComponent(
 			previewer,
 			constraints,
 			0,
 			1,
-			2,
+			3,
 			1,
 			100,
 			100,
@@ -158,6 +170,7 @@ public class PrintPadPreview extends JDialog {
 				xOff = 0;
 				yOff = .5 * (sy - scale * py);
 			}
+/*
 			System.out.println(
 				"xOff: " + xOff
 				+ ", yOff: " + yOff
@@ -166,6 +179,7 @@ public class PrintPadPreview extends JDialog {
 				+ ", py: " + py
 				+ ", sx: " + sx
 				+ ", sy: " + sy);
+*/
 			g2D.translate((float)xOff, (float)yOff);
 			g2D.scale((float)scale, (float)scale);
 			

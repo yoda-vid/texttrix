@@ -2073,10 +2073,25 @@ public class TextTrix extends JFrame {
 		return bk;
 	}
 	
+	public void printTextPadSettings() {
+		PrinterJob job = PrinterJob.getPrinterJob();
+		job.pageDialog(printAttributes);
+	}
+	
 	public void printPreview() {
 		Book bk = createBook();
 		if (bk == null) return;
-		PrintPadPreview preview = new PrintPadPreview(this, bk);
+		Action printAction = new AbstractAction("Print...", null) {
+			public void actionPerformed(ActionEvent e) {
+				printTextPad();
+			}
+		};
+		LibTTx.setAcceleratedAction(
+			printAction,
+			"Print...",
+			'I',
+			KeyStroke.getKeyStroke("alt I"));
+		PrintPadPreview preview = new PrintPadPreview(this, bk, printAction);
 		preview.setVisible(true);
 	}
 
@@ -2369,6 +2384,7 @@ public class TextTrix extends JFrame {
 					char printActionMnemonic = 'P';
 					KeyStroke printActionShortcut = KeyStroke.getKeyStroke("ctrl P");
 					char printPreviewActionMnemonic = 'R';
+					char printSettingsActionMnemonic = 'I';
 
 					// Alternate keybindings: shortcuts added to and with
 					// preference over the standard shortcuts
@@ -2605,6 +2621,17 @@ public class TextTrix extends JFrame {
 						printPreviewActionMnemonic);
 					fileMenu.add(printPreviewAction);
 					
+
+					Action printSettingsAction = new AbstractAction("Print settings...") {
+						public void actionPerformed(ActionEvent e) {
+							printTextPadSettings();
+						}
+					};
+					LibTTx.setAction(
+						printSettingsAction,
+						"Print settings...",
+						printSettingsActionMnemonic);
+					fileMenu.add(printSettingsAction);
 					
 					// Menu: begin exit entries
 					fileMenu.addSeparator();
