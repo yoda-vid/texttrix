@@ -701,10 +701,23 @@ public class TextTrix extends JFrame {
 		if (pl instanceof PlugInWindow) {
 			final JDialog dialog = new JDialog(this, name);
 			JPanel panel = pl.getWindow();
+				final String filename = pl.getFilename();
 			if (panel != null) {
 				dialog.setContentPane(panel);
-				dialog.setSize(panel.getSize());
-				dialog.setName(pl.getFilename());
+				
+				int width = getPrefs().getPlugInWidth(filename);
+				int height = getPrefs().getPlugInHeight(filename);
+				if (width == 0 || height == 0) {
+					dialog.setSize(panel.getSize());
+				} else {
+					dialog.setSize(width, height);
+				}
+				int xLoc = getPrefs().getPlugInXLoc(filename);
+				int yLoc = getPrefs().getPlugInYLoc(filename);
+				if (xLoc != 0 && yLoc != 0) {
+					dialog.setLocation(new Point(xLoc, yLoc));
+				}
+				dialog.setName(filename);
 				addPlugInDialog(dialog);
 			}/*
 			  * else { WindowAdapter winAdapter = new WindowAdapter() { public
@@ -715,11 +728,9 @@ public class TextTrix extends JFrame {
 			  */
 
 			// restore window size and location
-			final String filename = pl.getFilename();
-			dialog.setSize(getPrefs().getPlugInWidth(filename), getPrefs()
-					.getPlugInHeight(filename));
-			dialog.setLocation(new Point(getPrefs().getPlugInXLoc(filename),
-					getPrefs().getPlugInYLoc(filename)));
+			//dialog.setSize(, );
+			//dialog.setLocation(new Point(,
+//					));
 
 			// store window size and location with each movement
 			ComponentListener compListener = new ComponentListener() {
@@ -760,9 +771,9 @@ public class TextTrix extends JFrame {
 				pl.startPlugIn();
 				if (pl instanceof PlugInWindow) {
 					JDialog diag = null;
-					System.out.println("looking for: " + pl.getFilename());
+					//System.out.println("looking for: " + pl.getFilename());
 					if ((diag = getPlugInDialog(pl.getFilename())) != null) {
-						System.out.println("found it!");
+						//System.out.println("found it!");
 						diag.setVisible(true);
 					}
 				}
