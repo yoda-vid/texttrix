@@ -51,17 +51,17 @@ Note: "./" is the "check-mark" symbol
 
 v.0.3.6
 -fix loss of auto-wrap-indent bug when applying search plug-in
--fix auto-wrap-indent to not rely on previous line's indentation; FIXED: indent function no longer skips over the next newline when one newline is adjacent to another one, found in blank, unindented lines, which had prevented the next line from having graphical indentation
--fix wrap-indent failure at start of document; FIXED: removes the graphical indent at the start of documents in JVM >= v.1.5
--fix failure to auto-indent when first line is blank and second line has the tab; FIXED: now properly counts the previous line's tabs because no longer skips past the first newline
+-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
+-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
+-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
 -fix search to not exceed the selection boundaries
 -fix HTMLReplacer tool tip now that no longer need double undos
--check on different indents when apply auto-indent manually and via save; FIXED: now both indentCurrentParagraph, which has indented correctly, and setIndentTabs indent properly
 -have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure
 -tab entire regions
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
 -remember prefs panel position
+-adjust wrap-indent when user presses delete key or any of its shortcuts
 
 v.0.3.5
 -auto-save

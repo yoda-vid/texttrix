@@ -86,6 +86,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		// First discard JTextComponent's usual dealing with ctrl-backspace.
 		// (enter) Auto-indent if Text Trix's option selected.
 		addKeyListener(new KeyAdapter() {
+			/**Responds to whatever the current key combination maps to.
+			 * Backspaces have already been processed in JVM >= v.1.5.
+			 * 
+			 */
 			public void keyTyped(KeyEvent event) {
 				char keyChar = event.getKeyChar();
 				if (event.isControlDown()
@@ -100,18 +104,30 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& isLeadingTab()) {
 					// performs the action after adding the tab
 					indentCurrentParagraph(getTabSize());
-				} else if (
+				}/* else if (
 					autoIndent
 						&& keyChar == KeyEvent.VK_BACK_SPACE
 						&& isLeadingTab(JVM_15)) {
+					System.out.println("right here, baby");
 					// performs the action before deleting the char, the
 					// opposite of the assumption in indentCurrentParagraph
 					indentCurrentParagraph(getTabSize(), !JVM_15);
 				}
+				*/
 			}
-
+			
+			/**Responds to key events right after the key is pressed.
+			 * Unlike keyTyped(KeyEvent), backspaces have not yet
+			 * been processed, even for JVM == v.1.5.
+			 * 
+			 */
 			public void keyPressed(KeyEvent evt) {
-				//				int keyCode = evt.getKeyChar();
+				int keyCode = evt.getKeyChar();
+				if (autoIndent
+					&& keyCode == KeyEvent.VK_BACK_SPACE
+					&& isLeadingTab()) {
+					indentCurrentParagraph(getTabSize(), JVM_15);
+				}
 				//				System.out.println("keyChar:" + keyCode);
 			}
 
@@ -475,7 +491,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void indentCurrentParagraph(
 		int tabChars,
-		boolean unindentNotJVM_15) {
+		boolean decrementTab) {
 		String s = getAllText();
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
 //		System.out.println("caret position: " + getCaretPosition());
@@ -484,7 +500,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// the tab has already been deleted in JVM >= v.1.5;
 		// tabs should equal the final number of tab characters, so tabs
 		// must be decremented in JVM < v.1.5
-		if (unindentNotJVM_15) {
+		if (decrementTab) {
 			--tabs;
 		}
 		int end = s.indexOf("\n", start);
@@ -519,21 +535,18 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * of tabs.  Useful to prevent inner tabs from influencing indents.
 	 * @return <code>true</code> if the tab is a leading tab
 	 */
-	public boolean isLeadingTab(boolean jvm15) {
-		int i = jvm15 ? getCaretPosition() : getCaretPosition() - 1;
+	public boolean isLeadingTab() {
+		int i = getCaretPosition() - 1;
 		try {
 			while (i > 0 && getDocument().getText(i, 1).equals("\t"))
 				i--;
-			return i == 0 || getDocument().getText(i, 1).equals("\n");
+			return i == 0 || i >= 0 && getDocument().getText(i, 1).equals("\n");
 		} catch (BadLocationException e) {
 			System.out.println("Can't find no tabs, dude.");
 			return false;
 		}
 	}
 	
-	public boolean isLeadingTab() {
-		return isLeadingTab(false);
-	}
 
 	/**Gets the value showing whether the text in the text area
 	 * has changed.
