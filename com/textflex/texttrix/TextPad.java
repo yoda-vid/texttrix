@@ -43,7 +43,6 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.undo.*;
 import javax.swing.text.*;
-import javax.swing.text.JTextComponent.*;
 import javax.swing.Action.*;
 import java.io.*;
 
