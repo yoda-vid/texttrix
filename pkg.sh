@@ -8,6 +8,7 @@
 VER="0.3.3" # version info
 WKDIR="/home/davit/src/texttrix" # work directory
 DEST="/home/share" # final destination
+WIN_MOUNT="pkg-winmount.sh" # script to copy files to a Windows partition
 
 ##############################
 # Only change for tweaking
@@ -19,6 +20,7 @@ PKG=$PKGDIR.zip # name of compressed binary package
 SRCPKGDIR="$PKGDIR-src" # name of source package
 SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR=$NAME.jar # executable jar
+ALL="$PKGDIR $PKG $SRCPKGDIR $SRCPKG"
 
 cd $WKDIR # base of operations
 sh plug.sh # build the plugins
@@ -81,7 +83,8 @@ cd $WKDIR
 zip -r $PKG $PKGDIR
 zip -r $SRCPKG $SRCPKGDIR
 rm -rf $DEST/$PKGDIR*
-mv $PKGDIR* $DEST
-ls -l $DEST/$PKGDIR*
+mv $ALL $DEST
+cd $DEST && ls -l $ALL
+cd $WKDIR && sh $WIN_MOUNT
 
 exit 0
