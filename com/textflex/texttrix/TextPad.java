@@ -62,7 +62,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private int tabSize = 4; // default tab display size
 	private static boolean JVM_15 = false; // flags that running on JVM 1.5
 //	private double scale = 1;
-	private Thread autoSaveTimer = null; // timer to auto save the text
+	private StoppableThread autoSaveTimer = null; // timer to auto save the text
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -896,14 +896,14 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * with changed content if the user has enabled the feature.
 	 * @return the auto-save timer
 	 */
-	public Thread getAutoSaveTimer() {
+	public StoppableThread getAutoSaveTimer() {
 		return autoSaveTimer;
 	}
 	/**Sets the current auto-save timer.
 	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
 	 * with changed content if the user has enabled the feature.
 	 */
-	public void setAutoSaveTimer(Thread aAutoSaveTimer) {
+	public void setAutoSaveTimer(StoppableThread aAutoSaveTimer) {
 		autoSaveTimer = aAutoSaveTimer;
 	}
 }

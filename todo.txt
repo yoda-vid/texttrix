@@ -51,6 +51,7 @@ v.0.3.5
 	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again; recycles if file chooser open to prevent duplication of save-as and mulitplication of dialogs
 	-prompt before saving the changes to the current file; ADDED: preference option to prompt the user to accept the file changes since the auto-save overwrites the current file
 	-check print width anomalies
+	-new StoppableThread class to easily request threads to stop; ADDED: private classes can extend this class to have both private status and the ability for an external class to stop the thread
 -preferences panel to choose default paths
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront
 	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected; to prevent automatic reactivation while shifting to other windows, flag renders window inactivatable until timer unsets flag; window deactivation listener also sets the flag to prevent Text Trix from automatically requesting activation immediately after switching activation to another program
@@ -73,7 +74,9 @@ v.0.3.5
 -button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
 -add *.js files to Web file type; ADDED: as "Web file"; should also add to programming?
 -fix bold file menu font; FIXED (#911283): moved menu creation from class variable declaration area to TextTrix constructor
--remove "Features Descriptions" menu item and document
+-remove "Features Descriptions" menu item and document; FIXED (#799565): removed to focus on the plug-in tool tips, displayed dynamically for loaded plug-ins
+-add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window
+-update JarAjar to allow for MacOS X integration
 
 v.0.3.4
 -preferences:

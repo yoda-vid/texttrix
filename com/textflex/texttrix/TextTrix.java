@@ -2280,16 +2280,21 @@ public class TextTrix extends JFrame {
 	public void startTextPadAutoSaveTimer(TextPad pad) {
 		// TextPads store the timer as a Thread object since the timer's
 		// class is private
-		Thread timer = pad.getAutoSaveTimer();
+		StoppableThread timer = pad.getAutoSaveTimer();
 		//		TextPadAutoSaveTimer textTimer = null;
 		// creates a new timer if it doesn't exist, the case when auto-save 
 		// hasn't started, or stopTextPadAutoSaveTimer has stopped it;
 		// if try to restart, get ThreadStateException for some reason
 		// TODO: find out how to restart thread
+		
 		if (timer == null) {
 			pad.setAutoSaveTimer(timer = new TextPadAutoSaveTimer(pad));
 			timer.start();
-		} /* else if (timer instanceof TextPadAutoSaveTimer 
+		} else if (timer.isStopped()) {
+			timer.start();
+		}
+		 
+		/* else if (timer instanceof TextPadAutoSaveTimer 
 					&& !(textTimer = (TextPadAutoSaveTimer) timer).isAlive()) {//.isStopped()) {
 					// only restarts if stopped; otherwise would continually
 					// call the timer to start when it is already running
@@ -2305,12 +2310,13 @@ public class TextTrix extends JFrame {
 	 * @see #startTextPadAutoTimer(TextPad)
 	 */
 	public void stopTextPadAutoSaveTimer(TextPad pad) {
-		Thread timer = pad.getAutoSaveTimer();
+		StoppableThread timer = pad.getAutoSaveTimer();
 		if (timer != null) {
-			timer.interrupt();
+			//timer.interrupt();
 			// destroys object to ensure that the startTextPadAutoSaveTimer
 			// creates a new object
-			pad.setAutoSaveTimer(null);
+			//pad.setAutoSaveTimer(null);
+			timer.requestStop();
 		}
 	}
 
@@ -2572,10 +2578,12 @@ public class TextTrix extends JFrame {
 	 * saves and to see whether the user would like a prompt before the
 	 * timer saves the file automatically.
 	 */
-	private class TextPadAutoSaveTimer extends Thread {
+	private class TextPadAutoSaveTimer extends StoppableThread {
+
 		//		private boolean stopped = false;
 		private TextPad textPad = null;
 		private boolean chooserShowing = false;
+		private Thread thread = null;
 
 		/**Creates a timer to work on the given <code>TextPad</code>.
 		 * The pad will in turn store the timer.
@@ -2583,6 +2591,16 @@ public class TextTrix extends JFrame {
 		 */
 		public TextPadAutoSaveTimer(TextPad aTextPad) {
 			textPad = aTextPad;
+		}
+		
+		public void start() {
+			
+			//if (thread == null) {
+				setStopped(false);
+				thread = new Thread(this, "thread");
+				thread.start();
+			//}
+			
 		}
 
 		/**Saves the file after the time interval that the preferences
@@ -2645,6 +2663,7 @@ public class TextTrix extends JFrame {
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
 								saveFile(textPad);
+								System.out.println("now saved!");
 							} else {
 								// asks users whether they would like to supply a file 
 								// path rather than diving immediately and cryptically
@@ -2671,19 +2690,21 @@ public class TextTrix extends JFrame {
 								// solicits users for a file name;
 								// main prgm as dialog owner
 								fileSaveDialog(textPad, getThis());
+								System.out.println("now saved!");
 							}
 						}
 					});
-					System.out.println("now saved!");
 				} else {
 					//					stopped = true;
 				}
 				//				interrupted();
 				//				return;
+				setStopped(true);
 			} catch (InterruptedException e) {
 				//				stopped = true;
 				//				return;
 				// ensures that an interrupt during the sleep is still flagged
+				setStopped(true);
 				Thread.currentThread().interrupt();
 			}
 
@@ -2696,6 +2717,14 @@ public class TextTrix extends JFrame {
 				}
 			});
 			return chooserShowing;
+		}
+		
+		public void requestStop() {
+			setStopped(true);
+			if (thread != null) {
+				thread.interrupt();
+				thread = null;
+			}
 		}
 		/*
 				public boolean isStopped() {
@@ -2746,7 +2775,7 @@ public class TextTrix extends JFrame {
 	 * thread starts.
 	 * @author davit
 	 */
-	private class MenuBarCreator extends Thread {
+	private class MenuBarCreator implements Runnable {//extends Thread {
 
 		/** Begins creating the bars.
 		 * 
@@ -2754,6 +2783,7 @@ public class TextTrix extends JFrame {
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
+		
 
 		/** Performs the menu and associated bars' creation.
 		 * 

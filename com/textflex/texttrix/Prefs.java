@@ -809,7 +809,7 @@ public class Prefs extends JFrame {
 	 * 
 	 * @author davit
 	 */
-	private class CreateGeneralPanel extends Thread {
+	private class CreateGeneralPanel implements Runnable {//extends Thread {
 		
 		private JLabel autoSaveIntervalLbl = null;
 
@@ -819,6 +819,7 @@ public class Prefs extends JFrame {
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
+		
 
 		/** Makes a panel for the "General" preferences tab.
 		 * Displays options related to the program as a whole.
@@ -1049,7 +1050,8 @@ public class Prefs extends JFrame {
 	 * 
 	 * @author davit
 	 */
-	private class CreateShortsPanel extends Thread {
+	private class CreateShortsPanel implements Runnable {//extends Thread {
+		
 		/** Starts the thread.
 		 * 
 		 */
@@ -1113,7 +1115,8 @@ public class Prefs extends JFrame {
 	 * 
 	 * @author davit
 	 */
-	private class CreatePlugInsPanel extends Thread {
+	private class CreatePlugInsPanel implements Runnable {//extends Thread {
+
 		JButton moveToIgnoresBtn = null;
 		JButton moveToIncludesBtn = null;
 		JLabel plugInsSelectionLbl = new JLabel("Which plug-ins do you want?");
