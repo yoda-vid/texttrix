@@ -37,7 +37,6 @@ Note: "./" is the "check-mark" symbol
 -group tabs in separate tabbed panes
 -tabbed pane updates
 	-when have multiple files with same filename, add more of path to tab titles
-	-tab groupings: open sets of files at once
 	-truncate filenames on tabs
 -print images and multi-formatted text
 -integrated windowing design updates
@@ -46,8 +45,23 @@ Note: "./" is the "check-mark" symbol
 	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
 	-check for breakage of single thread rule
 -update JarAjar to allow for MacOS X integration
+-bookmarks, including bookmark groups
 
 ----Current Work----
+
+v.0.3.6
+-fix loss of auto-wrap-indent bug when applying search plug-in
+-fix auto-wrap-indent to not rely on previous line's indentation; FIXED: indent function no longer skips over the next newline when one newline is adjacent to another one, found in blank, unindented lines, which had prevented the next line from having graphical indentation
+-fix wrap-indent failure at start of document; FIXED: removes the graphical indent at the start of documents in JVM >= v.1.5
+-fix failure to auto-indent when first line is blank and second line has the tab; FIXED: now properly counts the previous line's tabs because no longer skips past the first newline
+-fix search to not exceed the selection boundaries
+-fix HTMLReplacer tool tip now that no longer need double undos
+-check on different indents when apply auto-indent manually and via save; FIXED: now both indentCurrentParagraph, which has indented correctly, and setIndentTabs indent properly
+-have plugins supply panels to TextTrix for it to apply to windows that TextTrix keeps secure
+-tab entire regions
+-plug-in load failure shouldn't tear down the entire menu bar creation
+-new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
+-remember prefs panel position
 
 v.0.3.5
 -auto-save

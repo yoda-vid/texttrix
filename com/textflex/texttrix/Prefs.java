@@ -814,9 +814,9 @@ public class Prefs extends JFrame {
 
 					// automatically auto-indents files whose extensions match any of those in
 					// the customizable list
-					String autoIndentTxt = "Auto-indent file types:";
+					String autoIndentTxt = "Auto-wrap-indent file types:";
 					String autoIndentTipTxt =
-						"<html>Auto-indent files with the following extensions."
+						"<html>Auto-wrap-indent files with the following extensions."
 							+ "<br>Including the period and space is optional,"
 							+ "<br>but be sure to separate each extension with a comma.</html>";
 					autoIndentChk =
@@ -824,7 +824,7 @@ public class Prefs extends JFrame {
 					autoIndentChk.setToolTipText(autoIndentTipTxt);
 					// default list of extension
 					String autoIndentExt =
-						".java, .c, .cpp, .html, .css, .shtml, .xhtml";
+						".java, .c, .cpp, .html, .css, .shtml, .xhtml, .sh";
 					autoIndentExtFld = new JTextField(autoIndentExt, 30);
 					
 

@@ -103,7 +103,7 @@ public class TextPad extends JTextPane implements StateEditable {
 				} else if (
 					autoIndent
 						&& keyChar == KeyEvent.VK_BACK_SPACE
-						&& isLeadingTab()) {
+						&& isLeadingTab(JVM_15)) {
 					// performs the action before deleting the char, the
 					// opposite of the assumption in indentCurrentParagraph
 					indentCurrentParagraph(getTabSize(), !JVM_15);
@@ -397,7 +397,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * to represent tabs as styled indents.
 	 * @param tabChars the number of characters that each tab represents
 	 * @param start the position from which to start indenting
-	 * @param end the last position from which to begin indenting
+	 * @param end the first position from which to no longer indent
 	 * @see #setDefaultTabs(int)
 	 * @see #setIndentTabs(int)
 	 */
@@ -406,15 +406,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		int i = start;
 		int j = 0;
 		String s = getAllText();
-		while (i < end && (j = s.indexOf("\n", i + 1)) != -1) {
+		while (i < end) {
 			//			System.out.println("i: " + i + ", j: " + j);
+			j = s.indexOf("\n", i);
+			if (j == -1) j = end - 1;
 			int tabs = leadingTabsCount(s, i);
 			if (tabs > 0)
 				indent(tabChars, tabs, i, j - i + 1);
 			i = j + 1;
 		}
+		/*
 		int tabs = leadingTabsCount(s, i);
 		indent(tabChars, tabs, i, s.length() + 1);
+		*/
 	}
 
 	/** Counts the number of continuous tabs from a given position.
@@ -459,10 +463,12 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @see #indentCurrentParagraph(int)
 	 */
 	/* JVM v.1.5 simply processes tabs according to the
-	 * number currently present, and indentCurrentParagraph operates accordingly:
+	 * number currently present, and indentCurrentParagraph methods operate 
+	 * accordingly:
 	 * both methods assume that the tab character change has already been 
-	 * accomplished.  Tab deletions in JVM < v.1.5, by contrast, 
-	 * appear to not be processed until the KeyListener methods finish.
+	 * accomplished.  Tab deletions in JVM < v.1.5 appear not to be processed 
+	 * until the KeyListener methods finish, requiring a the tab count
+	 * in these methods to be decremented.
 	 * Rather than create two separate indentation methods, a single indent
 	 * method now assumes that the tabs have been processed but also allows
 	 * for a parameter to flag when a tab deletion takes place in JVM < v.1.5. 
@@ -472,12 +478,17 @@ public class TextPad extends JTextPane implements StateEditable {
 		boolean unindentNotJVM_15) {
 		String s = getAllText();
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
+//		System.out.println("caret position: " + getCaretPosition());
+//		if (start == -1) start = 0;
 		int tabs = leadingTabsCount(s, start);
-		// the tab has already been deleted in JVM < v.1.5
+		// the tab has already been deleted in JVM >= v.1.5;
+		// tabs should equal the final number of tab characters, so tabs
+		// must be decremented in JVM < v.1.5
 		if (unindentNotJVM_15) {
 			--tabs;
 		}
-		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
+		int end = s.indexOf("\n", start);
+		indent(tabChars, tabs, start, (end == -1 ? s.length() : end + 1) - start);
 	}
 
 	/** Indents the current paragraph, no matter where the caret is within it.
@@ -508,8 +519,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * of tabs.  Useful to prevent inner tabs from influencing indents.
 	 * @return <code>true</code> if the tab is a leading tab
 	 */
-	public boolean isLeadingTab() {
-		int i = getCaretPosition() - 1;
+	public boolean isLeadingTab(boolean jvm15) {
+		int i = jvm15 ? getCaretPosition() : getCaretPosition() - 1;
 		try {
 			while (i > 0 && getDocument().getText(i, 1).equals("\t"))
 				i--;
@@ -518,6 +529,10 @@ public class TextPad extends JTextPane implements StateEditable {
 			System.out.println("Can't find no tabs, dude.");
 			return false;
 		}
+	}
+	
+	public boolean isLeadingTab() {
+		return isLeadingTab(false);
 	}
 
 	/**Gets the value showing whether the text in the text area
@@ -817,12 +832,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		try {
 			int n = 0;
 			int tabs = 0;
+			
+			// finds the previous newline that created the previous paragraph
 			for (n = getCaretPosition() - 2;
 				n >= 0 && !getDocument().getText(n, 1).equals("\n");
 				n--);
+//				System.out.println("n char: " + getDocument().getText(n, 1)); }
+			/*
 			if (n == 0)
 				n = -1;
+			*/
+			// counts the number of tabs at the start of the previous paragraph
 			for (tabs = 0; getDocument().getText(++n, 1).equals("\t"); tabs++);
+//			System.out.println("tab count: " + tabs);
 
 			// construct a string of all the tabs
 			StringBuffer tabStr = new StringBuffer(tabs);

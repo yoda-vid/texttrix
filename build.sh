@@ -44,7 +44,7 @@ Syntax:
 	build.sh [ --java java-compiler-binaries-path ] [ --plug ]
 	[ --pkg ] [ --help ]
 (\"sh \" might need to precede the command on the same line, in case
-the file pkg.sh does not have executable permissions.)
+the file build.sh does not have executable permissions.)
 
 Parameters:
 	--java java-compiler-binaries-path: Specifies the path to javac, 
@@ -64,7 +64,7 @@ Copyright:
 	Copyright (c) 2004 Text Flex
 
 Last updated:
-	2004-06-01
+	2004-06-24
 "
 
 #####################
