@@ -51,15 +51,15 @@ import javax.swing.event.*;
  * tool bar, menus, and dialogs.
  */
 public class TextTrix extends JFrame {
-    private static ArrayList textAreas = new ArrayList(); // holds all the TextPads
+    private static ArrayList textAreas = new ArrayList(); // all the TextPads
     /*
       private static TextPadTabbedPane tabbedPane 
       = new TextPadTabbedPane(JTabbedPane.TOP);
     */
     private static JTabbedPane tabbedPane
-	= new JTabbedPane(JTabbedPane.TOP); // tabbed window for multiple TextPads
+	= new JTabbedPane(JTabbedPane.TOP); // multiple TextPads
     private static JPopupMenu popup = new JPopupMenu(); // make popup menu
-    private static JFileChooser chooser = new JFileChooser(); // file open/save dialog
+    private static JFileChooser chooser = new JFileChooser(); // file dialog
     private static JCheckBoxMenuItem autoIndent 
 	= new JCheckBoxMenuItem("Auto-indent"); // auto-indent
     private static String openDir = ""; // most recently path opened to
@@ -212,8 +212,8 @@ public class TextTrix extends JFrame {
 		    }
 		}
 	    };
-	setAction(saveAction, "Save", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_S,
-								  InputEvent.CTRL_MASK));
+	setAction(saveAction, "Save", 'S', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 	fileMenu.add(saveAction);
 	JButton saveButton = toolBar.add(saveAction);
 	saveButton.setBorderPainted(false);
@@ -236,8 +236,8 @@ public class TextTrix extends JFrame {
 	    };
 	// Doesn't work if close all tabs unless click ensure window focused, 
 	// such as clicking on menu
-	setAction(exitAction, "Exit", 'E', KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-								  InputEvent.CTRL_MASK));
+	setAction(exitAction, "Exit", 'E', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK));
 	fileMenu.add(exitAction);
 
 	/* Edit menu items */
@@ -245,11 +245,12 @@ public class TextTrix extends JFrame {
 	// (ctrl-z) undo; multiple undos available
 	Action undoAction = new AbstractAction("Undo") {
 		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).undo();
+		    ((TextPad)textAreas
+		     .get(tabbedPane.getSelectedIndex())).undo();
 		}
 	    };
-	setAction(undoAction, "Undo", 'U', KeyStroke.getKeyStroke(KeyEvent.VK_Z,
-								  InputEvent.CTRL_MASK));
+	setAction(undoAction, "Undo", 'U', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
 	editMenu.add(undoAction);
 
 	// (ctrl-y) redo; multiple redos available
@@ -258,8 +259,8 @@ public class TextTrix extends JFrame {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).redo();
 		}
 	    };
-	setAction(redoAction, "Redo", 'R', KeyStroke.getKeyStroke(KeyEvent.VK_Y,
-								  InputEvent.CTRL_MASK));
+	setAction(redoAction, "Redo", 'R', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
 	editMenu.add(redoAction);
 
 	// Start Cut, Copy, Paste actions
@@ -268,33 +269,36 @@ public class TextTrix extends JFrame {
 	// (ctrl-x) cut
 	Action cutAction = new AbstractAction("Cut") {
 		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
+		    ((TextPad)textAreas
+		     .get(tabbedPane.getSelectedIndex())).cut();
 		}
 	    };
-	setAction(cutAction, "Cut", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_X,
-								InputEvent.CTRL_MASK));
+	setAction(cutAction, "Cut", 'C', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
 	editMenu.add(cutAction);
 	popup.add(cutAction);
 
 	// (ctrl-c) copy
 	Action copyAction = new AbstractAction("Copy") {
 		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).copy();
+		    ((TextPad)textAreas
+		     .get(tabbedPane.getSelectedIndex())).copy();
 		}
 	    };
-	setAction(copyAction, "Copy", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_C,
-								  InputEvent.CTRL_MASK));
+	setAction(copyAction, "Copy", 'O', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
 	editMenu.add(copyAction);
 	popup.add(copyAction);
 
 	// (ctrl-v) paste
 	Action pasteAction = new AbstractAction("Paste") {
 		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
+		    ((TextPad)textAreas
+		     .get(tabbedPane.getSelectedIndex())).paste();
 		}
 	    };
-	setAction(pasteAction, "Paste", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_V,
-								    InputEvent.CTRL_MASK));
+	setAction(pasteAction, "Paste", 'P', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
 	editMenu.add(pasteAction);
 	popup.add(pasteAction);
 
@@ -304,11 +308,12 @@ public class TextTrix extends JFrame {
 	// select all text in current text area
 	Action selectAllAction = new AbstractAction("Select all") {
 		public void actionPerformed(ActionEvent evt) {
-		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).selectAll();
+		    ((TextPad)textAreas
+		     .get(tabbedPane.getSelectedIndex())).selectAll();
 		}
 	    };
-	setAction(selectAllAction, "Select all", 'S', KeyStroke.getKeyStroke(KeyEvent.VK_L,
-									     InputEvent.CTRL_MASK));
+	setAction(selectAllAction, "Select all", 'S', 
+		  KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
 	editMenu.add(selectAllAction);
 	popup.add(selectAllAction);
 
@@ -329,6 +334,19 @@ public class TextTrix extends JFrame {
 		}
 	    });
 	optionsMenu.add(autoIndent);
+
+	Action autoIndentAllAction = 
+	    new AbstractAction("Auto-indent all current files") {
+		public void actionPerformed(ActionEvent evt) {
+		    for (int i = 0; i < textAreas.size(); i++) {
+			TextPad t = (TextPad)textAreas.get(i);
+			if (t != null) 
+			    t.setAutoIndent(true);
+		    }
+		    setAutoIndent(true);
+		}
+	    };
+	optionsMenu.add(autoIndentAllAction);
 		
 	/* View menu items */
 	
@@ -339,12 +357,14 @@ public class TextTrix extends JFrame {
 		    if (tab > 0) {
 			tabbedPane.setSelectedIndex(tab - 1);
 		    } else if (tab == 0) {
-			tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+			tabbedPane.setSelectedIndex(tabbedPane
+						    .getTabCount() - 1);
 		    }
 		}
 	    };
 	setAction(prevTabAction, "Preeceding tab", 'P', 
-		  KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, InputEvent.CTRL_MASK));
+		  KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, 
+					 InputEvent.CTRL_MASK));
 	viewMenu.add(prevTabAction);
 
 	// (ctrl-]) switch to the next tab
@@ -445,8 +465,9 @@ public class TextTrix extends JFrame {
 		    findDialog.show();
 		}
 	    };
+	// need capital "F" b/c "shift"
 	setAction(findAction, "Find and replace", 'F', 
-		  KeyStroke.getKeyStroke("ctrl shift F")); // need capital "F" b/c "shift"
+		  KeyStroke.getKeyStroke("ctrl shift F")); 
 	toolsMenu.add(findAction);
 	JButton findButton = toolBar.add(findAction);
 	findButton.setBorderPainted(false);
@@ -455,17 +476,21 @@ public class TextTrix extends JFrame {
 
 	// remove hard returns except between paragraphs and within lists; 
 	// also remove " > " and similar pre-appendages to lines
-	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
-							makeIcon("images/returnicon-16x16.png")) {
+	Action removeReturnsAction = 
+	    new AbstractAction("Remove extra hard returns", 
+			       makeIcon("images/returnicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    int tabIndex = tabbedPane.getSelectedIndex();
 		    if (tabIndex != -1) {
-			// may want to automatically apply HTML replacer after converting to plain
+			// may want to automatically apply HTML replacer 
+			// after converting to plain
 			viewPlain();
-			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			TextPad t = (TextPad)textAreas
+			    .get(tabbedPane.getSelectedIndex());
 			String text = t.getText();
 
-			// only modify the selected text, and make the action undoable
+			// only modify the selected text, and make 
+			// the action undoable
 			int start = 0;
 			int end = 0;
 			if ((start = t.getSelectionStart()) 
@@ -485,19 +510,23 @@ public class TextTrix extends JFrame {
 	JButton removeReturnsButton = toolBar.add(removeReturnsAction);
 	removeReturnsButton.setBorderPainted(false);
 	setRollover(removeReturnsButton, "images/returnicon-roll-16x16.png");
-	removeReturnsButton.setToolTipText(readText("removereturnsbutton.html"));
+	removeReturnsButton
+	    .setToolTipText(readText("removereturnsbutton.html"));
 	
 	// non-printing-character display
-	Action nonPrintingCharViewerAction = new AbstractAction(
-								"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
+	Action nonPrintingCharViewerAction = 
+	    new AbstractAction("View non-printing characters", 
+			       makeIcon("images/nonprinting-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    int tabIndex = tabbedPane.getSelectedIndex();
 		    if (tabIndex != -1) {
 			viewPlain();
-			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			TextPad t = (TextPad)textAreas
+			    .get(tabbedPane.getSelectedIndex());
 			String text = t.getText();
 	
-			// only modify the selected text, and make the action undoable
+			// only modify the selected text, and make the 
+			// action undoable
 			int start = 0;
 			int end = 0;
 			if ((start = t.getSelectionStart()) 
@@ -505,23 +534,31 @@ public class TextTrix extends JFrame {
 			    // may need to add original text to history buffer
 			    // before making the change
 			    t.setUndoableText(Tools.
-					      showNonPrintingChars(text, 0, text.length()));
+					      showNonPrintingChars(text, 
+								   0, 
+								   text
+								   .length()));
 			} else {
 			    t.setUndoableText(Tools.showNonPrintingChars(text, start, end));
 			}
 		    }
 		}
 	    };
-	setAction(nonPrintingCharViewerAction, "View non-printing characters", 'V');
+	setAction(nonPrintingCharViewerAction, 
+		  "View non-printing characters", 'V');
 	toolsMenu.add(nonPrintingCharViewerAction);
-	JButton nonPrintingCharViewerButton = toolBar.add(nonPrintingCharViewerAction);
+	JButton nonPrintingCharViewerButton = 
+	    toolBar.add(nonPrintingCharViewerAction);
 	nonPrintingCharViewerButton.setBorderPainted(false);
-	setRollover(nonPrintingCharViewerButton, "images/nonprinting-roll-16x16.png");
-	nonPrintingCharViewerButton.setToolTipText(readText("nonprintingbutton.html"));
+	setRollover(nonPrintingCharViewerButton, 
+		    "images/nonprinting-roll-16x16.png");
+	nonPrintingCharViewerButton
+	    .setToolTipText(readText("nonprintingbutton.html"));
 
 	// HTML replacement
-	Action htmlReplacerAction = new AbstractAction(
-						       "Replace HTML tags", makeIcon("images/htmlreplacer-16x16.png")) {
+	Action htmlReplacerAction = 
+	    new AbstractAction("Replace HTML tags", 
+			       makeIcon("images/htmlreplacer-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 		    int tabIndex = tabbedPane.getSelectedIndex();
 		    if (tabIndex != -1) {
@@ -529,7 +566,8 @@ public class TextTrix extends JFrame {
 			TextPad t = (TextPad)textAreas.get(tabIndex);
 			String text = t.getText();
 
-			// only modify the selected text, and make the action undoable
+			// only modify the selected text, and make 
+			// the action undoable
 			int start = 0;
 			int end = 0;
 			if ((start = t.getSelectionStart()) 
@@ -1218,7 +1256,7 @@ public class TextTrix extends JFrame {
 	 */
 	public FindDialog(JFrame owner) {
 	    super(owner, "Find and Replace", false);
-	    setSize(350, 150);
+	    setSize(400, 150);
 	    Container contentPane = getContentPane();
 	    contentPane.setLayout(new GridBagLayout());
 	    GridBagConstraints constraints = new GridBagConstraints();
