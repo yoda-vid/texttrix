@@ -1,10 +1,12 @@
+license.txt
+
 Text Trix
-a goofy gui text editor
+Meaningful Mistakes
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix
 This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
-Open SourceInitiative.
+Open Source Initiative.
 
 Copyright (c) 2002, David Young
 All rights reserved.

@@ -51,11 +51,11 @@ import java.io.*;
    as well as special, silly ones for true text fun.
 */
 public class TextPad extends JTextArea {
-	File file;
-	boolean changed = false;
-	String path;
-	UndoManager undoManager = new UndoManager();
-	Hashtable actions;
+	private File file;
+	private boolean changed = false;
+	private String path;
+	private UndoManager undoManager = new UndoManager();
+	private Hashtable actions;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -166,20 +166,9 @@ public class TextPad extends JTextArea {
 				// the deletions rather than building string manually, a slow task
 				(new JTextComponent.AccessibleJTextComponent())
 					.delete(wordPos, getCaretPosition());
-				
-				// alternate method, using StringBuffer; essentially same as
-				// building string manually
-				setText((new StringBuffer(getText())).delete(wordPos, getCaretPosition()).toString());
-
-				// alternate method, building string manually
-				String text = getText();
-				setText(text.substring(0, wordPos)
-					+ text.substring(getCaretPosition()));
-					*/
+				*/
 			}
 		});
-
-		
 	}
 
 	/**Gets the value showing whether the text in the text area
@@ -267,11 +256,14 @@ public class TextPad extends JTextArea {
 		int newCaretPos = caretPos - 1; // moving caret position
 		String delimiters = " .,;:-\\\'\"/_\t\n";
 		
-		// check that new caret not at start of string
+		// check that new caret not at start of string; 
+		// skip backward as long as delimiters
 		while (newCaretPos > 0
 				&& delimiters.indexOf(getText().charAt(newCaretPos)) != -1) {
 			newCaretPos--;
 		}
+		// check that new caret not at start of string;
+		// now skip backward as long as not delimiters; bring caret to next space, etc
 		while (newCaretPos > 0 
 				&& (delimiters.indexOf(getText().charAt(newCaretPos - 1)) == -1)) {
 			newCaretPos--;
@@ -279,31 +271,6 @@ public class TextPad extends JTextArea {
 
 		return (newCaretPos <= 0) ? 0 : newCaretPos;
 	}
-		/*
-		 * This method fails to skip over multiple delimiters.
-		while (newCaretPos > 0 && 
-				// check for space, comma, semicolon, etc
-				(((checkChar = getText().charAt(--newCaretPos)) != ' ')
-				 && checkChar != ','
-				 && checkChar != ';'
-				 && checkChar != ':'
-				 && checkChar != '-'
-				 && checkChar != '\\'
-				 && checkChar != '/'
-				 && checkChar != '\"'
-				 && checkChar != '\'')
-				// if space, comma, etc, check before exiting to ensure that not
-				// directly before orig caret position
-				|| newCaretPos == caretPos - 1);
-				
-		// if caret didn't move or reached start of string,
-		// set new caret to one position before string since will increment
-		if (newCaretPos == caretPos - 1 || newCaretPos == 0) 
-			newCaretPos = -1;
-		// place cursor after space, comma, etc, or at start of string
-		return ++newCaretPos;
-	}
-	*/
 
 	/**Gets the index of the next word's first character.
 	 * @return string index of the next word's beginning, past
@@ -315,11 +282,14 @@ public class TextPad extends JTextArea {
 		int textLen = getText().length(); // end of text
 		String delimiters = " .,;:-\\\'\"/_\t\n";
 		
-		// check that new caret not at start of string
+		// check that new caret not at end of string; 
+		// skip forward as long as not delimiters
 		while (newCaretPos < textLen
 				&& delimiters.indexOf(getText().charAt(newCaretPos)) == -1) {
 			newCaretPos++;
 		}
+		// check that new caret not at end of string; 
+		// now skip forward as long as delimiters; bring to next letter, etc
 		while (newCaretPos < textLen
 				&& (delimiters.indexOf(getText().charAt(newCaretPos)) != -1)) {
 			newCaretPos++;
@@ -327,27 +297,6 @@ public class TextPad extends JTextArea {
 
 		return newCaretPos;
 	}
-		/* This method does not skip over multiple delimiters.
-		int caretPos; // current caret position
-		int newCaretPos; // caret position progressing to desired position
-		caretPos = newCaretPos = getCaretPosition();
-		char checkChar;
-		int textLen = getText().length();
-		// check that new caret not at end of string
-		while (newCaretPos < textLen && 
-				// check for space, comma, semicolon, etc
-				((checkChar = getText().charAt(newCaretPos++)) != ' ')
-				&& checkChar != ','
-				&& checkChar != ';'
-				&& checkChar != ':'
-				&& checkChar != '-'
-				&& checkChar != '\\'
-				&& checkChar != '/'
-				&& checkChar != '\"'
-				&& checkChar != '\'');
-		return newCaretPos;
-	}
-	*/
 	
 	/**Fills an array with the component's possible actions.
 	 * @param txtComp <code>Java Swing</code> text component

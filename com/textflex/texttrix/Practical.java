@@ -60,8 +60,8 @@ public class Practical {
 	 * left untouched.  Additionally, each line whose first character is a 
 	 * dash, asterisk, or tab
 	 * gets its own line.  The line above such lines also gets to remain
-	 * by itself.  " &#062; " at the start of lines, such as from inline
-	 * email message replies, are also removed.
+	 * by itself.  "&#062;" at the start of lines, such as " &#062; &#062; " 
+	 * from inline email message replies, are also removed.
 	 * @param s the full text from which to strip extra hard returns
 	 * @return stripped text
 	 */
@@ -79,7 +79,7 @@ public class Practical {
 		String inlineReplySigns = ">"; // inline message indicators
 		boolean isCurrentLineReply = false; // current line part of message reply
 		boolean isNextLineReply = false; // next line part of message reply
-		boolean ignorePre = false;
+		boolean ignorePre = false; // ignore <pre>'s within inline replies
 
 		// check for inline reply symbols at start of string
 		n = containingSeq(s, n, searchChars, inlineReplySigns);
@@ -87,7 +87,7 @@ public class Practical {
 			isCurrentLineReply = false;
 		} else {	
 			isCurrentLineReply = true;
-			stripped.append("----Original Message----\n\n");
+			stripped.append("----Original Message----\n\n"); // mark replies
 			ignorePre = true;
 		}
 	
@@ -96,10 +96,10 @@ public class Practical {
 			int nextInlineReply = 0; // inline replies on next line
 	    	int singleReturn = s.indexOf("\n", n); // next hard return occurrence
 			boolean isDoubleReturn = false; // double hard return flag
-		    boolean isDash = false; // next dash occurrence 
-	    	boolean isAsterisk = false; // next asterisk occurrence
-			boolean isNumber = false;
-			boolean isTab = false; // next tab occurence
+		    boolean isDash = false; // dash flag
+	    	boolean isAsterisk = false; // asterisk flag
+			boolean isNumber = false; // number flag
+			boolean isTab = false; // tab flag
 	 	    int startPre = s.indexOf("<pre>", n); // next opening pre tag occurrence
 		    int endPre = s.indexOf("</pre>", n); // next cloisng pre tag occurrence
 			
@@ -116,6 +116,8 @@ public class Practical {
 					nextInlineReply = containingSeq(s, afterSingRet + inlineReply + 1,
 							searchChars, inlineReplySigns);
 				}
+				// check whether the character after a return is a 
+				// tab, dash, asterisk, or number
 				int afterInlineReply = singleReturn + inlineReply + 1;
 				if (afterInlineReply < s.length()) {
 					isTab = s.startsWith("\t", afterInlineReply);
@@ -124,8 +126,7 @@ public class Practical {
 					String numbers = "1234567890";
 					isNumber = (numbers.indexOf(s.charAt(afterInlineReply)) != -1) 
 						? true : false;
-				}
-					
+				}					
 			}
 			isNextLineReply = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 			
@@ -156,17 +157,19 @@ public class Practical {
 					stripped.append("\n-----------------------\n\n");
 				*/
 				n = s.length();
-			// may eventually show explicity that "Original Message": by flagging prev line?
+			// mark that start of inline message reply
 			} else if (!isCurrentLineReply && isNextLineReply) {
 				stripped.append(s.substring(n, singleReturn)
 						+ "\n\n----Original Message----\n\n");
 				n = (isDoubleReturn) ? (singleReturn + inlineReply + 2 + nextInlineReply)
 					: (singleReturn + inlineReply + 1);
+			// mark that end of inline message reply
 			} else if (isCurrentLineReply && !isNextLineReply) {
 				stripped.append(s.substring(n, singleReturn)
 						+ "\n------------------------\n\n"); // dashed start, so own line
 				n = (isDoubleReturn) ? (singleReturn + inlineReply + 2 + nextInlineReply)
 					: (singleReturn + inlineReply + 1);
+			// preserve double returns
 			} else if (isDoubleReturn) {
 				stripped.append(s.substring(n, singleReturn) + "\n\n");
 				n = singleReturn + inlineReply + 2 + nextInlineReply; // skip over processed rets
@@ -190,6 +193,7 @@ public class Practical {
 		    }
 		// flag whether the current line is part of a msg reply
 		isCurrentLineReply = isNextLineReply;
+		// flag to ignore <pre> tags if in inline message reply
 		ignorePre = (inlineReply != 0 || nextInlineReply != 0) ? true : false;
 		}	
 		return stripped.toString();

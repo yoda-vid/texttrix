@@ -2,6 +2,7 @@ shortcuts.txt
 
 Text Trix
 Meaningful Mistakes
+Copyright (c) 2002, David Young
 http://texttrix.sourceforge.net
 http://sourceforge.net/projects/texttrix
 
@@ -35,8 +36,9 @@ Extra Hard Return Remover:
 -to write a list without losing its hard returns, keep all the
 elements in a given block single-spaced, and use dashes or asterisks
 at the start of each line after the first; note that indents with tabs are a-ok
--text enclosed in <pre></pre> tags will not have hard
-returns removed; only the tags will be removed
--lines beginning with ">" or "<", such as those in email replies, will be 
+-text enclosed in <pre></pre> tags will be preserved; each tag should 
+be placed on its own line and will be removed
+-lines beginning with ">", such as those in email replies, will be 
 removed along with any spaces surrounding them; "---Original Message----"
 will be added before the region, and "-------------" will come afterward
+-if necessary, undo the change through two Undo commands (Edit > Undo)

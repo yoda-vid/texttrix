@@ -1,6 +1,6 @@
 /* TextTrix.java
  * Text Trix
- * a goofy gui editor
+ * Meaningful Mistakes
  * http://texttrix.sourceforge.net
  * http://sourceforge.net/projects/texttrix
 
@@ -44,6 +44,7 @@ import java.io.*;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
+
 /**The main <code>TextTrix</code> class.
  * Takes care of most graphical user interface operations, such as 
  * setting up and responding to changes in the <code>Text Pad</code>s, 
@@ -51,20 +52,17 @@ import javax.swing.event.*;
 */
 public class TextTrix extends JFrame {
 	// to keep track of all the TextPads
-    static ArrayList textAreas = new ArrayList();
+    private static ArrayList textAreas = new ArrayList();
 	// tabbed window for multiple TextPads
-    static JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+    private static JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 	// file open/save dialog
-    static JFileChooser chooser = new JFileChooser();
+    private static JFileChooser chooser = new JFileChooser();
 	// most recently path opened to
-	static String openPath = "";
+	private static String openPath = "";
 	// most recently path saved to
-	static String savePath = "";
+	private static String savePath = "";
 	// for giving each TextPad a unique name
-	int fileIndex = 0;
-	// url and icon for actions
-	URL url = null;
-	ImageIcon icon = null;
+	private int fileIndex = 0;
 
 	/**Constructs a new <code>TextTrix</code> frame and
 	 * <code>TextPad</code> to begin with.
@@ -111,10 +109,6 @@ public class TextTrix extends JFrame {
 	 * Tab back down to TextPad */
 
 	// (ctrl-o) open file; use selected tab if empty
-	/*
-	url = TextTrix.class.getResource("openicon-16x16.png");
-	icon = new ImageIcon(url);
-	*/
 	Action openAction = new FileOpenAction("Open", makeIcon("openicon-16x16.png"));
 	setAction(openAction, "Open", 'O', KeyStroke.getKeyStroke(KeyEvent.VK_O,
 				InputEvent.CTRL_MASK));
@@ -122,10 +116,12 @@ public class TextTrix extends JFrame {
 	JButton openButton = toolBar.add(openAction);
 	openButton.setBorderPainted(false);
 	setRollover(openButton, "openicon-roll-16x16.png");
-//	fileMenu.add(openItem);
-//	openItem.addActionListener(new FileOpenListener());
-//	openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
-//						       InputEvent.CTRL_MASK));
+
+	// set "*.txt" file filter for open/save dialog boxes
+	final ExtensionFileFilter filter = new ExtensionFileFilter();
+	filter.addExtension("txt");
+	filter.setDescription("Text files (*.txt)");
+	chooser.setFileFilter(filter);
 
 	// close file; check if saved
 	Action closeAction = new AbstractAction("Close", makeIcon("closeicon-16x16.png")) {
@@ -156,8 +152,6 @@ public class TextTrix extends JFrame {
 	JButton saveButton = toolBar.add(saveAction);
 	saveButton.setBorderPainted(false);
 	setRollover(saveButton, "saveicon-roll-16x16.png");
-//	saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-//				InputEvent.CTRL_MASK));
 
 	// save w/ file save dialog
 	Action saveAsAction = new FileSaveAction("Save as...", 
@@ -208,7 +202,7 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).cut();
 		}
-	    };
+	};
 	setAction(cutAction, "Cut", 'C', KeyStroke.getKeyStroke(KeyEvent.VK_X,
 						      InputEvent.CTRL_MASK));
 	editMenu.add(cutAction);
@@ -228,7 +222,7 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 		    ((TextPad)textAreas.get(tabbedPane.getSelectedIndex())).paste();
 		}
-	    };
+	};
 	setAction(pasteAction, "Paste", 'P', KeyStroke.getKeyStroke(KeyEvent.VK_V,
 							InputEvent.CTRL_MASK));
 	editMenu.add(pasteAction);
@@ -398,7 +392,7 @@ public class TextTrix extends JFrame {
 		action.putValue(Action.ACCELERATOR_KEY, keyStroke);
 	}
 	
-	/**Set an action's properties.
+	/**Sets an action's properties.
 	 * @param action action to set
 	 * @param description tool tip
 	 * @param mnemonic menu shortcut
@@ -408,6 +402,11 @@ public class TextTrix extends JFrame {
 		action.putValue(Action.MNEMONIC_KEY, new Integer(mnemonic));
 	}
 
+	/**Creates an image icon.
+	 * Retrieves the image file from a jar archive.
+	 * @param path image file location relative to TextTrix.class
+	 * @return icon from archive; null if the file cannot be retrieved
+	 */
 	public ImageIcon makeIcon(String path) {
 		URL iconURL = TextTrix.class.getResource(path);
 		return (iconURL != null) ? new ImageIcon(iconURL) : null;
@@ -555,6 +554,7 @@ public class TextTrix extends JFrame {
 		}
 		return text;
 	}
+	
 	/**Read in text from a file and return the text as a string.
 	 * Differs from <code>displayFile(String path)</code> because
 	 * allows editing.
@@ -598,17 +598,25 @@ public class TextTrix extends JFrame {
 			tabbedPane.setToolTipTextAt(i, textPad.getPath());
 	}
 
+	/**Changes tabbed pane title to indicate whether the file's changes 
+	 * have been changed or not.
+	 * Appends "<code> *</code>" if the file has unsaved changes; 
+	 * appends "<code>  </code>" otherwise.
+	 * @param arrayList array of <code>TextPad</code>s that the tabbed pane displays
+	 * @param tabbedPane tabbed pane to update
+	 */
 	public void updateTitle(ArrayList arrayList, JTabbedPane tabbedPane) {
 		int i = tabbedPane.getSelectedIndex();
 		TextPad textPad = (TextPad)arrayList.get(i);
 		String title = tabbedPane.getTitleAt(i);
 		// convert to filename; -2 b/c added 2 spaces
-		if (!title.endsWith(" *")) {
+		if (textPad.getChanged()) {
 			tabbedPane.setTitleAt(i, textPad.getName() + " *");
 		} else {
 			tabbedPane.setTitleAt(i, title.substring(0, title.length() - 1) + " ");
 		}
 	}
+	
 	/**Removes a tab containing a text area.
 	 * @param i tab index
 	 * @param l text area array list
@@ -667,10 +675,6 @@ public class TextTrix extends JFrame {
 	 */
 	public static void fileSaveDialog() {
 		chooser.setCurrentDirectory(new File(savePath));
-	   	final ExtensionFileFilter filter = new ExtensionFileFilter();
-	   	filter.addExtension("txt");
-	   	filter.setDescription("Text files (*.txt)");
-	   	chooser.setFileFilter(filter);
 
     	int result = chooser.showSaveDialog(null);
     	if (result == JFileChooser.APPROVE_OPTION) {
@@ -695,10 +699,6 @@ public class TextTrix extends JFrame {
 		
 		public void actionPerformed(ActionEvent evt) {
 	    	chooser.setCurrentDirectory(new File(openPath));
-		    final ExtensionFileFilter filter = new ExtensionFileFilter();
-		    filter.addExtension("txt");
-	    	filter.setDescription("Text files (*.txt)");
-	    	chooser.setFileFilter(filter);
 
 	    	int result = chooser.showOpenDialog(null);
 
@@ -756,6 +756,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/**Responds to changes in the <code>TextPad</code> text areas.
+	 * Updates the titles to reflect text alterations.
+	 */
 	private class TextPadDocListener implements DocumentListener {
 	
 		/**Flags a text insertion.
