@@ -114,7 +114,7 @@ public class TextTrix extends JFrame {
 	// make tool bar
 	toolBar = new JToolBar("Trix and Tools");
 	toolBar.addMouseListener(new PopupListener());
-	toolBar.setFloatable(false); // necessary since not BorderLayout
+	//	toolBar.setFloatable(false); // necessary since not BorderLayout
 	toolBar.setBorderPainted(false);
 	//	SwingUtilities.updateComponentTreeUI(TextTrix.this);
 
@@ -482,6 +482,8 @@ public class TextTrix extends JFrame {
 	setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
 
+	//	toolBar.addSeparator();
+
 
 
 
@@ -523,7 +525,8 @@ public class TextTrix extends JFrame {
 	menuBar.add(trixMenu);
 	menuBar.add(toolsMenu);
 	menuBar.add(helpMenu);
-	
+
+	/*	
 	// add components to frame; "add" function to set GridBag parameters
 	Container contentPane = getContentPane();
 	GridBagLayout layout = new GridBagLayout();
@@ -540,6 +543,13 @@ public class TextTrix extends JFrame {
 	constraints.fill = GridBagConstraints.BOTH;
 	constraints.anchor = GridBagConstraints.CENTER;
 	add(tabbedPane, constraints, 0, 2, 1, 1, 100, 100);
+	*/
+
+	Container contentPane = getContentPane();
+	contentPane.add(toolBar, BorderLayout.NORTH);
+	contentPane.add(tabbedPane, BorderLayout.CENTER);
+	//	contentPane.add(new TextArea(10, 5), BorderLayout.SOUTH);
+
 
 	// load files specified at start from command-line
 	if (paths != null) {
