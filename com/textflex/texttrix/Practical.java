@@ -238,6 +238,11 @@ public class Practical {
 	}
 
 	/**Displays String representations in place of given Unicode characters.
+	 * Not working: will hard-code a table instead since the file would 
+	 * automatically convert the Unicode characters, and we only need a few 
+	 * Unicode characters in the first place--non-printing ones.
+	 * Nevertheless, the table functions will probably be useful for other 
+	 * tools and a preferences component.
 	 * @param text text to convert
 	 * @return text with String representations in place of given Unicode characters
 	 */
@@ -248,11 +253,12 @@ public class Practical {
 		String unicodeTable[][] = loadUnicodeArray("unicodetable.txt");
 		for (int i = 0; i < text.length(); i++) {
 			c = text.charAt(i);
-			charText = unicodeDisplay(unicodeTable, c);
-			if (charText != null) 
+			charText = unicodeConversion(unicodeTable, c);
+			if (charText != null) {
 				s.append(charText);
-			else
+			} else {
 				s.append(c);
+			}
 		}
 		return s.toString();
 	}
@@ -330,8 +336,26 @@ public class Practical {
 	 * @param c Unicode character whose String representation will be retrieved
 	 * @return appropriate String representation, null if none is in the table
 	 */
-	public static String unicodeDisplay(String[][] unicodeTable, char c) {
-		String displayChar = new String(); // should assign later
+	public static String unicodeConversion(String[][] unicodeTable, char quarry) {
+		String displayChar = null;
+		int start = 0;
+		int end = unicodeTable.length - 1;
+		int mid = end / 2;
+		char c;
+		for (int i = 0; i < unicodeTable.length; i++)
+			System.out.println(unicodeTable[i][0] + "," + unicodeTable[i][1]);
+		while (displayChar == null && start <= end) {
+			System.out.println("start == " + start + ", mid == " + mid + ", end == " + end);
+			if ((c = unicodeTable[mid][0].charAt(0)) == quarry) {
+				displayChar = unicodeTable[mid][1];
+			} else if (quarry < c) {
+				end = mid - 1;
+			} else {
+				start = mid + 1;
+			}
+			System.out.println("c == " + c + ", quarry == " + quarry + ", tableval == " + unicodeTable[mid][0]);
+			mid = (start + end) / 2;
+		}
 		return displayChar;
 	}
 			

@@ -293,6 +293,20 @@ public class TextTrix extends JFrame {
 	removeReturnsButton.setBorderPainted(false);
 	setRollover(removeReturnsButton, "returnicon-roll-16x16.png");
 	removeReturnsButton.setToolTipText(readText("removeReturnsButton.html"));
+
+	// Non-printing-character display
+	Action unicodeViewerAction = new AbstractAction("View non-printing characters", 
+			null) {
+		public void actionPerformed(ActionEvent evt) {
+			TextPad t = (TextPad)textAreas.get(tabbedPane.getSelectedIndex());
+			t.setText(Practical.displayUnicode(t.getText()));
+		}
+	};
+	setAction(unicodeViewerAction, "View non-printing characters", 'V');
+	toolsMenu.add(unicodeViewerAction);
+	JButton unicodeViewerButton = toolBar.add(unicodeViewerAction);
+	unicodeViewerButton.setBorderPainted(false);
+//	setRollover(unicodeViewerAction, null);
 	
 	toolBar.setFloatable(false); // necessary since not BorderLayout
 
