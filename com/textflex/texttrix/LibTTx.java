@@ -84,9 +84,7 @@ public class LibTTx {
 		*/
 		try {
 			URL url = new File(path).toURL();
-			//		    System.out.println(url.toString());
 			loader = new URLClassLoader(new URL[] { url });
-			//		    System.out.println(url.toString());
 		} catch (MalformedURLException e) {
 		}
 		// all plugins are in the package, com.textflex.texttrix
@@ -118,9 +116,7 @@ public class LibTTx {
 		try {
 			path = plugInDir.toString() + File.separator + plugInName;
 			URL url = new File(path).toURL();
-			//		    System.out.println(url.toString());
 			loader = new URLClassLoader(new URL[] { url });
-			//		    System.out.println(url.toString());
 		} catch (MalformedURLException e) {
 		}
 		// all plugins are in the package, com.textflex.texttrix
@@ -191,7 +187,6 @@ public class LibTTx {
 		Object obj = null; // the object to return
 		// load the class
 		try {
-			//	    System.out.println("name: " + name);
 			Class cl = loader.loadClass(name);
 			obj = cl.newInstance();
 		} catch (InstantiationException e) {
@@ -326,7 +321,6 @@ public class LibTTx {
 		String searchStr,
 		int offset) {
 		int i = offset - 1;
-		//	System.out.println("len: " + searchStr.length());
 		while (i >= 0
 			&& !str.substring(i, i + searchStr.length()).equals(searchStr)) {
 			i--;
@@ -570,6 +564,44 @@ public class LibTTx {
 		}
 		return (String[]) truncateArray(lines, linesIdx);
 	}
+	
+
+	/** Gets the next whole word from a given position, assuming that the position
+	 * is not in the middle of a word.
+	 * @param text text to search
+	 * @param start index at which to start
+	 * @param finish first index at which to stop searching, though the word may extend 
+	 * to or past this index
+	 * @return the whole word
+	 */
+	public static String getWord(String text, int start, int finish) {
+		int n = start; // becomes position of start of word
+		int end = start + 1; // becomes first character after word
+		//int len = end;
+		String specialChars = "_\'";
+		String word = "";
+		// skip over non-letters/non-digits
+		char c = 0;
+		while (n < finish
+			&& !Character.isLetterOrDigit(c = text.charAt(n))
+			&& specialChars.indexOf(c) < 0) {
+			//		System.out.println("skipped char: " + c);
+			n++;
+		}
+		if (n >= finish)
+			return "";
+		// progress to the end of a word
+		end = n + 1;
+		while (end < finish
+			&& (Character.isLetterOrDigit(c = text.charAt(end))
+				|| specialChars.indexOf(c) >= 0)) {
+			//		System.out.println("included char: " + c);
+			end++;
+		}
+		//		}
+		return text.substring(n, end);
+	}
+
 
 }
 

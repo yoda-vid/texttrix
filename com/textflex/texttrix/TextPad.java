@@ -111,11 +111,6 @@ public class TextPad extends JTextPane implements StateEditable {
 				}
 				//				indentCurrentParagraph();
 			}
-			/* else if (autoIndent && keyChar == KeyEvent.VK_PASTE) {
-					indentCurrentParagraph(getTabSize());
-				}
-			}
-			*/
 
 			public void keyPressed(KeyEvent evt) {
 				//				int keyCode = evt.getKeyChar();
@@ -123,7 +118,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 
 		});
-
+		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 
 	}
@@ -435,7 +430,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		int tabs = 0;
 		for (int i = offset; i < s.length() && s.charAt(i) == '\t'; i++)
 			++tabs;
-		//	System.out.println("I found " + tabs + " tabs");
 		return tabs;
 	}
 
@@ -453,12 +447,9 @@ public class TextPad extends JTextPane implements StateEditable {
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
-		//StateEdit stateEdit = new StateEdit(this);
 		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument().setParagraphAttributes(offset, length, // next char
 		attribs, false); // false to preserve default font
-		//stateEdit.end();
-		//undoManager.addEdit((UndoableEdit) stateEdit);
 	}
 
 	/** Indents the current paragraph, no matter where the caret is within it.
@@ -482,13 +473,12 @@ public class TextPad extends JTextPane implements StateEditable {
 		int tabChars,
 		boolean unindentNotJVM_15) {
 		String s = getAllText();
-		//	System.out.println("caret pos: " + caretPos);
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
 		int tabs = leadingTabsCount(s, start);
+		// the tab has already been deleted in JVM < v.1.5
 		if (unindentNotJVM_15) {
 			--tabs;
 		}
-		//		System.out.println("tabs: " + tabs);
 		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
 	}
 
@@ -514,23 +504,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void indentCurrentParagraph(int tabChars) {
 		indentCurrentParagraph(tabChars, false);
 	}
-
-	/** Reverses the indent on the current paragraph.
-	 * Restores the size of each tab, but also decreases the entire paragraph indentation.
-	 * @param tabChars number of spaces for each tab to represent
-	 *
-	public void unindentCurrentParagraph(int tabChars) {
-	//		setDefaultTabs(tabChars);
-	//		setIndentTabs(tabChars);
-		String s = getAllText();
-		//	System.out.println("caret pos: " + caretPos);
-		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
-		int tabs = leadingTabsCount(s, start) - 1; // don't subtract 1 b/c tab already deleted
-	//		indent(tabChars, 0, start, s.indexOf("\n", start) - start);
-		System.out.println("tabs: " + tabs);
-		indent(tabChars, tabs, start, s.indexOf("\n", start) - start);
-	}
-	*/
 
 	/** Determines whether the tab is at the start of a given line.
 	 * The tab must be either at the head of the line or connected to it by a continuous string
@@ -578,7 +551,11 @@ public class TextPad extends JTextPane implements StateEditable {
 			return "";
 		}
 	}
-
+	
+	/**Gets the file in the text pad.
+	 * 
+	 * @return the file
+	 */
 	public File getFile() {
 		return file;
 	}
@@ -722,12 +699,10 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void viewPlain() {
 		StateEdit stateEdit = new StateEdit(this);
-		//	String text = getAllText();
 		String text = getText();
 		setEditorKit(createDefaultEditorKit()); // revert to default editor kit
 		// use the default editor kit's <code>DefaultStyledDocument</code>
 		setDocument(getEditorKit().createDefaultDocument());
-		//	replaceAllText(text);
 		setText(text);
 		applyDocumentSettings();
 		stateEdit.end();
@@ -775,7 +750,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		int newCaretPos = caretPos - 1; // moving caret position
 		String delimiters = " .,;:-\\\'\"/_\t\n";
 
-		//	System.out.println(getText());
 		try {
 			while (newCaretPos > 0
 				&& delimiters.indexOf(getDocument().getText(newCaretPos, 1))
@@ -915,24 +889,31 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * 
 	 */
 	public void paste() {
-		int start = getCaretPosition();
+		int start = getCaretPosition(); // to mark beginning of pasted region
 		super.paste();
-
+		
+		// refreshes the graphical indents in the pasted region
 		if (autoIndent) {
-			int end = getCaretPosition();
-			int prevBreak = end;
-			String text = getAllText();
+			int end = getCaretPosition(); // marks end of region
+			int prevBreak = end; // position of next preceding "\n"
+			String text = getAllText(); // pad's text
+			// indents each paragraph in pasted region individually;
+			// stops once finds a hard return outside the region
 			do {
-				//				System.out.println("prevBreak: " + prevBreak);
-				setCaretPosition(prevBreak);
+				// indentCurrentParagraph relies on caret position
+				setCaretPosition(prevBreak); 
 				indentCurrentParagraph();
 			} while (
 				start
 					< (prevBreak = LibTTx.reverseIndexOf(text, "\n", prevBreak)));
-			setCaretPosition(end);
+			setCaretPosition(end); // returns caret position to end of region
 		}
 	}
-
+	
+	/**Checks the value of the auto-indent flag.
+	 * 
+	 * @return <code>true</code> if the pad is flagged to auto-indent
+	 */
 	public boolean isAutoIndent() {
 		return autoIndent;
 	}

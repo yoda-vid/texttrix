@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003
+# Portions created by the Initial Developer are Copyright (C) 2003-4
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -35,24 +35,87 @@
 #
 # ***** END LICENSE BLOCK *****
 
-# Text Trix document builder
-# Copyright (c) 2003, Text Flex
+HELP="
+Builds the Text Trix API documentation, based on the J2SE, 
+v.1.5.0 API.
 
-######################
+Syntax:
+	build-docs.sh [ --java java-compiler-binaries-path ] [ --help ]
+(\"sh \" might need to precede the command on the same line, in case
+the file pkg.sh does not have executable permissions.)
+
+Parameters:
+	--java java-compiler-binaries-path: Specifies the path to javac, 
+	jar, and other Java tools necessary for compilation.  
+	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	to specify the path, which would override any command-line 
+	specification.
+	
+	--help: Lends a hand by displaying yours truly.
+	
+Copyright:
+	Copyright (c) 2004 Text Flex
+
+Last updated:
+	2004-05-29
+"
+
+#####################
 # User-defined variables
 # Check them!
-######################
-JAVA="/usr/java/j2sdk1.5.0/bin"
-SYSTEM=`uname -a`
+####################
+
+JAVA="" # compiler location
+
+####################
+# System setup
+####################
+
+SYSTEM=`uname -s`
 CYGWIN="false"
+PLUG="false"
+PKG="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	#JAVA="/cygdrive/c/j2sdk1.5.0/bin"
-	JAVA="/cygdrive/c/Program Files/Java/j2sdk1.5.0/bin"
 	CYGWIN="true"
 fi
+
+echo "Set to build the Text Trix API documentation"
+READ_PARAMETER=0
+for arg in "$@"
+do
+	# checks whether to read the option following an argument
+	if [ $READ_PARAMETER -eq 1 ]
+	then
+		if [ "x$JAVA" = "x" ]
+		then
+			JAVA=$arg
+		fi
+		READ_PARAMETER=0
+	fi
+	
+	# reads arguments
+	
+	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
+	then
+		echo "$HELP"
+		exit 0
+	elif [ "x$arg" = "x--java" ] # Java path
+	then
+		READ_PARAMETER=1
+	fi
+done
+
+if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+then
+	JAVA="$JAVA"/
+fi
+echo "Using the Java binary directory at [defaults to PATH]:"
+echo "$JAVA"
+
+# Source directories
 BASE_DIR=""
-if [ "x$BASE_DIR" = "x" ]
+if [ "x$BASE_DIR" = "x" ] # empty string
 then
 	if [ `expr index "$0" "/"` -eq 1 ]
 	then
@@ -60,7 +123,7 @@ then
 	else
 		BASE_DIR="$PWD/$0"
 	fi
-	BASE_DIR="${BASE_DIR%/texttrix/build-docs.sh}"
+	BASE_DIR="${BASE_DIR%/texttrix/build-docs.sh}" # assumes name is build-docs.sh
 fi
 TTX_DIR="$BASE_DIR/texttrix"
 API_DIR="$BASE_DIR/docs/api"
@@ -71,6 +134,7 @@ API_DIR="$BASE_DIR/docs/api"
 ###################
 # Build operations
 ###################
+
 if [ ! -d "$API_DIR" ]
 then
 	echo "$API_DIR does not exist.  Please create it or set \"API_DIR\""
@@ -80,9 +144,9 @@ fi
 cd "$TTX_DIR"
 if [ "$CYGWIN" = "true" ]
 then	
-	"$JAVA/javadoc" -d "`cygpath -p -w $API_DIR`" -link "http://java.sun.com/j2se/1.5.0/docs/api" -overview "overview.html" "com.textflex.texttrix"
+	"$JAVA"javadoc -d "`cygpath -p -w $API_DIR`" -link "http://java.sun.com/j2se/1.5.0/docs/api" -overview "overview.html" "com.textflex.texttrix"
 else
-	"$JAVA/javadoc" -d $API_DIR -link "http://java.sun.com/j2se/1.5.0/docs/api" -overview "overview.html" "com.textflex.texttrix"
+	"$JAVA"javadoc -d "$API_DIR" -link "http://java.sun.com/j2se/1.5.0/docs/api" -overview "overview.html" "com.textflex.texttrix"
 fi
 
 exit 0

@@ -57,7 +57,6 @@ public class Prefs extends JFrame {
 	private JTabbedPane tabbedPane = new JTabbedPane();
 	// main prefs
 	private Preferences prefs = Preferences.userNodeForPackage(TextTrix.class);
-	private boolean plugInsPrefsChanged = false;  // REMOVE
 
 
 
@@ -195,7 +194,6 @@ public class Prefs extends JFrame {
 			null,
 			"In general...",
 			GENERAL_PANEL_INDEX);
-		//tabbedPane.setComponentAt(0, createGeneralPanel());
 		createGeneralPanel.start();
 
 		tabbedPane.insertTab(
@@ -212,19 +210,6 @@ public class Prefs extends JFrame {
 			null,
 			"Don't get electricuted...",
 			PLUG_INS_PANEL_INDEX);
-			
-			
-		/*
-		tabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (tabbedPane.getSelectedIndex() == PLUG_INS_PANEL_INDEX) {
-					setPlugInsPrefsChanged(true);
-					System.out.println("I'm changed!");
-				}
-			}
-						
-		});
-		*/
 
 		// adds the components to the panel
 		Container contentPane = getContentPane();
@@ -436,7 +421,6 @@ public class Prefs extends JFrame {
 	public void storePlugInSize(String filename, int width, int height) {
 		plugInsPrefs.putInt(PLUG_IN_WIDTH + filename, width);
 		plugInsPrefs.putInt(PLUG_IN_HEIGHT + filename, height);
-//		System.out.println("size saved: " + filename + ", " + width + "(X), " + height + "(Y)");
 	}
 	
 	/**Stores the given plug-in's window location.
@@ -450,10 +434,6 @@ public class Prefs extends JFrame {
 	public void storePlugInLocation(String filename, Point p) {
 		plugInsPrefs.putInt(PLUG_IN_X_LOC + filename, (int) p.getX());
 		plugInsPrefs.putInt(PLUG_IN_Y_LOC + filename, (int) p.getY());
-		/*
-		System.out.println("location saved: " + filename + ", " 
-			+ p.getX() + "(X), " + p.getY() + "(Y)");
-			*/
 	}
 
 	/** Stores whether the program should reopen tabs automatically.
@@ -499,7 +479,6 @@ public class Prefs extends JFrame {
 	 * @param file path of file to add to list
 	 */
 	public void storeFileHist(String file) {
-		//System.out.println("Storing: " + file);
 		String[] files = retrieveFileHist(); // gets the current history array
 		boolean shift = false;
 		// shift files if moving one entry to top of list
@@ -516,7 +495,6 @@ public class Prefs extends JFrame {
 				// find where to start shifting, if necessary
 				shift = true;
 			}
-			//System.out.println("files[" + i + "]: " + files[i] + ", file: " + file);
 		}
 		// if already shifted files, regenerate the stored list
 		if (shift) {
@@ -548,7 +526,6 @@ public class Prefs extends JFrame {
 		String[] files = new String[fileHistCount];
 		for (int i = 0; i < files.length; i++) {
 			files[i] = generalPrefs.get(FILE_HIST + i, "");
-			//System.out.println("files[" + i + "]: " + files[i]);
 			if (files[i] == "") {
 				// ensure that every array element is occuped by a path
 				return (String[]) LibTTx.truncateArray(files, i);
@@ -614,15 +591,6 @@ public class Prefs extends JFrame {
 		plugInsList = s;
 	}
 	
-	/**Sets the flag that indicates that the plug-in preferences have changed.
-	 * 
-	 * @param b
-	 *
-	public void setPlugInsPrefsChanged(boolean b) {
-		plugInsPrefsChanged = b;
-	}
-	*/
-
 	/** Gets the stored width for the program.
 	 * 
 	 * @return width in pixels
@@ -795,16 +763,7 @@ public class Prefs extends JFrame {
 	public String getIgnorePlugIns() {
 		return plugInsPrefs.get(IGNORE_PLUG_INS, "");
 	}
-	/*
-	public String[] getIgnorePlugInsNames() {
-		return ignores;
-	}
-	*/
 	
-	public boolean getPlugInsPrefsChanged() {
-		return plugInsPrefsChanged;
-	}
-
 	/** Worker thread to create the preferences panel.
 	 * 
 	 * @author davit
@@ -1038,6 +997,11 @@ public class Prefs extends JFrame {
 			});
 		}
 		
+		/**Enables or disables the auto-save selectors.
+		 * 
+		 * @param b <code>true</code> to enable the selectors,
+		 * allowing the user to adjust them
+		 */
 		public void setAutoSaveSelectors(boolean b) {
 			autoSaveIntervalLbl.setEnabled(b);
 			autoSaveIntervalSpinner.setEnabled(b);

@@ -93,18 +93,15 @@ public class PrintPad implements Printable {
 		Graphics2D g2D = (Graphics2D)g;
 		// sets (0,0) as the corner of the printable area
 		g2D.translate(pf.getImageableX(), pf.getImageableY());
-//		int pp = getPageCount(g2D, pf);
 		// counts the number of pages and stops the printing process once
 		// they have been exceeded;
 		// TODO: try storing page count in class variable to avoid repetitive calls
 		if (page > getPageCount(g2D, pf)) { 
 			return Printable.NO_SUCH_PAGE;
 		}
-//		if (true) return Printable.NO_SUCH_PAGE;
 		// draws the page on the current graphics display, which can in 
 		// turn be displayed on a printer or even a <code>JComponent</code>
 		drawPage(g2D, pf, page);
-//		System.out.println(getAllText());
 		return Printable.PAGE_EXISTS;
 	}
 	
@@ -119,8 +116,6 @@ public class PrintPad implements Printable {
 	 * page is drawn
 	 */
 	public void drawPage(Graphics2D g2D, PageFormat pf, int page) {
-//		if (getAllText().equals("")) return;
-//		Font f = new Font()
 		// sets the font specified in the class variable
 		g2D.setFont(font);
 		
@@ -130,15 +125,8 @@ public class PrintPad implements Printable {
 		
 		// the font context for TextLayout
 		FontRenderContext fontContext = g2D.getFontRenderContext();
-//		Font f = new Font("Serif", Font.PLAIN, 72);
 		// the layout to write text, line-by-line
-		TextLayout txtLayout = null;//new TextLayout(text, font, fontContext);
-//		AffineTransform affTransform = AffineTransform.getTranslateInstance(0, txtLayout.getAscent());
-//		Shape txtOutline = txtLayout.getOutline(affTransform);
-//		txtLayout.draw(g2D, 0, 0);
-//		g2D.draw(txtOutline);
-//		float ascent = txtLayout.getAscent();
-//		g2D.drawString(text, 0, ascent);
+		TextLayout txtLayout = null;
 		// writes text line-by-line, advancing the pen position between
 		// each line
 		float penY = 0;
@@ -152,28 +140,6 @@ public class PrintPad implements Printable {
 			penY += txtLayout.getAscent() + txtLayout.getDescent() + txtLayout.getLeading();
 			txtLayout.draw(g2D, 0, penY);
 		}
-
-//		g2D.scale(scale, scale);
-		/*
-		g2D.drawString(text, 
-			(float)pf.getImageableWidth(), 
-			(float)(pf.getImageableHeight()));
-		*/
-		
-		// creates a single string of the text from the number of lines
-		// specified from getPageCount(Graphics2D, PageFormat), adding
-		// a newline at the end of every line that doesn't already
-		// contain a newline;
-		// only text for the current page is written
-/*
-		String text 
-			= LibTTx.createStringFromArray(printText, 
-			page * linesPerPage, linesPerPage, true);
-		System.out.println("page: " + page + ", text: " + text);
-*/
-//		System.out.println("pf width: " + pf.getImageableWidth() + ", pf height: " + pf.getImageableHeight());
-//		System.out.println("font height: ")
-//		paintComponent(g2D);
 		
 	}
 	
@@ -187,7 +153,6 @@ public class PrintPad implements Printable {
 	 * @return the number of pages to print
 	 */
 	public int getPageCount(Graphics2D g2D, PageFormat pf) {
-//		int lines = LibTTx.getVisibleLineCount(this);
 		FontRenderContext context = g2D.getFontRenderContext();
 		// the line height for the current font and text;
 		// reads from the entire body of text, not just for the current
@@ -201,44 +166,11 @@ public class PrintPad implements Printable {
 		// determines the maximum number of lines that will fit onto
 		// the current paper size 
 		linesPerPage = (int)(pf.getImageableHeight() / lineHeight);
-//		if (printText == null) {
-//			printText = LibTTx.getVisibleLines(this);
-//		}
-//		int pp_max = (int)(lines * g2D.getFontMetrics().getHeight() 
-//			/ pf.getImageableHeight());
 		// determines the maximum number of pages for the given 
 		// number of lines
 		int pp_max = (int)Math.ceil(printText.length * lineHeight
 			/ pf.getImageableHeight());
-/*
-		System.out.println(
-//			"lines: " + lines 
-			"font height: "	+ font.getLineMetrics(LibTTx.createStringFromArray(printText, false), context).getHeight()
-			+ ", linesPerPage: " + linesPerPage
-			+ ", pp_max: " + pp_max
-//			+ ", fontMetrics height: " + g2D.getFontMetrics().getHeight()
-//			+ ", font size: " + getFont().getSize2D()
-//			+ ", pf.imageableHeight: " + pf.getImageableHeight()
-//			+ ", rec Height: " + getFont().getStringBounds(getAllText(), context).getHeight()
-			);
-*/
 		return pp_max;
-		/*
-		Rectangle rec = g2D.getClipBounds(new Rectangle());
-		int pp = (int)Math.ceil(rec.getHeight() / pf.getImageableHeight());
-		System.out.println("width: " + rec.getWidth() + ", height: " + rec.getHeight() + ", pp: " + pp);
-		return pp;
-		/*
-		if (getAllText().equals("")) return 0;
-		FontRenderContext context = g2D.getFontRenderContext();
-		Rectangle2D bounds = getFont().getStringBounds(getAllText(), context);
-		if (bounds.getWidth() > pf.getImageableWidth()) {
-			scale = pf.getImageableWidth() / bounds.getWidth();
-		}
-		double width = scale * bounds.getWidth();
-		int pp = (int)Math.ceil(scale * bounds.getHeight() / pf.getImageableHeight());
-		return pp;
-		*/
 	}
 	
 	/**Gets the current font.

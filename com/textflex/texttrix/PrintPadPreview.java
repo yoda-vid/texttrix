@@ -184,6 +184,7 @@ public class PrintPadPreview extends JDialog {
 			// panel dimensions
 			double sx = getWidth() - 1; // -1 to give border
 			double sy = getHeight() - 1; // -1 to give border
+			
 			// centering the image on the panel;
 			// if true, then printer dimensions less wide relative to height;
 			// need to scale to fit height since width already fits
@@ -196,19 +197,12 @@ public class PrintPadPreview extends JDialog {
 				xOff = 0;
 				yOff = .5 * (sy - scale * py);
 			}
-/*
-			System.out.println(
-				"xOff: " + xOff
-				+ ", yOff: " + yOff
-				+ ", scale: " + scale
-				+ ", px: " + px
-				+ ", py: " + py
-				+ ", sx: " + sx
-				+ ", sy: " + sy);
-*/
+			
+			// shifts the image to fit in the panel's dimensions
 			g2D.translate((float)xOff, (float)yOff);
 			g2D.scale((float)scale, (float)scale);
 			
+			// draws the image
 			Rectangle2D previewPage = new Rectangle2D.Double(0, 0, px, py);
 			g2D.setPaint(Color.white);
 			g2D.fill(previewPage);

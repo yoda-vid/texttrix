@@ -17,7 +17,6 @@ Note: "./" is the "check-mark" symbol
 -check on shortcuts in HTML/RTF views
 -plug-ins: listener types create listeners that TextTrix attaches to given TextPad
 -pop-up dialog when null pointers for hard-coded documentation names
--move word-search functions to LibTTX to make accessible to all plug-ins
 -"Letter Pulse" plug-in: check on auto-indent adjustments after switching tabs in the middle of a pulse session
 -check on Forward/Back when opening multiple tabs
 -Forward/Back icon?
@@ -80,11 +79,13 @@ v.0.3.5
 -help menu items update
 	-remove "Features Descriptions" menu item and document; FIXED (#799565): removed to focus on the plug-in tool tips, displayed dynamically for loaded plug-ins ./
 	-open help documents in blank Text Pad if active; FIXED (#799563): same mechanism to open the help documents as to open regular files, except that the mechanism renders the help documents uneditable ./
--add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window ./
 -build scripts update
 	-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to specify path manually ./
 	-option to output help documentation; ADDED: helps docs output via "-h" command-line argument ./
--PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application ./
+-plug-in updates
+	-PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application ./
+	-move word-search functions to LibTTX to make accessible to all plug-ins; ADDED: moved the word-finding function ./
+	-add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window ./
 -status bar
 	-add status bar for line numbers and other messages; ADDED: status bar at bottom of a new panel, which holds tabbed pane and status bar so user can still move tool bar to southern position of main window; tab change listener to update status bar when switching tabs ./
 	-add line numbers for lines with hard breaks; ADDED: current line number, total lines, and position as percentage of document length ./

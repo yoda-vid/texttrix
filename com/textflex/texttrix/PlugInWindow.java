@@ -110,7 +110,6 @@ public abstract class PlugInWindow extends PlugIn {
 	 */
 	public void addWindowAdapter() {
 		window.addWindowListener(winAdapter);//getWindowAdapter());
-//		System.out.println("added");
 	}
 	
 	/**Attaches a component listener to the window for external responses
@@ -212,10 +211,9 @@ public abstract class PlugInWindow extends PlugIn {
 	
 	/**Gets the window listener.
 	 * @return the window listener
+	 * @see #TextTrix.focusAllWindows(PlugIn)
 	 */
 	public WindowAdapter getWindowAdapter() {
-//		System.out.println("making winAdapter");
-//		return winAdapter;
 		return winAdapter;
 	}
 	

@@ -157,11 +157,12 @@ public class TextTrix extends JFrame {
 			'O',
 			KeyStroke.getKeyStroke("alt O"));
 
-		// creates an action that could store and apply preferences without closing the window;
-		// the class, not the calling function, creates the action b/c no need to report
-		// back to the calling function;
-		// contrast "cancelAction", which requires the calling function to both dispose of
-		// and destroy the object 
+		// creates an action that could store and apply preferences 
+		// without closing the window;
+		// the class, not the calling function, creates the action b/c 
+		// no need to report back to the calling function;
+		// contrast "cancelAction", which requires the calling function to 
+		// both dispose of and destroy the object 
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
 				if (continuePrefsUpdate()) {
@@ -375,7 +376,6 @@ public class TextTrix extends JFrame {
 	public static void main(String[] args) {
 		// set the look and feel;
 		try {
-			//	    System.out.println("java ver num: " + System.getProperty("java.vm.version") + ", " + System.getProperty("os.name"));
 
 			/* JRE Bug 4275928, "RFE: Mnemonics for non-character keys are
 			 * displayed incorectly in the tooltip"
@@ -764,7 +764,7 @@ public class TextTrix extends JFrame {
 			Document doc = t.getDocument();
 			String text = null; // text from the Document methods
 
-			// only modify the selected text, and make 
+			// unless flagged otherwise, only modify the selected text, and make 
 			// the action undoable
 			int start = t.getSelectionStart();
 			int end = t.getSelectionEnd(); // at the first unselected character
@@ -775,18 +775,17 @@ public class TextTrix extends JFrame {
 				if (start == end || pl.getAlwaysEntireText()) { // no selection
 					text = doc.getText(0, doc.getLength()); // all the text
 
-					// invokes the plugin: start and ending selection positions
-					// when "alwaysEntireText" b/c want to both get all of 
-					// the text and show its highlighted portion,
-					// rather than only getting that part of the text
-					//System.out.println(text);
+					// invokes the plugin: need both start and ending selection 
+					// positions when "alwaysEntireText" b/c want to both get 
+					// all of the text and reshow its highlighted portion,
+					// rather than only getting the highlighted part
 					outcome =
 						pl.getAlwaysEntireText()
 							? pl.run(text, start, end)
 							: pl.run(text, end);
-					//System.out.println("I'm there");
 
-					// if the plug-in flags that it has not changed the text, don't even try to do so
+					// if the plug-in flags that it has not changed the text, 
+					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						doc.remove(0, doc.getLength()); // remove all the text
 						doc.insertString(0, outcome.getText(), null);
@@ -809,7 +808,8 @@ public class TextTrix extends JFrame {
 					// start and end only 
 					outcome = pl.run(text); // invoke the plugin
 
-					// if the plug-in flags that it has not changed the text, don't even try to do so
+					// if the plug-in flags that it has not changed the text, 
+					// don't even try to do so
 					if (!outcome.getNoTextChange()) {
 						// remove only the region
 						doc.remove(start, len);
@@ -847,52 +847,102 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/* Integrated Windowing Design
+	 * 
+	 * The integrated windowing design brings all the Text Trix
+	 * windows to the front of the desktop when one Text Trix
+	 * window is focused.  Activating one window fires a listener
+	 * that the main Text Trix object to sequentially focus all
+	 * the plug-in windows and finally the main window and
+	 * returning to the originally focused window if necessary.
+	 * When the originally focused window is refocused, it needs
+	 * to prevent itself from firing the focusing mechanism
+	 * again.  The windows each use a flag to signal that they
+	 * have been recently focused.  If a focusing mechanism 
+	 * automatically focuses them, the flag signals that the window
+	 * is not merely being focused, but refocused, returning the 
+	 * focus to the orignally focused window and requiring no
+	 * more focusing to bring the other windows to the forefront.
+	 * 
+	 * Rather than asking the focusing mechanism to turn off these
+	 * flags, they turn off automatically after a given period of time.
+	 * On slow systems, the window might not fully activate until
+	 * the focusing mechanism would have already turned off the flag,
+	 * allowing for reactivation and resulting in an infinite loop
+	 * of focusing.  A sleep call in the focusing mechanism would
+	 * allow enough time for the window to focus before its flag
+	 * turns off, but each window has to focus after the entire
+	 * delay.  By using its own timer to turn off by itself, the flag
+	 * allows the focusing mechanism to move on to the next window while
+	 * the current window completes its activation and subsequently
+	 * turns off its flag to allow future integrated windowing 
+	 * activation.
+	 * 
+	 */
+	 
+	/**Focuses all open Text Trix windows when the user manually focuses
+	 * one plug-in window.
+	 * 
+	 * @param pl the plug-in originally focused
+	 * @see #focusAllWindows()
+	 */
 	public void focusAllWindows(PlugIn pl) {
-		//		if (pl.isActivated()) return;
+		// cycles through all the plug-ins
 		for (int i = 0; i < plugIns.length; i++) {
+			// focuses the plug-in if has a window and isn't the
+			// originally focuses plug-in, which will be refocused at the end
 			if (plugIns[i] != pl && plugIns[i] instanceof PlugInWindow) {
+				// flags the plug-in not to invoke this method, lest
+				// an infinite loop of focusing occur--gotta keep focused
+				// on the task!
 				plugIns[i].setTmpActivated(true);
-				//				activatePlugInWindow(pl);
 				plugIns[i].activateWindow();
-				//				plugIns[i].setActivated(false);
 			}
 		}
+		// focuses the main Text Trix window
 		setTmpActivated(true);
 		toFront();
+		// refocuses the plug-in that started all this fuss
 		pl.setTmpActivated(true);
 		pl.activateWindow();
-		//		pl.setActivated(false);
-		//		System.out.println("hey there");
 	}
-
+	
+	/**Focuses all open Text Trix windows when the user manually focuses
+	 * the main Text Trix window
+	 * 
+	 * @see #focusAllWindows(PlugIn)
+	 */
 	public void focusAllWindows() {
-		//		System.out.println("plugIns.length = " + plugIns.length);
+		// cycles through all the plug-ins
 		for (int i = 0; i < plugIns.length; i++) {
-			//			System.out.println("plugIn[" + i + "]");
+			// focuses the plug-in if has a window 
 			if (plugIns[i] instanceof PlugInWindow) {
 				plugIns[i].setTmpActivated(true);
-				/*
-				try {
-					System.out.println("sleeping...");
-					Thread.sleep(500);
-				} catch (Exception e) {
-				}
-				*/
 				plugIns[i].activateWindow();
 			}
 		}
+		// refocuses the main Text Trix window
 		setTmpActivated(true);
 		toFront();
-		//		System.out.println("hi there");
 	}
 
-	public void setTmpActivated(boolean b) {
+	/**Flags the main Text Trix window as temporarily active to ward
+	 * off a focusing mechanism from calling itself again. 
+	 * The flag automatically resets itself to <code>false</code>
+	 * after 500 ms.
+	 * 
+	 * @param b <code>true</code> indicates that the window has been
+	 * recently activated and should not fire the mechanism to focus all
+	 * windows
+	 * @see #isTmpActivated()
+	 */
+	private void setTmpActivated(boolean b) {
+		// automatically resets itself to false after 500 ms
 		if (tmpActivated = b) {
 			Thread runner = new Thread() {
 				public void run() {
 					try {
-							//						System.out.println("main waiting");
-	Thread.sleep(500);
+						Thread.sleep(500);
 						tmpActivated = false;
 					} catch (InterruptedException e) {
 					}
@@ -901,10 +951,26 @@ public class TextTrix extends JFrame {
 			runner.start();
 		}
 	}
-
-	public boolean isTmpActivated() {
+	
+	/**Checks if the main Text Trix window is flagged as recently
+	 * activated.
+	 * 
+	 * @return <code>true</code> if the window has breen recently focused
+	 * @see #setTmpActivated(boolean)
+	 */
+	private boolean isTmpActivated() {
 		return tmpActivated;
 	}
+
+
+
+
+
+
+
+
+
+
 
 	/** Reloads all the plug-ins in the current <code>plugins</code> folder.
 	 * Prepares the preferences panel to offer all available plug-ins.
@@ -1235,7 +1301,6 @@ public class TextTrix extends JFrame {
 		*/
 		boolean repeat = true;
 		boolean shift = false;
-		//	System.out.println("mostRecent: " + mostRecent + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex);
 		for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
 			// shift the records as necessary to move a potential
 			// duplicate to the front of the history
@@ -1284,7 +1349,6 @@ public class TextTrix extends JFrame {
 	*/
 	public void removeTabIndexHistory(int removed) {
 		boolean shift = false;
-		//	System.out.print("removed: " + removed + "; tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; new: ");
 		// cycle through the entire history, removing the tab and shifting
 		// both the tab indices and the tab history index appropriately
 		for (int i = 0; i < tabIndexHistory.length; i++) {
@@ -1556,36 +1620,50 @@ public class TextTrix extends JFrame {
 		tabbedPane.setToolTipTextAt(i, textPad.getPath());
 	}
 
-	/**Changes tabbed pane title to indicate whether the file's changes 
-	 * have been changed or not.
+	/**Changes given tab's title in the tabbed pane title 
+	 * to indicate whether the file has unsaved changes.
 	 * Appends "<code> *</code>" if the file has unsaved changes; 
 	 * appends "<code>  </code>" otherwise.
+	 * @param arrayList array of <code>TextPad</code>s that the 
+	 * tabbed pane displays
+	 * @param tabbedPane tabbed pane to update
+	 * @param i the index of the tab to update
+	 */
+	public static void updateTabTitle(
+		ArrayList arrayList,
+		JTabbedPane tabbedPane,
+		int i) {
+		// if the tab index is given as -1, assumes that the current
+		// tab should be updated
+		if (i < 0) {
+			i = tabbedPane.getSelectedIndex();
+		}
+		TextPad textPad = (TextPad) arrayList.get(i);
+		
+		// updates the title with the filename and a flag indicating
+		// whether the file has unsaved changes
+		String title = textPad.getFilename();
+		if (textPad.getChanged()) { // unsaved changes present
+			tabbedPane.setTitleAt(i, title + "*");
+		} else { // all changes saved
+			tabbedPane.setTitleAt(i, title + " ");
+		}
+	}
+	
+	/**Changes current tab's title in the tabbed pane title 
+	 * to indicate whether the file has unsaved changes.
+	 * Appends "<code> *</code>" if the file has unsaved changes; 
+	 * appends "<code>  </code>" otherwise.
+	 * 
 	 * @param arrayList array of <code>TextPad</code>s that the 
 	 * tabbed pane displays
 	 * @param tabbedPane tabbed pane to update
 	 */
 	public static void updateTabTitle(
 		ArrayList arrayList,
-		JTabbedPane tabbedPane,
-		int i) {
-		if (i < 0) {
-			i = tabbedPane.getSelectedIndex();
-		}
-		TextPad textPad = (TextPad) arrayList.get(i);
-		//	String title = tabbedPane.getTitleAt(i);
-		String title = textPad.getFilename();
-		// convert to filename; -2 b/c added 2 spaces
-		if (textPad.getChanged()) {
-			tabbedPane.setTitleAt(i, title + "*");
-		} else {
-			tabbedPane.setTitleAt(i, title + " ");
-			//		setTitleAt(i, title.substring(0, title.length() - 1) + " ");
-		}
-	}
-
-	public static void updateTabTitle(
-		ArrayList arrayList,
 		JTabbedPane tabbedPane) {
+		// -1 indicates that the currently selected tab is the one
+		// to update
 		updateTabTitle(arrayList, tabbedPane, -1);
 	}
 
@@ -1685,7 +1763,6 @@ public class TextTrix extends JFrame {
 		PrintWriter out = null;
 		try {
 			if (t != null) {
-				//				File f = new File(path);
 				/* if don't use canWrite(), work instead by 
 				   catching exception and either handling it there
 				   or returning signal of the failure
@@ -1702,7 +1779,6 @@ public class TextTrix extends JFrame {
 				// relies on TextPadDocListener to restart the timer
 				stopTextPadAutoSaveTimer(t);
 
-				//				System.out.println("about to update the tab title");
 				updateTabTitle(textAreas, tabbedPane, textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
@@ -1740,7 +1816,6 @@ public class TextTrix extends JFrame {
 	 */
 	public boolean saveFile(TextPad pad) {
 		return saveFile(pad.getPath(), pad);
-		//		return false;
 	}
 
 	/**Saves the file to the given path.
@@ -1787,6 +1862,11 @@ public class TextTrix extends JFrame {
 	tab's tool tip.
 	Assumes that the file is readable as text.
 	@param file file to open
+	@param editable <code>true</code> if the resulting text pad should
+	be editable
+	@param resource <code>true</code> if the file should be accessed
+	as a resource, via <code>TextTrix.class.getResourceAsStream(path)</code>
+	@see #openFile(File)
 	*/
 	public boolean openFile(File file, boolean editable, boolean resource) {
 		String path = file.getPath();
@@ -1862,6 +1942,17 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
+	/**Opens a file into a text pad.
+	 * Calls the file open dialog.
+	 * Opens the file into a new pad unless the currently selected one
+	 * is empty.
+	 * Sets the file's name as a the tab's title and the path as the
+	 * tab's tool tip.  Assumes that the file is readable as text and
+	 * should be accessed directly, rather than as as a resource.
+	 * Also assumed that the resulting text pad should be editable.
+	 * @param file file to open
+	 * @see #openFile(File, boolean, boolean)
+	*/
 	public boolean openFile(File file) {
 		return openFile(file, true, false);
 	}
@@ -1900,10 +1991,11 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
-	/** Evokes a save dialog, with a filter for text files.
-	Sets the tabbed pane tab to the saved file name.
-	@param owner parent frame; can be null
-	@return true if the approve button is chosen, false if otherwise
+	/** Evokes a save dialog to save a file just before exiting the 
+	 * program, when the text pad will no longer exist.
+	 *
+	 * @param owner parent frame; can be null
+	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public static boolean fileSaveDialogOnExit(JFrame owner) {
 		if (!prepFileSaveDialog())
@@ -1911,20 +2003,21 @@ public class TextTrix extends JFrame {
 		return getSavePathOnExit(owner);
 	}
 
-	/** Evokes a save dialog, with a filter for text files.
+	/** Evokes a save dialog.
 	Sets the tabbed pane tab to the saved file name.
 	@param owner parent frame; can be null
 	@return true if the approve button is chosen, false if otherwise
 	 */
 	public boolean fileSaveDialog(JFrame owner) {
 		return fileSaveDialog(null, owner);
-		/*
-		if (!prepFileSaveDialog())
-			return false;
-		return getSavePath(owner);
-		*/
 	}
 
+	/** Evokes a save dialog to save the given pad's file.
+	Sets the tabbed pane tab to the saved file name.
+	@param pad the text pad with the file to save
+	@param owner parent frame; can be null
+	@return true if the approve button is chosen, false if otherwise
+	 */
 	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
 		if (chooser.isShowing() || !prepFileSaveDialog(pad))
 			return false;
@@ -2352,11 +2445,18 @@ public class TextTrix extends JFrame {
 		int totLines = getTotalLineNumber(pad);
 		// cast to float for float division rather than int division
 		int percentage = (int) ((float) lineNum / (float) totLines * 100);
-		//		System.out.println("percentage: " + percentage);
 		statusBar.setText(
 			lineNum + ", " + totLines + " " + "(" + percentage + "%)");
 	}
 	
+	/**Displays a message dialog to inform the user that a resource,
+	 * such as a documentation or icon file, is missing.
+	 * Points the user to the Text Trix website to find the resource
+	 * and notify its maintainers to include the file in the next
+	 * release.
+	 * 
+	 * @param path the path to the missing resource
+	 */
 	private void displayMissingResourceDialog(String path) {
 		JOptionPane.showMessageDialog(
 			getThis(),
@@ -2436,7 +2536,6 @@ public class TextTrix extends JFrame {
 			String dir = openDir;
 			if (t != null && (dir = t.getDir()).equals(""))
 				dir = openDir;
-			//	    System.out.println("dir: " + dir);
 			chooser.setCurrentDirectory(new File(dir));
 			chooser.setSelectedFile(new File(""));
 			// allows one to open multiple files;
@@ -2475,7 +2574,7 @@ public class TextTrix extends JFrame {
 					setAutoIndent();
 					/* Original workaround.
 					   Utilizes the fact that getSelectedFiles() returns an 
-					   array of length 0, which getSelectedFile() returns the
+					   array of length 0, while getSelectedFile() returns the
 					   intended file object.
 					*/
 					/*
@@ -2490,7 +2589,6 @@ public class TextTrix extends JFrame {
 						    repeat = yesNoDialog(owner, msg, title);
 						}
 					} else {
-						//		System.out.println("files: " + files.length + ", file: ");// + f1.exists());
 						boolean allFound = true;
 						for (int i = 0; i < files.length; i++) {
 						    if (!openFile(files[i]))
@@ -2871,7 +2969,6 @@ public class TextTrix extends JFrame {
 					/* Create new menu and tool bars */
 
 					// remove the old components if necessary
-					//					UIManager.put("Menu.font", new Font("SansSerif", Font.PLAIN, 12));
 					if (menuBar != null) {
 						contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");
@@ -3108,9 +3205,16 @@ public class TextTrix extends JFrame {
 						redoActionShortcut);
 					editMenu.add(redoAction);
 
-					// Begin Cut, Copy, Paste entries;
+					// Begins Cut, Copy, Paste entries;
 					// create here instead of within TextPad so can use as 
-					// menu entries
+					// menu entries;
+					/* The JVM apparently overrides these shortcus with its
+					 * own when the standard keys map to them.
+					 * For example, when using ctrl-V for paste, the JVM
+					 * seems to call the paste mechanism directly rather
+					 * than following code from the pasteAction, below.
+					 * 
+					 */
 					editMenu.addSeparator();
 
 					// cut
@@ -3246,10 +3350,8 @@ public class TextTrix extends JFrame {
 								// to the past tabs -- leave the tabs as a
 								// trail until a new tab is chosesn
 								updateTabIndexHistory = false;
-								//System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + tabIndexHistory[tabIndexHistoryIndex]);
 								tabbedPane.setSelectedIndex(
 									tabIndexHistory[tabIndexHistoryIndex - 1]);
-								//System.out.println("Re-allowing tab history updates...");
 							} else { // reset the index to its orig val, -1
 								++tabIndexHistoryIndex;
 							}
@@ -3277,7 +3379,6 @@ public class TextTrix extends JFrame {
 								// trail of selections past and future from 
 								// the current position
 								updateTabIndexHistory = false;
-								//System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex + "; tabIndexHistory[]: " + i);
 								tabbedPane.setSelectedIndex(i);
 								//updateTabIndexHistory = true;
 							} else {
@@ -3430,8 +3531,6 @@ public class TextTrix extends JFrame {
 
 					// Load plugins; add to appropriate menu
 					setupPlugIns();
-					/*
-					*/
 
 					/* Place menus and other UI components */
 
@@ -3453,26 +3552,6 @@ public class TextTrix extends JFrame {
 					syncMenus();
 					//System.out.println("Validating the menu bar...");
 					validate();
-					/*
-					for (int i = 0; i < plugIns.length; i++) {
-						System.out.println(": " + i);
-						final PlugIn pl = plugIns[i];
-						try {
-						EventQueue.invokeAndWait(new Runnable() {
-							public void run() {
-					
-									if (pl.isWindowVisible()) {
-										pl.reloadWindow();
-									}
-							}
-							
-						});
-						} catch(InvocationTargetException e) {
-							
-						} catch(InterruptedException e) {
-						}
-					}
-					*/
 				}
 			});
 		}

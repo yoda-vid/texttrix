@@ -149,7 +149,6 @@ public abstract class PlugIn extends JComponent {
 	 * @see PlugInWindow
 	 */
 	public void setWindowAdapter(WindowAdapter adapter) {
-		//		winAdapter = adapter;
 	}
 
 	/**Checks the flag that indicates that the plug-in
@@ -167,13 +166,13 @@ public abstract class PlugIn extends JComponent {
 	 * 
 	 * @param b <code>true</code> indicates that the plug-in has just
 	 * been activated
+	 * @see #TextTrix.setTmpActivated(boolean)
 	 */
 	public void setTmpActivated(boolean b) {
 		if (tmpActivated = b) {
 			Thread runner = new Thread() {
 				public void run() {
 					try {
-							//						System.out.println(name + "waiting...");
 						Thread.sleep(500);
 						tmpActivated = false;
 					} catch (InterruptedException e) {
@@ -184,7 +183,6 @@ public abstract class PlugIn extends JComponent {
 			};
 			runner.start();
 		}
-		//		tmpActivated = b;
 	}
 
 	/** Runs the plugin on a given section of the text.
@@ -234,7 +232,6 @@ public abstract class PlugIn extends JComponent {
 	@see #runPlugIn()
 	*/
 	public void processEvent(AWTEvent event) {
-		//		System.out.println("processing event");
 		if (event instanceof PlugInEvent) {
 			EventListener[] listeners =
 				listenerList.getListeners(PlugInListener.class);
@@ -489,8 +486,6 @@ public abstract class PlugIn extends JComponent {
 	 * @see PlugInWindow
 	 */
 	public WindowAdapter getWindowAdapter() {
-		//		System.out.println("making winAdapter");
-		//		return winAdapter;
 		return null;
 	}
 

@@ -64,6 +64,10 @@ public abstract class StoppableThread extends Thread {
 		stopped = aStopped;
 	}
 	
+	/**Requests the thread to stop.
+	 * Must be overridden to perform the stoppage.
+	 *
+	 */
 	public abstract void requestStop();
 
 }

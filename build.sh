@@ -72,7 +72,11 @@ Last updated:
 # Check them!
 ####################
 
-JAVA="" # compiler location
+# compiler location
+JAVA=""
+
+# the chosen plugins
+PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" 
 
 ####################
 # System setup
@@ -139,12 +143,10 @@ then
 		BASE_DIR="$PWD/$0"
 	fi
 	BASE_DIR="${BASE_DIR%/texttrix/build.sh}" # assumes the script's name is plug.sh
-	#BASE_DIR="${BASE_DIR%/}"
 fi
 TTX_DIR="$BASE_DIR/texttrix" # texttrix folder within main dir
 PLGS_DIR="$BASE_DIR/plugins" # plugins folder within main dir
 DIR="com/textflex/texttrix" # src package structure
-PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse" # the chosen plugins
 
 #####################
 # Build operations
