@@ -71,6 +71,8 @@ public class TextTrix extends JFrame {
 	private int tabIndexHistoryIndex = 0; // index of next record
 	private boolean updateTabIndexHistory = true; // flag to update the record
 	private static Prefs prefs = null;
+	private static Action prefsOkayAction = null;
+	private static Action prefsCancelAction = null;
 	private static JMenu fileMenu = new JMenu("File");
 	private static int fileHistCount = 0;
 
@@ -80,18 +82,61 @@ public class TextTrix extends JFrame {
 	 */
 	public TextTrix(String[] paths) {
 		setTitle("Text Trix");
-		
-		prefs = new Prefs();
-		
-		
-		
-		
+
+		prefsOkayAction = new AbstractAction("Okay", null) {
+			public void actionPerformed(ActionEvent evt) {
+				getPrefs().storePrefs();
+				getPrefs().dispose();
+			}
+		};
+		LibTTx.setAcceleratedAction(
+			prefsOkayAction,
+			"Okay",
+			'O',
+			KeyStroke.getKeyStroke("alt O"));
+
+		prefsCancelAction = new AbstractAction("No way", null) {
+			public void actionPerformed(ActionEvent evt) {
+				prefs = null;
+			}
+		};
+		LibTTx.setAcceleratedAction(
+			prefsCancelAction,
+			"Cancel",
+			'C',
+			KeyStroke.getKeyStroke("alt C"));
+		//prefs = new Prefs(prefsOkayAction, prefsCancelAction);
+		getPrefs();
+
 		// pre-set window size
-		setSize(500, 600); // TODO: adjust to user's screen size
+		setSize(getPrefs().getPrgmWidth(), getPrefs().getPrgmHeight());
+		setLocation(new Point(getPrefs().getPrgmXLoc(), getPrefs().getPrgmYLoc()));
 		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
 		// set frame icon
-		if (im != null)
+		if (im != null) {
 			setIconImage(im.getImage());
+		}
+		addComponentListener(new ComponentListener() {
+			public void componentMoved(ComponentEvent evt) {
+				getPrefs().storeLocation(getLocation());
+			}
+			public void componentResized(ComponentEvent evt) {
+				getPrefs().storeSize(getWidth(), getHeight());
+				//System.out.println("Width: " + getWidth());
+				//System.out.println("Height: " + getHeight());
+			}
+			public void componentShown(ComponentEvent evt) {
+			}
+			public void componentHidden(ComponentEvent evt) {
+			}
+		});
+		
+
+		//Point loc = getLocation();
+		//getPrefs().storeSizeAndLocation(getWidth(), getHeight(), loc.getX(), loc.getY());	
+			
+			
+			
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		// keep the tabs the same width when substituting chars
 		tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -295,19 +340,10 @@ public class TextTrix extends JFrame {
 			'Q',
 			KeyStroke.getKeyStroke("ctrl Q"));
 		fileMenu.add(quitAction);
-		
+
 		fileMenu.addSeparator();
-		
+
 		createFileHist(fileMenu);
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
 		/* Edit menu items */
 
@@ -404,9 +440,11 @@ public class TextTrix extends JFrame {
 		editMenu.addSeparator();
 
 		// options sub-menu
+		/*
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic('O');
 		editMenu.add(optionsMenu);
+		*/
 
 		// auto-indent
 		// apply the selection to the current TextPad
@@ -426,21 +464,15 @@ public class TextTrix extends JFrame {
 		//	autoIndent.addActionListener(autoIndentAction);
 		autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 		// auto-indent
-		optionsMenu.add(autoIndent);
+		editMenu.add(autoIndent);
 
-		Action autoIndentAllAction =
-			new AbstractAction("Auto-indent all current files") {
+		Action prefsAction = new AbstractAction("Change your preferences") {
 			public void actionPerformed(ActionEvent evt) {
-				for (int i = 0; i < textAreas.size(); i++) {
-					TextPad t = (TextPad)textAreas.get(i);
-					if (t != null)
-						t.setAutoIndent(true);
-				}
-				setAutoIndent(true);
+				getPrefs().show();
 			}
 		};
-		LibTTx.setAction(autoIndentAllAction, "Auto indent all files", 'A');
-		optionsMenu.add(autoIndentAllAction);
+		LibTTx.setAction(prefsAction, "It's your preferences", 'P');
+		editMenu.add(prefsAction);
 
 		/* View menu items */
 
@@ -770,10 +802,10 @@ public class TextTrix extends JFrame {
 		String titleSuffix = " - Text Trix";
 		setTitle(filename + titleSuffix);
 	}
-	
+
 	public void createFileHist(JMenu menu) {
 		// assumes that the file history entries are at the entries in the menu
-		String[] files = prefs.retrieveFileHist();
+		String[] files = getPrefs().retrieveFileHist();
 		//for (int i = files.length - 1; i >= 0; i--) {
 		for (int i = 0; i < files.length; i++) {
 			String file = files[i];
@@ -784,7 +816,7 @@ public class TextTrix extends JFrame {
 		}
 		fileHistCount = files.length;
 	}
-	
+
 	public Action createFileHistAction(final String file) {
 		Action act = new AbstractAction(file) {
 			public void actionPerformed(ActionEvent evt) {
@@ -794,6 +826,10 @@ public class TextTrix extends JFrame {
 		return act;
 	}
 	
+	public static Prefs getPrefs() {
+		return (prefs == null) ? prefs = new Prefs(prefsOkayAction, prefsCancelAction) : prefs;
+	} 
+
 	/*
 	public void updateFileHist(JMenu menu, String file) {
 		//int fileHistCount = prefs.getFileHistCount();
@@ -1624,7 +1660,7 @@ public class TextTrix extends JFrame {
 				t.setChanged(false);
 				t.setFile(path);
 				updateTabTitle(textAreas, tabbedPane);
-				prefs.storeFileHist(path);
+				getPrefs().storeFileHist(path);
 				return true;
 			}
 		} catch (IOException e) {
@@ -1636,9 +1672,7 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-	
-	
-	
+
 	public static boolean saveFileOnExit(String path) {
 		//	System.out.println("printing");
 		TextPad t = getSelectedTextPad();
@@ -1666,7 +1700,6 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-
 
 	/** Opens a file into a text pad.
 	Calls the file open dialog.
@@ -1712,8 +1745,12 @@ public class TextTrix extends JFrame {
 				if (getOpenDir() == null) {
 					setOpenDir(System.getProperty("user.dir"));
 				}
-				prefs.storeFileHist(path);
+				getPrefs().storeFileHist(path);
 				updateFileHist(fileMenu);
+				if (getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
+					setAutoIndent(true);
+					t.setAutoIndent(true);
+				}
 				return true;
 			} catch (IOException exception) {
 				//		exception.printStackTrace();
@@ -1731,16 +1768,29 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 	
+	public boolean isAutoIndentExt(String path) {
+		int extIndex = LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
+		if (extIndex < 0 || extIndex >= path.length()) return false;
+		String ext = path.substring(extIndex);
+		System.out.println("Ext: " + ext);
+		StringTokenizer tokenizer = new StringTokenizer(getPrefs().getAutoIndentExt(), " ,.");
+		String token = "";
+		while (tokenizer.hasMoreTokens()) {
+			if (tokenizer.nextElement().equals(ext)) return true;
+		}
+		return false;
+	}
+
 	/** Evokes a save dialog, with a filter for text files.
 	Sets the tabbed pane tab to the saved file name.
 	@param owner parent frame; can be null
 	@return true if the approve button is chosen, false if otherwise
 	 */
 	public static boolean fileSaveDialogOnExit(JFrame owner) {
-		if (!prepFileSaveDialog()) return false;
+		if (!prepFileSaveDialog())
+			return false;
 		return getSavePathOnExit(owner);
 	}
-	
 
 	/** Evokes a save dialog, with a filter for text files.
 	Sets the tabbed pane tab to the saved file name.
@@ -1748,10 +1798,11 @@ public class TextTrix extends JFrame {
 	@return true if the approve button is chosen, false if otherwise
 	 */
 	public boolean fileSaveDialog(JFrame owner) {
-		if (!prepFileSaveDialog()) return false;		
+		if (!prepFileSaveDialog())
+			return false;
 		return getSavePath(owner);
 	}
-	
+
 	public static boolean prepFileSaveDialog() {
 		//	int tabIndex = tabbedPane.getSelectedIndex();
 		TextPad t = getSelectedTextPad();
@@ -1775,7 +1826,7 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-	
+
 	/** Helper function to <code>fileSaveDialog</code>.
 	Opens the file save dialog to retrieve the file's new name.
 	If the file will overwrite another file, prompts the user
@@ -1842,7 +1893,6 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 
-
 	/** Helper function to <code>fileSaveDialog</code>.
 	Opens the file save dialog to retrieve the file's new name.
 	If the file will overwrite another file, prompts the user
@@ -1895,9 +1945,9 @@ public class TextTrix extends JFrame {
 							tabbedPane.getSelectedIndex(),
 							path);
 						updateTitle(owner, f.getName());
-						prefs.storeFileHist(path);
+						getPrefs().storeFileHist(path);
 						updateFileHist(fileMenu);
-						
+
 						return true;
 					} else { // fail; request another try at saving
 						String msg =

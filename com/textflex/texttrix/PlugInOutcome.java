@@ -149,7 +149,7 @@ public class PlugInOutcome {
 	}
 	/** Gets the position of the first character to no longer highlight.
 	 * Only useful when <code>selectionStart != -1</code>
-	 * @return
+	 * @return position of first char beyond region to select
 	 */
 	public int getSelectionEnd() {
 		return selectionEnd;

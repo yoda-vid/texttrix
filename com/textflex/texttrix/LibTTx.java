@@ -171,7 +171,7 @@ public class LibTTx {
 	}
 	
 	/** Searches backward in a text to find a given normal-oriented string.
-	 * For example, in the text, text = "Mr. Smith went to the door and found a moose,"
+	 * For example, in the text, text = "Mr. Smith went to the door went out,"
 	 * reverseIndexOf(text, "went", 14) would return 10. 
 	 * @param str text to search
 	 * @param searchStr string to find

@@ -50,6 +50,12 @@ v.0.3.4
 		-File menu with menu items for each file; ADDED: descending menu items
 		-dynamically update menu items
 		-truncate long paths
+		-choose number of files to remember; ADDED: adjustable file history count
+	-panel:
+		-create preferences panel; ADDED: panel complete with tabs, okay/apply/cancel buttons
+		-remember panel size; ADDED: record panel size whenever hit "ok" button
+		-remember program size and location; ADDED: record whenever move or resize the program window
+	-auto-indent automatically for given extensions; ADDED: can turn on/off and customize extensions
 
 v.0.3.3
 -set tab display size; FIXED: TabStop, TabSet, and SimpleAttributeSet to specify distances according to character widths ./
