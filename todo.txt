@@ -69,7 +69,8 @@ v.0.3.6
 	-save prefs panel location and size, even if user doesn't save or apply prefs changes; ADDED: treats prefs panel as a plug-in for size and location information storage and retrieval; adopts same default size and location as with plugIns
 -plug-in load failure shouldn't tear down the entire menu bar creation
 -new icons; ADDED: slick, modern icons (courtesy of Stephen Liu)
--stop auto-save thread when close file
+-stop auto-save thread when close file; FIXED: removing tab stops the timer
+-refresh files; ADDED: refresh tabs with their current file, with warning for unsaved changes
 
 ----Past Releases----
 

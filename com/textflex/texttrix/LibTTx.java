@@ -404,7 +404,10 @@ public class LibTTx {
 	 * @param action action to set
 	 * @param description tool tip
 	 * @param mnemonic menu shortcut
-	 * @param keyStroke accelerator key shortcut
+	 * @param keyStroke accelerator key shortcut; when using KeyStroke
+	 * .getKeyStroke(String), note that the string can be a space-delimited
+	 * list of modifiers plus typed keys, such as "ctrl S" or even something
+	 * as simple as "F5"
 	 */
 	public static void setAcceleratedAction(
 		Action action,

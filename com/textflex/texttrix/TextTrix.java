@@ -1882,8 +1882,12 @@ public class TextTrix extends JFrame {
 	 *            tabbed pane from which to remove a tab
 	 */
 	public static void removeTextArea(int i, ArrayList l, JTabbedPane tp) {
-		l.remove(i);
-		tp.remove(i);
+		TextPad t = getSelectedTextPad();
+		if (t != null) {
+			stopTextPadAutoSaveTimer(t);
+			l.remove(i);
+			tp.remove(i);
+		}
 	}
 
 	/**
@@ -2020,7 +2024,7 @@ public class TextTrix extends JFrame {
 	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
 	 * @see #openFile(File)
 	 */
-	public boolean openFile(File file, boolean editable, boolean resource) {
+	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
 		String path = file.getPath();
 		// ensures that the file exists and is not a directory
 		if (file.canRead() || resource) { // readable file
@@ -2045,7 +2049,7 @@ public class TextTrix extends JFrame {
 				 * tab and set its text if no tabs exist or if current tab has
 				 * tokens; set current tab's text otherwise.
 				 */
-				if (t == null || !t.isEmpty()) { // open file in new pad
+				if (t == null || !reuseTab && !t.isEmpty()) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
 					t = getSelectedTextPad();
 					read(t, reader, path);
@@ -2105,7 +2109,45 @@ public class TextTrix extends JFrame {
 	 * @see #openFile(File, boolean, boolean)
 	 */
 	public boolean openFile(File file) {
-		return openFile(file, true, false);
+		return openFile(file, true, false, false);
+	}
+	
+	public boolean openFile(File file, boolean editable, boolean resource) {
+		return openFile(file, true, false, false);
+	}
+	
+	public void refreshTab() {
+		TextPad t = getSelectedTextPad();
+		if (t != null) {
+			if (!t.fileExists()) {
+				String title = "Refreshing ain't always easy";
+				String msg = "This is all we've got.  There's no saved file yet"
+					+ "\nfor us to refresh.  Sorry about that.";
+				JOptionPane.showMessageDialog(getThis(), msg, title,
+					JOptionPane.INFORMATION_MESSAGE, null);
+				return;
+			}
+			if (t.getChanged()) {
+				
+				String s = "Refresh request";
+				// dialog with 3 choices: save, discard, cancel
+				String msg = "This file has not yet been saved."
+						+ "\nShould I still refresh it with the currently saved version?";
+				int choice = JOptionPane.showOptionDialog(getThis(), msg,
+						"Save before refreshing", JOptionPane.WARNING_MESSAGE,
+						JOptionPane.DEFAULT_OPTION, null, new String[] { 
+								"Refresh me now", "Cancel" }, "Cancel"
+						);
+				switch (choice) {
+				// save the text area's contents
+				case 0:
+					break;
+				default:
+					return;
+				}
+			}
+			openFile(t.getFile(), t.isEditable(), false, true);
+		}
 	}
 
 	/**
@@ -2548,7 +2590,7 @@ public class TextTrix extends JFrame {
 	 *            the pad with the auto-save timer to stop
 	 * @see #startTextPadAutoSaveTimer(TextPad)
 	 */
-	public void stopTextPadAutoSaveTimer(TextPad pad) {
+	public static void stopTextPadAutoSaveTimer(TextPad pad) {
 		StoppableThread timer = pad.getAutoSaveTimer();
 		if (timer != null) {
 			//timer.interrupt();
@@ -3560,6 +3602,16 @@ public class TextTrix extends JFrame {
 							KeyStroke.getKeyStroke("ctrl CLOSE_BRACKET"));
 					viewMenu.add(nextTabAction);
 
+					// (ctrl-]) switch to the next tab
+					Action refreshTabAction = new AbstractAction("Refresh tab") {
+						public void actionPerformed(ActionEvent evt) {
+							refreshTab();
+						}
+					};
+					LibTTx.setAcceleratedAction(refreshTabAction, "Refresh tab", 'R',
+							KeyStroke.getKeyStroke("F5"));
+					viewMenu.add(refreshTabAction);
+
 					viewMenu.addSeparator();
 
 					// view as plain text
@@ -3590,7 +3642,7 @@ public class TextTrix extends JFrame {
 							viewRTF();
 						}
 					};
-					LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'R');
+					LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'T');
 					viewMenu.add(toggleRTFViewAction);
 
 					/* Help menu items */
