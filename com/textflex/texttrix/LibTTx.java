@@ -321,9 +321,31 @@ public class LibTTx {
 		String searchStr,
 		int offset) {
 		int i = offset - 1;
+		int searchLen = searchStr.length();
+		int strLen = str.length();
 		while (i >= 0
-			&& !str.substring(i, i + searchStr.length()).equals(searchStr)) {
+			&& i + searchLen <= strLen
+			&& !str.substring(i, i + searchLen).equals(searchStr)) {
 			i--;
+		}
+		return i;
+	}
+	
+	public static int reverseIndexOf(
+		Document doc,
+		String searchStr,
+		int offset) {
+		int docLen = doc.getLength();
+		int len = searchStr.length();
+		int i = offset - 1;
+		try {
+			while (i >= 0
+				&& i + len <= docLen
+				&& !doc.getText(i, len).equals(searchStr)) {
+				i--;
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
 		}
 		return i;
 	}

@@ -137,11 +137,14 @@ public class TextPad extends JTextPane implements StateEditable {
 					indentCurrentParagraph(getTabSize(), true);//JVM_15);
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
-					&& evt.isShiftDown()
-					&& getSelectionStart() != getSelectionEnd()) {
+					&& evt.isShiftDown()) {
 					evt.consume();
 					try {
-						tabRegionReverse();
+						if (getSelectionStart() != getSelectionEnd()) {
+							tabRegionReverse();
+						} else {
+							unindentLeadingTab();
+						}
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
@@ -167,6 +170,16 @@ public class TextPad extends JTextPane implements StateEditable {
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 
+	}
+	
+	public void unindentLeadingTab() throws BadLocationException {
+		Document doc = getDocument();
+		int i = getCaretPosition();
+		int lineLeadingChar = LibTTx.reverseIndexOf(doc, "\n", i) + 1;
+		if (doc.getText(lineLeadingChar, 1).equals("\t")) {
+			doc.remove(lineLeadingChar, 1);
+			indentCurrentParagraph();
+		}
 	}
 	
 	public void tabRegion() throws BadLocationException {
@@ -319,12 +332,28 @@ public class TextPad extends JTextPane implements StateEditable {
 				*/
 			}
 		});
+		
+		// (Shfit+BKSPC): deletes the previous character, as if BKSPC alone
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.SHIFT_MASK),
 			"deletePrevChar");
 		amap.put(
 			"deletePrevChar",
 			getActionByName(DefaultEditorKit.deletePrevCharAction));
+			
+		/*
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_TAB, Event.SHIFT_MASK),
+			"deletePrevTab");
+		amap.put(
+			"deletePrevChar",
+			new AbstractAction() {
+				public void actionPerformed(ActionEvent evt) {
+					if (autoIndent && isLeadingTab()) {
+						try {
+							getDocument().remove(getLeadingCharIndex(), 1)
+			);
+		*/
 	}
 
 	/** Creates the partial-Emacs shortcuts, consisting of single character and
@@ -471,6 +500,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setTabSet(attribs, tabSet);
 		StyleConstants.setLeftIndent(attribs, 0);
+		StyleConstants.setFirstLineIndent(attribs, 0);
 		//StateEdit stateEdit = new StateEdit(this);
 		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument()
@@ -573,6 +603,18 @@ public class TextPad extends JTextPane implements StateEditable {
 		return tabs;
 	}
 
+	public int leadingTabsCount(Document doc, int offset) {
+		int tabs = 0;
+		int len = doc.getLength();
+		try {
+			for (int i = offset; i < len && doc.getText(i, 1).equals("\t"); i++)
+				++tabs;
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return tabs;
+	}
+
 	/** Indents a paragraph by a given number of tabs and size per tab.
 	 * Indents the entire region, not just the first line, though each tab remains the size of
 	 * one space.
@@ -672,7 +714,10 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @return <code>true</code> if the tab is a leading tab
 	 */
 	public boolean isLeadingTab() {
-		int i = getCaretPosition() - 1;
+		//System.out.println("caret: " + getCaretPosition() + ", selectionEnd: " + getSelectionEnd());
+		//int i = getCaretPosition() - 1;
+		//int i = getSelectionEnd() - 1;
+		int i = getLeadingCharIndex();
 		try {
 			if (i >= 0 && !getDocument().getText(i, 1).equals("\t")) return false;
 			while (i > 0 && getDocument().getText(i, 1).equals("\t"))
@@ -682,6 +727,12 @@ public class TextPad extends JTextPane implements StateEditable {
 			System.out.println("Can't find no tabs, dude.");
 			return false;
 		}
+	}
+	
+	private int getLeadingCharIndex() {
+		int start = getSelectionStart();
+		int end = getSelectionEnd();
+		return (start == end) ? --end : start;
 	}
 	
 
@@ -805,8 +856,12 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * May need to make include the goofy features' text manipulations.
 	 */
 	public void undo() {
-		if (undoManager.canUndo())
+		if (undoManager.canUndo()) {
 			undoManager.undo();
+			if (autoIndent) {
+				indentCurrentParagraph();
+			}
+		}
 	}
 
 	/**Redoes the last undone text change.

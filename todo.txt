@@ -48,13 +48,15 @@ Note: "./" is the "check-mark" symbol
 
 v.0.3.6
 -auto-wrap-indent additions and fixes
-	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with SHIFT+TAB
+	-tab entire regions; ADDED: when auto-wrap-indent selected, tab entire selected regions with TAB, and un-tab with Shift+TAB
+	-decrement line's tab with Shift+TAB; ADDED: if no text selected, current line loses one leading tab if auto indent mode and line indented
 	-adjust wrap-indent when user presses delete key or any of its shortcuts; ADDED: re-wrap-indents when user presses Delete key or shortcuts that also delete the next character
 	-fix auto-wrap-indent to not rely on previous line's indentation; FIXED (#982975, 709862): indent function no longer skips over the second of adjacent newlines--the one following a blank, unindented line
 	-fix wrap-indent failure at start of document; FIXED (#982977): removes the graphical indent at the start of documents in JVM >= v.1.5
 	-fix failure to auto-indent when first line is blank and second line has the tab; FIXED (#982992): now properly counts the previous line's tabs because no longer skips past the first newline
 	-update auto-wrap indents after changing text; ADDED: updates when plugin run returns changed text
-	-adjust isLeadingTab() or the backspace unindenter to check if the text is selected, since selecting text backward and culminating at a leading tab causes a graphical unindent after a backspace
+	-adjust isLeadingTab() or the backspace unindenter to check if the text is selected, since selecting text backward and culminating at a leading tab causes a graphical unindent after a backspace; FIXED: leading tab checker looks at either the first character of a selection, to ensure that changes to  leading tabs at the start of a selection affect the graphical indent, or, if no text is selected, the character just behind the current caret position
+	-undo should apply indents if auto-indent is enabled; FIXED: graphically indents the current paragraph if autoIndent is on
 	-update indents when paste over selected area
 	-wrap indent to the first line in the paragraph, rather than indenting the first line a little more with each tab; ADDED: negative, hanging indent for each tab, along with array of negative tab stops to fill up the space from the hanging indent
 -plug-in updates
@@ -90,7 +92,7 @@ v.0.3.6
 	-Makefiles to allow selective building and updating; ADDED: "configure" script creates Makefiles to build Text Trix from the base or distant locations within the filesystem
 	-build the API through the Makefile
 	-rules to clean and install
--fix tab history from failing
+-fix tab history from failing under certain extreme cases
 -bookmarks groups
 	-open all files in a group
 	-create separate dialog window listing all the files, where files can be added be dragging their tab into the box
@@ -98,6 +100,7 @@ v.0.3.6
 -add forward and back icons
 -forward and back to previous edit positions
 -function to go directly to a line number
+-check file menu history
 
 ----Past Releases----
 
