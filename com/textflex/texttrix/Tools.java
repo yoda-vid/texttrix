@@ -214,7 +214,7 @@ public class Tools {
 	 */
 	public static int containingSeq(String seq, int start, 
 			String chars, String innerChars) {
-		char nextChar = '\0';
+		char nextChar;
 		boolean inSeq = false;
 		int i = start;
 		while (seq.length() > i && chars.indexOf(nextChar = seq.charAt(i)) != -1) {
@@ -232,32 +232,43 @@ public class Tools {
 	 * @return text with HTML tags removed
 	 */
 	public static String htmlReplacer(String text) {
-		String lowerCase = text.toLowerCase();
+		String lowerCase = text.toLowerCase(); // so ignore tag upper/lower case
 		int len = text.length();
 		StringBuffer s = new StringBuffer(len);
 		int n = 0;
 		char c;
+		// add to the stringbuffer char by char, deleting and replacing 
+		// tags as appropriate
 		while (n < len) {
+			// tags
 			if ((c = text.charAt(n)) == '<' && n < len - 1) {
 				n++;
+				// <p> tags
 				if (startsWithAny(lowerCase, new String[] {"p>", "p "}, n)) {
 					s.append("\n\n");
+				// <br> tags
 				} else if (startsWithAny(lowerCase, 
 							new String[] {"br>", "br>", "/br>", "/br "}, n)) {
 					s.append("\n");
+				// <b> tags: replace with "*"
 				} else if (startsWithAny(lowerCase, 
 							new String[] {"b>", "b ", "/b>", "/b "}, n)) {
 					s.append("*");
+				// <i> tags: replace with "/"
 				} else if (startsWithAny(lowerCase, 
 							new String[] {"i>", "i ", "/i>", "/i "}, n)) {
 					s.append("/");
+				// <u> tags: replace with "_"
 				} else if (startsWithAny(lowerCase, 
 							new String[] {"u>", "u ", "/u>", "/u >"}, n)) {
 					s.append("_");
+				// any other closing tag
 				} else if (startsWithAny(lowerCase, new String[] {"/"}, n)) {
 				}
 				n = lowerCase.indexOf('>', n);
+			// skip over hard returns and tabs
 			} else if (c == '\n' || c == '\t') {
+			// add non-tag, non hard return/tab chars
 			} else {
 				s.append(c);
 			}
@@ -269,9 +280,11 @@ public class Tools {
 	/**Checks whether any of the strings in an array are at the start
 	 * of another string.
 	 * @param s string to check
-	 * @param strs[] array of strings that may be at the beginning of <code>s</code>
+	 * @param strs[] array of strings that may be at the beginning 
+	 * of <code>s</code>
 	 * @param offset index to start checking in <code>s</code>
-	 * @return <code>true</code> if any of the array's strings start <code>s</code>, 
+	 * @return <code>true</code> if any of the array's strings 
+	 * start <code>s</code>, 
 	 * <code>false</code> if otherwise
 	 */
 	public static boolean startsWithAny(String s, String strs[], int offset) {
@@ -284,15 +297,15 @@ public class Tools {
 	}
 	
 	/**Shows non-printing characters.
-	 * Adds String representations for non-printing characters, such as paragraph 
-	 * and tab markers.  The representations become part of the text.
+	 * Adds String representations for non-printing characters, such as 
+	 * paragraph and tab markers.  The representations become part of the text.
 	 * @param text text to convert
 	 * @return text with added String representations
 	 */
 	public static String showNonPrintingChars(String text) {
 		StringBuffer s = new StringBuffer(text.length());
 		char c;
-//		String unicodeTable[][] = loadUnicodeArray("unicodetable.txt");
+		// progress char by char, revealing newlines and tabs explicitly
 		for (int i = 0; i < text.length(); i++) {
 			c = text.charAt(i);
 			switch (c) {
@@ -306,14 +319,6 @@ public class Tools {
 					s.append(c);
 					break;
 			}
-			/*
-//			charText = unicodeConversion(unicodeTable, c);
-			if (charText != null) {
-				s.append(charText);
-			} else {
-				s.append(c);
-			}
-			*/
 		}
 		return s.toString();
 	}
@@ -336,14 +341,17 @@ public class Tools {
 			StringTokenizer token;
 			String delimiters = "| =";
 			String line;
-			ArrayList vars = new ArrayList();
-			ArrayList vals = new ArrayList();
+			ArrayList vars = new ArrayList(); // variable-like string
+			ArrayList vals = new ArrayList(); // value-like string: var equivs
+			// separately retrieve each string and its equivalent, with 
+			// "|", " ", "=", or a combo of them delineating the two strings
 			for (int i = 0; (line = reader.readLine()) != null; i++) {
 				token = new StringTokenizer(line, delimiters);
 				vars.add(token.nextToken());
 				vals.add(token.nextToken());
 			}
 			int n = vars.size();
+			// storage array based on number of equivalencies
 			String equivs[][] = new String[n][2];
 			for (int i = 0; i < n; i++) {
 				equivs[i][0] = (String)vars.get(i);
@@ -359,6 +367,7 @@ public class Tools {
 
 	/**Sorts a 2-dimensional String array according to the first element
 	 * of each array.
+	 * Works according to the Shell sort algorithm.
 	 * @param array[][] an array of 2-element arrays
 	 */
 	public static void sortEquivalencyTable(String[][] array) {
@@ -381,6 +390,7 @@ public class Tools {
 	}
 
 	/**Displays a string's equivalent string.
+	 * Works according to the Binary search algorithm.
 	 * @param equivalencyTable[][] array of 2-element arrays, each holding 
 	 * a string and its equivalent string
 	 * @return equivalent string, the original string if it is not in the table
@@ -405,12 +415,32 @@ public class Tools {
 		return s;
 	}
 
+	/**Find a the first occurrence of a given sequence in a string.
+	 * @param text string to search
+	 * @param quarry sequence to find
+	 * @param start index to start searching
+	 * @return index of the sequence's start in the string; -1 if not found
+	 */
 	public static int find(String text, String quarry, int start) {
 		if (start < text.length())
 			return text.indexOf(quarry, start);
 		return -1;
 	}
-		
+	
+	/**Front-end to the <code>find</code> and <code>findWord</code> methods.
+	 * Depending on the options given to it, checks for either a 
+	 * any occurrence of a given sequence in a string or only when 
+	 * the string occurs as a separate word, ie with only non-letter or 
+	 * non-digits surrounding it.  Also can choose to ignore upper/lower 
+	 * case.
+	 * @param text string to search
+	 * @param quarry sequence to search for
+	 * @param n index to start searching
+	 * @param word if true, treat the sequence as a separate word, with only
+	 * non-letters/non-digits surrounding it
+	 * @param ignoreCase if true, ignore upper/lower case
+	 * @return index of sequence's start in the string; -1 if not found
+	 */
 	public static int find(String text, String quarry, int n, boolean word, boolean ignoreCase) {
 		if (ignoreCase) {
 			text = text.toLowerCase();
@@ -419,17 +449,30 @@ public class Tools {
 		return word ? findWord(text, quarry, n) : find(text, quarry, n);
 	}
 
+	/**Find a given expression as a separate word.
+	 * Searches through text to find the given expression so long 
+	 * as it is surrounded by non-letter, non-digit characters, such 
+	 * as spaces, dashes, or quotation marks.
+	 * @param text text to search
+	 * @param quarry word to find; can contain letter and/or numbers
+	 * @param start index at which to start searching
+	 * @return int starting index of matching expression; -1 if not found
+	 */
 	public static int findWord(String text, String quarry, int start) {
 		int n = start;
 		int end = start + 1;
 		int len = text.length();
 		while (n < len) {
+			// skip over non-letters/non-digits
 			while (!Character.isLetterOrDigit(text.charAt(n)))
 				n++;
+			// progress to the end of a word
 			while (end < len && Character.isLetterOrDigit(text.charAt(end)))
 				end++;
+			// compare the word with the quarry to see if they match
 			if (end < len && text.substring(n, end).equals(quarry)) {
 				return n;
+			// continue search with next word if no match yet
 			} else {
 				n = end;
 				end++;
@@ -438,40 +481,76 @@ public class Tools {
 		return -1;
 	}
 	
+	/**Find and replace occurences of a given sequence.
+	 * Employs options for specific word searching, replacing all 
+	 * occurrences, wrap around to the text's beginning, and ignoring upper/
+	 * lower case.
+	 * @param text string to search
+	 * @param quarry sequence to find
+	 * @param replacement sequence with which to substitute
+	 * @param start index to start searching
+	 * @param end index at which to no longer begin another search; 
+	 * a search can continue past it, but cannot start once exceeding it
+	 * @param word treat the quarry as a separate word, with only 
+	 * non-letters/non-digits surrounding it
+	 * @param all if true, replace all occurrences of the sequence, starting 
+	 * with the current cursor position and continuing through the text's end, 
+	 * though only wrapping around to the start and back to the cursor if 
+	 * <code>wrap</code> is enabled; 
+	 * if false, replace only the first occurrence
+	 * @param wrap if necessary, continue to the beginning of the text and 
+	 * return to the cursor
+	 * @param ignoreCase ignore upper/lower case
+	 * @return text with appropriate replacements
+	 */
 	public static String findReplace(String text, String quarry, 
 			String replacement, int start, int end, boolean word, boolean all, boolean wrap, boolean ignoreCase) {
 		StringBuffer s = new StringBuffer(text.length());
 		int n = start;
 		int prev;
+		// replace all occurrences of the quarry
 		if (all) {
+			// append unmodified the text preceding the caret
 			s.append(text.substring(0, n));
+			// continue until the reaching text's end or the quarry has
+			// not been found
 			while (n < end && n != -1) {
 				prev = n;
 				n = find(text, quarry, n, word, ignoreCase);
+				// replace the quarry if found
 				if (n != -1) {
 					s.append(text.substring(prev, n) + replacement);
 					n += quarry.length();
+				// if not found, append the rest of the text unmodified
 				} else {
 					s.append(text.substring(prev));
 					text = s.toString();
 				}
 			}
+			// append the rest of the text if a quarry occurrence extended 
+			// beyond the search boundary
 			if (n != -1) {
 				s.append(text.substring(n));
 				text = s.toString();
 			}
+			// recursively call the method on the beginning portion of the 
+			// text if wrap is enabled
 			if (wrap) {
 				text = findReplace(text, quarry, replacement, 0, start - 1,
 						word, all, false, ignoreCase);
 			}
 			return text;
-				
+		// replace first occurrence only
 		} else {
+			// stay within given boundary
 			if (n < end) {
 				n = find(text, quarry, n, word, ignoreCase);
+				// replace quarry if found
 				if (n != -1) {
 					text = (text.substring(0, n) + replacement
 						+ text.substring(n + quarry.length()));
+				// if not found and wrap is enabled, continue from 
+				// beginning of text
 				} else {
 					if (wrap) {
 						text = findReplace(text, quarry, replacement, 
@@ -482,5 +561,4 @@ public class Tools {
 			return text;
 		}
 	}
-
 }

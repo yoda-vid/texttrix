@@ -66,10 +66,6 @@ public class TextTrix extends JFrame {
 	// find dialog
 	private static FindDialog findDialog;
 
-	
-	private static int currentTabIndex = 0;
-	private static int prevTabIndex = 0;
-
 	/**Constructs a new <code>TextTrix</code> frame and
 	 * <code>TextPad</code> to begin with.
 	 */
@@ -80,8 +76,6 @@ public class TextTrix extends JFrame {
 
 	// make first tab and text area
 	addTextArea(textAreas, tabbedPane, makeNewFile());
-
-//	tabbedPane.addChangeListener(new TabSwitchListener());
 
 	// make menu bar and menus
 	JMenuBar menuBar = new JMenuBar();
@@ -125,7 +119,7 @@ public class TextTrix extends JFrame {
 	openButton.setBorderPainted(false);
 	setRollover(openButton, "images/openicon-roll-16x16.png");
 
-	// set "*.txt" and "*.html" file filters for open/save dialog boxes
+	// set text and web file filters for open/save dialog boxes
 	final ExtensionFileFilter webFilter = new ExtensionFileFilter();
 	webFilter.addExtension("html");
 	webFilter.addExtension("htm");
@@ -294,21 +288,23 @@ public class TextTrix extends JFrame {
 	setAction(licenseAction, "License", 'L');
 	helpMenu.add(licenseAction);
 
-	Action findAction = new AbstractAction("Find", makeIcon("images/find-16x16.png")) {
+	// find and replace Tools feature
+	Action findAction = new AbstractAction("Find and replace", makeIcon("images/find-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
 			if (findDialog == null) 
 				findDialog = new FindDialog(TextTrix.this);
 			findDialog.show();
 		}
 	};
-	setAction(findAction, "Find", 'F');
+	setAction(findAction, "Find and replace", 'F');
 	toolsMenu.add(findAction);
 	JButton findButton = toolBar.add(findAction);
 	findButton.setBorderPainted(false);
 	setRollover(findButton, "images/find-roll-16x16.png");
 	findButton.setToolTipText(readText("findbutton.html"));
 
-	// Text Trix's first "goofy" function! (it's actually a practical one)
+	// remove hard returns except between paragraphs and within lists; 
+	// also remove " > " and similar pre-appendages to lines
 	Action removeReturnsAction = new AbstractAction("Remove extra hard returns", 
 			makeIcon("images/returnicon-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
@@ -325,7 +321,7 @@ public class TextTrix extends JFrame {
 	setRollover(removeReturnsButton, "images/returnicon-roll-16x16.png");
 	removeReturnsButton.setToolTipText(readText("removereturnsbutton.html"));
 
-	// Non-printing-character display
+	// non-printing-character display
 	Action nonPrintingCharViewerAction = new AbstractAction(
 			"View non-printing characters", makeIcon("images/nonprinting-16x16.png")) {
 		public void actionPerformed(ActionEvent evt) {
@@ -424,6 +420,9 @@ public class TextTrix extends JFrame {
 		return savePath;
 	}
 
+	/**Gets the currently selected <code>TextPad</code>
+	 * @return <code>TextPad</code> whose tab is currently selected
+	 */
 	public static TextPad getSelectedTextPad() {
 		int i = tabbedPane.getSelectedIndex();
 		if (i != -1) {
@@ -431,14 +430,6 @@ public class TextTrix extends JFrame {
 		} else {
 			return null;
 		}
-	}
-
-	public static int getCurrentTabIndex() {
-		return currentTabIndex;
-	}
-
-	public static int getPrevTabIndex() {
-		return prevTabIndex;
 	}
 
 	/**Sets the given path as the most recently one used
@@ -455,14 +446,6 @@ public class TextTrix extends JFrame {
 	 */
 	public static void setSavePath(String aSavePath) {
 		savePath = aSavePath;
-	}
-
-	public static void setCurrentTabIndex(int i) {
-		currentTabIndex = i;
-	}
-
-	public static void setPrevTabIndex(int i) {
-		prevTabIndex = i;
 	}
 
 	/**Enable button rollover icon change.
@@ -868,15 +851,23 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/**Find and replace dialog.
+	 * Creates a dialog box accepting input for search and replacement 
+	 * expressions as well as options to tailor the search.
+	 */
 	private class FindDialog extends JDialog {
-		JTextField find;
-		JTextField replace;
-		JCheckBox word;
-		JCheckBox wrap;
-		JCheckBox selection;
-		JCheckBox replaceAll;
-		JCheckBox ignoreCase;
+		JTextField find; // search expression input
+		JTextField replace; // replacement expression input
+		JCheckBox word; // treat the search expression as a separate word
+		JCheckBox wrap; // search to the bottom and start again from the top
+		JCheckBox selection; // search only within a highlighted section
+		JCheckBox replaceAll; // replace all instances of search expression
+		JCheckBox ignoreCase; // ignore upper/lower case
 		
+		/**Construct a find/replace dialog box
+		 * @param owner frame to which the dialog box will be attached; 
+		 * can be null
+		 */
 		public FindDialog(JFrame owner) {
 			super(owner, "Find and Replace", false);
 			setSize(350, 150);
@@ -885,26 +876,46 @@ public class TextTrix extends JFrame {
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.fill = GridBagConstraints.HORIZONTAL;
 			constraints.anchor = GridBagConstraints.CENTER;
+			
+			// search expression input
 			add(new JLabel("Find:"), constraints, 0, 0, 1, 1, 100, 0);
 			add(find = new JTextField(20), constraints, 1, 0, 2, 1, 100, 0);
+
+			// replace expression input
 			add(new JLabel("Replace:"), constraints, 0, 1, 1, 1, 100, 0);
 			add(replace = new JTextField(20), constraints, 1, 1, 2, 1, 100, 0);
-			add(word = new JCheckBox("Find word"), constraints, 0, 2, 1, 1, 100, 0);
+			
+			// treat search expression as a separate word
+			add(word = new JCheckBox("Find word"), 
+					constraints, 0, 2, 1, 1, 100, 0);
 			word.setMnemonic(KeyEvent.VK_N);
 			word.setToolTipText("Search for the expression as a separate word");
+			
+			// wrap search through start of text if necessary
 			add(wrap = new JCheckBox("Wrap"), constraints, 2, 2, 1, 1, 100, 0);
 			wrap.setMnemonic(KeyEvent.VK_A);
 			wrap.setToolTipText("Start searching from the cursor and wrap back to it");
-			add(selection = new JCheckBox("Replace within selection"), constraints, 1, 2, 1, 1, 100, 0);
+			
+			// replace all instances within highlighted section
+			add(selection = new JCheckBox("Replace within selection"), 
+					constraints, 1, 2, 1, 1, 100, 0);
 			selection.setMnemonic(KeyEvent.VK_S);
 			selection.setToolTipText("Search and replace text within the entire highlighted section");
-			add(replaceAll = new JCheckBox("Replace all"), constraints, 0, 3, 1, 1, 100, 0);
+			
+			// replace all instances from cursor to end of text unless 
+			// combined with wrap, where replace all instances in whole text
+			add(replaceAll = new JCheckBox("Replace all"), 
+					constraints, 0, 3, 1, 1, 100, 0);
 			replaceAll.setMnemonic(KeyEvent.VK_L);
 			replaceAll.setToolTipText("Replace all instances of the expression");
-			add(ignoreCase = new JCheckBox("Ignore case"), constraints, 1, 3, 1, 1, 100, 0);
+			
+			// ignore upper/lower case while searching
+			add(ignoreCase = new JCheckBox("Ignore case"), 
+					constraints, 1, 3, 1, 1, 100, 0);
 			ignoreCase.setMnemonic(KeyEvent.VK_I);
 			ignoreCase.setToolTipText("Search for both lower and upper case versions of the expression");
 
+			// find action, using the appropriate options above
 			Action findAction = new AbstractAction("Find", null) {
 				public void actionPerformed(ActionEvent e) {
 					TextPad t = getSelectedTextPad();
@@ -925,6 +936,7 @@ public class TextTrix extends JFrame {
 						InputEvent.ALT_MASK));
 			add(new JButton(findAction), constraints, 0, 4, 1, 1, 100, 0);
 
+			// find and replace action, using appropriate options above
 			Action findReplaceAction = new AbstractAction("Find and Replace", null) {
 				public void actionPerformed(ActionEvent e) {
 					TextPad t = getSelectedTextPad();
