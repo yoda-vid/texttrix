@@ -510,12 +510,10 @@ public class Prefs extends JFrame {
 		// checked before replacing it with a future entry
 		for (int i = files.length - 1; i >= 0; i--) {
 			if (shift) { // shift the records, overwriting the duplicate record
-				files[i + 1] = files[i];
 				// move the current record to the next spot
-			} else if (
+				files[i + 1] = files[i];
+			} else if (files[i].equals(file)) {
 				// find where to start shifting, if necessary
-			files[i].equals(
-					file)) {
 				shift = true;
 			}
 			//System.out.println("files[" + i + "]: " + files[i] + ", file: " + file);

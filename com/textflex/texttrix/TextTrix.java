@@ -1533,6 +1533,19 @@ public class TextTrix extends JFrame {
 			removeTextArea(tabIndex, textAreas, tabbedPane);
 			successfulClose = true;
 		}
+		
+		/* Potential JVM bug (>= v.1.4.2): The tab change listener doesn't
+		 * appear to respond to tab changes when closing a tab.  Our
+		 * listener updates the main window title when changing tabs,
+		 * but the title remains the same after the user closes a window.
+		 * 
+		 * Workaround: The text pad close method manually updates the title
+		 * for the newly selected pad, if it exists.
+		 */
+		t = getSelectedTextPad();
+		if (successfulClose && t != null) {
+			updateTitle(t.getFilename());
+		}
 		return successfulClose;
 	}
 

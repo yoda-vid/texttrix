@@ -8,26 +8,32 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
---------------------------------------
+-------------------------------------------------------
 ----v.0.3 Series: FEATure Series (FEATS)----
---------------------------------------
+-------------------------------------------------------
 
 ----v.0.3.5 (6/1/04)----
 
-Text Trix, the text tinker, whips into gear with its new WYSIWYP printing system, auto-save function, and integrated windowing design.  "WYSIWYP" derives from the lofty standard for pure text processing, "WYSIWYG," or "What You See Is What You Get."  Here we extend the standard from "What You Get" to "What You Print," so that what you see on the page is exactly what you get in print.  Feel free to adjust the window width, squeezing the text together or spreading it over few lines, and see a print preview of it.
+Text Trix, the text tinker, whips into gear with its new WYSIWYP printing system, auto-save function, and integrated windowing design.  "WYSIWYP" derives from the lofty standard for pure text processing, "What You See Is What You Get" (WYSIWYG).  In many cases "what you get" (WYG) is ultimately "what you print" (WYP), so that what you see on the page is exactly what you get in print.  Feel free to adjust the window width, squeezing the text together or spreading it over few lines, and see a print preview of the same alignment.
 
-The new auto-save and integrated windowing design ensure that you can focus on your text instead of managing its surroundings.  Auto-save saves your files automatically, on your time scale.  The integrated windowing remembers plug-in windows' positions and focuses all windows simultaneously so that the entire Text Trix workspace remains visible.
+The new auto-save and integrated windowing design ensure that you can focus on your text instead of managing its surroundings.  Auto-save preserves your file changes automatically, on your time scale.  The integrated windowing remembers plug-in windows' positions and focuses all windows simultaneously so that the entire Text Trix workspace remains visible.
 
-Behind the scenes, Text Trix development remains at the forefront.  That includes developing Text Trix, complete with revised build and packaging scripts for one-step building in most cases, and using Text Trix to develop other programs through the new status bar with line tracking and the word-wrap auto-indent updated for compatibility with the upcoming v.1.5 of the Java Virtual Machine.  Text Trix continues to focus on text--its own, that of other programs, yours.
+Behind the scenes, Text Trix development remains at the forefront.  That includes developing Text Trix, complete with revised build and packaging scripts for one-step building in most cases, and using Text Trix to develop other programs through the new status bar with line tracking and updated word-wrap auto-indent compatible with the upcoming v.1.5 of the Java Virtual Machine.  Text Trix continues to focus on text--its own, that of other programs, and of course yours.
 
-New features
--What You See Is What You Print (WYSIWYP) printing system to print what you see on screen
+New features include:
+-What You See Is What You Print (WYSIWYP) printing system to print the same alignment you see on screen
 -Auto-save, by your preference and according to your chosen time interval
 -Integrated windowing design, which remembers your window positions and keeps them together
 -Status bar to track hard-return lines
 -Build scripts revised for one-step building in most cases by accepting an optional Java path argument and auto-detecting the Cygwin environment
 -PlugIn classes split into parent PlugIn and child PlugInWindow classes to simplify graphical plug-in development
+-Loop capability in the LetterPulse plug-in
 
+Fixed bugs include:
+-Auto-indent compatibility with JVM v.1.5.0-beta1
+-Auto-indenting newly pasted text
+-Shfit-backspace as normal backspace
+-Button to close tabs
 
 ----v.0.3.4 (8/26/03)----
 

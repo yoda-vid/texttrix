@@ -8,34 +8,26 @@ Note: "./" is the "check-mark" symbol
 ----Future Work----
 
 -drag selected text
--check on line-down and changed-file breaks
--status bar, incl line count
 -check on lost I-bar after switching to HTML view
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
 	-about dialog box
 -feature to insert hard returns after a given number of characters or for given visible space
 -elim multiple spaces via Extra Returns Remover
--allow shortcuts to work when the toolbar is in focus; FIXED: seemed to solve itself w/ a JVM upgrade
 -check on shortcuts in HTML/RTF views
 -plug-ins: listener types create listeners that TextTrix attaches to given TextPad
 -pop-up dialog when null pointers for hard-coded documentation names
 -move word-search functions to LibTTX to make accessible to all plug-ins
--"Letter Pulse" plug-in
-	-check on auto-indent adjustments after switching tabs in the middle of a pulse session
-	-add stop button
+-"Letter Pulse" plug-in: check on auto-indent adjustments after switching tabs in the middle of a pulse session
 -check on Forward/Back when opening multiple tabs
 -Forward/Back icon?
 -new, unsaved(?) files don't register in the tab history(?)
 -use java.util.ResourceBundle for internationalization and further keybinding customization
--auto-indent:
-	-adjust when single word spans multiple lines, including when hit enter in the middle
--truncate filenames on tabs
+-auto-indent: adjust when single word spans multiple lines, including when hit enter in the middle
 -automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
 -when saving an already existing file, match the file filter with the file's extension
 -compound edits during plug-in edits
 -plug-ins' pref list fields sizes
--build scripts pass paths to one another
 -plug-in: spell checker
 -plug-in: spell-check any given text in system clipborad, displaying corrected text in Text Trix pad
 -save preferences to easily retrievable file
@@ -43,55 +35,58 @@ Note: "./" is the "check-mark" symbol
 -Java Web Start compatibility
 -option to remember which specific files used auto-indent
 -group tabs in separate tabbed panes
--when have multiple files with same filename, add more of path to tab titles
--tab groupings: open sets of files at once
+-tabbed pane updates
+	-when have multiple files with same filename, add more of path to tab titles
+	-tab groupings: open sets of files at once
+	-truncate filenames on tabs
 -print images and multi-formatted text
 -integrated windowing design updates
 	-try putting windowing events in separate thread so can still capture function from click on first window clicked
 	-check toFront() failures with one Fedora Core 1 installation
 	-try to cause alt-tab to treat all Text Trix windows as single integrated window so can shift directly to next program rather than to another window in Text Trix
 	-check for breakage of single thread rule
+-update JarAjar to allow for MacOS X integration
 
 ----Current Work----
 
 v.0.3.5
 -auto-save
-	-preference option to save file automatically; ADDED: auto-save option to start auto-saving the moment the preference is saved
-	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again
-	-file chooser should check whether already open; ADDED: checks whether open to prevent duplicate openings; existing file still auto-saves underneath open chooser
-	-prompt before saving the changes to the current file; ADDED: preference option to prompt the user to accept the file changes since the auto-save overwrites the current file
-	-new StoppableThread abstract class to easily request threads to stop; ADDED: private classes can extend this class to have both private status and the ability for an external class to stop the thread
+	-preference option to save file automatically; ADDED: auto-save option to start auto-saving the moment the preference is saved ./
+	-customizable time interval that restarts every time the file is manually saved; ADDED: time interval preference, which resets at every save and doesn't restart until the file is changed again ./
+	-file chooser should check whether already open; ADDED: checks whether open to prevent duplicate openings; existing file still auto-saves underneath open chooser ./
+	-prompt before saving the changes to the current file; ADDED: preference option to prompt the user to accept the file changes since the auto-save overwrites the current file ./
+	-new StoppableThread abstract class to easily request threads to stop; ADDED: private classes can extend this class to have both private status and the ability for an external class to stop the thread ./
 -when refocusing one window from Text Trix, option to bring the other windows to the forefront
-	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought the front and immediately below the window just selected; to prevent automatic reactivation while shifting to other windows, flag renders window inactivatable until timer unsets flag; window deactivation listener also sets the flag to prevent Text Trix from automatically requesting activation immediately after switching activation to another program
-	-option to turn off; ADDED: Prefs option to turn off the activateWindowsTogether feature
-	-close open plug-in windows, or else they will no longer respond to activation requests; ADDED: dialog warning that plug-in windows will be closed when saving preferences while any of the windows are open
+	-activate windows together; ADDED: when clicking on any Text Trix window, all the other windows are brought to the front and immediately below the window just selected; to prevent automatic reactivation while shifting to other windows, flag renders window inactivatable until timer unsets flag; window deactivation listener also sets the flag to prevent Text Trix from automatically requesting activation immediately after switching activation to another program ./
+	-option to turn off; ADDED: Prefs option to turn off the activateWindowsTogether feature ./
+	-close open plug-in windows, or else they will no longer respond to activation requests; ADDED: dialog warning that plug-in windows will be closed when saving preferences while any of the windows are open ./
 -save plug-in window positions
-	-component listener to store plug-in position nfo in prefs; ADDED: component listener captures plug-in window size and location changes to store in the prefs according to plug-ins' filenames
-	-restore plug-in window position parameters from last opening;  ADDED: TextTrix restores these parameters from prefs when creating plug-in action
+	-component listener to store plug-in position info in prefs; ADDED: component listener captures plug-in window size and location changes to store in the prefs according to plug-ins' filenames ./
+	-restore plug-in window position parameters from last opening;  ADDED: TextTrix restores these parameters from prefs when creating plug-in action ./
 -printing
-	-print text as viewed in Text Pad; ADDED: prints plain text with line breaks at the same location as the current Text Pad displays the text
-	-print preview; ADDED: screen shows each page before printing, with print button to enter the print dialog directly
+	-print text as viewed in Text Pad; ADDED: prints plain text with line breaks at the same location as the current Text Pad displays the text ./
+	-print preview; ADDED: screen shows each page before printing, with print button to enter the print dialog directly ./
 -auto-indent fixes
-	-fix auto-indent over-indentation when running in JVM v.1.5; FIXED: the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM at startup
-	-refresh after paste; FIXED: overrides paste method to auto-indent the entire pasted region if necessary
--PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application
--button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers
+	-fix auto-indent over-indentation when running in JVM v.1.5; FIXED (#895315): the unindentCurrentParagraph method assumed that the tab had not yet been deleted, no longer true in JVM v.1.5 and thus creating an unindented an extra tab space there; each TextPad now flags JVM ver at startup ./
+	-refresh after paste; FIXED (#766257): overrides paste method to auto-indent the entire pasted region if necessary ./
 -file type filters update; ADDED: added *.js and *.sh to the programming file type filter and *.js to the Web filter
--fix bold file menu font; FIXED (#911283): moved menu creation from class variable declaration area to TextTrix constructor
+-main interface updates
+	-button to close tabs; ADDED (#799564): button next to open button closes the currently selected tab; tool bar separator distinguishes file operators from plug-in invokers ./
+	-fix bold file menu font; FIXED (#911283): moved file menu object creation from class variable declaration area to TextTrix constructor ./
+	-align the "About" option pane with the main window; ADDED: now opens on top of the center of the main window ./
+	-main window title should update after user closes a tab; FIXED (#962436): for some reason, tabbed pane change listener not invoked when close tab, so need to update title manually when closing tabs
 -help menu items update
-	-remove "Features Descriptions" menu item and document; FIXED (#799565): removed to focus on the plug-in tool tips, displayed dynamically for loaded plug-ins
-	-open help documents in blank Text Pad if active; FIXED (#799563): same mechanism to open the help documents as to open regular files, except that the mechanism renders the help documents uneditable
--add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window
--update JarAjar to allow for MacOS X integration
--align the "About" option pane with the main window; ADDED: now opens on top of the center of the main window
--enable shift-backspace as normal backspace; FIXED: added as action in TextPad
+	-remove "Features Descriptions" menu item and document; FIXED (#799565): removed to focus on the plug-in tool tips, displayed dynamically for loaded plug-ins ./
+	-open help documents in blank Text Pad if active; FIXED (#799563): same mechanism to open the help documents as to open regular files, except that the mechanism renders the help documents uneditable ./
+-add loop capability to Letter Pulse; ADDED (#799567): loop option for repeated pulsing, with a stop button to terminate it; pulse stops automatically after closing the pulser window ./
+-enable shift-backspace as normal backspace; FIXED (#961922): added as action in TextPad ./
 -build scripts update
-	-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to hard-code path
-	-option to output help documentation; ADDED: helps docs output
+	-assume Java commands already in path, with option to pass Java binary directory commands directly; ADDED: avoids forcing the user to specify the specific location of the path, since the path likely differs from system to system; option to specify path manually ./
+	-option to output help documentation; ADDED: helps docs output via "-h" command-line argument ./
+-PlugInWindow class to provide core windowing functions automatically; ADDED: window class now extends PlugIn, adding WindowAdapter functions to allow for windowing integration with the main application ./
 -status bar
-	-add status bar for line numbers and other messages; ADDED: status bar at bottom of new panel that holds tabbed pane and status bar so can still move tool bar to southern position of main window
-	-add line numbers for lines with hard breaks; ADDED: current line number, total lines, and position as percentage of document length
-	-update line numbers when switching tabs; ADDED: call update in tab change listener
+	-add status bar for line numbers and other messages; ADDED: status bar at bottom of a new panel, which holds tabbed pane and status bar so user can still move tool bar to southern position of main window; tab change listener to update status bar when switching tabs ./
+	-add line numbers for lines with hard breaks; ADDED: current line number, total lines, and position as percentage of document length ./
 
 v.0.3.4
 -preferences:
