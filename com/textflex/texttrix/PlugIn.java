@@ -112,7 +112,8 @@ public abstract class PlugIn extends JComponent {
 	 * @param s
 	 * @param selectionStart
 	 * @param selectionEnd
-	 * @return
+	 * @return object containing the updated text; selection start position, or <code>-1</code>
+	 * if the text should not be highlighted; and selection end position
 	 */
 	public PlugInOutcome run(String s, int selectionStart, int selectionEnd) {
 		return run(s);

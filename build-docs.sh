@@ -38,7 +38,7 @@
 # Text Trix document builder
 # Copyright (c) 2003, Text Flex
 
-BASE_DIR="$HOME/myworkspace/TextTrix"
+BASE_DIR="$HOME/src/TextTrix"
 TTX_DIR="$BASE_DIR/texttrix"
 JAVA="/usr/java/j2sdk1.4.2/bin"
 API_DIR="$BASE_DIR/docs/api"

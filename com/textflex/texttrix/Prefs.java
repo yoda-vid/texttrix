@@ -230,12 +230,12 @@ public class Prefs extends JFrame {
 		String[] updatedIgnores = new String[list.length];
 		int updatedIgnInd = 0;
 		for (int i = 0; i < list.length; i++) {
-			System.out.print("list[" + i + "]: " + list[i] + "...");
+			//System.out.print("list[" + i + "]: " + list[i] + "...");
 			if (LibTTx.inUnsortedList(list[i], ignores)) {
 				updatedIgnores[updatedIgnInd++] = list[i];
 			} else {
 				updatedIncludes[updatedInclInd++] = list[i];
-				System.out.println("included");
+				//System.out.println("included");
 			}
 		}
 		includes = updatedIncludes;

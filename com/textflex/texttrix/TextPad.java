@@ -75,7 +75,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		createActionTable(this);
 
 		
-		//partialEmacsShortcuts();
 		// (ctrl-backspace) delete from caret to current word start
 		// First discard JTextComponent's usual dealing with ctrl-backspace.
 		// (enter) Auto-indent if Text Trix's option selected.
@@ -111,6 +110,10 @@ public class TextPad extends JTextPane implements StateEditable {
 
 	}
 	
+	/** Sets the keybindings to the preferred value.
+	 * 
+	 * @param prefs preferences storage
+	 */
 	public void applyKeybindings(Prefs prefs) {
 		if (prefs.isHybridKeybindings()) {
 			hybridKeybindings();
@@ -120,14 +123,21 @@ public class TextPad extends JTextPane implements StateEditable {
 			standardKeybindings();
 		}
 	}
-		
+	
+	/** Sets the keybindings to standard shortcuts.
+	 * These shortcuts consist of those typically found on most desktop
+	 * systems.  The old set of keybindings are replaced with this set.
+	 *
+	 */
 	public void standardKeybindings() {
 		createActionTable(this);
 		universalShortcuts();
 	}
 	
-	/** Uses Emacs shortcuts for most single line or character navigation,
-	 * but standard shortcuts for everything else.
+	/** Sets the keybindings to a mesh of standard and Emacs shortcuts.
+	 * The keybinding uses Emacs shortcuts are those for most single line or 
+	 * character navigation, but standard shortcuts for everything else.  In case
+	 * of a conflict, the Emacs shortcuts take precedence.
 	 *
 	 */
 	public void hybridKeybindings() {
@@ -136,14 +146,25 @@ public class TextPad extends JTextPane implements StateEditable {
 		partialEmacsShortcuts();
 	}
 	
+	/** Sets the keybindings to Emacs shortcuts for most typical single-key
+	 * combinations.  
+	 * The keybindings essentially uses a hierarchy of standard, hybrid,
+	 * and Emacs combinations, where set of shortcuts takes precedence
+	 * over the previous set in case of conflict.  The limit of the shortcuts is
+	 * a set of common single-key Emacs combinations.
+	 */
 	public void emacsKeybindings() {
-		// TODO: create more keybindings; defaults to hybrid keybindings for now
 		createActionTable(this);
 		universalShortcuts();
 		partialEmacsShortcuts();
 		emacsShortcuts();
 	}
 	
+	/** Creates the universal shortcuts, common to standard, partial-Emacs,
+	 * and Emacs keybindings.
+	 * Currently the standard set consists of only the universal shortcuts.
+	 *
+	 */
 	private void universalShortcuts() {
 		// Next apply own action
 		imap.put(
@@ -179,6 +200,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		});
 	}
 	
+	/** Creates the partial-Emacs shortcuts, consisting of single character and
+	 * line navigation.
+	 *
+	 */
 	private void partialEmacsShortcuts() {
 		// (ctrl-f) advance a character
 		imap.put(
@@ -254,6 +279,12 @@ public class TextPad extends JTextPane implements StateEditable {
 
 	}
 	
+	/** Sets the Emacs shortcuts, consisting of common single-key Emacs keybindings.
+	 * These shortcuts should be applied on top of those from
+	 * <code>partialEmacsShortcuts()</code>; <code>emacsShortcuts()</code>
+	 * only applies additional key combinations.
+	 *
+	 */
 	private void emacsShortcuts() {
 		imap.put(
 			KeyStroke.getKeyStroke(KeyEvent.VK_V, Event.CTRL_MASK),
@@ -268,6 +299,21 @@ public class TextPad extends JTextPane implements StateEditable {
 		amap.put(
 			"pageUp",
 			getActionByName(DefaultEditorKit.pageUpAction));
+		
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, Event.ALT_MASK | Event.SHIFT_MASK),
+			"begin");
+		amap.put(
+			"begin",
+			getActionByName(DefaultEditorKit.beginAction));
+			
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, Event.ALT_MASK | Event.SHIFT_MASK),
+			"end");
+		amap.put(
+			"end",
+			getActionByName(DefaultEditorKit.endAction));
+		
 	}
 	
 	/** Sets the default displayed tab sizes.
@@ -363,7 +409,6 @@ public class TextPad extends JTextPane implements StateEditable {
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
-		//	StyleConstants.setFirstLineIndent(attribs, -1 * tabs * tabWidth);
 		getStyledDocument().setParagraphAttributes(offset, length, // next char
 		attribs, false); // false to preserve default font
 	}
@@ -546,7 +591,11 @@ public class TextPad extends JTextPane implements StateEditable {
 			? true
 			: false;
 	}
-
+	
+	/** Gets all the current text.
+	 * 
+	 * @return the text
+	 */
 	public String getAllText() {
 		try {
 			Document doc = getDocument();
@@ -754,11 +803,22 @@ public class TextPad extends JTextPane implements StateEditable {
 		if (doc != null)
 			setDocument(doc);
 	}
-
+	
+	/** Sets the number of characters that each tab represents.
+	 * The tab is still represented by a '/t' rather than the given number
+	 * of characters; this setting is merely for display purposes.
+	 * 
+	 * @param aTabSize number of characters
+	 */
 	public void setTabSize(int aTabSize) {
 		tabSize = aTabSize;
 	}
-
+	
+	/** Gets the number of characters that each tab represents.
+	 * 
+	 * @return the number of characters
+	 * @see #setTabSize(int)
+	 */
 	public int getTabSize() {
 		return tabSize;
 	}

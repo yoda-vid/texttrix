@@ -449,7 +449,6 @@ public class TextTrix extends JFrame {
 	 * @see #applyGeneralPrefs()
 	 * @see #applyShortsPrefs()
 	 * @see #reloadPlugIns()
-	 * @see #MenuBarCreator
 	 */
 	public void applyPrefs() {
 		reloadPlugIns();
@@ -662,7 +661,7 @@ public class TextTrix extends JFrame {
 	
 	/** Reloads all the plug-ins in the current <code>plugins</code> folder.
 	 * Prepares the preferences panel to offer all available plug-ins.
-	 * @see #getPlugInsFile();
+	 * @see #getPlugInsFile()
 	 *
 	 */
 	public void reloadPlugIns() {
@@ -685,7 +684,7 @@ public class TextTrix extends JFrame {
 			// check for extant but unloaded plug-ins files
 			for (int i = 0; i < list.length; i++) {
 				if (!LibTTx.inUnsortedList(list[i], paths)) {
-					System.out.println("Couldn't find " + list[i]);
+					//System.out.println("Couldn't find " + list[i]);
 					extraPlugs[extraPlugsInd++] = LibTTx.loadPlugIn(list[i]);
 				}
 			}
@@ -772,8 +771,6 @@ public class TextTrix extends JFrame {
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
 		getPrefs().updatePlugInsPanel(getPlugInNames());
 		if (plugIns != null) {
-			System.out.println(
-				"Loading them all up!  plugIns.length: " + plugIns.length);
 			for (int i = 0; i < plugIns.length; i++) {
 				makePlugInAction(plugIns[i]);
 			}
@@ -786,7 +783,7 @@ public class TextTrix extends JFrame {
 	 * to reuse plug-ins after installing a new version of Text Trix.
 	 * @return <code>plugins</code> folder
 	 */
-	private File getPlugInsFile() {
+	public File getPlugInsFile() {
 		/* The code has a relatively elaborate mechanism to locate
 		   the plugins folder and its JAR files.  Why not use
 		   the URL that the Text Trix class supplies?
@@ -2046,18 +2043,35 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/** Creates the menu bar and its associated tool bar through a worker
+	 * thread to build concurrently with other processes.
+	 * No other method should rely upon the components that this
+	 * class creates to be available until sufficient time after the
+	 * thread starts.
+	 * @author davit
+	 */
 	private class MenuBarCreator extends Thread {
+		
+		/** Begins creating the bars.
+		 * 
+		 */
 		public void start() {
 			(new Thread(this, "thread")).start();
 		}
 
-		// probably shouldn't be a Thread since creates the objects that 
-		// many other methods depend on
+		/** Performs the menu and associated bars' creation.
+		 * 
+		 */
 		public void run() {
-			//try {
+			// start creating the components after others methods that might use
+			// the components have finalized their tasks
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					System.out.println("Creating the menu bar...");
+					//System.out.println("Creating the menu bar...");
+					
+					/* Shortcuts */
+					
+					// Standard keybindings
 					char fileMenuMnemonic = 'F';
 					char newActionMnemonic = 'N';
 					KeyStroke newActionShortcut = KeyStroke.getKeyStroke("ctrl N");
@@ -2076,7 +2090,11 @@ public class TextTrix extends JFrame {
 					char selectAllActionMnemonic = 'A';
 					KeyStroke selectAllActionShortcut = KeyStroke.getKeyStroke("ctrl A");
 
+					// Alternate keybindings: shortcuts added to and with
+					// preference over the standard shortcuts
+					// TODO: add Mac-sytle shortcuts
 					if (prefs.isHybridKeybindings()) {
+						// Hybrid: standard + Emacs for single char and line navigation
 						fileMenuMnemonic = 'I';
 						newActionMnemonic = 'T';
 						newActionShortcut = KeyStroke.getKeyStroke("ctrl T");
@@ -2086,8 +2104,9 @@ public class TextTrix extends JFrame {
 						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut =
 							KeyStroke.getKeyStroke("ctrl L");
-						//} else if (prefs.isEmacsKeybindings()) { // TODO: implement Emacs-keybindings
 					} else if (prefs.isEmacsKeybindings()) {
+						// Emacs: Hybrid + Emacs single-key shortcuts
+						// TODO: create double-key shortcuts, such as ctrl-x, ctrl-s for saving
 						fileMenuMnemonic = 'I';
 						newActionMnemonic = 'T';
 						newActionShortcut = KeyStroke.getKeyStroke("ctrl T");
@@ -2105,16 +2124,24 @@ public class TextTrix extends JFrame {
 							KeyStroke.getKeyStroke("ctrl L");							
 					}
 
+
+
+
+
+
+
+					/* Create new menu and tool bars */
+					
+					// remove the old components if necessary
 					if (menuBar != null) {
 						contentPane.remove(menuBar);
 						fileMenu = new JMenu("File");
 						contentPane.remove(toolBar);
-						//fileHistCount = 0;
 					}
+					
 					// make menu bar and menus
 					menuBar = new JMenuBar();
 					fileMenu.setMnemonic(fileMenuMnemonic);
-					// not 'F' since Alt-f for word-forward
 					JMenu editMenu = new JMenu("Edit");
 					editMenu.setMnemonic('E');
 					JMenu viewMenu = new JMenu("View");
@@ -2130,8 +2157,14 @@ public class TextTrix extends JFrame {
 					toolBar = new JToolBar("Trix and Tools");
 					toolBar.addMouseListener(new PopupListener());
 					toolBar.setBorderPainted(false);
-
+					
+					// create pop-up menu for right-mouse-clicking
 					popup = new JPopupMenu();
+
+
+
+
+
 
 					/* File menu items */
 
@@ -2141,7 +2174,6 @@ public class TextTrix extends JFrame {
 							addTextArea(textAreas, tabbedPane, makeNewFile());
 						}
 					};
-					// per Mozilla keybinding
 					LibTTx.setAcceleratedAction(
 						newAction,
 						"New",
@@ -2245,10 +2277,10 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(saveAsAction, "Save as...", '.');
 					fileMenu.add(saveAsAction);
 
-					// Start exit functions
+					// Begin exit entires
 					fileMenu.addSeparator();
 
-					// (ctrl-q) exit file; close each tab separately, checking for saves
+					// exit file; close each tab separately, checking for saves
 					Action exitAction = new AbstractAction(exitActionTxt) {
 						public void actionPerformed(ActionEvent evt) {
 							exitTextTrix();
@@ -2264,9 +2296,13 @@ public class TextTrix extends JFrame {
 					fileMenu.add(exitAction);
 
 					fileMenu.addSeparator();
-					System.out.println("About to create the menu entries");
-					//createFileHist(fileMenu);
-					//fileHist.start(fileMenu);
+					//System.out.println("About to create the menu entries");
+					
+					
+					
+					
+					
+					
 
 					/* Edit menu items */
 
@@ -2285,7 +2321,7 @@ public class TextTrix extends JFrame {
 						KeyStroke.getKeyStroke("ctrl Z"));
 					editMenu.add(undoAction);
 
-					// (ctrl-y) redo; multiple redos available
+					// redo; multiple redos available
 					Action redoAction = new AbstractAction("Redo") {
 						public void actionPerformed(ActionEvent evt) {
 							((TextPad)textAreas
@@ -2300,10 +2336,11 @@ public class TextTrix extends JFrame {
 						redoActionShortcut);
 					editMenu.add(redoAction);
 
-					// Start Cut, Copy, Paste actions
+					// Begin Cut, Copy, Paste entries;
+					// create here instead of within TextPad so can use as menu entries
 					editMenu.addSeparator();
 
-					// (ctrl-x) cut
+					// cut
 					Action cutAction = new AbstractAction("Cut") {
 						public void actionPerformed(ActionEvent evt) {
 							((TextPad)textAreas
@@ -2319,7 +2356,7 @@ public class TextTrix extends JFrame {
 					editMenu.add(cutAction);
 					popup.add(cutAction);
 
-					// (ctrl-c) copy
+					// copy
 					Action copyAction = new AbstractAction("Copy") {
 						public void actionPerformed(ActionEvent evt) {
 							((TextPad)textAreas
@@ -2335,7 +2372,7 @@ public class TextTrix extends JFrame {
 					editMenu.add(copyAction);
 					popup.add(copyAction);
 
-					// (ctrl-v) paste
+					// paste
 					Action pasteAction = new AbstractAction("Paste") {
 						public void actionPerformed(ActionEvent evt) {
 							((TextPad)textAreas
@@ -2373,13 +2410,6 @@ public class TextTrix extends JFrame {
 					// edit menu preferences separator
 					editMenu.addSeparator();
 
-					// options sub-menu
-					/*
-					JMenu optionsMenu = new JMenu("Options");
-					optionsMenu.setMnemonic('O');
-					editMenu.add(optionsMenu);
-					*/
-
 					// auto-indent
 					// apply the selection to the current TextPad
 					Action autoIndentAction =
@@ -2395,16 +2425,15 @@ public class TextTrix extends JFrame {
 						"Automatically repeat tabs with the next line",
 						'I',
 						KeyStroke.getKeyStroke("alt shift I"));
-					//	autoIndent.addActionListener(autoIndentAction);
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
-					// auto-indent
 					editMenu.add(autoIndent);
-
+					
+					// Preferences panel starter;
+					// also reloads the plug-ins
 					Action prefsAction =
 						new AbstractAction("It's your preference...") {
 						public void actionPerformed(ActionEvent evt) {
 							reloadPlugIns();
-							//refreshPlugIns();
 							getPrefs().show();
 						}
 					};
@@ -2486,7 +2515,7 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAcceleratedAction(
 						forwardTabAction,
-						"Foreward",
+						"Forward",
 						'F',
 						KeyStroke.getKeyStroke(
 							"ctrl shift " + "CLOSE_BRACKET"));
@@ -2565,6 +2594,12 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'R');
 					viewMenu.add(toggleRTFViewAction);
+					
+					
+					
+					
+					
+					
 
 					/* Help menu items */
 
@@ -2625,20 +2660,27 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(licenseAction, "License", 'L');
 					helpMenu.add(licenseAction);
+					
+					
+					
+					
+					
+					
+					
 
 					/* Trix and Tools menus */
 
 					// Load plugins; add to appropriate menu
-					/*
-					if (plugIns == null) {
-						setupPlugins();
-					} else {
-						refreshPlugIns();
-					}
-					*/
 					setupPlugIns();
+					
+					
+					
+					
+					
+					
 
 					/* Place menus and other UI components */
+					
 					// must add tool bar before set menu bar lest tool bar shortcuts 
 					// take precedence
 					contentPane.add(toolBar, BorderLayout.NORTH);
@@ -2651,66 +2693,63 @@ public class TextTrix extends JFrame {
 					menuBar.add(trixMenu);
 					menuBar.add(toolsMenu);
 					menuBar.add(helpMenu);
-
-					//contentPane.invalidate();
-					//contentPane.validate();
-					//contentPane.repaint();
-					//setAutoIndent();
+					
+					// prepare the file history menu entries
 					fileHistStart = fileMenu.getItemCount();
 					syncMenus();
-					System.out.println("Validating the menu bar...");
+					//System.out.println("Validating the menu bar...");
 					validate();
 				}
 			});
-			/*
-			} catch (InterruptedException e) {
-			} catch (java.lang.reflect.InvocationTargetException e) {
-			}
-			*/
-
 		}
 	}
-
+	
+	/** Worker thread class to update the file history entries.
+	 * @author davit
+	 *
+	 */
 	private class FileHist extends Thread {
-		//boolean update = false;
 		JMenu menu = null;
 
+		/** Starts creating the entries within the given menu.
+		 * 
+		 * @param aMenu menu to add file history entries
+		 */
 		public void start(JMenu aMenu) {
 			menu = aMenu;
-			//update = aUpdate;
 			 (new Thread(this, "thread")).start();
 		}
 
+		/** Updates the file history record and menu entries.
+		 * 
+		 */
 		public void run() {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					/*
-					if (update) {
-						updateFileHist();
-					} else {
-						createFileHist();
-					}
-					*/
 					updateFileHist();
 				}
 			});
 		}
 
+		/** Creates the file history menu entries.
+		 * 
+		 *
+		 */
 		public void createFileHist() {
 			// assumes that the file history entries are at the entries in the menu
 			String[] files = getPrefs().retrieveFileHist();
-			//for (int i = files.length - 1; i >= 0; i--) {
 			for (int i = 0; i < files.length; i++) {
 				String file = files[i];
-				//System.out.println("file[" + i + "]: " + file);
 				Action fileAction = createFileHistAction(file);
-				//LibTTx.setAction(fileAction, file, (char)i);
-				//fileAction.setAction();
 				menu.add(fileAction);
 			}
-			//fileHistCount = files.length;
 		}
 
+		/** Creates the actions to add to the history menu.
+		 * 
+		 * @param file file to open when invoking the action
+		 * @return action to open the given file
+		 */
 		public Action createFileHistAction(final String file) {
 			String fileDisp = file;
 			int pathLen = file.length();
@@ -2720,6 +2759,7 @@ public class TextTrix extends JFrame {
 						+ "..."
 						+ file.substring(pathLen - 15);
 			}
+			// action to open the file
 			Action act = new AbstractAction(fileDisp) {
 				public void actionPerformed(ActionEvent evt) {
 					openFile(new File(file));
@@ -2727,8 +2767,23 @@ public class TextTrix extends JFrame {
 			};
 			return act;
 		}
-
+		
+		/** Updates the file history menu by deleting old entries and
+		 * replacing them with the current ones.
+		 * Assumes that <code>fileHistStart</code> in <code>TextTrix</code>
+		 * has been set.
+		 *
+		 */
 		public void updateFileHist() {
+			for (int i = menu.getItemCount() - 1; i >= fileHistStart; i--) {
+				menu.remove(i);
+			}
+			createFileHist();
+			menu.revalidate();
+
+			/* Attempt to delete specific menu entries rather than updating
+			 * the whole history.  Not yet working.
+			 */
 			/*
 			String[] files = getPrefs().retrieveFileHist();
 			if (files.length == 0) {
@@ -2772,13 +2827,6 @@ public class TextTrix extends JFrame {
 			}
 			createFileHist(menu);
 			*/
-			for (int i = menu.getItemCount() - 1; i >= fileHistStart; i--) {
-				menu.remove(i);
-			}
-			createFileHist();
-
-			menu.revalidate();
-
 		}
 
 	}
