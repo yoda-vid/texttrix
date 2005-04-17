@@ -10,7 +10,7 @@ plans for future ones.)
 
 ----v.0.5.0 (1/1/05)----
 
-Text Trix v.0.5.0 represents the culmination of our Feature Series, where Text Trix evolved from a simple editor with a few specialized tool add-ons to a sophisticated "super tool chest for text," complete with unique, integrated features of its own.  Text Trix acts as a text manager text by helping people organize and navigate through their text files.  Tabbed browsing, including forward/back browser-style navigation; wrap-indent, which visually aligns word-wrapped text; multiple keyboard shortcut models; and Line Find, a find-as-you-type navigator for specific lines, are just some of the features that makes managing text easier with Text Trix.  Plus, the specialized tools are more integrated than ever, most including customized option windows to make updating large amounts of text less tedious than ever.
+Text Trix v.0.5.0 represents the culmination of our Feature Series, where Text Trix evolved from a simple editor with a few specialized tool add-ons to a one-stop "super tool chest for text."  Text Trix acts as a text manager text by helping people organize and navigate through their text files.  Tabbed browsing, including forward/back browser-style navigation; wrap-indent, which visually aligns word-wrapped text; multiple keyboard shortcut models; and Line Find, a find-as-you-type navigator for specific lines, are just some of the features that makes managing text easier with Text Trix.  Plus, the specialized tools--the plugins--are more integrated than ever, most including customized option windows to make updating large amounts a small deal.
 
 New features include:
 -Wrap-Indent, renewed and reinvigorated: Total Line Align for uniform indentation within each paragraph; section indent by highlighting paragraphs and pressing TAB (Shift-TAB to unindent); and numerous bug fixes
@@ -27,6 +27,14 @@ Fixes include:
 -Print function restores the indentation, including wrap-indent, that it apparently had lost (#1067823)
 -Auto-save no longer tries to save now-closed files (#1007497)
 -Faulty plug-ins no longer tear down the entire menu bar creation (#1092036)
+
+Fixes since v.0.5.0rc1:
+-Reuse of empty, unchanged tabs during file openings now restored (#1184694)
+-LineFind only goes to the line if a new number is input or Enter is pressed within the box (#1184698)
+-Search plugin tips corrected for "^t" and "^n" to find tabs and newlines, respectively (#1184700)
+-Text Trix and its plugins load remotely from My Network Places on Windows platforms (#1184701)
+-Tab reopenings and auto-detection for wrap-indent files now on by default (#1184705)
+-Enlarged default Search plugin window so not a grain of it is missed! (#1184709)
 
 -------------------------------------------------------
 ----v.0.3 Series: FEATure Series (FEATS)----
