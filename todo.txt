@@ -57,6 +57,7 @@ Note: "./" is the "check-mark" symbol
 -command-line arg not to reopen files or for quiet operation
 -check on completeness of $(TARGET_FILES) in cleans
 -pref for hanging indent size
+-launch remotely, w/o installation: bundle entire application, including plugins, within single jar; mechanism to add plugins directly into the jar
 
 ----Current Work----
 

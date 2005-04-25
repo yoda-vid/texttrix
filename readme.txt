@@ -11,7 +11,11 @@ Copyright (c) 2002-5, Text Flex
 All rights reserved.
 
 -----------------
-Welcome to Text Trix[tm], the text tinker from Text Flex[tm]! Text Trix serves as a super chest of text tools to help renew your text. The tool chest has a number of built-in features to help organize and navigate through your code or text documents. And every tool chest has space for a host of tools, or in Text Trix, "plug-ins" that each update large amounts of text in a specific way.
+Welcome to Text Trix[tm], the text tinker from Text Flex[tm]! Text Trix is a 
+one-stop tool chest of text tools. Pick from an array of Text Trix "plug-ins," 
+specialized tools that allow you to modify large amounts of text quickly and 
+specifically. The tool chest has its own built-in features to help you organize 
+and navigate through your code or text documents.
 
 System Reqs:
 -Java[tm] Virtual Machine, v.1.4+ (http://java.sun.com/getjava/index.html), 
@@ -20,33 +24,23 @@ freely available from Sun Microsystems[tm]; also available from IBM[tm]
 for Linux PPC systems (IBM SDK for 32-bit iSeries/pSeries)
 
 Instructions for use:
--Install the Text Trix package by double-clicking on the Jar Ajar[tm] 
-self-extracting file, "TextTrix-x.y.z-jarajar-selfextractor.jar".  Follow the 
+-Double-click on the Jar Ajar[tm] self-extracting file, 
+"TextTrix-x.y.z-jarajar-selfextractor.jar".  Follow the 
 instructions to unpack the file.
 -Double-click on "TextTrix.jar" in the directory that you unpacked
 
 Troubleshooting:
--Ensure that the Java Virtual Machine, v.1.4+, is installed.  To check, point 
-your browser to http://java.sun.com/getjava/index.html and click on the 
-Download banner.  Even if the browser does not indicate that the virtual 
-machine is installed, it may be.  If necessary, check by opening a command 
-prompt, typing "java -version", and looking for output displaying version 1.4 or 
-higher.  See http://textflex.com/texttrix/faq.html#jvm for more details, 
-including how to set the PATH environment variable that looks for the "java" 
-command automatically.
--For use on Windows(R) systems: check that the desktop is set to use 
-"javaw" for ".jar" programs
--For use on Linux(R) or MacOS(R) X system: check that the 
-application/x-jar MIME type is both supported and executes the command, 
-"java -jar" on the file
--If necessary, try installing and running Text Trix via the command line:
-	-Move into the folder holding "TextTrix-x.y.z-jarajar-extractor.jar" 
-	by typing: "cd [folder holding the jarajar package]"
-	-Run the package and follow its instructions: 
-	"java -jar texttrix-x.y.z-jarajar-extractor.jar"
-	-After file extraction, move into the TextTrix folder: 
-	"cd texttrix-x.y.z"
-	-Start Text Trix: "java -jar TextTrix.jar"
+-Ensure that the Java Virtual Machine, v.1.4+, is installed.  See 
+http://textflex.com/texttrix/faq.html#jvm for details, including how to set the 
+PATH environment variable that looks for the "java" command 
+automatically.
+-On Windows(R) systems, check that the desktop is set to use "javaw" for 
+".jar" programs
+-On Linux(R) or MacOS(R) X system, check that the application/x-jar MIME 
+type is both supported and executes the command, "java -jar" on the file
+-If double-clicking doesn't work, try unpacking and running Text Trix via the 
+command line: In the directory with the .jar file, type, "java -jar [JarFile].jar", 
+where [JarFile] is the name of the package.
 -See http://textflex.com/texttrix/faq.html for more details
 
 Run...away?

@@ -39,7 +39,7 @@
 # Overview Variables
 ##################
 
-TTX_VER=0.3.6 # curr ver num; only used for default install loc
+TTX_VER=0.5.0 # curr ver num; only used for default install loc
 HELP="
 Generates a customized Makefile to build Text Trix, the super tool 
 chest for text.
@@ -66,10 +66,10 @@ Parameters:
 	jar, and other Java tools necessary for compilation.
 
 Copyright:
-	Copyright (c) 2003-4 Text Flex
+	Copyright (c) 2003-5 Text Flex
 
 Last updated:
-	2004-12-27
+	2005-04-17
 "
 
 
