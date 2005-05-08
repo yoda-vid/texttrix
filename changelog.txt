@@ -8,16 +8,16 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-----v.0.5.0 (4/25/05)----
+----v.0.5.0 (5/8/05)----
 
 Text Trix v.0.5.0 represents the culmination of our Feature Series, where 
 Text Trix evolved from a simple editor with a few specialized tool add-ons to 
-a one-stop chest of text tools.  Text Trix acts as a text manager text by 
+a one-stop chest of text tools.  Text Trix acts as a text manager by 
 helping people organize and navigate through their text files.  Tabbed 
 browsing, including forward/back browser-style navigation; wrap-indent, 
 which visually aligns word-wrapped text; multiple keyboard shortcut models; 
 and Line Find, a find-as-you-type navigator for line numbers, are just some of 
-the features that makes managing text easier with Text Trix.  Plus, the 
+the features that make managing text easier with Text Trix.  Plus, the 
 specialized tools--the plugins--are more integrated than ever, most including 
 customized option windows to make updating lots of text a little deal.
 
@@ -27,13 +27,13 @@ indentation within each paragraph; section indent by highlighting paragraphs
 and pressing TAB (Shift-TAB to unindent); and numerous bug fixes
 -Line Find, featuring a permanent text box that navigates directly to the line 
 as it is typed into the box
--File refresher
+-File refresher in case a file is changed elsewhere
 -Plug-ins can choose the region of text to work on
 -Extra Returns Remover plug-in, for reformatting emailed text, has a new 
 options window, including the choice to include reply-region boundary 
 markers, threshold line lengths, and list markers
--Integrated Windowing Design is highly simplified to keep all windows, 
-including those from plug-ins, visible at once
+-Integrated Windowing Design is highly streamlined and simplified to keep all 
+windows, including those from plug-ins, visible at once
 -Build process includes a "configure" script for streamlined customizability, 
 reduced rebuilding redundancy, and expanded build tasks, such as API 
 documentation generation and program installation
