@@ -534,13 +534,10 @@ public abstract class PlugIn extends JComponent {
 	public Point getWindowLocation() {
 		return null;
 	}
-	/**Stub method to set the component listener of the plug-in's window.
-	 * 
-	 * @param compListener the listener to keep track of window movements
+	/**Stub method to get the plug-in's window.
+	 * @return <code>null</code>
 	 * @see PlugInWindow
 	 *
-	public void setWindowComponentListener(ComponentListener compListener) {
-	}
 	*/
 	public JPanel getWindow() {
 		return null;

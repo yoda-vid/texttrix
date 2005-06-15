@@ -58,8 +58,13 @@ Note: "./" is the "check-mark" symbol
 -check on completeness of $(TARGET_FILES) in cleans
 -pref for hanging indent size
 -launch remotely, w/o installation: bundle entire application, including plugins, within single jar; mechanism to add plugins directly into the jar
+-Search plugin looks through multiple files
 
 ----Current Work----
+
+v.0.5.1
+
+----Past Releases----
 
 v.0.5.0
 
@@ -128,8 +133,6 @@ v.0.5.0
 	-Line Find; ADDED: Line Finder highlights the line number as it's typed into a new text field in the status bar
 	-more versatile status bar; ADDED: experimenting with new SpringLayout in status bar
 -fix printer indentation loss; FIXED (#1067823): store indent information from the paragraph attributes in a new PrintPadText object for each line
-
-----Past Releases----
 
 v.0.3.5
 -auto-save

@@ -1950,7 +1950,7 @@ public class TextTrix extends JFrame {
 	 *            <code>true</code> if the file should be accessed as a
 	 *            resource, via
 	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
-	 * @param resueTab <code>false</code> if a tab should never be reused,
+	 * @param reuseTab <code>false</code> if a tab should never be reused,
 	 * even if empty
 	 * @see #openFile(File)
 	 */

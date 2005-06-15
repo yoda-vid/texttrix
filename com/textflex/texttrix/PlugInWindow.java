@@ -235,18 +235,11 @@ public abstract class PlugInWindow extends PlugIn {
 		return window;
 	}
 	
-	/**Gets the window listener.
-	 * @return the window listener
-	 * @see TextTrix#focusAllWindows(PlugIn)
-	 *
-	public WindowAdapter getWindowAdapter() {
-		return winAdapter;
-	}
+	/** Gets the current location of the window on screen.
+	 * @return the location in x,y format
 	*/
-	
 	public Point getWindowLocation() {
 		return window.getLocation();
-		//return panel.getLocation();
 	}
 	
 	/**Gets the width of the plug-in's window.
@@ -255,7 +248,6 @@ public abstract class PlugInWindow extends PlugIn {
 	 */
 	public int getWindowWidth() {
 		return window.getWidth();
-		//return panel.getWidth();
 	}
 	
 	/**Getst the height of the plug-in's window.

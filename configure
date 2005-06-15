@@ -39,7 +39,7 @@
 # Overview Variables
 ##################
 
-TTX_VER=0.5.0 # curr ver num; only used for default install loc
+TTX_VER=0.5.1 # curr ver num; only used for default install loc
 HELP="
 Generates a customized Makefile to build Text Trix, the super tool 
 chest for text.
@@ -302,7 +302,7 @@ clean="" # prep for building up the clean rule
 # Plug-in rules
 # Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
 # sensitive format
-PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
+PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 plgSrcFiles=""
 plgTargetFiles=""
 plgRules="Plugs plugs: $PLGS""\n"
@@ -385,7 +385,7 @@ $plgTargetFiles
 # API rule
 # links to online Java documentation
 LINK="-link http://java.sun.com/j2se/1.5.0/docs/api"
-api='api: $(TARGET_FILES)'"\n\t"'mkdir docs/api'
+api='api: $(TARGET_FILES)'"\n\t"'mkdir -p docs/api'
 if [ $CYGWIN = true ]
 then
 	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -wp docs/api) '$LINK' -classpath $(shell cygpath -wp texttrix) $(PKG)'

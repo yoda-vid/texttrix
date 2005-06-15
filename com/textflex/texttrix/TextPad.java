@@ -530,7 +530,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	/** Counts the number of continuous tabs from a given position.
 	 * Useful when determining the number of tabs in the current line to auto-indent
 	 * the same number for the next line, for example.
-	 * @param s text to count for tabs
+	 * @param doc the document with the text to count for tabs
 	 * @param offset position to start counting
 	 * @return number of continuous tabs from a given position
 	 * @see #leadingTabsCount(String, int)
