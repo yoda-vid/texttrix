@@ -101,6 +101,16 @@ public class TextPad extends JTextPane implements StateEditable {
 		amap = getActionMap();
 		createActionTable(this);
 		
+		/* WORKAROUND:
+		 * The paragraph that follows a word-wrapped line may overlap it.  With each
+		 * line that wraps, the following paragraph for some reason gets less and less
+		 * space between it and the previous paragraph.  Apparently this problem
+		 * exists solely in the Windows L&F at certain font size and apparently for 
+		 * specific font(s).  See
+		 *  http://forum.java.sun.com/thread.jspa?forumID=57&threadID=613396
+		 * for the proposed workaround.
+		*/
+		setFont(getFont().deriveFont(11.5f));
 
 		// (ctrl-backspace) delete from caret to current word start
 		// First discard JTextComponent's usual dealing with ctrl-backspace.
