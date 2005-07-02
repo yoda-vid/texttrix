@@ -76,8 +76,10 @@ public class LibTTx {
 	public static PlugIn loadPlugIn(String path) {
 		// loader corresponding to the given plugin's location
 		ClassLoader loader = null;
+		PlugIn plugIn = null;
 		int nameStart = path.lastIndexOf(File.separator) + 1;
 		String plugInName = path.substring(nameStart);
+		
 		/* Beginning with JRE v.1.4.2, the URL must be created
 		   by first making a File object from the path and then
 		   converting it to a URL.  Manually parsing "file://"
@@ -89,14 +91,27 @@ public class LibTTx {
 			loader = new URLClassLoader(new URL[] { url });
 		} catch (MalformedURLException e) {
 		}
+		return loadPlugIn(path, plugInName, loader);
+		
+		
+		/*
 		// all plugins are in the package, com.textflex.texttrix
 		String name =
 			"com.textflex.texttrix."
 				+ plugInName.substring(0, plugInName.indexOf(".jar"));
-		PlugIn plugIn = (PlugIn) createObject(name, loader);
+//		PlugIn plugIn = (PlugIn) createObject(name, loader);
+		try {
+			plugIn = (PlugIn) createObject(name, loader);
+		} catch (Exception e) {
+			System.out.println("The plug-in, " + name + ", could not be"
+				+ NEWLINE + "loaded.  If you'd like to use it, please visit"
+				+ NEWLINE + "http://textflex.com/texttrix/plugins.html to"
+				+ NEWLINE + "contact the plugin maker.");
+		}
 		if (plugIn == null) return null;
 		plugIn.setPath(path);
 		return plugIn;
+		*/
 	}
 
 	/** Loads the specified plug-in from a given directory.
@@ -110,6 +125,8 @@ public class LibTTx {
 		// loader corresponding to the given plugin's location
 		ClassLoader loader = null;
 		String path = null;
+		PlugIn plugIn = null;
+		
 		/* Beginning with JRE v.1.4.2, the URL must be created
 		   by first making a File object from the path and then
 		   converting it to a URL.  Manually parsing "file://"
@@ -122,11 +139,42 @@ public class LibTTx {
 			loader = new URLClassLoader(new URL[] { url });
 		} catch (MalformedURLException e) {
 		}
+		return loadPlugIn(path, plugInName, loader);
+		
+		
+		/*
 		// all plugins are in the package, com.textflex.texttrix
 		String name =
 			"com.textflex.texttrix."
 				+ plugInName.substring(0, plugInName.indexOf(".jar"));
-		PlugIn plugIn = (PlugIn) createObject(name, loader);
+		try {
+			plugIn = (PlugIn) createObject(name, loader);
+		} catch (Exception e) {
+			System.out.println("The plug-in, " + name + ", could not be"
+				+ NEWLINE + "loaded.  If you'd like to use it, please visit"
+				+ NEWLINE + "http://textflex.com/texttrix/plugins.html to"
+				+ NEWLINE + "contact the plugin maker.");
+		}
+		if (plugIn == null) return null;
+		plugIn.setPath(path);
+		return plugIn;
+		*/
+	}
+	
+	private static PlugIn loadPlugIn(String path, String plugInName, ClassLoader loader) {
+		PlugIn plugIn = null;
+		// all plugins are in the package, com.textflex.texttrix
+		String name =
+			"com.textflex.texttrix."
+				+ plugInName.substring(0, plugInName.indexOf(".jar"));
+		try {
+			plugIn = (PlugIn) createObject(name, loader);
+		} catch (Exception e) {
+			System.out.println("The plug-in, " + name + ", could not be"
+				+ NEWLINE + "loaded.  If you'd like to use it, please visit"
+				+ NEWLINE + "http://textflex.com/texttrix/plugins.html to"
+				+ NEWLINE + "contact the plugin maker.");
+		}
 		if (plugIn == null) return null;
 		plugIn.setPath(path);
 		return plugIn;
@@ -192,7 +240,8 @@ public class LibTTx {
 	@param loader class loader referencing a location containing
 	the named class
 	*/
-	public static Object createObject(String name, ClassLoader loader) {
+	public static Object createObject(String name, ClassLoader loader) 
+		throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		Object obj = null; // the object to return
 		// load the class
 		try {
@@ -200,13 +249,16 @@ public class LibTTx {
 			obj = cl.newInstance();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
+			throw e;
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+			throw e;
 		} catch (ClassNotFoundException e) {
-			System.out.println("The plug-in, " + name + ", could not be"
-				+ NEWLINE + "loaded.  If you'd like to use it, please"
-				+ NEWLINE + "make sure we can, too.");
-//			e.printStackTrace();
+			e.printStackTrace();
+			throw e;
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			throw e;
 		}
 		return obj;
 	}
@@ -701,6 +753,12 @@ public class LibTTx {
 		return text.substring(n, end);
 	}
 	
+	/** Converts stub escape characters to real ones.
+	 * <br> "^t" and "^T" become "\t"
+	 * <br> "^n" and "^N" become "\n"
+	 * @param escapedStr the string in which to convert to true escape chars
+	 * @return the converted string
+	*/
 	public static String convertEscapeChars(String escapedStr) {
 		String convertedStr = escapedStr
 			.replaceAll("\\^t", "\t")
@@ -711,6 +769,13 @@ public class LibTTx {
 		return convertedStr;
 	}
 	
+	/** Randomly picks a string from an array, with increasing weight given to 
+	 * earlier elements in the array as the weight factor increases.
+	 * @param strings the array of strings from which to randomly choose one
+	 * @param weightFront the weighting factor; larger numbers weight more
+	 * toward earlier elements in the array; should be > 0
+	 * @return the chosen string
+	*/
 	public static String pickWeightedStr(String[] strings, int weightFront) {
 		int n = (int) (strings.length * Math.pow(Math.random(), weightFront));
 		return strings[n];
