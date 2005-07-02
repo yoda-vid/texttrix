@@ -110,7 +110,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		 *  http://forum.java.sun.com/thread.jspa?forumID=57&threadID=613396
 		 * for the proposed workaround.
 		*/
-		setFont(getFont().deriveFont(11.5f));
+//		setFont(getFont().deriveFont(11.5f));
+		setFont(new Font("Arial,SansSerif", Font.PLAIN, 11));
 
 		// (ctrl-backspace) delete from caret to current word start
 		// First discard JTextComponent's usual dealing with ctrl-backspace.

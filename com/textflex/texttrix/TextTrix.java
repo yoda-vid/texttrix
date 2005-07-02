@@ -965,7 +965,10 @@ public class TextTrix extends JFrame {
 	 *            end point of selection, relative to baseline
 	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
-		if (end != -1) {
+		if (start == end) {
+			t.setCaretPosition(baseline + start);
+//			System.out.println("I'm here");
+		} if (end != -1) {
 			t.setCaretPosition(baseline + start);
 			t.moveCaretPosition(baseline + end);
 			t.getCaret().setSelectionVisible(true);
