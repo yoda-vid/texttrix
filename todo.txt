@@ -59,10 +59,16 @@ Note: "./" is the "check-mark" symbol
 -pref for hanging indent size
 -launch remotely, w/o installation: bundle entire application, including plugins, within single jar; mechanism to add plugins directly into the jar
 -Search plugin looks through multiple files
+-file management:
+	-working copy mode: allows user to work on a copy of the file rather than the file itself, then see and apply changes as desired
+	-file locking
+	-read-only mode
+-integrate with Jar Ajar plug-in installation mode
 
 ----Current Work----
 
 v.0.5.1
+-fix Refresh Tab from creating a new tab rather than refreshing the current copy; FIXED: updated the main openFile method not to reuse tabs by default, but only if flagged, or the current tab is empty and unchanged
 
 ----Past Releases----
 

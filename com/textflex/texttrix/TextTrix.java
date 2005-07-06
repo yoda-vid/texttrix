@@ -465,7 +465,7 @@ public class TextTrix extends JFrame {
 	 */
 	private void openInitialFile(String path) {
 		System.out.print("Opening file from path " + path + "...");
-		if (!openFile(new File(path))) {
+		if (!openFile(new File(path), true, false, false)) {
 			String msg = newline + "Sorry, but " + path + " can't be read."
 					+ newline + "Is it a directory?  Does it have the right "
 					+ "permsissions for reading?";
@@ -1953,8 +1953,8 @@ public class TextTrix extends JFrame {
 	 *            <code>true</code> if the file should be accessed as a
 	 *            resource, via
 	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
-	 * @param reuseTab <code>false</code> if a tab should never be reused,
-	 * even if empty
+	 * @param reuseTab <code>true</code> if a tab should be reused, even
+	 * if it is isn't empty or is empty but with unsaved changes
 	 * @see #openFile(File)
 	 */
 	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
@@ -1981,14 +1981,25 @@ public class TextTrix extends JFrame {
 				 * t.getText() != null, even if have typed nothing in it. Add
 				 * tab and set its text if no tabs exist or if current tab has
 				 * tokens; set current tab's text otherwise.
+				 * Defaults to creating a new tab, unless a tab already exists and 
+				 * tab reuse is forced or the tab is empty or has no unsaved changes.
 				 */
-				if (t == null || !reuseTab || !t.isEmpty() || t.getChanged()) { // open file in new pad
+				if (t != null && (reuseTab || (t.isEmpty() && !t.getChanged()))) {
+					read(t, reader, path);
+				} else {
+					addTextArea(textAreas, tabbedPane, file);
+					t = getSelectedTextPad();
+					read(t, reader, path);
+				}
+				/*
+				if (t == null || (!reuseTab && (!t.isEmpty() || t.getChanged()))) { // open file in new pad
 					addTextArea(textAreas, tabbedPane, file);
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				} else { // open file in current, empty pad
 					read(t, reader, path);
 				}
+				*/
 				t.setEditable(editable);
 				t.setCaretPosition(0);
 				t.setChanged(false);
@@ -2035,14 +2046,17 @@ public class TextTrix extends JFrame {
 	 * file's name as a the tab's title and the path as the tab's tool tip.
 	 * Assumes that the file is readable as text and should be accessed
 	 * directly, rather than as as a resource. Also assumed that the resulting
-	 * text pad should be editable.
+	 * text pad should be editable and that the currently selected tab should not 
+	 * be force reused.  Front-end for <code>openFile(File, boolean, boolean, 
+	 * boolean)</code>, with the arguments, 
+	 * <code>openFile(File, true, false, false)</code>.
 	 * 
 	 * @param file
 	 *            file to open
 	 * @see #openFile(File, boolean, boolean)
 	 */
 	public boolean openFile(File file) {
-		return openFile(file, true, false, true);
+		return openFile(file, true, false, false);
 	}
 	
 	/**Opens a file as editable and not from a resource.
