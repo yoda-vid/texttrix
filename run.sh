@@ -128,7 +128,7 @@ do
 		then
 			JAVA=`expr substr $arg $n ${#arg}`
 			READ_JAVA=0
-			echo "...set to use $JAVA as the Java compiler path..."
+			echo "...set to use $JAVA as the Java binary path..."
 		fi
 		READ_PARAMETER=0
 	fi

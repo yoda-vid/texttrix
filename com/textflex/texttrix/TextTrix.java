@@ -189,7 +189,6 @@ public class TextTrix extends JFrame {
 		setSize(getPrefs().getPrgmWidth(), getPrefs().getPrgmHeight());
 		setLocation(new Point(getPrefs().getPrgmXLoc(), getPrefs()
 				.getPrgmYLoc()));
-
 		// store window size and location with each movement
 		addComponentListener(new ComponentListener() {
 			public void componentMoved(ComponentEvent evt) {
@@ -208,9 +207,9 @@ public class TextTrix extends JFrame {
 		});
 
 		// set frame icon
-		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
+		ImageIcon im = LibTTx.makeIcon("images/minicon-16x16.png");
 		if (im != null) {
-			setIconImage(im.getImage());
+	    		setIconImage(im.getImage());
 		}
 
 		/* Create the main Text Trix frame components */

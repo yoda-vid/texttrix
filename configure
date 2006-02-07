@@ -302,7 +302,7 @@ clean="" # prep for building up the clean rule
 # Plug-in rules
 # Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
 # sensitive format
-PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
+PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
 plgTargetFiles=""
 plgRules="Plugs plugs: $PLGS""\n"
@@ -347,7 +347,7 @@ do
 	fi
 	# each plug-in must be packaged in a JAR file and moved to the "plugins" folder
 	# within "texttrix"
-	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; jar -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
+	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; "'$(JAR)'" -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
 	plgClassRules="$plgClassRules""\n\tmv plugins/$plgDir/$plg.jar texttrix/plugins"
 	plgClassRules="$plgClassRules""\n"
 	
@@ -372,6 +372,7 @@ COMMON_VARS="TTX_VER=$TTX_VER
 BASE_DIR=$BASE_DIR
 PREFIX=$PREFIX
 JAVAC="$JAVA"javac
+JAR="$JAVA"jar
 JAVADOC="$JAVA"javadoc
 PKG_DIR=$PKG_DIR
 PKG=$PKG
