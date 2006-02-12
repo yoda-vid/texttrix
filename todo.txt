@@ -1,6 +1,6 @@
 Text Trix
 the text tinker
-Copyright (c) 2002-5, Text Flex
+Copyright (c) 2002-6, Text Flex
 http://textflex.com/texttrix
 
 Note: "./" is the "check-mark" symbol
@@ -69,6 +69,11 @@ Note: "./" is the "check-mark" symbol
 
 v.0.5.1
 -fix Refresh Tab from creating a new tab rather than refreshing the current copy; FIXED: updated the main openFile method not to reuse tabs by default, but only if flagged, or the current tab is empty and unchanged
+-classpath info in run script; ADDED: -cp parameter to run.sh to define classpath in case CLASSPATH env already set to some other location
+-fix load failure on X11 systems; FIXED: 32x32 icon apparently won't load on Java on X11, so switched to smaller, 16x16 icon
+-streamline stats function in Search plugin; FIXED: stats works on both selected area only and entire document; stats results cleared when button other than stats button chosen
+
+-opening file should check whether the file has already been opened and, if so, switch to that tab instead
 
 ----Past Releases----
 
