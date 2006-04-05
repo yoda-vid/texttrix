@@ -70,15 +70,16 @@ Note: "./" is the "check-mark" symbol
 v.0.5.1
 -fix Refresh Tab from creating a new tab rather than refreshing the current copy; FIXED: updated the main openFile method not to reuse tabs by default, but only if flagged, or the current tab is empty and unchanged
 -classpath info in run script; ADDED: -cp parameter to run.sh to define classpath in case CLASSPATH env already set to some other location
--fix load failure on X11 systems; FIXED: 32x32 icon apparently won't load on Java on X11, so switched to smaller, 16x16 icon
+-fix load failure on X11 systems; FIXED (#1328572 ): 32x32 icon apparently won't load on Java on X11, so switched to smaller, 16x16 icon
 -streamline stats function in Search plugin; FIXED: stats works on both selected area only and entire document; stats results cleared when button other than stats button chosen
+-add nbsp support to SongSheet plugin; ADDED: "&nbsp" ('\240') supported as a blankspace in chord lines; spaces, tabs, and nbsp removed from "chord indicators" and applied only as blankspaces
 
 -opening file should check whether the file has already been opened and, if so, switch to that tab instead
+-fix find/replace only searching in highlighted areas unless nothing highlighted
 
 ----Past Releases----
 
 v.0.5.0
-
 -from v.0.5.0rc1
 	-fix failure to reuse initial tab; FIXED (#1184694): updated openFile(File) to reuse unused tab by default, while the main openFile now ensures that the tab has not been changed before reusing it for a newly opened file, even if the tab is blank
 	-LineFind shouldn't go to line if just click in box when it already has a number; FIXED (#1184698): advances to line each time user types in new number, not if just clicks in box, or if type Enter

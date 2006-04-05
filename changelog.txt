@@ -2,11 +2,35 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-5, Text Flex
+Copyright (c) 2002-6, Text Flex
 http://textflex.com/texttrix
 
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
+
+---------------------------------------------------------------------
+----Family of Really Innovative ENDS (FRIENDS) Series----
+---------------------------------------------------------------------
+
+----v.0.5.0 (3/30/06)----
+
+Our v.0.5.1 release of Text Trix is the first bug-cruncher in our new FRIENDS 
+(Family of Really Innovative ENDS) series.  Our goal in this series is to get 
+serious about making friends of Text Trix.  We're seeking to create a family of 
+plugins that will be a one-stop resource, and "end" to your search for text 
+tools that make your typing easier.  Or an "end*s*," cuz with Text Trix, the 
+family keeps growing, and the trix never end!
+
+Of course, to build a family, we need a solid home to house it.  This release 
+focuses on crunching a few bugs in Text Trix itself as well as a couple of its 
+plugins.  Notable behind-the-scenes fixes include removal of a couple 
+start-up errors you reported on some platforms.  The new Song Sheet plugin 
+also has a few tweaks to work with a wider variety of text formatting.
+
+Every house needs an exterminator...but soon we'll need a decorator!  We've 
+blasted a few bugs here, and now we're looking for new decor.  If you have 
+ideas for a plugin or would like to write your own, please don't hesitate to 
+post one.  We look forward to your joining the family!
 
 ----v.0.5.0 (5/8/05)----
 
