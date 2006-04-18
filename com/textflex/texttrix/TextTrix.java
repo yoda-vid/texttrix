@@ -1955,10 +1955,20 @@ public class TextTrix extends JFrame {
 	 * @param reuseTab <code>true</code> if a tab should be reused, even
 	 * if it is isn't empty or is empty but with unsaved changes
 	 * @see #openFile(File)
+	 * @return true if the file is successfully opened or already open
 	 */
 	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
 		String path = file.getPath();
 		// ensures that the file exists and is not a directory
+		if (!path.equals("") && textAreas.size() > 0 && !reuseTab) {
+			int idPath = getIdenticalTextPadIndex(path);
+//			System.out.println("idPath: " + idPath);
+			if (idPath != -1) {
+				tabbedPane.setSelectedIndex(idPath);
+//				openFile(file, editable, resource, true);
+				return true;
+			}
+		}
 		if (file.canRead() || resource) { // readable file
 			TextPad t = getSelectedTextPad();
 			BufferedReader reader = null;
@@ -2037,6 +2047,17 @@ public class TextTrix extends JFrame {
 			}
 		}
 		return false;
+	}
+	
+	public int getIdenticalTextPadIndex(String path) {
+		int len = textAreas.size();
+		for (int i = 0; i < len; i++) {
+//			System.out.println("path to find: " + path + ", current path: " + ((TextPad)textAreas.get(i)).getPath());
+			if (((TextPad)textAreas.get(i)).getPath().equals(path)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	/**
