@@ -1959,7 +1959,8 @@ public class TextTrix extends JFrame {
 	 */
 	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
 		String path = file.getPath();
-		// ensures that the file exists and is not a directory
+		
+		// Checks for open file before creating new tab
 		if (!path.equals("") && textAreas.size() > 0 && !reuseTab) {
 			int idPath = getIdenticalTextPadIndex(path);
 //			System.out.println("idPath: " + idPath);
@@ -1969,6 +1970,7 @@ public class TextTrix extends JFrame {
 				return true;
 			}
 		}
+		// ensures that the file exists and is not a directory
 		if (file.canRead() || resource) { // readable file
 			TextPad t = getSelectedTextPad();
 			BufferedReader reader = null;
@@ -2049,8 +2051,13 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 	
+	/** Finds the tab with the given path.
+	 * @param path the path of the file to find
+	 * @return the index of the tab with the file of the given tab; -1 if no such tab exists
+	*/
 	public int getIdenticalTextPadIndex(String path) {
-		int len = textAreas.size();
+		int len = textAreas.size(); // the number of tabs
+		// checks each tab to see if any have the given path
 		for (int i = 0; i < len; i++) {
 //			System.out.println("path to find: " + path + ", current path: " + ((TextPad)textAreas.get(i)).getPath());
 			if (((TextPad)textAreas.get(i)).getPath().equals(path)) {
