@@ -58,6 +58,9 @@ public class TextTrix extends JFrame {
 
 	/* Constants */
 	private static final String newline = System.getProperty("line.separator");
+	private static final String FILE_SPLITTER = "::";
+	private static final String FILE_GROUP_SPLITTER = "{}";
+	private static final String FILE_GROUP_SPLITTER_REGEX = "\\{\\}";
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -81,6 +84,8 @@ public class TextTrix extends JFrame {
 	private static JPopupMenu popup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
+	private static MotherTabbedPane groupTabbedPane = null;
+//	private static ArrayList tabbedPaneGroups = new ArrayList();
 //	private boolean tmpActivated = false;
 	
 	/* Menu bar controls */
@@ -213,54 +218,10 @@ public class TextTrix extends JFrame {
 		}
 
 		/* Create the main Text Trix frame components */
-
-		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		// keep the tabs the same width when substituting chars
-		tabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
-		// initialize tabIndexHistory
-		for (int i = 0; i < tabIndexHistory.length; i++)
-			tabIndexHistory[i] = -1;
-
-		/*
-		 * adds a change listener to listen for tab switches and display the
-		 * options of the tab's TextPad
-		 */
-		tabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent evt) {
-				final TextPad t = getSelectedTextPad();
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						if (t != null) {
-							setAutoIndent();
-							// update the tab index record;
-							// addTabIndexHistory increments the record index;
-							// add the current tab selection now to ensure that
-							// all selections are recorded
-							int i = tabbedPane.getSelectedIndex();
-							if (updateTabIndexHistory) {
-								//System.out.println("Updating tab index
-								// history...");
-								addTabIndexHistory(i);
-							} else {
-								updateTabIndexHistory = true;
-							}
-							updateTitle(t.getFilename());
-							// doesn't work when creating new tabs via
-							// the keyboard accelerator;
-							// only works when changing between already created
-							// tabs or creating new ones via the menu item
-							t.requestFocusInWindow();
-							updateStatusBarLineNumbers(t);
-						}
-					}
-				});
-				// this second call is necessary for unknown reasons;
-				// perhaps some events still follow the call in invokeLater
-				// (above)
-				if (t != null)
-					t.requestFocusInWindow();
-			}
-		});
+		
+		groupTabbedPane = new MotherTabbedPane(
+			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		addTabbedPane(groupTabbedPane);
 
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
@@ -327,7 +288,7 @@ public class TextTrix extends JFrame {
 				JPanel centerPanel = new JPanel(new BorderLayout());
 
 				// adds the panel's compoenents
-				centerPanel.add(tabbedPane, BorderLayout.CENTER);
+				centerPanel.add(getGroupTabbedPane(), BorderLayout.CENTER);
 				centerPanel.add(statusBarPanel, BorderLayout.SOUTH);
 				// adds the panel to the main window, central position
 				contentPane.add(centerPanel, BorderLayout.CENTER);
@@ -335,7 +296,7 @@ public class TextTrix extends JFrame {
 				// make first tab and text area;
 				// can only create after making several other user interface
 				// components, such as the autoIndent check menu item
-				addTextArea(textAreas, tabbedPane, makeNewFile());
+//				addTextArea(getSelectedTabbedPane(), makeNewFile());
 
 				// load files specified at start from command-line
 				if (paths != null) {
@@ -348,11 +309,25 @@ public class TextTrix extends JFrame {
 				if (getPrefs().getReopenTabs()) {
 					// the list consists of a comma-delimited string of
 					// filenames
+					String[] tokens = getPrefs().getReopenTabsList().split(FILE_SPLITTER);
+					for (int i = 0; i < tokens.length; i++) {
+						System.out.println("tokens[" + i + "]:" + tokens[i]);
+						String[] grpTokens = tokens[i].split(FILE_GROUP_SPLITTER_REGEX);
+						openInitialFile(grpTokens[0]);
+						for (int h = 1; h < grpTokens.length; h++) {
+							addTabbedPane(getGroupTabbedPane());
+							openInitialFile(grpTokens[h]);
+						}
+					}
+					/*
 					StringTokenizer tokenizer = new StringTokenizer(getPrefs()
 							.getReopenTabsList(), ",");
 					while (tokenizer.hasMoreElements()) {
-						openInitialFile(tokenizer.nextToken());
+						String token = tokenizer.nextToken();
+						StringTokenizer grpTok = new StringTokenizer(token, "|");
+						openInitialFile(token);
 					}
+					*/
 				}
 
 				// make the file history menu entries and set the auto-indent
@@ -556,16 +531,18 @@ public class TextTrix extends JFrame {
 	 */
 	public void applyGeneralPrefs() {
 		fileHist.start(fileMenu);
-		for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-			TextPad pad = getTextPadAt(i);
-			if (getPrefs().getAutoSave()) {
-				if (pad.getChanged()) {
-					startTextPadAutoSaveTimer(pad);
+		for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
+			getSelectedTabbedPane().setSelectedIndex(h);
+			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+				TextPad pad = getTextPadAt(i);
+				if (getPrefs().getAutoSave()) {
+					if (pad.getChanged()) {
+						startTextPadAutoSaveTimer(pad);
+					}
+				} else {
+					stopTextPadAutoSaveTimer(pad);
 				}
-			} else {
-				stopTextPadAutoSaveTimer(pad);
 			}
-
 		}
 	}
 
@@ -579,19 +556,28 @@ public class TextTrix extends JFrame {
 	public void applyShortsPrefs() {
 		// applies shortcuts according to user choice in preferences
 		if (prefs.isHybridKeybindings()) {
-			// mix of standard + Emacs-style shortcuts
-			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-				getTextPadAt(i).hybridKeybindings();
+			for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
+				getSelectedTabbedPane().setSelectedIndex(h);
+				// mix of standard + Emacs-style shortcuts
+				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+					getTextPadAt(i).hybridKeybindings();
+				}
 			}
 		} else if (prefs.isEmacsKeybindings()) {
-			// Emacs-style shortcuts
-			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-				getTextPadAt(i).emacsKeybindings();
+			for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
+				getSelectedTabbedPane().setSelectedIndex(h);
+				// Emacs-style shortcuts
+				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+					getTextPadAt(i).emacsKeybindings();
+				}
 			}
 		} else {
-			// standard shortcuts
-			for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-				getTextPadAt(i).standardKeybindings();
+			for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
+				getSelectedTabbedPane().setSelectedIndex(h);
+				// standard shortcuts
+				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+					getTextPadAt(i).standardKeybindings();
+				}
 			}
 		}
 	}
@@ -1281,6 +1267,20 @@ public class TextTrix extends JFrame {
 	public static String getSaveDir() {
 		return saveDir;
 	}
+	
+	public static MotherTabbedPane getGroupTabbedPane() {
+		return groupTabbedPane;
+	}
+	
+	public static MotherTabbedPane getSelectedTabbedPane() {
+		MotherTabbedPane pane = getGroupTabbedPane();
+		int i = pane.getSelectedIndex();
+		if (i != -1) {
+			return (MotherTabbedPane) pane.getSelectedComponent();
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Gets the currently selected <code>TextPad</code>
@@ -1288,9 +1288,10 @@ public class TextTrix extends JFrame {
 	 * @return <code>TextPad</code> whose tab is currently selected
 	 */
 	public static TextPad getSelectedTextPad() {
-		int i = tabbedPane.getSelectedIndex();
+		MotherTabbedPane pane = getSelectedTabbedPane();
+		int i = pane.getSelectedIndex();
 		if (i != -1) {
-			return (TextPad) textAreas.get(i);
+			return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();//textAreas.get(i);
 		} else {
 			return null;
 		}
@@ -1305,11 +1306,31 @@ public class TextTrix extends JFrame {
 	 *         the index value
 	 */
 	public static TextPad getTextPadAt(int i) {
-		if (i < -1 || i >= tabbedPane.getTabCount())
+		return getTextPadAt(getSelectedTabbedPane(), i);
+	}
+	
+	public static TextPad getTextPadAt(JTabbedPane pane, int i) {
+		if (i < -1 || i >= pane.getTabCount())
 			return null;
-		return (TextPad) (textAreas.get(i));
+		return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();//(textAreas.get(i));
+		
+	}
+	
+	public static MotherTabbedPane getTabbedPaneAt(int i) {
+		return (MotherTabbedPane) getGroupTabbedPane().getComponentAt(i);
 	}
 
+	public static int getTextPadIndex(TextPad textPad) {
+		int len = getGroupTabbedPane().getTabCount();
+		int tabIndex = -1;
+		for (int i = 0; 
+			i < len 
+				&& (tabIndex = getTabbedPaneAt(i++)
+					.indexOfComponent(textPad)) == -1;
+			i++);
+		return tabIndex;
+	}
+	
 	/**
 	 * Gets whether the auto-indent function is selected.
 	 * 
@@ -1317,107 +1338,6 @@ public class TextTrix extends JFrame {
 	 */
 	public static boolean getAutoIndent() {
 		return autoIndent.isSelected();
-	}
-
-	/**
-	 * Adds a tab selection to the index record. Creates a trail of tab
-	 * selections that the user can progress through forward or backward,
-	 * similar to "Back" and "Forward" buttons in a web browser. With each
-	 * addition, the record shifts any potential duplicate selections to the
-	 * head so that the user will only progress once through a given tab during
-	 * a complete cycle in one direction. The history expands as necessary,
-	 * allowing an unlimited number of records.
-	 * 
-	 * @param mostRecent
-	 *            the tab selection index to record
-	 * @see #removeTabIndexHistory(int)
-	 */
-	public void addTabIndexHistory(int mostRecent) {
-		/*
-		 * The current tabIndexHistoryIndex value refers to the next available
-		 * element in the tabIndexHistory array in which to add tab selections.
-		 * Adding a tab selection places the tab index value into this element
-		 * and increments tabIndexHistoryIndex so that it continues to point to
-		 * the next available position. "tabIndexHistoryIndex - 1" now refers to
-		 * the current tab, while "tabIndexHistoryIndex - 2" refers to the last
-		 * tab, the one to return to while going "Back". The "Back" method must
-		 * therefore not only decrement tabIndexHistoryIndex, but also refer to
-		 * the position preceding the new index.
-		 */
-		boolean repeat = true;
-		boolean shift = false;
-		for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
-			// shift the records as necessary to move a potential
-			// duplicate to the front of the history
-			if (shift) { // shift the records
-				if (tabIndexHistory[i] == -1) {
-					repeat = false;
-				} else {
-					tabIndexHistory[i - 1] = tabIndexHistory[i];
-				}
-			} else { // find where to start shifting, if necessary
-				if (tabIndexHistory[i] == mostRecent) {
-					shift = true;
-				} else if (tabIndexHistory[i] == -1) {
-					repeat = false;
-				}
-			}
-		}
-		// add the tab selection
-		if (shift) { // add the potential duplicate to the front of the record
-			tabIndexHistory[--tabIndexHistoryIndex] = mostRecent;
-		} else if (tabIndexHistoryIndex >= tabIndexHistory.length) {
-			// increase the array size if necessary
-			tabIndexHistory = (int[]) LibTTx.growArray(tabIndexHistory);
-			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
-		} else if (tabIndexHistoryIndex >= 0) {
-			// ensure that the tab during TextTrix's startup has no entry;
-			// otherwise, the 0 tab selection index duplicates
-			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
-		}
-		for (int i = ++tabIndexHistoryIndex; i < tabIndexHistory.length; i++) {
-			tabIndexHistory[i] = -1;
-		}
-		//tabIndexHistoryIndex++;
-		/*
-		 * for (int i = 0; i < tabIndexHistoryIndex; i++) {
-		 * System.out.println("tabIndexHistory[" + i + "]: " +
-		 * tabIndexHistory[i]); }
-		 */
-		//System.out.println("tabIndexHistoryIndex: " + tabIndexHistoryIndex);
-	}
-
-	/**
-	 * Removes an entry from the tab selection history. Shifts the tab indices
-	 * as necessary.
-	 * 
-	 * @param removed
-	 *            index of removed tab
-	 * @see #addTabIndexHistory(int)
-	 */
-	public void removeTabIndexHistory(int removed) {
-		boolean shift = false;
-		// cycle through the entire history, removing the tab and shifting
-		// both the tab indices and the tab history index appropriately
-		for (int i = 0; i < tabIndexHistory.length; i++) {
-			// flag for a record shift and check whether to decrement
-			// the tab history index
-			if (tabIndexHistory[i] == removed) {
-				if (i <= tabIndexHistoryIndex)
-					--tabIndexHistoryIndex;
-				shift = true;
-			}
-			// shift the tab record
-			if (shift) {
-				tabIndexHistory[i] = (i < tabIndexHistory.length - 1) ? tabIndexHistory[i + 1]
-						: -1;
-			}
-			// decrease tab indices for those above the that of the removed tab
-			if (tabIndexHistory[i] > removed) {
-				tabIndexHistory[i] = --tabIndexHistory[i];
-			}
-			//	    System.out.print(tabIndexHistory[i] + ",");
-		}
 	}
 
 	/**
@@ -1486,23 +1406,33 @@ public class TextTrix extends JFrame {
 		//}
 		//int i = 0;
 		boolean b = true;
-		int totTabs = tabbedPane.getTabCount();
-
-		// close the files and prepare to store their paths in the list
-		// of files left open at the end of the session
-		while (totTabs > 0 && b) {
-			if (reopenTabs) {
-				TextPad t = getTextPadAt(0);
-				if (t.fileExists()) {
-					if (!openedPaths.equals("")) {
-						openedPaths = openedPaths + "," + t.getPath();
-					} else {
-						openedPaths = t.getPath();
+		boolean newGrp = false;
+		MotherTabbedPane pane = getGroupTabbedPane();
+		for (int i = 0; i < pane.getTabCount() && b; i++) {
+			if (!openedPaths.equals("")) {
+				openedPaths = openedPaths + FILE_GROUP_SPLITTER;
+				newGrp = true;
+			}
+			pane.setSelectedIndex(i);
+			int totTabs = getSelectedTabbedPane().getTabCount();
+	
+			// close the files and prepare to store their paths in the list
+			// of files left open at the end of the session
+			while (totTabs > 0 && b) {
+				if (reopenTabs) {
+					TextPad t = getTextPadAt(0);
+					if (t.fileExists()) {
+						if (!openedPaths.equals("") && !newGrp) {
+							openedPaths = openedPaths + FILE_SPLITTER + t.getPath();
+						} else {
+							openedPaths = openedPaths + t.getPath();
+							newGrp = false;
+						}
 					}
 				}
+				b = closeTextArea(0, getSelectedTabbedPane());
+				totTabs = getSelectedTabbedPane().getTabCount();
 			}
-			b = closeTextArea(0, textAreas, tabbedPane);
-			totTabs = tabbedPane.getTabCount();
 		}
 
 		// store the file list and exit Text Trix all the files closed
@@ -1532,11 +1462,10 @@ public class TextTrix extends JFrame {
 	 *            pane holding a tab to be closed
 	 * @return <code>true</code> if the tab successfully closes
 	 */
-	public boolean closeTextArea(int tabIndex, ArrayList textAreas,
-			JTabbedPane tabbedPane) {
+	public boolean closeTextArea(int tabIndex, MotherTabbedPane tabbedPane) {
 		boolean successfulClose = false;
-
-		TextPad t = (TextPad) textAreas.get(tabIndex);
+		
+		TextPad t = getTextPadAt(tabbedPane, tabIndex);//(TextPad) tabbedPane.getComponentAt(tabIndex);// textAreas.get(tabIndex);
 		// check if unsaved text area
 		if (t.getChanged()) {
 			String s = "Please save first.";
@@ -1560,12 +1489,12 @@ public class TextTrix extends JFrame {
 					successfulClose = fileSaveDialogOnExit(null);
 				}
 				if (successfulClose) {
-					removeTextArea(tabIndex, textAreas, tabbedPane);
+					removeTextArea(tabIndex, tabbedPane);
 				}
 				break;
 			// discard the text area's contents
 			case 1:
-				removeTextArea(tabIndex, textAreas, tabbedPane);
+				removeTextArea(tabIndex, tabbedPane);
 				successfulClose = true;
 				break;
 			// cancel the dialog and return unsuccessful closure;
@@ -1579,7 +1508,7 @@ public class TextTrix extends JFrame {
 			}
 			// if unchanged, simply remove the tab
 		} else {
-			removeTextArea(tabIndex, textAreas, tabbedPane);
+			removeTextArea(tabIndex, tabbedPane);
 			successfulClose = true;
 		}
 
@@ -1636,13 +1565,68 @@ public class TextTrix extends JFrame {
 		}
 		return text;
 	}
+	
+	public void addTabbedPane(MotherTabbedPane tabbedPane) {
+		final MotherTabbedPane newTabbedPane = new MotherTabbedPane(JTabbedPane.TOP);
+		
+		addTextArea(newTabbedPane, makeNewFile());
+		
+		// keep the tabs the same width when substituting chars
+		newTabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
+
+		/*
+		 * adds a change listener to listen for tab switches and display the
+		 * options of the tab's TextPad
+		 */
+		newTabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				final TextPad t = getSelectedTextPad();
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						if (t != null) {
+							setAutoIndent();
+							// update the tab index record;
+							// addTabIndexHistory increments the record index;
+							// add the current tab selection now to ensure that
+							// all selections are recorded
+							int i = newTabbedPane.getSelectedIndex();
+							if (updateTabIndexHistory) {
+								//System.out.println("Updating tab index
+								// history...");
+								newTabbedPane.addTabIndexHistory(i);
+							} else {
+								updateTabIndexHistory = true;
+							}
+							updateTitle(t.getFilename());
+							// doesn't work when creating new tabs via
+							// the keyboard accelerator;
+							// only works when changing between already created
+							// tabs or creating new ones via the menu item
+							t.requestFocusInWindow();
+							updateStatusBarLineNumbers(t);
+						}
+					}
+				});
+				// this second call is necessary for unknown reasons;
+				// perhaps some events still follow the call in invokeLater
+				// (above)
+				if (t != null)
+					t.requestFocusInWindow();
+			}
+		});
+
+//		arrayList.add(newTabbedPane);
+		int i = tabbedPane.getTabCount();
+		tabbedPane.addTab("Group " + i, newTabbedPane);
+		tabbedPane.setSelectedIndex(i);
+	}
 
 	/**
 	 * Creates a new <code>TextPad</code> object, a text area for writing, and
 	 * gives it a new tab. Can call for each new file; names the tab,
 	 * <code>Filen.txt</code>, where <code>n</code> is the tab number.
 	 */
-	public void addTextArea(ArrayList arrayList, JTabbedPane tabbedPane,
+	public void addTextArea(MotherTabbedPane tabbedPane,
 			File file) {
 		final TextPad textPad = new TextPad(file, getPrefs());
 
@@ -1653,7 +1637,8 @@ public class TextTrix extends JFrame {
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
-		arrayList.add(textPad);
+//		tabbedPane.addTab(textPad);
+//		arrayList.add(textPad);
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
@@ -1682,14 +1667,13 @@ public class TextTrix extends JFrame {
 	 * @param i
 	 *            the index of the tab to update
 	 */
-	public static void updateTabTitle(ArrayList arrayList,
-			JTabbedPane tabbedPane, int i) {
+	public static void updateTabTitle(JTabbedPane tabbedPane, int i) {
 		// if the tab index is given as -1, assumes that the current
 		// tab should be updated
 		if (i < 0) {
 			i = tabbedPane.getSelectedIndex();
 		}
-		TextPad textPad = (TextPad) arrayList.get(i);
+		TextPad textPad = getTextPadAt(tabbedPane, i);//(TextPad) tabbedPane.getComponentAt(i);//arrayList.get(i);
 
 		// updates the title with the filename and a flag indicating
 		// whether the file has unsaved changes
@@ -1712,11 +1696,10 @@ public class TextTrix extends JFrame {
 	 * @param tabbedPane
 	 *            tabbed pane to update
 	 */
-	public static void updateTabTitle(ArrayList arrayList,
-			JTabbedPane tabbedPane) {
+	public static void updateTabTitle(JTabbedPane tabbedPane) {
 		// -1 indicates that the currently selected tab is the one
 		// to update
-		updateTabTitle(arrayList, tabbedPane, -1);
+		updateTabTitle(tabbedPane, -1);
 	}
 
 	/**
@@ -1730,7 +1713,7 @@ public class TextTrix extends JFrame {
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
 		textPad.getDocument().addDocumentListener(new TextPadDocListener());
 		textPad.setChanged(true);
-		updateTabTitle(textAreas, tabbedPane);
+		updateTabTitle(getSelectedTabbedPane());
 	}
 
 	/**
@@ -1801,6 +1784,12 @@ public class TextTrix extends JFrame {
 		addExtraTextPadDocumentSettings(textPad);
 	}
 
+	public static void removeTabbedPane(MotherTabbedPane tp) {
+		int i = tp.getSelectedIndex();
+		if (i >= 0 && i < tp.getTabCount()) {
+			tp.remove(i);
+		}
+	}
 	/**
 	 * Removes a tab containing a text area.
 	 * 
@@ -1811,11 +1800,11 @@ public class TextTrix extends JFrame {
 	 * @param tp
 	 *            tabbed pane from which to remove a tab
 	 */
-	public static void removeTextArea(int i, ArrayList l, JTabbedPane tp) {
+	public static void removeTextArea(int i, MotherTabbedPane tp) {
 		TextPad t = getSelectedTextPad();
 		if (t != null) {
 			stopTextPadAutoSaveTimer(t);
-			l.remove(i);
+//			l.remove(i);
 			tp.remove(i);
 		}
 	}
@@ -1832,7 +1821,7 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile(TextPad)
 	 * @see #saveFile(String)
 	 */
-	public boolean saveFile(String path, TextPad t) {
+	public boolean saveFile(String path, TextPad t, int tabIndex) {
 		//	System.out.println("printing");
 		if (t == null)
 			t = getSelectedTextPad();
@@ -1856,7 +1845,7 @@ public class TextTrix extends JFrame {
 				// relies on TextPadDocListener to restart the timer
 				stopTextPadAutoSaveTimer(t);
 
-				updateTabTitle(textAreas, tabbedPane, textAreas.indexOf(t));
+				updateTabTitle(getSelectedTabbedPane(), tabIndex);//textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
 				return true;
@@ -1881,8 +1870,8 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile(String, TextPad)
 	 * @see #saveFile(TextPad)
 	 */
-	public boolean saveFile(String path) {
-		return saveFile(path, null);
+	public boolean saveFile(String path, int tabIndex) {
+		return saveFile(path, null, tabIndex);
 	}
 
 	/**
@@ -1894,8 +1883,8 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile(String, TextPad)
 	 * @see #saveFile(String)
 	 */
-	public boolean saveFile(TextPad pad) {
-		return saveFile(pad.getPath(), pad);
+	public boolean saveFile(TextPad pad, int tabIndex) {
+		return saveFile(pad.getPath(), pad, tabIndex);
 	}
 
 	/**
@@ -1961,11 +1950,11 @@ public class TextTrix extends JFrame {
 		String path = file.getPath();
 		
 		// Checks for open file before creating new tab
-		if (!path.equals("") && textAreas.size() > 0 && !reuseTab) {
+		if (!path.equals("") && getSelectedTabbedPane().getTabCount() > 0 && !reuseTab) {
 			int idPath = getIdenticalTextPadIndex(path);
 //			System.out.println("idPath: " + idPath);
 			if (idPath != -1) {
-				tabbedPane.setSelectedIndex(idPath);
+				getSelectedTabbedPane().setSelectedIndex(idPath);
 //				openFile(file, editable, resource, true);
 				return true;
 			}
@@ -1998,13 +1987,13 @@ public class TextTrix extends JFrame {
 				if (t != null && (reuseTab || (t.isEmpty() && !t.getChanged()))) {
 					read(t, reader, path);
 				} else {
-					addTextArea(textAreas, tabbedPane, file);
+					addTextArea(getSelectedTabbedPane(), file);
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				}
 				/*
 				if (t == null || (!reuseTab && (!t.isEmpty() || t.getChanged()))) { // open file in new pad
-					addTextArea(textAreas, tabbedPane, file);
+					addTextArea(getSelectedTabbedPane(), file);
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				} else { // open file in current, empty pad
@@ -2015,9 +2004,9 @@ public class TextTrix extends JFrame {
 				t.setCaretPosition(0);
 				t.setChanged(false);
 				t.setFile(path);
-				tabbedPane.setToolTipTextAt(tabbedPane.getSelectedIndex(), t
+				getSelectedTabbedPane().setToolTipTextAt(getSelectedTabbedPane().getSelectedIndex(), t
 						.getPath());
-				updateTabTitle(textAreas, tabbedPane);
+				updateTabTitle(getSelectedTabbedPane());
 				updateTitle(t.getFilename());
 				// set the path to the last opened directory
 				setOpenDir(file.getParent());
@@ -2056,11 +2045,10 @@ public class TextTrix extends JFrame {
 	 * @return the index of the tab with the file of the given tab; -1 if no such tab exists
 	*/
 	public int getIdenticalTextPadIndex(String path) {
-		int len = textAreas.size(); // the number of tabs
+		int len = getSelectedTabbedPane().getTabCount(); // the number of tabs
 		// checks each tab to see if any have the given path
 		for (int i = 0; i < len; i++) {
-//			System.out.println("path to find: " + path + ", current path: " + ((TextPad)textAreas.get(i)).getPath());
-			if (((TextPad)textAreas.get(i)).getPath().equals(path)) {
+			if (((TextPad) getTextPadAt(i)).getPath().equals(path)) {
 				return i;
 			}
 		}
@@ -2226,7 +2214,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public boolean fileSaveDialog(JFrame owner) {
-		return fileSaveDialog(null, owner);
+		return fileSaveDialog(null, -1, owner);
 	}
 
 	/**
@@ -2239,10 +2227,10 @@ public class TextTrix extends JFrame {
 	 *            parent frame; can be null
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
-	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
+	public boolean fileSaveDialog(TextPad pad, int tabIndex, JFrame owner) {
 		if (chooser.isShowing() || !prepFileSaveDialog(pad))
 			return false;
-		return getSavePath(pad, owner);
+		return getSavePath(pad, tabIndex, owner);
 	}
 
 	/**
@@ -2259,7 +2247,7 @@ public class TextTrix extends JFrame {
 	 * @see #prepFileSaveDialog()
 	 */
 	public static boolean prepFileSaveDialog(TextPad t) {
-		//	int tabIndex = tabbedPane.getSelectedIndex();
+		//	int tabIndex = getSelectedTabbedPane().getSelectedIndex();
 		if (t == null)
 			t = getSelectedTextPad();
 		//	if (tabIndex != -1) {
@@ -2375,7 +2363,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the file is saved successfully
 	 * @see #getSavePathOnExit(JFrame)
 	 */
-	public boolean getSavePath(TextPad pad, JFrame owner) {
+	public boolean getSavePath(TextPad pad, int tabIndex, JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name,
@@ -2408,19 +2396,19 @@ public class TextTrix extends JFrame {
 				} else { // write, even if overwriting
 					// try to save the file and check if successful
 					boolean success = false;
-					int idx = -1;
+					int idx = tabIndex;//-1;
 					if (pad == null) {
-						success = saveFile(path);
-						idx = tabbedPane.getSelectedIndex();
+						success = saveFile(path, tabIndex);
+						idx = getSelectedTabbedPane().getSelectedIndex();
 					} else {
-						success = saveFile(path, pad);
-						idx = textAreas.indexOf(pad);
+						success = saveFile(path, pad, tabIndex);
+//						idx = textAreas.indexOf(pad);
 					}
 					if (success) {
 						setSaveDir(chooser.getSelectedFile().getParent());
 						// update graphical components
-						tabbedPane.setToolTipTextAt(idx, path);
-						if (idx == tabbedPane.getSelectedIndex()) {
+						getSelectedTabbedPane().setToolTipTextAt(idx, path);
+						if (idx == getSelectedTabbedPane().getSelectedIndex()) {
 							updateTitle(owner, f.getName());
 						}
 						getPrefs().storeFileHist(path);
@@ -2454,8 +2442,8 @@ public class TextTrix extends JFrame {
 	 * @return true if the file is saved successfully
 	 * @see #getSavePathOnExit(JFrame)
 	 */
-	public boolean getSavePath(JFrame owner) {
-		return getSavePath(null, owner);
+	public boolean getSavePath(JFrame owner, int tabIndex) {
+		return getSavePath(null, tabIndex, owner);
 	}
 
 	/**
@@ -2908,12 +2896,13 @@ public class TextTrix extends JFrame {
 		 *  
 		 */
 		public void actionPerformed(ActionEvent evt) {
-			int i = tabbedPane.getSelectedIndex();
+			MotherTabbedPane pane = getSelectedTabbedPane();
+			int i = pane.getSelectedIndex();
 			if (i >= 0) {
 				updateTabIndexHistory = false;
-				removeTabIndexHistory(i);
+				pane.removeTabIndexHistory(i);
 				updateTabIndexHistory = true;
-				closeTextArea(i, textAreas, tabbedPane);
+				closeTextArea(i, pane);
 			}
 		}
 	}
@@ -2963,7 +2952,7 @@ public class TextTrix extends JFrame {
 			final TextPad pad = getSelectedTextPad();
 			if (!pad.getChanged()) {
 				pad.setChanged(true);
-				updateTabTitle(textAreas, tabbedPane);
+				updateTabTitle(getSelectedTabbedPane());
 				if (getPrefs().getAutoSave()) {
 					//					System.out.println("i'm here");
 					startTextPadAutoSaveTimer(pad);
@@ -2972,7 +2961,7 @@ public class TextTrix extends JFrame {
 		}
 
 	}
-
+	
 	/**
 	 * A timer to automatically save the <code>TextPad</code>'s contents. The
 	 * timer checks the preferences to determine the interval between saves and
@@ -3054,10 +3043,12 @@ public class TextTrix extends JFrame {
 									return;
 								}
 							}
+							
+							int tabIndex = getTextPadIndex(textPad);
 							// saves the pad directly if it already exists;
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
-								saveFile(textPad);
+								saveFile(textPad, tabIndex);
 							} else {
 								// asks users whether they would like to supply
 								// a file
@@ -3084,7 +3075,7 @@ public class TextTrix extends JFrame {
 								}
 								// solicits users for a file name;
 								// main prgm as dialog owner
-								fileSaveDialog(textPad, getThis());
+								fileSaveDialog(textPad, tabIndex, getThis());
 							}
 						}
 					});
@@ -3177,7 +3168,13 @@ public class TextTrix extends JFrame {
 					char newActionMnemonic = 'N';
 					KeyStroke newActionShortcut = KeyStroke
 							.getKeyStroke("ctrl N");
+					char newGroupActionMnemonic = 'G';
+					KeyStroke newGroupActionShortcut = KeyStroke
+							.getKeyStroke("ctrl G");
 					char closeActionMnemonic = 'C';
+					char closeGroupActionMnemonic = 'R';
+					KeyStroke closeGroupActionShortcut = KeyStroke
+							.getKeyStroke("ctrl shift C");
 					KeyStroke closeActionShortcut = KeyStroke
 							.getKeyStroke("ctrl W");
 					String exitActionTxt = "Exit";
@@ -3281,12 +3278,22 @@ public class TextTrix extends JFrame {
 					// make new tab and text area
 					Action newAction = new AbstractAction("New") {
 						public void actionPerformed(ActionEvent evt) {
-							addTextArea(textAreas, tabbedPane, makeNewFile());
+							addTextArea(getSelectedTabbedPane(), makeNewFile());
 						}
 					};
 					LibTTx.setAcceleratedAction(newAction, "New",
 							newActionMnemonic, newActionShortcut);
 					fileMenu.add(newAction);
+
+					// make new tab group
+					Action newGroupAction = new AbstractAction("New group") {
+						public void actionPerformed(ActionEvent evt) {
+							addTabbedPane(getGroupTabbedPane());
+						}
+					};
+					LibTTx.setAcceleratedAction(newGroupAction, "New group",
+							newGroupActionMnemonic, newGroupActionShortcut);
+					fileMenu.add(newGroupAction);
 
 					// (ctrl-o) open file; use selected tab if empty
 					Action openAction = new FileOpenAction(TextTrix.this,
@@ -3321,16 +3328,27 @@ public class TextTrix extends JFrame {
 					LibTTx.setRollover(closeButton,
 							"images/closeicon-16x16.png");
 
+
+					// close tab group
+					Action closeGroupAction = new AbstractAction("Close tab group") {
+						public void actionPerformed(ActionEvent evt) {
+							removeTabbedPane(getGroupTabbedPane());
+						}
+					};
+					LibTTx.setAcceleratedAction(newAction, "Close tab group",
+							closeGroupActionMnemonic, closeGroupActionShortcut);
+					fileMenu.add(closeGroupAction);
+
 					// (ctrl-s) save file; no dialog if file already created
 					Action saveAction = new AbstractAction("Save", LibTTx
 							.makeIcon("images/saveicon-16x16.png")) {
 						public void actionPerformed(ActionEvent evt) {
 							TextPad t = getSelectedTextPad(); //null;
-							// can't use tabbedPane.getSelectedComponent() b/c
+							// can't use getSelectedTabbedPane().getSelectedComponent() b/c
 							// returns JScrollPane
 							if (t != null) {
 								if (t.fileExists()) {
-									if (!saveFile(t.getPath())) {
+									if (!saveFile(t.getPath(), getTextPadIndex(t))) {
 										String msg = t.getPath()
 												+ " couldn't be written.\n"
 												+ "Would you like to try saving it somewhere else?";
@@ -3420,8 +3438,7 @@ public class TextTrix extends JFrame {
 					// (ctrl-z) undo; multiple undos available
 					Action undoAction = new AbstractAction("Undo") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad) textAreas.get(tabbedPane
-									.getSelectedIndex())).undo();
+							((TextPad) getSelectedTextPad()).undo();
 						}
 					};
 					LibTTx.setAcceleratedAction(undoAction, "Undo", 'U',
@@ -3431,8 +3448,7 @@ public class TextTrix extends JFrame {
 					// redo; multiple redos available
 					Action redoAction = new AbstractAction("Redo") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad) textAreas.get(tabbedPane
-									.getSelectedIndex())).redo();
+							((TextPad) getSelectedTextPad()).redo();
 						}
 					};
 					LibTTx.setAcceleratedAction(redoAction, "Redo", 'R',
@@ -3455,8 +3471,7 @@ public class TextTrix extends JFrame {
 					// cut
 					Action cutAction = new AbstractAction("Cut") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad) textAreas.get(tabbedPane
-									.getSelectedIndex())).cut();
+							((TextPad) getSelectedTextPad()).cut();
 						}
 					};
 					LibTTx.setAcceleratedAction(cutAction, "Cut",
@@ -3467,8 +3482,7 @@ public class TextTrix extends JFrame {
 					// copy
 					Action copyAction = new AbstractAction("Copy") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad) textAreas.get(tabbedPane
-									.getSelectedIndex())).copy();
+							((TextPad) getSelectedTextPad()).copy();
 						}
 					};
 					LibTTx.setAcceleratedAction(copyAction, "Copy",
@@ -3494,8 +3508,7 @@ public class TextTrix extends JFrame {
 					// select all text in current text area
 					Action selectAllAction = new AbstractAction("Select all") {
 						public void actionPerformed(ActionEvent evt) {
-							((TextPad) textAreas.get(tabbedPane
-									.getSelectedIndex())).selectAll();
+							((TextPad) getSelectedTextPad()).selectAll();
 						}
 					};
 					LibTTx.setAcceleratedAction(selectAllAction, "Select all",
@@ -3570,16 +3583,18 @@ public class TextTrix extends JFrame {
 						 * checked.
 						 */
 						public void actionPerformed(ActionEvent evt) {
-							if (--tabIndexHistoryIndex >= 1) {
+							MotherTabbedPane pane = getSelectedTabbedPane();
+							pane.decrementTabIndexHistoryIndex();
+							int tabIndexHistoryIndex = pane.getTabIndexHistoryIndex();
+							if (tabIndexHistoryIndex >= 1) {
 								// uncouple the tab index history while
 								// switching
 								// to the past tabs -- leave the tabs as a
 								// trail until a new tab is chosesn
 								updateTabIndexHistory = false;
-								tabbedPane
-										.setSelectedIndex(tabIndexHistory[tabIndexHistoryIndex - 1]);
+								pane.setSelectedIndex(pane.getTabIndexHistoryAt(tabIndexHistoryIndex - 1));
 							} else { // reset the index to its orig val, -1
-								++tabIndexHistoryIndex;
+								pane.incrementTabIndexHistoryIndex();
 							}
 						}
 					};
@@ -3590,6 +3605,7 @@ public class TextTrix extends JFrame {
 					// (ctrl-shift-]) switch forwared in the tab history
 					Action forwardTabAction = new AbstractAction("Forward") {
 						public void actionPerformed(ActionEvent evt) {
+							MotherTabbedPane pane = getSelectedTabbedPane();
 							int i = 0;
 							// switch only through the the last recorded
 							// selected tab;
@@ -3597,16 +3613,18 @@ public class TextTrix extends JFrame {
 							// for that index;
 							// keep from updating the history with past
 							// selections
-							if (++tabIndexHistoryIndex < tabIndexHistory.length
-									&& (i = tabIndexHistory[tabIndexHistoryIndex - 1]) != -1) {
+							pane.incrementTabIndexHistoryIndex();
+							int tabIndexHistoryIndex = pane.getTabIndexHistoryIndex();
+							if (tabIndexHistoryIndex < pane.getTabIndexHistoryCount()
+									&& (i = pane.getTabIndexHistoryAt(tabIndexHistoryIndex - 1)) != -1) {
 								// uncouple the history, preserving it as a
 								// trail of selections past and future from
 								// the current position
 								updateTabIndexHistory = false;
-								tabbedPane.setSelectedIndex(i);
+								pane.setSelectedIndex(i);
 								//updateTabIndexHistory = true;
 							} else {
-								--tabIndexHistoryIndex;
+								pane.decrementTabIndexHistoryIndex();
 							}
 						}
 					};
@@ -3618,11 +3636,11 @@ public class TextTrix extends JFrame {
 					// (ctrl-[) switch to the preceding tab
 					Action prevTabAction = new AbstractAction("Preceeding tab") {
 						public void actionPerformed(ActionEvent evt) {
-							int tab = tabbedPane.getSelectedIndex();
+							int tab = getSelectedTabbedPane().getSelectedIndex();
 							if (tab > 0) {
-								tabbedPane.setSelectedIndex(tab - 1);
+								getSelectedTabbedPane().setSelectedIndex(tab - 1);
 							} else if (tab == 0) {
-								tabbedPane.setSelectedIndex(tabbedPane
+								getSelectedTabbedPane().setSelectedIndex(getSelectedTabbedPane()
 										.getTabCount() - 1);
 							}
 						}
@@ -3635,12 +3653,12 @@ public class TextTrix extends JFrame {
 					// (ctrl-]) switch to the next tab
 					Action nextTabAction = new AbstractAction("Next tab") {
 						public void actionPerformed(ActionEvent evt) {
-							int tab = tabbedPane.getSelectedIndex();
+							int tab = getSelectedTabbedPane().getSelectedIndex();
 							if ((tab != -1)
-									&& (tab == tabbedPane.getTabCount() - 1)) {
-								tabbedPane.setSelectedIndex(0);
+									&& (tab == getSelectedTabbedPane().getTabCount() - 1)) {
+								getSelectedTabbedPane().setSelectedIndex(0);
 							} else if (tab >= 0) {
-								tabbedPane.setSelectedIndex(tab + 1);
+								getSelectedTabbedPane().setSelectedIndex(tab + 1);
 							}
 						}
 					};
@@ -3777,6 +3795,9 @@ public class TextTrix extends JFrame {
 			});
 		}
 	}
+	
+	
+	
 	
 	/**Creates the status bar in a worker thread.
 	*/
