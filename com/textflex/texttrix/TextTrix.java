@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-5
+ * Portions created by the Initial Developer are Copyright (C) 2002-6
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -82,6 +82,7 @@ public class TextTrix extends JFrame {
 	private Container contentPane = getContentPane();
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
+	private static JPopupMenu tabsPopup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
 	private static MotherTabbedPane groupTabbedPane = null;
@@ -221,7 +222,7 @@ public class TextTrix extends JFrame {
 		
 		groupTabbedPane = new MotherTabbedPane(
 			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-		addTabbedPane(groupTabbedPane);
+		addTabbedPane(groupTabbedPane, "");
 
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
@@ -306,20 +307,41 @@ public class TextTrix extends JFrame {
 				}
 
 				// load files left open at the close of the last session
+				String reopenPaths = getPrefs().getReopenTabsList();
 				if (getPrefs().getReopenTabs()) {
+					// the list consists of a comma-delimited string of
+					// filenames
+					String[] grpTokens = reopenPaths.split(FILE_GROUP_SPLITTER_REGEX);
+					
+					// Start at 1 b/c first token is the empty group splitter
+					for (int i = 1; i < grpTokens.length; i++) {
+						System.out.println("grpTokens[" + i + "]:" + grpTokens[i]);
+						String[] tokens = grpTokens[i].split(FILE_SPLITTER);
+						// Blank group already open initally, so simply update title
+						// and start adding files
+						if (i == 1) {
+							setSelectedTabbedPaneTitle(tokens[0]);
+						} else {
+							addTabbedPane(getGroupTabbedPane(), tokens[0]);
+						}
+						for (int h = 1; h < tokens.length; h++) {
+							openInitialFile(tokens[h]);
+						}
+					}
+					/*
 					// the list consists of a comma-delimited string of
 					// filenames
 					String[] tokens = getPrefs().getReopenTabsList().split(FILE_SPLITTER);
 					for (int i = 0; i < tokens.length; i++) {
-						System.out.println("tokens[" + i + "]:" + tokens[i]);
+//						System.out.println("tokens[" + i + "]:" + tokens[i]);
 						String[] grpTokens = tokens[i].split(FILE_GROUP_SPLITTER_REGEX);
 						openInitialFile(grpTokens[0]);
+						String title = "";
 						for (int h = 1; h < grpTokens.length; h++) {
 							addTabbedPane(getGroupTabbedPane());
 							openInitialFile(grpTokens[h]);
 						}
 					}
-					/*
 					StringTokenizer tokenizer = new StringTokenizer(getPrefs()
 							.getReopenTabsList(), ",");
 					while (tokenizer.hasMoreElements()) {
@@ -329,6 +351,7 @@ public class TextTrix extends JFrame {
 					}
 					*/
 				}
+				getGroupTabbedPane().setSelectedIndex(0);
 
 				// make the file history menu entries and set the auto-indent
 				// check box
@@ -531,8 +554,12 @@ public class TextTrix extends JFrame {
 	 */
 	public void applyGeneralPrefs() {
 		fileHist.start(fileMenu);
-		for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
-			getSelectedTabbedPane().setSelectedIndex(h);
+		MotherTabbedPane pane = getGroupTabbedPane();
+		int origPaneIndex = pane.getSelectedIndex();
+		// TODO: access text pad directly, rather than through selection
+		for (int h = 0; h < pane.getTabCount(); h++) {
+			pane.setSelectedIndex(h);
+//			System.out.println("h: " + h);
 			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 				TextPad pad = getTextPadAt(i);
 				if (getPrefs().getAutoSave()) {
@@ -544,6 +571,7 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
+		pane.setSelectedIndex(origPaneIndex);
 	}
 
 	/**
@@ -554,32 +582,36 @@ public class TextTrix extends JFrame {
 	 *  
 	 */
 	public void applyShortsPrefs() {
+		MotherTabbedPane pane = getGroupTabbedPane();
+		int origPaneIndex = pane.getSelectedIndex();
 		// applies shortcuts according to user choice in preferences
+		// TODO: access text pad directly, rather than through selection
 		if (prefs.isHybridKeybindings()) {
-			for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
-				getSelectedTabbedPane().setSelectedIndex(h);
+			for (int h = 0; h < pane.getTabCount(); h++) {
+				pane.setSelectedIndex(h);
 				// mix of standard + Emacs-style shortcuts
 				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 					getTextPadAt(i).hybridKeybindings();
 				}
 			}
 		} else if (prefs.isEmacsKeybindings()) {
-			for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
-				getSelectedTabbedPane().setSelectedIndex(h);
+			for (int h = 0; h < pane.getTabCount(); h++) {
+				pane.setSelectedIndex(h);
 				// Emacs-style shortcuts
 				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 					getTextPadAt(i).emacsKeybindings();
 				}
 			}
 		} else {
-			for (int h = 0; h < getGroupTabbedPane().getTabCount(); h++) {
-				getSelectedTabbedPane().setSelectedIndex(h);
+			for (int h = 0; h < pane.getTabCount(); h++) {
+				pane.setSelectedIndex(h);
 				// standard shortcuts
 				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 					getTextPadAt(i).standardKeybindings();
 				}
 			}
 		}
+		pane.setSelectedIndex(origPaneIndex);
 	}
 
 	/**
@@ -1409,10 +1441,8 @@ public class TextTrix extends JFrame {
 		boolean newGrp = false;
 		MotherTabbedPane pane = getGroupTabbedPane();
 		for (int i = 0; i < pane.getTabCount() && b; i++) {
-			if (!openedPaths.equals("")) {
-				openedPaths = openedPaths + FILE_GROUP_SPLITTER;
-				newGrp = true;
-			}
+			openedPaths = openedPaths + FILE_GROUP_SPLITTER + getGroupTabbedPane().getTitleAt(i);
+//			newGrp = true;
 			pane.setSelectedIndex(i);
 			int totTabs = getSelectedTabbedPane().getTabCount();
 	
@@ -1422,12 +1452,7 @@ public class TextTrix extends JFrame {
 				if (reopenTabs) {
 					TextPad t = getTextPadAt(0);
 					if (t.fileExists()) {
-						if (!openedPaths.equals("") && !newGrp) {
-							openedPaths = openedPaths + FILE_SPLITTER + t.getPath();
-						} else {
-							openedPaths = openedPaths + t.getPath();
-							newGrp = false;
-						}
+						openedPaths = openedPaths + FILE_SPLITTER + t.getPath();
 					}
 				}
 				b = closeTextArea(0, getSelectedTabbedPane());
@@ -1439,11 +1464,22 @@ public class TextTrix extends JFrame {
 		// successfully
 		if (b == true) {
 			if (reopenTabs) {
+//				openedPaths = "";
 				getPrefs().storeReopenTabsList(openedPaths);
 			}
 			System.exit(0);
 		}
 		return b;
+	}
+	
+	public String getSelectedTabbedPaneTitle() {
+		JTabbedPane pane = getGroupTabbedPane();
+		return pane.getTitleAt(pane.getSelectedIndex());
+	}
+	
+	public void setSelectedTabbedPaneTitle(String title) {
+		JTabbedPane pane = getGroupTabbedPane();
+		pane.setTitleAt(pane.getSelectedIndex(), title);
 	}
 
 	/**
@@ -1566,7 +1602,7 @@ public class TextTrix extends JFrame {
 		return text;
 	}
 	
-	public void addTabbedPane(MotherTabbedPane tabbedPane) {
+	public void addTabbedPane(MotherTabbedPane tabbedPane, String title) {
 		final MotherTabbedPane newTabbedPane = new MotherTabbedPane(JTabbedPane.TOP);
 		
 		addTextArea(newTabbedPane, makeNewFile());
@@ -1617,7 +1653,10 @@ public class TextTrix extends JFrame {
 
 //		arrayList.add(newTabbedPane);
 		int i = tabbedPane.getTabCount();
-		tabbedPane.addTab("Group " + i, newTabbedPane);
+		if (title.equals("")) {
+			title = "Group " + i;
+		}
+		tabbedPane.addTab(title, newTabbedPane);
 		tabbedPane.setSelectedIndex(i);
 	}
 
@@ -1643,7 +1682,7 @@ public class TextTrix extends JFrame {
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
 		textPad.getDocument().addDocumentListener(listener);
-		textPad.addMouseListener(new PopupListener());
+		textPad.addMouseListener(new PopupListener(popup));
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				updateStatusBarLineNumbers(textPad);
@@ -3111,6 +3150,13 @@ public class TextTrix extends JFrame {
 	 * @author davit
 	 */
 	private class PopupListener extends MouseAdapter {
+		private JPopupMenu popup = null;
+		
+		public PopupListener(JPopupMenu aPopup) {
+			super();
+			popup = aPopup;
+		}
+	
 		/**
 		 * Press right mouse button.
 		 *  
@@ -3267,11 +3313,13 @@ public class TextTrix extends JFrame {
 
 					// make tool bar
 					toolBar = new JToolBar("Trix and Tools");
-					toolBar.addMouseListener(new PopupListener());
+//					toolBar.addMouseListener(new PopupListener());
 					toolBar.setBorderPainted(false);
 
 					// create pop-up menu for right-mouse-clicking
 					popup = new JPopupMenu();
+					tabsPopup = new JPopupMenu();
+					getGroupTabbedPane().addMouseListener(new PopupListener(tabsPopup));
 
 					/* File menu items */
 
@@ -3288,7 +3336,7 @@ public class TextTrix extends JFrame {
 					// make new tab group
 					Action newGroupAction = new AbstractAction("New group") {
 						public void actionPerformed(ActionEvent evt) {
-							addTabbedPane(getGroupTabbedPane());
+							addTabbedPane(getGroupTabbedPane(), "");
 						}
 					};
 					LibTTx.setAcceleratedAction(newGroupAction, "New group",
@@ -3518,6 +3566,20 @@ public class TextTrix extends JFrame {
 
 					// edit menu preferences separator
 					editMenu.addSeparator();
+
+					// group tab title
+					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title") {
+						public void actionPerformed(ActionEvent evt) {
+							String title = JOptionPane.showInputDialog(
+								getThis(), 
+								"What would you like to name the tab group?");
+							getGroupTabbedPane().setTitleAt(getGroupTabbedPane().getSelectedIndex(), title);
+						}
+					};
+					LibTTx.setAcceleratedAction(chgGrpTabTitleAction, "Change group tab title", 'H',
+							KeyStroke.getKeyStroke("alt shift C"));
+					editMenu.add(chgGrpTabTitleAction);
+					tabsPopup.add(chgGrpTabTitleAction);
 
 					// auto-indent
 					// apply the selection to the current TextPad

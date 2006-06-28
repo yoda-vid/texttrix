@@ -67,7 +67,8 @@ Last updated:
 ##############################
 
 # version number
-VER="0.5.1"
+DATE=`date +'%Y-%m-%d'`
+VER="0.5.2-"$DATE
 
 # the final destination of the resulting packages
 DEST="/home/share" 
