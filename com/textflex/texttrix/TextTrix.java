@@ -3387,6 +3387,8 @@ public class TextTrix extends JFrame {
 							closeGroupActionMnemonic, closeGroupActionShortcut);
 					fileMenu.add(closeGroupAction);
 
+
+
 					// (ctrl-s) save file; no dialog if file already created
 					Action saveAction = new AbstractAction("Save", LibTTx
 							.makeIcon("images/saveicon-16x16.png")) {
@@ -3568,16 +3570,18 @@ public class TextTrix extends JFrame {
 					editMenu.addSeparator();
 
 					// group tab title
-					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title") {
+					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title...") {
 						public void actionPerformed(ActionEvent evt) {
 							String title = JOptionPane.showInputDialog(
 								getThis(), 
 								"What would you like to name the tab group?");
-							getGroupTabbedPane().setTitleAt(getGroupTabbedPane().getSelectedIndex(), title);
+							if (title != null) {
+								getGroupTabbedPane().setTitleAt(getGroupTabbedPane().getSelectedIndex(), title);
+							}
 						}
 					};
-					LibTTx.setAcceleratedAction(chgGrpTabTitleAction, "Change group tab title", 'H',
-							KeyStroke.getKeyStroke("alt shift C"));
+					LibTTx.setAcceleratedAction(chgGrpTabTitleAction, "Change group tab title...", 'H',
+							KeyStroke.getKeyStroke("ctrl shift G"));
 					editMenu.add(chgGrpTabTitleAction);
 					tabsPopup.add(chgGrpTabTitleAction);
 

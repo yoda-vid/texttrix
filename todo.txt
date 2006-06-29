@@ -70,9 +70,14 @@ Note: "./" is the "check-mark" symbol
 v.0.5.2
 -opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file before creating new tab
 -fix find/replace only searching in highlighted areas unless nothing highlighted
+-Search replace fn very slow when searching within selected area
 -group tabbing
 	-tab groups; ADDED: tabs can now be grouped into parent tabs so that one can organize, say, all web files in one tab, all personal documents in another, and all programming files in a third tab group; remembers tab grouping for next program launch
 	-rename and remember tab groups; ADDED: right-clicking on group tab brings up input dialog to enter group name; name saved and reapplied on next program start
+	-write name in directly; TARGET: Java 6
+	-close tab button; TARGET: Java 6
+	-mechanism to clear out saved tabs from previous versions
+-remove popup menu from tool bar; FIXED: removed from menu, since currently not applicable to the toolbar
 
 ----Past Releases----
 
