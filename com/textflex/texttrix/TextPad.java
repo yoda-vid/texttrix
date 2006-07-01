@@ -81,6 +81,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private StoppableThread autoSaveTimer = null; // timer to auto save the text
 	private CompoundEdit compoundEdit = null;
 	private boolean compoundEditing = false;
+	private JScrollPane scrollPane = null;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -1381,6 +1382,26 @@ public class TextPad extends JTextPane implements StateEditable {
 		autoSaveTimer = aAutoSaveTimer;
 	}
 	
+	public void setScrollPane(JScrollPane aScrollPane) {
+		scrollPane = aScrollPane;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public JScrollPane getScrollPane() {
+		return scrollPane;
+	}
 	
 	
 	

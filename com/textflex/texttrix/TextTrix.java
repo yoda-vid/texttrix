@@ -1352,6 +1352,35 @@ public class TextTrix extends JFrame {
 		return (MotherTabbedPane) getGroupTabbedPane().getComponentAt(i);
 	}
 
+	public static MotherTabbedPane getTabbedPane(TextPad textPad) {
+		int lenGroup = getGroupTabbedPane().getTabCount();
+		int tabIndex = -1;
+		MotherTabbedPane pane = null;
+		for (int i = 0; i < lenGroup; i++) {
+			pane = getTabbedPaneAt(i);
+			if (pane.indexOfComponent(textPad.getScrollPane()) != -1) {
+				return pane;
+			}
+		}
+		/*
+			pane = getTabbedPaneAt(i);
+			int len = pane.getTabCount();
+			for (int h = 0; h < len; h++) {
+				if (getTextPadAt(pane, h) == textPad) {
+					return pane;
+				}
+			}
+		}
+		*/
+		System.out.println("didn't find it");
+		return null;
+	}
+	
+	public static int getTextPadIndex(JTabbedPane pane, TextPad textPad) {
+		return pane.indexOfComponent(textPad.getScrollPane());
+	}
+
+/*
 	public static int getTextPadIndex(TextPad textPad) {
 		int len = getGroupTabbedPane().getTabCount();
 		int tabIndex = -1;
@@ -1362,6 +1391,7 @@ public class TextTrix extends JFrame {
 			i++);
 		return tabIndex;
 	}
+*/
 	
 	/**
 	 * Gets whether the auto-indent function is selected.
@@ -1669,9 +1699,10 @@ public class TextTrix extends JFrame {
 			File file) {
 		final TextPad textPad = new TextPad(file, getPrefs());
 
-		JScrollPane scrollPane = new JScrollPane(textPad,
+		final JScrollPane scrollPane = new JScrollPane(textPad,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		textPad.setScrollPane(scrollPane);
 		DocumentListener listener = new TextPadDocListener();
 
 		// must add to array list before adding scroll pane to tabbed pane
@@ -1706,21 +1737,25 @@ public class TextTrix extends JFrame {
 	 * @param i
 	 *            the index of the tab to update
 	 */
-	public static void updateTabTitle(JTabbedPane tabbedPane, int i) {
+	public static void updateTabTitle(TextPad textPad) {
+		MotherTabbedPane pane = getTabbedPane(textPad);
+		int tabIndex = getTextPadIndex(pane, textPad);
 		// if the tab index is given as -1, assumes that the current
 		// tab should be updated
+		/*
 		if (i < 0) {
 			i = tabbedPane.getSelectedIndex();
 		}
 		TextPad textPad = getTextPadAt(tabbedPane, i);//(TextPad) tabbedPane.getComponentAt(i);//arrayList.get(i);
+		*/
 
 		// updates the title with the filename and a flag indicating
 		// whether the file has unsaved changes
 		String title = textPad.getFilename();
 		if (textPad.getChanged()) { // unsaved changes present
-			tabbedPane.setTitleAt(i, title + "*");
+			pane.setTitleAt(tabIndex, title + "*");
 		} else { // all changes saved
-			tabbedPane.setTitleAt(i, title + " ");
+			pane.setTitleAt(tabIndex, title + " ");
 		}
 	}
 
@@ -1734,12 +1769,13 @@ public class TextTrix extends JFrame {
 	 *            displays
 	 * @param tabbedPane
 	 *            tabbed pane to update
-	 */
+	 *
 	public static void updateTabTitle(JTabbedPane tabbedPane) {
 		// -1 indicates that the currently selected tab is the one
 		// to update
 		updateTabTitle(tabbedPane, -1);
 	}
+	*/
 
 	/**
 	 * Adds additional listeners and other settings to a <code>TextPad</code>.
@@ -1752,7 +1788,7 @@ public class TextTrix extends JFrame {
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
 		textPad.getDocument().addDocumentListener(new TextPadDocListener());
 		textPad.setChanged(true);
-		updateTabTitle(getSelectedTabbedPane());
+		updateTabTitle(textPad);//getSelectedTabbedPane());
 	}
 
 	/**
@@ -1860,7 +1896,7 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile(TextPad)
 	 * @see #saveFile(String)
 	 */
-	public boolean saveFile(String path, TextPad t, int tabIndex) {
+	public boolean saveFile(String path, TextPad t) {
 		//	System.out.println("printing");
 		if (t == null)
 			t = getSelectedTextPad();
@@ -1883,8 +1919,8 @@ public class TextTrix extends JFrame {
 				// since the file has just been saved;
 				// relies on TextPadDocListener to restart the timer
 				stopTextPadAutoSaveTimer(t);
-
-				updateTabTitle(getSelectedTabbedPane(), tabIndex);//textAreas.indexOf(t));
+				
+				updateTabTitle(t);//textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
 				return true;
@@ -1909,8 +1945,8 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile(String, TextPad)
 	 * @see #saveFile(TextPad)
 	 */
-	public boolean saveFile(String path, int tabIndex) {
-		return saveFile(path, null, tabIndex);
+	public boolean saveFile(String path) {
+		return saveFile(path, null);
 	}
 
 	/**
@@ -1922,8 +1958,8 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile(String, TextPad)
 	 * @see #saveFile(String)
 	 */
-	public boolean saveFile(TextPad pad, int tabIndex) {
-		return saveFile(pad.getPath(), pad, tabIndex);
+	public boolean saveFile(TextPad pad) {
+		return saveFile(pad.getPath(), pad);
 	}
 
 	/**
@@ -2045,7 +2081,7 @@ public class TextTrix extends JFrame {
 				t.setFile(path);
 				getSelectedTabbedPane().setToolTipTextAt(getSelectedTabbedPane().getSelectedIndex(), t
 						.getPath());
-				updateTabTitle(getSelectedTabbedPane());
+				updateTabTitle(t);//getSelectedTabbedPane());
 				updateTitle(t.getFilename());
 				// set the path to the last opened directory
 				setOpenDir(file.getParent());
@@ -2247,13 +2283,15 @@ public class TextTrix extends JFrame {
 
 	/**
 	 * Evokes a save dialog. Sets the tabbed pane tab to the saved file name.
+	 * Assumes that the text pad from which to save is the currently
+	 * selected text pad.
 	 * 
 	 * @param owner
 	 *            parent frame; can be null
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public boolean fileSaveDialog(JFrame owner) {
-		return fileSaveDialog(null, -1, owner);
+		return fileSaveDialog(getSelectedTextPad(), owner);
 	}
 
 	/**
@@ -2266,10 +2304,10 @@ public class TextTrix extends JFrame {
 	 *            parent frame; can be null
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
-	public boolean fileSaveDialog(TextPad pad, int tabIndex, JFrame owner) {
+	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
 		if (chooser.isShowing() || !prepFileSaveDialog(pad))
 			return false;
-		return getSavePath(pad, tabIndex, owner);
+		return getSavePath(pad, owner);
 	}
 
 	/**
@@ -2402,7 +2440,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the file is saved successfully
 	 * @see #getSavePathOnExit(JFrame)
 	 */
-	public boolean getSavePath(TextPad pad, int tabIndex, JFrame owner) {
+	public boolean getSavePath(TextPad pad, JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name,
@@ -2435,6 +2473,9 @@ public class TextTrix extends JFrame {
 				} else { // write, even if overwriting
 					// try to save the file and check if successful
 					boolean success = false;
+					success = saveFile(path, pad);
+					
+					/*
 					int idx = tabIndex;//-1;
 					if (pad == null) {
 						success = saveFile(path, tabIndex);
@@ -2443,13 +2484,18 @@ public class TextTrix extends JFrame {
 						success = saveFile(path, pad, tabIndex);
 //						idx = textAreas.indexOf(pad);
 					}
+					*/
 					if (success) {
 						setSaveDir(chooser.getSelectedFile().getParent());
 						// update graphical components
-						getSelectedTabbedPane().setToolTipTextAt(idx, path);
+						MotherTabbedPane pane = getTabbedPane(pad);
+						pane.setToolTipTextAt(getTextPadIndex(pane, pad), path);
+						updateTitle(owner, f.getName());
+						/*
 						if (idx == getSelectedTabbedPane().getSelectedIndex()) {
 							updateTitle(owner, f.getName());
 						}
+						*/
 						getPrefs().storeFileHist(path);
 						fileHist.start(fileMenu);
 
@@ -2480,10 +2526,11 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @return true if the file is saved successfully
 	 * @see #getSavePathOnExit(JFrame)
-	 */
+	 *
 	public boolean getSavePath(JFrame owner, int tabIndex) {
 		return getSavePath(null, tabIndex, owner);
 	}
+	*/
 
 	/**
 	 * Front-end, helper function to ask yes/no questions.
@@ -2991,7 +3038,7 @@ public class TextTrix extends JFrame {
 			final TextPad pad = getSelectedTextPad();
 			if (!pad.getChanged()) {
 				pad.setChanged(true);
-				updateTabTitle(getSelectedTabbedPane());
+				updateTabTitle(pad);//getSelectedTabbedPane());
 				if (getPrefs().getAutoSave()) {
 					//					System.out.println("i'm here");
 					startTextPadAutoSaveTimer(pad);
@@ -3083,11 +3130,11 @@ public class TextTrix extends JFrame {
 								}
 							}
 							
-							int tabIndex = getTextPadIndex(textPad);
+//							int tabIndex = getTextPadIndex(textPad);
 							// saves the pad directly if it already exists;
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
-								saveFile(textPad, tabIndex);
+								saveFile(textPad);
 							} else {
 								// asks users whether they would like to supply
 								// a file
@@ -3114,7 +3161,7 @@ public class TextTrix extends JFrame {
 								}
 								// solicits users for a file name;
 								// main prgm as dialog owner
-								fileSaveDialog(textPad, tabIndex, getThis());
+								fileSaveDialog(textPad, getThis());
 							}
 						}
 					});
@@ -3398,18 +3445,18 @@ public class TextTrix extends JFrame {
 							// returns JScrollPane
 							if (t != null) {
 								if (t.fileExists()) {
-									if (!saveFile(t.getPath(), getTextPadIndex(t))) {
+									if (!saveFile(t.getPath())) {
 										String msg = t.getPath()
 												+ " couldn't be written.\n"
 												+ "Would you like to try saving it somewhere else?";
 										String title = "Couldn't write";
 										if (yesNoDialog(TextTrix.this, msg,
 												title))
-											fileSaveDialog(TextTrix.this);
+											fileSaveDialog(t, TextTrix.this);
 									}
 									// otherwise, request filename for new file
 								} else {
-									fileSaveDialog(TextTrix.this);
+									fileSaveDialog(t, TextTrix.this);
 								}
 							}
 						}
