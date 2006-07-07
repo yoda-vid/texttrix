@@ -1635,61 +1635,25 @@ public class TextTrix extends JFrame {
 	public void addTabbedPane(MotherTabbedPane tabbedPane, String title) {
 		final MotherTabbedPane newTabbedPane = new MotherTabbedPane(JTabbedPane.TOP);
 		
-		addTextArea(newTabbedPane, makeNewFile());
-		
 		// keep the tabs the same width when substituting chars
 		newTabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
 
-		/*
-		 * adds a change listener to listen for tab switches and display the
-		 * options of the tab's TextPad
-		 */
-		newTabbedPane.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent evt) {
-				final TextPad t = getSelectedTextPad();
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						if (t != null) {
-							setAutoIndent();
-							// update the tab index record;
-							// addTabIndexHistory increments the record index;
-							// add the current tab selection now to ensure that
-							// all selections are recorded
-							int i = newTabbedPane.getSelectedIndex();
-							if (updateTabIndexHistory) {
-								//System.out.println("Updating tab index
-								// history...");
-								newTabbedPane.addTabIndexHistory(i);
-							} else {
-								updateTabIndexHistory = true;
-							}
-							updateTitle(t.getFilename());
-							// doesn't work when creating new tabs via
-							// the keyboard accelerator;
-							// only works when changing between already created
-							// tabs or creating new ones via the menu item
-							t.requestFocusInWindow();
-							updateStatusBarLineNumbers(t);
-						}
-					}
-				});
-				// this second call is necessary for unknown reasons;
-				// perhaps some events still follow the call in invokeLater
-				// (above)
-				if (t != null)
-					t.requestFocusInWindow();
-			}
-		});
-
-//		arrayList.add(newTabbedPane);
 		int i = tabbedPane.getTabCount();
 		if (title.equals("")) {
 			title = "Group " + i;
 		}
 		tabbedPane.addTab(title, newTabbedPane);
 		tabbedPane.setSelectedIndex(i);
+		
+		// TODO: focus in newly created tab
+		addTextArea(newTabbedPane, makeNewFile());
+		
+		// adds a change listener to listen for tab switches and display the
+		// options of the tab's TextPad
+		newTabbedPane.addChangeListener(new TextPadChangeListener(newTabbedPane));
+		
 	}
-
+	
 	/**
 	 * Creates a new <code>TextPad</code> object, a text area for writing, and
 	 * gives it a new tab. Can call for each new file; names the tab,
@@ -3265,11 +3229,11 @@ public class TextTrix extends JFrame {
 					KeyStroke newGroupActionShortcut = KeyStroke
 							.getKeyStroke("ctrl G");
 					char closeActionMnemonic = 'C';
-					char closeGroupActionMnemonic = 'R';
-					KeyStroke closeGroupActionShortcut = KeyStroke
-							.getKeyStroke("ctrl shift C");
 					KeyStroke closeActionShortcut = KeyStroke
 							.getKeyStroke("ctrl W");
+					char closeGroupActionMnemonic = 'R';
+					KeyStroke closeGroupActionShortcut = KeyStroke
+							.getKeyStroke("ctrl shift W");
 					String exitActionTxt = "Exit";
 					char exitActionMnemonic = 'X';
 					KeyStroke exitActionShortcut = KeyStroke
@@ -3430,7 +3394,7 @@ public class TextTrix extends JFrame {
 							removeTabbedPane(getGroupTabbedPane());
 						}
 					};
-					LibTTx.setAcceleratedAction(newAction, "Close tab group",
+					LibTTx.setAcceleratedAction(closeGroupAction, "Close tab group",
 							closeGroupActionMnemonic, closeGroupActionShortcut);
 					fileMenu.add(closeGroupAction);
 
@@ -4163,6 +4127,54 @@ public class TextTrix extends JFrame {
 		}
 
 	}
+	
+	
+	private class TextPadChangeListener implements ChangeListener {
+	
+		private MotherTabbedPane pane = null;
+		
+		public TextPadChangeListener(MotherTabbedPane aPane) {
+			pane = aPane;
+		}
+		
+		public void stateChanged(ChangeEvent evt) {
+			final TextPad t = getSelectedTextPad();
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					if (t != null) {
+						setAutoIndent();
+						// update the tab index record;
+						// addTabIndexHistory increments the record index;
+						// add the current tab selection now to ensure that
+						// all selections are recorded
+						int i = pane.getSelectedIndex();
+						if (updateTabIndexHistory) {
+							//System.out.println("Updating tab index
+							// history...");
+							pane.addTabIndexHistory(i);
+						} else {
+							updateTabIndexHistory = true;
+						}
+						updateTitle(t.getFilename());
+						// doesn't work when creating new tabs via
+						// the keyboard accelerator;
+						// only works when changing between already created
+						// tabs or creating new ones via the menu item
+						t.requestFocusInWindow();
+						updateStatusBarLineNumbers(t);
+					}
+				}
+			});
+			// this second call is necessary for unknown reasons;
+			// perhaps some events still follow the call in invokeLater
+			// (above)
+			if (t != null)
+				t.requestFocusInWindow();
+		}
+	}
+
+	
+	
 }
 
 /**
