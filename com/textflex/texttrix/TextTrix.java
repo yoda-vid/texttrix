@@ -1522,8 +1522,6 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @param tabIndex
 	 *            tab to close
-	 * @param textAreas
-	 *            array of <code>TextPad</code> s
 	 * @param tabbedPane
 	 *            pane holding a tab to be closed
 	 * @return <code>true</code> if the tab successfully closes
@@ -1693,13 +1691,8 @@ public class TextTrix extends JFrame {
 	 * the file has unsaved changes. Appends "<code> *</code>" if the file
 	 * has unsaved changes; appends "<code>  </code>" otherwise.
 	 * 
-	 * @param arrayList
-	 *            array of <code>TextPad</code> s that the tabbed pane
-	 *            displays
-	 * @param tabbedPane
+	 * @param textPad
 	 *            tabbed pane to update
-	 * @param i
-	 *            the index of the tab to update
 	 */
 	public static void updateTabTitle(TextPad textPad) {
 		MotherTabbedPane pane = getTabbedPane(textPad);
@@ -1834,8 +1827,6 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @param i
 	 *            tab index
-	 * @param l
-	 *            text area array list
 	 * @param tp
 	 *            tabbed pane from which to remove a tab
 	 */
@@ -2337,7 +2328,7 @@ public class TextTrix extends JFrame {
 	 * @param owner
 	 *            the frame to which the dialog will serve; can be null
 	 * @return true if the file is saved successfully
-	 * @see #getSavePath(JFrame)
+	 * @see #getSavePath(TextPad, JFrame)
 	 */
 	public static boolean getSavePathOnExit(JFrame owner) {
 		boolean repeat = false;
@@ -2479,22 +2470,6 @@ public class TextTrix extends JFrame {
 		} while (repeat); // repeat if retrying save after failure
 		return false;
 	}
-
-	/**
-	 * Opens the file save dialog to retrieve the new name of the currently
-	 * selected <code>TextPad</code>. If the file will overwrite another
-	 * file, prompts the user with a dialog box to determine whether to continue
-	 * with the overwrite, get another name, or cancel the whole operation.
-	 * Unlike <code>getSavePathOnExit(JFrame)</code>, this method attempts to
-	 * update the graphical components.
-	 * 
-	 * @return true if the file is saved successfully
-	 * @see #getSavePathOnExit(JFrame)
-	 *
-	public boolean getSavePath(JFrame owner, int tabIndex) {
-		return getSavePath(null, tabIndex, owner);
-	}
-	*/
 
 	/**
 	 * Front-end, helper function to ask yes/no questions.
