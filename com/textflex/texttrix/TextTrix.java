@@ -222,6 +222,20 @@ public class TextTrix extends JFrame {
 		
 		groupTabbedPane = new MotherTabbedPane(
 			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		groupTabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				final TextPad t = getSelectedTextPad();
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						if (t != null) {
+							updateTitle(t.getFilename());
+							updateStatusBarLineNumbers(t);
+						}
+					}
+				});
+			}
+		});
+		
 		addTabbedPane(groupTabbedPane, "");
 
 		// display tool tips for up to 100s

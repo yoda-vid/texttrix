@@ -10,9 +10,6 @@ Note: "./" is the "check-mark" symbol
 -drag selected text
 -drag-n-drop files to open them in Text Trix
 -Bookmarks groups
-	-open all files in a group
-	-create separate dialog window listing all the files, where files can be added by dragging their tab into the box
-	-move to each tab by clicking on a file in the group dialog window
 -check on lost I-bar after switching to HTML view
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
@@ -71,6 +68,7 @@ v.0.5.2
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file before creating new tab
 	-saving file over path of currently opened file should close the old version of the file
+	-simultaneous editing mode, where can open same file in multiple tabs, and other tabs update when user switches to them after editing the file in another tab; mark duplicate file tabs with "[n]"
 -find
 	-fix find/replace only searching in highlighted areas unless nothing highlighted
 	-Search replace fn very slow when searching within selected area
@@ -82,6 +80,7 @@ v.0.5.2
 	-write name in directly; TARGET: Java 6
 	-close tab button; TARGET: Java 6
 	-mechanism to clear out saved tabs from previous versions
+	-consider whether to save groups without any tabs with text
 -remove popup menu from tool bar; FIXED: removed from menu, since currently not applicable to the toolbar
 
 ----Past Releases----
