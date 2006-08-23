@@ -66,7 +66,7 @@ Note: "./" is the "check-mark" symbol
 
 v.0.5.2
 -duplicate files
-	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file before creating new tab
+	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab
 	-saving file over path of currently opened file should close the old version of the file; ADDED: checks whether to close other tab with identical path, warning of potentially unsaved changes, to see that tab, or to cancel
 	-simultaneous editing mode, where can open same file in multiple tabs, and other tabs update when user switches to them after editing the file in another tab; mark duplicate file tabs with "[n]"
 -find
@@ -74,6 +74,7 @@ v.0.5.2
 	-Search replace fn very slow when searching within selected area
 	-text find, similar to line find; ADDED: "Word Find," a feature similar to the "type as you find" feature found in web browsers, but requiring the user to place the cursor in a special box to distinguish from text editing
 	-ability to search backward in text
+	-right-click to save current cursor location into Line Find; ADDED: right-click in status bar brings up popup menu that allows saving the current line number into Line Find
 -group tabbing
 	-tab groups; ADDED: tabs can now be grouped into parent tabs so that one can organize, say, all web files in one tab, all personal documents in another, and all programming files in a third tab group; remembers tab grouping for next program launch
 	-rename and remember tab groups; ADDED: right-clicking on group tab brings up input dialog to enter group name; name saved and reapplied on next program start

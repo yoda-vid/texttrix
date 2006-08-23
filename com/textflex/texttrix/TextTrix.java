@@ -126,6 +126,7 @@ public class TextTrix extends JFrame {
 	private JLabel statusBar = null; // the status label; not really a "bar"
 	private JTextField lineNumFld = null; // Line Find
 	private JTextField wordFindFld = null; // Word Find
+	private JPopupMenu statusBarPopup = null;
 
 	/**
 	 * Constructs a new <code>TextTrix</code> frame and with
@@ -4001,6 +4002,9 @@ public class TextTrix extends JFrame {
 					// Make the status bar components;
 					// statusBar already created so that could accept line updates
 					
+					
+					
+					
 					// Line Find
 					JLabel lineNumLbl = new JLabel("Line Find:");
 					lineNumLbl.setToolTipText("GoTo the line number as it's typed");
@@ -4038,7 +4042,7 @@ public class TextTrix extends JFrame {
 					// Word Find
 					JLabel wordFindLbl = new JLabel("Word Find:");
 					wordFindLbl.setToolTipText("GoTo the word as it's typed");
-					wordFindFld = new JTextField(5);
+					wordFindFld = new JTextField(10);
 					// caret listener to find-as-you-type the line number into the text box
 					wordFindFld.addCaretListener(new CaretListener() {
 						public void caretUpdate(CaretEvent e) {
@@ -4080,6 +4084,27 @@ public class TextTrix extends JFrame {
 						doc = (AbstractDocument) fldDoc;
 						doc.setDocumentFilter(new DocumentSearchFilter(MAX_CHARS));
 					}
+					
+					
+					
+					
+					statusBarPopup = new JPopupMenu();
+					statusBar.addMouseListener(new PopupListener(statusBarPopup));
+					
+					// line saver
+					Action lineSaverAction = new AbstractAction("Save this line number") {
+						public void actionPerformed(ActionEvent evt) {
+							lineNumFld.setText("" + getLineNumber(getSelectedTextPad()));
+						}
+					};
+					LibTTx.setAcceleratedAction(lineSaverAction, "Save this line number", 'L',
+							KeyStroke.getKeyStroke("ctrl shift L"));
+					statusBarPopup.add(lineSaverAction);
+					
+					
+					
+					
+					
 					
 					// Add the components
 					statusBarPanel.add(statusBar);
@@ -4131,7 +4156,7 @@ public class TextTrix extends JFrame {
 					
 					// position the Word Find text field
 					layout.putConstraint(SpringLayout.EAST, wordFindFld,
-						-2,
+						-5,
 						SpringLayout.WEST, lineNumLbl);
 					layout.putConstraint(SpringLayout.NORTH, wordFindFld,
 						0,
