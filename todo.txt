@@ -67,7 +67,7 @@ Note: "./" is the "check-mark" symbol
 v.0.5.2
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file before creating new tab
-	-saving file over path of currently opened file should close the old version of the file
+	-saving file over path of currently opened file should close the old version of the file; ADDED: checks whether to close other tab with identical path, warning of potentially unsaved changes, to see that tab, or to cancel
 	-simultaneous editing mode, where can open same file in multiple tabs, and other tabs update when user switches to them after editing the file in another tab; mark duplicate file tabs with "[n]"
 -find
 	-fix find/replace only searching in highlighted areas unless nothing highlighted
@@ -82,7 +82,7 @@ v.0.5.2
 	-mechanism to clear out saved tabs from previous versions
 	-consider whether to save groups without any tabs with text
 -remove popup menu from tool bar; FIXED: removed from menu, since currently not applicable to the toolbar
--Alt-TAB shifts focus to the menu bar when the time gap between pressing Alt and TAB is small; FIXED: 
+-Alt-TAB shifts focus to the menu bar when the time gap between pressing Alt and TAB is small; WORKAROUND: based on workaround to Java bug #6458497 (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6458497), automatically shift focus from menubar back to original component when changing windows
 
 ----Past Releases----
 

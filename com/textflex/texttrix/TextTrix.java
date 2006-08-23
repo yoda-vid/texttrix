@@ -61,6 +61,8 @@ public class TextTrix extends JFrame {
 	private static final String FILE_SPLITTER = "::";
 	private static final String FILE_GROUP_SPLITTER = "{}";
 	private static final String FILE_GROUP_SPLITTER_REGEX = "\\{\\}";
+	private static final String NEWLINE 
+		= System.getProperty("line.separator"); // newlines
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -78,6 +80,7 @@ public class TextTrix extends JFrame {
 	private static int fileHistStart = -1;
 	
 	/* General GUI components */
+	private static MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
 	private static ArrayList textAreas = new ArrayList(); // all the TextPads
 	private Container contentPane = getContentPane();
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
@@ -85,7 +88,6 @@ public class TextTrix extends JFrame {
 	private static JPopupMenu tabsPopup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
-	private static MotherTabbedPane groupTabbedPane = null;
 //	private static ArrayList tabbedPaneGroups = new ArrayList();
 //	private boolean tmpActivated = false;
 	
@@ -1337,6 +1339,49 @@ public class TextTrix extends JFrame {
 		return saveDir;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void setSelectedTextPad(int motherIdx, int padIdx) {
+		getGroupTabbedPane().setSelectedIndex(motherIdx);
+		getSelectedTabbedPane().setSelectedIndex(padIdx);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static MotherTabbedPane getGroupTabbedPane() {
 		return groupTabbedPane;
 	}
@@ -1992,6 +2037,7 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
+	
 
 	/**
 	 * Opens a file into a text pad. Calls the file open dialog. Opens the file
@@ -2016,14 +2062,17 @@ public class TextTrix extends JFrame {
 	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
 		String path = file.getPath();
 		
-		// Checks for open file before creating new tab
-		if (!path.equals("") && getSelectedTabbedPane().getTabCount() > 0 && !reuseTab) {
-			int idPath = getIdenticalTextPadIndex(path);
-//			System.out.println("idPath: " + idPath);
-			if (idPath != -1) {
-				getSelectedTabbedPane().setSelectedIndex(idPath);
-//				openFile(file, editable, resource, true);
-				return true;
+		// Check to see if the file is already open before creating new tab
+		if (!path.equals("")) {
+			int len = getGroupTabbedPane().getTabCount();
+			for (int i = 0; i < len; i++) {
+				if (getTabbedPaneAt(i).getTabCount() > 0 && !reuseTab) {
+					int idPath = getIdenticalTextPadIndex(path, i);
+					if (idPath != -1) {
+						setSelectedTextPad(i, idPath);
+						return true;
+					}
+				}
 			}
 		}
 		// ensures that the file exists and is not a directory
@@ -2111,11 +2160,12 @@ public class TextTrix extends JFrame {
 	 * @param path the path of the file to find
 	 * @return the index of the tab with the file of the given tab; -1 if no such tab exists
 	*/
-	public int getIdenticalTextPadIndex(String path) {
-		int len = getSelectedTabbedPane().getTabCount(); // the number of tabs
+	public int getIdenticalTextPadIndex(String path, int paneIdx) {
+		MotherTabbedPane pane = getTabbedPaneAt(paneIdx);
+		int len = pane.getTabCount(); // the number of tabs
 		// checks each tab to see if any have the given path
 		for (int i = 0; i < len; i++) {
-			if (((TextPad) getTextPadAt(i)).getPath().equals(path)) {
+			if (getTextPadAt(pane, i).getPath().equals(path)) {
 				return i;
 			}
 		}
@@ -2447,6 +2497,37 @@ public class TextTrix extends JFrame {
 				int choice = 0;
 				// check whether a file by the chosen name already exists
 				if (f.exists()) {
+					int len = getGroupTabbedPane().getTabCount();
+					int idPath = -1;
+					int paneIdx = -1;
+					while (idPath == -1&& ++paneIdx < len) {
+						if (getTabbedPaneAt(paneIdx).getTabCount() > 0) {
+							idPath = getIdenticalTextPadIndex(path, paneIdx);
+						}
+					}
+					if (idPath != -1) {
+						String closeIDTabWarning = 
+							"A text pad saved to the path you have chosen"
+							+ NEWLINE + "is already open.  Should I close it?  It may have"
+							+ NEWLINE + "unsaved changes.";
+						String[] closeIDTabOptions = { "Close it anyway", "Show me", "Cancel" };
+						int closeIDTabChoice = JOptionPane.showOptionDialog(
+							owner, closeIDTabWarning,
+							"Close?", JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.WARNING_MESSAGE, null, closeIDTabOptions,
+							closeIDTabOptions[1]);
+						switch (closeIDTabChoice) {
+							case 0:
+								removeTextArea(idPath, getTabbedPaneAt(paneIdx));
+							System.out.println("paneIdx: " + paneIdx);
+								break;
+							case 1:
+								setSelectedTextPad(paneIdx, idPath);
+								return false;
+							case 2:
+								return false;
+						}
+					}
 					String overwrite = path
 							+ "\nalready exists.  Should I overwrite it?";
 					String[] options = { "But of course", "Please, no!",
