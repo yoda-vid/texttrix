@@ -123,6 +123,7 @@ public class TextTrix extends JFrame {
 	private JPanel statusBarPanel = null; // the panel
 	private JLabel statusBar = null; // the status label; not really a "bar"
 	private JTextField lineNumFld = null; // Line Find
+	private JTextField wordFindFld = null; // Word Find
 
 	/**
 	 * Constructs a new <code>TextTrix</code> frame and with
@@ -329,7 +330,7 @@ public class TextTrix extends JFrame {
 					
 					// Start at 1 b/c first token is the empty group splitter
 					for (int i = 1; i < grpTokens.length; i++) {
-						System.out.println("grpTokens[" + i + "]:" + grpTokens[i]);
+//						System.out.println("grpTokens[" + i + "]:" + grpTokens[i]);
 						String[] tokens = grpTokens[i].split(FILE_SPLITTER);
 						// Blank group already open initally, so simply update title
 						// and start adding files
@@ -442,6 +443,25 @@ public class TextTrix extends JFrame {
 		}
 		TextTrix textTrix = new TextTrix(args);
 		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
+		/* Workaround for bug #4841881
+		 * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4841881
+		 * This bug existed in Java v.1.4.x, disappeared in v.1.5, but
+		 * reappeared in snapshots of v.1.6 (tested in b94).  The workaround
+		 * has potentially undesirable side effects, as mentioned by the 
+		 * submitter, but is a temporary solution until the Java regression
+		 * is fixed.
+		 */
+		textTrix.addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+			}
+			
+			public void windowLostFocus(WindowEvent e) {
+				MenuSelectionManager.defaultManager().clearSelectedPath();
+			}
+		});
+		
+//		RepaintManager.setCurrentManager(new TTxRepaintManager());
 		textTrix.setVisible(true);
 
 		/*
@@ -996,10 +1016,13 @@ public class TextTrix extends JFrame {
 	 *            end point of selection, relative to baseline
 	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
+	/*
 		if (start == end) {
 			t.setCaretPosition(baseline + start);
 //			System.out.println("I'm here");
-		} if (end != -1) {
+		}
+	*/
+		if (end != -1&& start != end) {
 			t.setCaretPosition(baseline + start);
 			t.moveCaretPosition(baseline + end);
 			t.getCaret().setSelectionVisible(true);
@@ -3870,6 +3893,7 @@ public class TextTrix extends JFrame {
 	private class StatusBarCreator implements Runnable {
 		
 		private int lastLine = 0;
+		private String lastWord = "";
 
 		/**
 		 * Begins creating the bars.
@@ -3929,8 +3953,57 @@ public class TextTrix extends JFrame {
 						}
 					});
 					
+					
+					// Word Find
+					JLabel wordFindLbl = new JLabel("Word Find:");
+					wordFindLbl.setToolTipText("GoTo the word as it's typed");
+					wordFindFld = new JTextField(5);
+					// caret listener to find-as-you-type the line number into the text box
+					wordFindFld.addCaretListener(new CaretListener() {
+						public void caretUpdate(CaretEvent e) {
+							String lineStr = wordFindFld.getText();
+							// do nothing if empty box
+							if (!lineStr.equals("") && !lastWord.equalsIgnoreCase(lineStr)) {
+								// otherwise, parse string, assuming key listener has
+								// filtered out non-digits
+								findSeq(lineStr, -1);
+							}
+						}
+					});
+					// filter input to only accept digits
+					wordFindFld.addKeyListener(new KeyAdapter() {
+						public void keyTyped(KeyEvent evt) {
+							char keyChar = evt.getKeyChar();
+							String lineStr = wordFindFld.getText();
+							if (keyChar == KeyEvent.VK_ENTER) {
+								evt.consume();
+//							System.out.println("here");
+								findSeq(lineStr, -1);
+							}
+						}
+						
+						public void keyPressed(KeyEvent evt) {
+							String lineStr = wordFindFld.getText();
+							if (evt.getKeyCode() == KeyEvent.VK_F3) {
+								evt.consume();
+//								System.out.println("end: " + getSelectedTextPad().getSelectionEnd());
+								findSeq(lineStr, getSelectedTextPad().getSelectionEnd());
+							}
+						}
+					});
+					
+					AbstractDocument doc = null;
+					final int MAX_CHARS = 256;
+					Document fldDoc = wordFindFld.getDocument();
+					if (fldDoc instanceof AbstractDocument) {
+						doc = (AbstractDocument) fldDoc;
+						doc.setDocumentFilter(new DocumentSearchFilter(MAX_CHARS));
+					}
+					
 					// Add the components
 					statusBarPanel.add(statusBar);
+					statusBarPanel.add(wordFindLbl);
+					statusBarPanel.add(wordFindFld);
 					statusBarPanel.add(lineNumLbl);
 					statusBarPanel.add(lineNumFld);
 					
@@ -3957,6 +4030,39 @@ public class TextTrix extends JFrame {
 					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
 						2,
 						SpringLayout.SOUTH, statusBar);
+					
+					
+					
+					
+					
+					// position the Word Find label relative to the Word Find
+					// text field, which is in turn relative to the right side of 
+					// the panel
+					layout.putConstraint(SpringLayout.NORTH, wordFindLbl,
+						2,
+						SpringLayout.NORTH, statusBarPanel);
+					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
+						2,
+						SpringLayout.SOUTH, wordFindFld);
+					layout.putConstraint(SpringLayout.EAST, wordFindLbl,
+						-2,
+						SpringLayout.WEST, wordFindFld);
+					
+					// position the Word Find text field
+					layout.putConstraint(SpringLayout.EAST, wordFindFld,
+						-2,
+						SpringLayout.WEST, lineNumLbl);
+					layout.putConstraint(SpringLayout.NORTH, wordFindFld,
+						0,
+						SpringLayout.NORTH, statusBarPanel);
+					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
+						0,
+						SpringLayout.SOUTH, wordFindFld);
+					
+					
+					
+					
+					
 					
 					// position the Line Find label relative to the Line Find
 					// text field, which is in turn relative to the right side of 
@@ -3996,6 +4102,27 @@ public class TextTrix extends JFrame {
 					(int) p.getY() - (int) p.getX());
 				lastLine = line;
 			}
+		}
+		
+		public void findSeq(String seq, int start) {
+			TextPad t = getSelectedTextPad();
+			String text = t.getAllText().toLowerCase();
+			seq = seq.toLowerCase();
+			int origCaretPosition = t.getCaretPosition();
+			if (start == -1) start = 0;
+			int i = text.indexOf(seq, start);
+			if (i == -1) {
+				i = text.indexOf(seq, 0);
+			}
+			if (i != -1) {
+				wordFindFld.setBackground(Color.white);
+				textSelection(t, 0, i, i + seq.length());
+			} else {
+				Toolkit.getDefaultToolkit().beep();
+				wordFindFld.setBackground(Color.pink);
+				t.setCaretPosition(origCaretPosition);
+			}
+			lastWord = seq;
 		}
 	}
 
