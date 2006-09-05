@@ -3848,10 +3848,10 @@ public class TextTrix extends JFrame {
 					
 					
 					
-					
+					viewMenu.addSeparator();
 					
 					Action lineDanceViewAction = new AbstractAction(
-							"Line Dance view") {
+							"Line Dance...", LibTTx.makeIcon("images/linedance.png")) {
 						public void actionPerformed(ActionEvent evt) {
 							if (lineDanceDialog == null) {
 								lineDanceDialog = new LineDanceDialog();
@@ -3867,7 +3867,7 @@ public class TextTrix extends JFrame {
 					JButton lineDanceButton = toolBar.add(lineDanceViewAction);
 					lineDanceButton.setBorderPainted(false);
 					LibTTx.setRollover(lineDanceButton,
-							"");
+							"images/linedance-roll.png");
 
 					
 					

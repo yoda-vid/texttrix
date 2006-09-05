@@ -1380,7 +1380,12 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	public void lineDance() {
 		int position = lineDancePanel.getPosition();
-		if (position != -1) setCaretPosition(position);
+		int len = getDocument().getLength();
+		if (position > len) {
+			setCaretPosition(len);
+		} else if (position != -1) {
+			setCaretPosition(position);
+		}
 		requestFocus();
 		requestFocusInWindow();
 	}
