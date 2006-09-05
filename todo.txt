@@ -68,7 +68,10 @@ v.0.5.2
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab
 	-saving file over path of currently opened file should close the old version of the file; ADDED: checks whether to close other tab with identical path, warning of potentially unsaved changes, to see that tab, or to cancel
-	-simultaneous editing mode, where can open same file in multiple tabs, and other tabs update when user switches to them after editing the file in another tab; mark duplicate file tabs with "[n]"
+-Line Dance
+	-add a plug-in-like tool to record line numbers and allow returning to them by double-clicking; ability to name and rename lines, add and remove line records, and jump directly to the specific location within the line by either a double-click or a pressing on a button; ADDED: Line Dance
+	-add tool tip description
+	-add icon
 -find
 	-fix find/replace only searching in highlighted areas unless nothing highlighted
 	-Search replace fn very slow when searching within selected area
@@ -82,8 +85,17 @@ v.0.5.2
 	-close tab button; TARGET: Java 6
 	-mechanism to clear out saved tabs from previous versions
 	-consider whether to save groups without any tabs with text
+	-fix bug where not picking up last tab in history sometimes
+-Song Sheet
+	-add flats ("b") capability; ADDED: identifies flats and transposes them according to a flats scale
+	-change half-step usage so that always adds half a step; ADDED: rather than adding half a step if the full steps is positive, or subtracting one if negative, which made descending half a step difficult, now consistently adds half a step
+	-clarify "chord indicators"; FIXED: changed to "chord suffixes" to clarify that strings don't have to have these suffixes to indicate a chord
+	-make the results field and button span the entire dialog window; FIXED: span the whole field
+	-add tool tip description
 -remove popup menu from tool bar; FIXED: removed from menu, since currently not applicable to the toolbar
 -Alt-TAB shifts focus to the menu bar when the time gap between pressing Alt and TAB is small; WORKAROUND: based on workaround to Java bug #6458497 (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6458497), automatically shift focus from menubar back to original component when changing windows
+-use single instance of TextPadDocumentListener to improve performance; FIXED: listener discovers the appropriate tab, so no need to create instance for each tab
+-fix right-click popup error on first tab; FIXED: the PopUpListener had been generalized to include popups from all sorts of components, but since the listener would be initialized for the first tab prior to the creation of the popup, the tab would have nothing to popup; now, each component has its own popup listener, tied into its own program-wide popup
 
 ----Past Releases----
 

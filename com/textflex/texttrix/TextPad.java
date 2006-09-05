@@ -82,6 +82,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private CompoundEdit compoundEdit = null;
 	private boolean compoundEditing = false;
 	private JScrollPane scrollPane = null;
+	private LineDancePanel lineDancePanel = null;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -95,6 +96,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
 		applyDocumentSettings();
+		
+		// Create Line Dance panel
+		lineDancePanel = new LineDancePanel();
+		lineDancePanel.addTableMouseListener(new LineDanceMouseListener());
 		
 		// to allow multiple undos and listen for events
 		// for new key-bindings
@@ -1303,9 +1308,82 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 	
 	
+	/**
+	 * Gets the number of the current newline in the given pad. Word-wrapped
+	 * lines are not counted, but only lines with hard breaks.
+	 * 
+	 * @param pad
+	 *            the pad
+	 * @return the line number, relative to 1 as the first line of the document
+	 */
+	public int getLineNumber() {
+		int offset = getCaretPosition();
+		return getDocument().getDefaultRootElement()
+				.getElementIndex(offset) + 1;
+	}
+
+	/**
+	 * Gets the number of newlines in the given pad. Word-wrapped lines are not
+	 * counted, but only lines with hard breaks.
+	 * 
+	 * @param pad
+	 *            the pad
+	 * @return the number of lines with hard breaks
+	 */
+	public int getTotalLineNumber() {
+		return getDocument().getDefaultRootElement().getElementCount();
+	}
 	
+	/**Gets the index position within the document, given the line number.
+	 * @param pad the text pad to search for the given line number
+	 * @param line the number of the line, starting at 1; add 1 to the
+	 * document element number
+	 * @return a <code>Point</code> object whose X value corresponds
+	 * to the start of the line and whose Y value corresponds to the end,
+	 * the index of the last character - 1, dropping the last char to avoid
+	 * including a newline char or exceeding the document length;
+	 * both values relative to the start
+	 * of the document
+	*/
+	public Point getPositionFromLineNumber(int line) {
+		// adjusts the line number from the user-friendly, 1 to n+1 numbering
+		// system, to the standard 0 to n system
+		line--;
+		Element elt = getDocument().getDefaultRootElement();
+		int len = getDocument().getLength();
+		// returns x=0, y=0 if the line number precedes the doc
+		if (line < 0) {
+			return new Point(0, 0);
+		} else if (line >= elt.getElementCount()) {
+			// returns x=len,y=len if the line num exceeds the doc
+			int i = len;
+			return new Point(i, i);
+		}
+		// otherwise, returns the boundary indices of the line
+		Element lineElt = elt.getElement(line);
+		int end = lineElt.getEndOffset() - 1;
+//		if (end >= len) end--;
+		return new Point(lineElt.getStartOffset(), end);
+	}
 	
+	public void remLineNum() {
+		lineDancePanel.addRow(new String[] {
+			"" + getLineNumber(),
+			"" + getCaretPosition(),
+			""
+		});
+	}
 	
+	public void forgetSelectedLines() {
+		lineDancePanel.removeSelectedRows();
+	}
+	
+	public void lineDance() {
+		int position = lineDancePanel.getPosition();
+		if (position != -1) setCaretPosition(position);
+		requestFocus();
+		requestFocusInWindow();
+	}
 	
 	
 	
@@ -1403,6 +1481,9 @@ public class TextPad extends JTextPane implements StateEditable {
 		return scrollPane;
 	}
 	
+	public LineDancePanel getLineDancePanel() {
+		return lineDancePanel;
+	}
 	
 	
 	
@@ -1494,6 +1575,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		public void removePropertyChangeListener(PropertyChangeListener listener) { }
 		public void setEnabled(boolean b) { }
 	}
-
+	
+	private class LineDanceMouseListener extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 2) {
+//				Point p = e.getPoint();
+//				int row = lineDancePanel.getTable().rowAtPoint(p);
+				lineDance();
+			}
+		}
+	}
 }
 

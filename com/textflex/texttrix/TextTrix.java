@@ -63,6 +63,7 @@ public class TextTrix extends JFrame {
 	private static final String FILE_GROUP_SPLITTER_REGEX = "\\{\\}";
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
+	private static final String LINE_DANCE = "line dance";
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -88,6 +89,8 @@ public class TextTrix extends JFrame {
 	private static JPopupMenu tabsPopup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
+	private TextPadDocListener textPadDocListener = new TextPadDocListener();
+	private LineDanceDialog lineDanceDialog = null;
 //	private static ArrayList tabbedPaneGroups = new ArrayList();
 //	private boolean tmpActivated = false;
 	
@@ -346,28 +349,6 @@ public class TextTrix extends JFrame {
 							openInitialFile(tokens[h]);
 						}
 					}
-					/*
-					// the list consists of a comma-delimited string of
-					// filenames
-					String[] tokens = getPrefs().getReopenTabsList().split(FILE_SPLITTER);
-					for (int i = 0; i < tokens.length; i++) {
-//						System.out.println("tokens[" + i + "]:" + tokens[i]);
-						String[] grpTokens = tokens[i].split(FILE_GROUP_SPLITTER_REGEX);
-						openInitialFile(grpTokens[0]);
-						String title = "";
-						for (int h = 1; h < grpTokens.length; h++) {
-							addTabbedPane(getGroupTabbedPane());
-							openInitialFile(grpTokens[h]);
-						}
-					}
-					StringTokenizer tokenizer = new StringTokenizer(getPrefs()
-							.getReopenTabsList(), ",");
-					while (tokenizer.hasMoreElements()) {
-						String token = tokenizer.nextToken();
-						StringTokenizer grpTok = new StringTokenizer(token, "|");
-						openInitialFile(token);
-					}
-					*/
 				}
 				getGroupTabbedPane().setSelectedIndex(0);
 
@@ -1445,17 +1426,7 @@ public class TextTrix extends JFrame {
 				return pane;
 			}
 		}
-		/*
-			pane = getTabbedPaneAt(i);
-			int len = pane.getTabCount();
-			for (int h = 0; h < len; h++) {
-				if (getTextPadAt(pane, h) == textPad) {
-					return pane;
-				}
-			}
-		}
-		*/
-		System.out.println("didn't find it");
+//		System.out.println("didn't find it");
 		return null;
 	}
 	
@@ -1463,18 +1434,6 @@ public class TextTrix extends JFrame {
 		return pane.indexOfComponent(textPad.getScrollPane());
 	}
 
-/*
-	public static int getTextPadIndex(TextPad textPad) {
-		int len = getGroupTabbedPane().getTabCount();
-		int tabIndex = -1;
-		for (int i = 0; 
-			i < len 
-				&& (tabIndex = getTabbedPaneAt(i++)
-					.indexOfComponent(textPad)) == -1;
-			i++);
-		return tabIndex;
-	}
-*/
 	
 	/**
 	 * Gets whether the auto-indent function is selected.
@@ -1748,7 +1707,7 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		textPad.setScrollPane(scrollPane);
-		DocumentListener listener = new TextPadDocListener();
+		DocumentListener listener = textPadDocListener;//new TextPadDocListener();
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
@@ -1758,7 +1717,7 @@ public class TextTrix extends JFrame {
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
 		textPad.getDocument().addDocumentListener(listener);
-		textPad.addMouseListener(new PopupListener(popup));
+		textPad.addMouseListener(new TextPadPopupListener());
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				updateStatusBarLineNumbers(textPad);
@@ -1826,7 +1785,7 @@ public class TextTrix extends JFrame {
 	 *            <code>TextPad</code> requiring applied settings
 	 */
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
-		textPad.getDocument().addDocumentListener(new TextPadDocListener());
+		textPad.getDocument().addDocumentListener(textPadDocListener);//new TextPadDocListener());
 		textPad.setChanged(true);
 		updateTabTitle(textPad);//getSelectedTabbedPane());
 	}
@@ -2067,9 +2026,11 @@ public class TextTrix extends JFrame {
 		if (!path.equals("")) {
 			int len = getGroupTabbedPane().getTabCount();
 			for (int i = 0; i < len; i++) {
-				if (getTabbedPaneAt(i).getTabCount() > 0 && !reuseTab) {
+				MotherTabbedPane pane = getTabbedPaneAt(i);
+				if (pane.getTabCount() > 0 && !reuseTab) {
 					int idPath = getIdenticalTextPadIndex(path, i);
 					if (idPath != -1) {
+//						pane.insertTab("new", null, getTextPadAt(pane, idPath).getScrollPane(), "", 1);
 						setSelectedTextPad(i, idPath);
 						return true;
 					}
@@ -2108,15 +2069,6 @@ public class TextTrix extends JFrame {
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				}
-				/*
-				if (t == null || (!reuseTab && (!t.isEmpty() || t.getChanged()))) { // open file in new pad
-					addTextArea(getSelectedTabbedPane(), file);
-					t = getSelectedTextPad();
-					read(t, reader, path);
-				} else { // open file in current, empty pad
-					read(t, reader, path);
-				}
-				*/
 				t.setEditable(editable);
 				t.setCaretPosition(0);
 				t.setChanged(false);
@@ -2758,66 +2710,6 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Gets the number of the current newline in the given pad. Word-wrapped
-	 * lines are not counted, but only lines with hard breaks.
-	 * 
-	 * @param pad
-	 *            the pad
-	 * @return the line number, relative to 1 as the first line of the document
-	 */
-	public int getLineNumber(TextPad pad) {
-		//		TextPad pad = getSelectedTextPad();
-		//		Element root = pad.getDocument().getDefaultRootElement();
-		int offset = pad.getCaretPosition();
-		return pad.getDocument().getDefaultRootElement()
-				.getElementIndex(offset) + 1;
-	}
-
-	/**
-	 * Gets the number of newlines in the given pad. Word-wrapped lines are not
-	 * counted, but only lines with hard breaks.
-	 * 
-	 * @param pad
-	 *            the pad
-	 * @return the number of lines with hard breaks
-	 */
-	public int getTotalLineNumber(TextPad pad) {
-		return pad.getDocument().getDefaultRootElement().getElementCount();
-	}
-	
-	/**Gets the index position within the document, given the line number.
-	 * @param pad the text pad to search for the given line number
-	 * @param line the number of the line, starting at 1; add 1 to the
-	 * document element number
-	 * @return a <code>Point</code> object whose X value corresponds
-	 * to the start of the line and whose Y value corresponds to the end,
-	 * the index of the last character - 1, dropping the last char to avoid
-	 * including a newline char or exceeding the document length;
-	 * both values relative to the start
-	 * of the document
-	*/
-	public Point getPositionFromLineNumber(TextPad pad, int line) {
-		// adjusts the line number from the user-friendly, 1 to n+1 numbering
-		// system, to the standard 0 to n system
-		line--;
-		Element elt = pad.getDocument().getDefaultRootElement();
-		int len = pad.getDocument().getLength();
-		// returns x=0, y=0 if the line number precedes the doc
-		if (line < 0) {
-			return new Point(0, 0);
-		} else if (line >= elt.getElementCount()) {
-			// returns x=len,y=len if the line num exceeds the doc
-			int i = len;
-			return new Point(i, i);
-		}
-		// otherwise, returns the boundary indices of the line
-		Element lineElt = elt.getElement(line);
-		int end = lineElt.getEndOffset() - 1;
-//		if (end >= len) end--;
-		return new Point(lineElt.getStartOffset(), end);
-	}
-
-	/**
 	 * Updates the status bar with the latest line number information.
 	 * 
 	 * @param pad
@@ -2825,8 +2717,8 @@ public class TextTrix extends JFrame {
 	 */
 	public void updateStatusBarLineNumbers(TextPad pad) {
 		// TODO: make one component of a larger status-bar update operation
-		int lineNum = getLineNumber(pad);
-		int totLines = getTotalLineNumber(pad);
+		int lineNum = pad.getLineNumber();
+		int totLines = pad.getTotalLineNumber();
 		// cast to float for float division rather than int division
 		int percentage = (int) ((float) lineNum / (float) totLines * 100);
 		statusBar.setText(lineNum + ", " + totLines + " " + "(" + percentage
@@ -3254,16 +3146,17 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @author davit
 	 */
-	private class PopupListener extends MouseAdapter {
-		private JPopupMenu popup = null;
+	private class TextPadPopupListener extends MouseAdapter {
+//		private JPopupMenu popup = null;
 		
-		public PopupListener(JPopupMenu aPopup) {
+		public TextPadPopupListener() {
 			super();
-			popup = aPopup;
+//			popup = aPopup;
 		}
 	
 		/**
 		 * Press right mouse button.
+		 * Responds to requests from Macs.
 		 *  
 		 */
 		public void mousePressed(MouseEvent e) {
@@ -3274,11 +3167,84 @@ public class TextTrix extends JFrame {
 
 		/**
 		 * Release right mouse button.
+		 * Responds to requests from Windows/Linux.
 		 *  
 		 */
 		public void mouseReleased(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+	}
+
+	/**
+	 * Listener to pop up a context menu when right-clicking.
+	 * 
+	 * @author davit
+	 */
+	private class TabsPopupListener extends MouseAdapter {
+//		private JPopupMenu popup = null;
+		
+		public TabsPopupListener() {
+			super();
+//			popup = aPopup;
+		}
+	
+		/**
+		 * Press right mouse button.
+		 * Responds to requests from Macs.
+		 *  
+		 */
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				tabsPopup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+
+		/**
+		 * Release right mouse button.
+		 * Responds to requests from Windows/Linux.
+		 *  
+		 */
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				tabsPopup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+	}
+
+	/**
+	 * Listener to pop up a context menu when right-clicking.
+	 * 
+	 * @author davit
+	 */
+	private class StatusBarPopupListener extends MouseAdapter {
+//		private JPopupMenu popup = null;
+		
+		public StatusBarPopupListener() {
+			super();
+//			popup = aPopup;
+		}
+	
+		/**
+		 * Press right mouse button.
+		 * Responds to requests from Macs.
+		 *  
+		 */
+		public void mousePressed(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				statusBarPopup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+
+		/**
+		 * Release right mouse button.
+		 * Responds to requests from Windows/Linux.
+		 *  
+		 */
+		public void mouseReleased(MouseEvent e) {
+			if (e.isPopupTrigger()) {
+				statusBarPopup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}
@@ -3424,7 +3390,7 @@ public class TextTrix extends JFrame {
 					// create pop-up menu for right-mouse-clicking
 					popup = new JPopupMenu();
 					tabsPopup = new JPopupMenu();
-					getGroupTabbedPane().addMouseListener(new PopupListener(tabsPopup));
+					getGroupTabbedPane().addMouseListener(new TabsPopupListener());
 
 					/* File menu items */
 
@@ -3879,7 +3845,39 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(toggleRTFViewAction, "View as RTF", 'T');
 					viewMenu.add(toggleRTFViewAction);
+					
+					
+					
+					
+					
+					Action lineDanceViewAction = new AbstractAction(
+							"Line Dance view") {
+						public void actionPerformed(ActionEvent evt) {
+							if (lineDanceDialog == null) {
+								lineDanceDialog = new LineDanceDialog();
+							}
+							lineDanceDialog.updatePadPanel();
+//							lineDanceDialog.validate();
+							lineDanceDialog.setVisible(true);
+						}
+					};
+					LibTTx.setAction(lineDanceViewAction, "Line Dance", 'L');
+					viewMenu.add(lineDanceViewAction);
+					
+					JButton lineDanceButton = toolBar.add(lineDanceViewAction);
+					lineDanceButton.setBorderPainted(false);
+					LibTTx.setRollover(lineDanceButton,
+							"");
 
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					/* Help menu items */
 
 					// about Text Trix, incl copyright notice and version number
@@ -4089,12 +4087,12 @@ public class TextTrix extends JFrame {
 					
 					
 					statusBarPopup = new JPopupMenu();
-					statusBar.addMouseListener(new PopupListener(statusBarPopup));
+					statusBar.addMouseListener(new StatusBarPopupListener());
 					
 					// line saver
 					Action lineSaverAction = new AbstractAction("Save this line number") {
 						public void actionPerformed(ActionEvent evt) {
-							lineNumFld.setText("" + getLineNumber(getSelectedTextPad()));
+							lineNumFld.setText("" + getSelectedTextPad().getLineNumber());
 						}
 					};
 					LibTTx.setAcceleratedAction(lineSaverAction, "Save this line number", 'L',
@@ -4203,7 +4201,7 @@ public class TextTrix extends JFrame {
 			TextPad t = getSelectedTextPad();
 			if (t != null) {
 				// highlight the appropriate line
-				Point p = getPositionFromLineNumber(t, line);
+				Point p = t.getPositionFromLineNumber(line);
 				textSelectionReverse(t, (int) p.getX(), 0, 
 					(int) p.getY() - (int) p.getX());
 				lastLine = line;
@@ -4378,6 +4376,12 @@ public class TextTrix extends JFrame {
 							updateTabIndexHistory = true;
 						}
 						updateTitle(t.getFilename());
+						
+						if (lineDanceDialog != null && lineDanceDialog.isVisible()) {
+							lineDanceDialog.updatePadPanel();
+//							System.out.println("hello.");
+						}
+						
 						// doesn't work when creating new tabs via
 						// the keyboard accelerator;
 						// only works when changing between already created
@@ -4393,6 +4397,176 @@ public class TextTrix extends JFrame {
 			if (t != null)
 				t.requestFocusInWindow();
 		}
+	}
+	
+	
+	
+	private class LineDanceDialog extends JDialog {
+		
+		JPanel padPanel = new JPanel();
+		Container contentPane = null;
+		
+		public LineDanceDialog() {
+			super(getThis(), "Line Dance");
+//			setSize(350, 300);
+			contentPane = getContentPane();
+			contentPane.setLayout(new GridBagLayout());
+			GridBagConstraints constraints = new GridBagConstraints();
+			constraints.fill = GridBagConstraints.HORIZONTAL;
+			constraints.anchor = GridBagConstraints.SOUTH;
+			
+			getPrefs().applyPlugInSizeLoc(this, LINE_DANCE, 350, 300);
+
+			// store window size and location with each movement
+			ComponentListener compListener = new ComponentListener() {
+				public void componentMoved(ComponentEvent evt) {
+					getPrefs().storePlugInLocation(LINE_DANCE,
+							getLocation());
+				}
+
+				public void componentResized(ComponentEvent evt) {
+					getPrefs().storePlugInSize(LINE_DANCE, getWidth(),
+							getHeight());
+				}
+
+				public void componentShown(ComponentEvent evt) {
+				}
+
+				public void componentHidden(ComponentEvent evt) {
+				}
+			};
+			addComponentListener(compListener);
+			
+			// Runs the plug-in if the user hits "Enter" in components with this adapter
+			KeyAdapter takeMeEnter = new KeyAdapter() {
+				public void keyPressed(KeyEvent evt) {
+					if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+					}
+				}
+			};
+	
+	
+			
+			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// button;
+			// creates a shortcut key (alt-L) as an alternative way to invoke
+			// the button
+			Action remCurrLineAction = 
+				new AbstractAction("Remember line", null) {
+				public void actionPerformed(ActionEvent e) {
+					getSelectedTextPad().remLineNum();
+				}
+			};
+			LibTTx.setAcceleratedAction(
+				remCurrLineAction,
+				"Remember line",
+				'R',
+				KeyStroke.getKeyStroke("alt R"));
+			JButton remCurrLineBtn = new JButton(remCurrLineAction);
+			
+			
+			
+			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// button;
+			// creates a shortcut key (alt-L) as an alternative way to invoke
+			// the button
+			Action forgetSelLineAction = 
+				new AbstractAction("Forget line", null) {
+				public void actionPerformed(ActionEvent e) {
+					getSelectedTextPad().forgetSelectedLines();
+				}
+			};
+			LibTTx.setAcceleratedAction(
+				forgetSelLineAction,
+				"Forget line",
+				'F',
+				KeyStroke.getKeyStroke("alt F"));
+			JButton forgetSelLineBtn = new JButton(forgetSelLineAction);
+			
+			
+			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// button;
+			// creates a shortcut key (alt-L) as an alternative way to invoke
+			// the button
+			Action lineDanceAction = 
+				new AbstractAction("Line Dance", null) {
+				public void actionPerformed(ActionEvent e) {
+					TextPad pad = getSelectedTextPad();
+					pad.lineDance();
+				}
+			};
+			LibTTx.setAcceleratedAction(
+				lineDanceAction,
+				"Line Dance",
+				'L',
+				KeyStroke.getKeyStroke("alt L"));
+			JButton lineDanceBtn = new JButton(lineDanceAction);
+			
+			
+			
+			
+			
+			
+			
+			LibTTx.addGridBagComponent(
+				remCurrLineBtn,
+				constraints,
+				0,
+				1,
+				1,
+				1,
+				100,
+				0,
+				contentPane);
+			
+			LibTTx.addGridBagComponent(
+				forgetSelLineBtn,
+				constraints,
+				1,
+				1,
+				1,
+				1,
+				100,
+				0,
+				contentPane);
+			
+			LibTTx.addGridBagComponent(
+				lineDanceBtn,
+				constraints,
+				0,
+				2,
+				2,
+				1,
+				100,
+				0,
+				contentPane);
+		}
+		
+		public void updatePadPanel() {
+			contentPane.remove(padPanel);
+			contentPane.validate();
+			TextPad pad = getSelectedTextPad();
+			if (pad != null) {
+				padPanel = pad.getLineDancePanel();
+//				padPanel = getSelectedTextPad().getLineDancePanel();
+				GridBagConstraints constraints = new GridBagConstraints();
+				constraints.fill = GridBagConstraints.HORIZONTAL;
+				constraints.anchor = GridBagConstraints.NORTH;
+				
+				LibTTx.addGridBagComponent(
+					padPanel,
+					constraints,
+					0,
+					0,
+					2,
+					1,
+					100,
+					0,
+					contentPane);
+				contentPane.validate();
+			}
+		}
+		
 	}
 
 	

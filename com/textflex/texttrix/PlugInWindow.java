@@ -101,17 +101,6 @@ public abstract class PlugInWindow extends PlugIn {
 	 * as well as a button to run the plug-in.
 	 */
 	public void startPlugIn() {
-		/*
-		setTmpActivated(true);
-		*
-		if (window != null) {
-			window.setVisible(true);
-			System.out.println("right here");
-		}/* else if (panel != null){
-			System.out.println("showing dialog");
-			//panel.setVisible(true);
-		}
-		*/
 	}
 
 	/**Attaches a window listener to the window.
