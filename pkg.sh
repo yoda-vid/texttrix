@@ -55,10 +55,10 @@ Parameters:
 	--help: Lends a hand by displaying yours truly.
 	
 Copyright:
-	Copyright (c) 2003-4 Text Flex
+	Copyright (c) 2003-6 Text Flex
 
 Last updated:
-	2004-12-27
+	2006-09-05
 "
 
 ##############################
@@ -68,7 +68,8 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-VER="0.5.2-"$DATE
+#VER="0.7.0-"$DATE
+VER="0.7.0beta1"
 
 # the final destination of the resulting packages
 DEST="/home/share" 

@@ -64,7 +64,7 @@ Note: "./" is the "check-mark" symbol
 
 ----Current Work----
 
-v.0.5.2
+v.0.7.0
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab
 	-saving file over path of currently opened file should close the old version of the file; ADDED: checks whether to close other tab with identical path, warning of potentially unsaved changes, to see that tab, or to cancel
@@ -73,12 +73,13 @@ v.0.5.2
 	-add tool tip description
 	-add icon; ADDED: icon and rollover icon
 	-update line positions based on character insertions?
--find
-	-fix find/replace only searching in highlighted areas unless nothing highlighted
-	-Search replace fn very slow when searching within selected area
+-Word Find
+	-Search plugin: fix find/replace only searching in highlighted areas unless nothing highlighted
+	-Search plugin: replace fn very slow when searching within selected area
 	-text find, similar to line find; ADDED: "Word Find," a feature similar to the "type as you find" feature found in web browsers, but requiring the user to place the cursor in a special box to distinguish from text editing
 	-ability to search backward in text
 	-right-click to save current cursor location into Line Find; ADDED: right-click in status bar brings up popup menu that allows saving the current line number into Line Find
+	-navigate backward
 -group tabbing
 	-tab groups; ADDED: tabs can now be grouped into parent tabs so that one can organize, say, all web files in one tab, all personal documents in another, and all programming files in a third tab group; remembers tab grouping for next program launch
 	-rename and remember tab groups; ADDED: right-clicking on group tab brings up input dialog to enter group name; name saved and reapplied on next program start
@@ -93,10 +94,13 @@ v.0.5.2
 	-clarify "chord indicators"; FIXED: changed to "chord suffixes" to clarify that strings don't have to have these suffixes to indicate a chord
 	-make the results field and button span the entire dialog window; FIXED: span the whole field
 	-add tool tip description
--remove popup menu from tool bar; FIXED: removed from menu, since currently not applicable to the toolbar
--Alt-TAB shifts focus to the menu bar when the time gap between pressing Alt and TAB is small; WORKAROUND: based on workaround to Java bug #6458497 (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6458497), automatically shift focus from menubar back to original component when changing windows
--use single instance of TextPadDocumentListener to improve performance; FIXED: listener discovers the appropriate tab, so no need to create instance for each tab
--fix right-click popup error on first tab; FIXED: the PopUpListener had been generalized to include popups from all sorts of components, but since the listener would be initialized for the first tab prior to the creation of the popup, the tab would have nothing to popup; now, each component has its own popup listener, tied into its own program-wide popup
+-bug fixes
+	-remove popup menu from tool bar; FIXED: removed from menu, since currently not applicable to the toolbar
+	-Alt-TAB shifts focus to the menu bar when the time gap between pressing Alt and TAB is small; WORKAROUND: based on workaround to Java bug #6458497 (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6458497), automatically shift focus from menubar back to original component when changing windows
+	-use single instance of TextPadDocumentListener to improve performance; FIXED: listener discovers the appropriate tab, so no need to create instance for each tab
+	-fix right-click popup error on first tab; FIXED (regression): the PopUpListener had been generalized to include popups from all sorts of components, but since the listener would be initialized for the first tab prior to the creation of the popup, the tab would have nothing to popup; now, each component has its own popup listener, tied into its own program-wide popup
+	-remove Non-Printing-Character Viewer plugin since confusing that actually modifies the underlying text
+	-closing tab should take you to the last used tab
 
 ----Past Releases----
 

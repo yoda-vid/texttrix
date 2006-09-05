@@ -3659,7 +3659,7 @@ public class TextTrix extends JFrame {
 					// auto-indent
 					// apply the selection to the current TextPad
 					Action autoIndentAction = new AbstractAction(
-							"Auto-wrap-indent the selected file") {
+							"Auto Wrap Indent the selected file") {
 						public void actionPerformed(ActionEvent evt) {
 							TextPad t = getSelectedTextPad();
 							if (t != null)
@@ -3670,7 +3670,8 @@ public class TextTrix extends JFrame {
 							.setAcceleratedAction(
 									autoIndentAction,
 									"<html>Automatically repeat tabs on the next line and "
-											+ "<br>graphically wrap the indentations</html>",
+											+ "<br>graphically wraps the indentations,"
+											+ "<br>without modifying the underlying text.</html>",
 									'I', KeyStroke.getKeyStroke("alt shift I"));
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 					editMenu.add(autoIndent);

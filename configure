@@ -302,7 +302,8 @@ clean="" # prep for building up the clean rule
 # Plug-in rules
 # Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
 # sensitive format
-PLGS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
+# Deprecated/removed plugins: NonPrintingChars
+PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse"
 plgSrcFiles=""
 plgTargetFiles=""
 plgRules="Plugs plugs: $PLGS""\n"
