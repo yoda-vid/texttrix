@@ -39,7 +39,7 @@
 # Overview Variables
 ##################
 
-TTX_VER=0.5.1 # curr ver num; only used for default install loc
+TTX_VER=0.7.0beta2 # curr ver num; only used for default install loc
 HELP="
 Generates a customized Makefile to build Text Trix, the super tool 
 chest for text.
@@ -303,7 +303,7 @@ clean="" # prep for building up the clean rule
 # Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
 # sensitive format
 # Deprecated/removed plugins: NonPrintingChars
-PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse"
+PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 plgSrcFiles=""
 plgTargetFiles=""
 plgRules="Plugs plugs: $PLGS""\n"

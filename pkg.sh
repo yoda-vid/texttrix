@@ -68,8 +68,8 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-#VER="0.7.0-"$DATE
-VER="0.7.0beta1"
+VER="0.7.0beta2-"$DATE
+#VER="0.7.0beta1"
 
 # the final destination of the resulting packages
 DEST="/home/share" 

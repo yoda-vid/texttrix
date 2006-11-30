@@ -14,39 +14,39 @@ plans for future ones.)
 
 ----v.0.7.0 (beta1: 2006-09-05)----
 
-"What defines Text Trix?" friends like to ask me.  For a long time I didn't quite know how to respond.  I had simply put it together to meet some personal needs--to satisfy a software "itch," as they call it--and didn't want people with the same itch to have to reinvent the wheel.  But behind every itch is a need, and that need slowly became clear to me.  Text Trix was born out of a desire to make a text editor for what I cosidered a "coding purist."  Its design is to help you organize your text and text files and to do so without modifying that text, unless you explicity told it to do so through individual, specially designed plugins.
+"What defines Text Trix?" friends like to ask me.  For a long time I didn't quite know how to respond.  I had simply put it together to meet some personal needs--to satisfy a software "itch," as they call it--and didn't want people with the same itch to have to reinvent the wheel.  But behind every itch is a need, and that need slowly became clear to me.  Text Trix was born out of a desire to make a lightweight, non-intrusive program for visualizing text.  Its design is to help you organize your text and text files and to do so without modifying that text, unless explicity told through specialized plugins.
 
-Let's take an example of coding with Text Trix.  If you, say, wanted to write HTML code, you could create a new group tab, title it, "My Website," and open all your .html files within the group.  Each file would open automatically with Wrap Indent, which indents wrapped lines, but only graphically, without modifying the underlying text.  If you're familiar with Emacs/Pine shortcuts, you could set the appropriate shortcuts within the Preferences panel.
+Let's take an example of coding with Text Trix.  If you, say, wanted to design a new website, you could create a new Text Trix group tab, title it, "My Website," and open all your .html files within the group.  Each file would open automatically with Wrap Indent, which indents wrapped lines, but only graphically, without modifying the underlying text.  If you're familiar with Emacs/Pine shortcuts, you could set the appropriate shortcuts within the Preferences panel.
 
-Where did you put that "p.right" CSS tag?  You click on the .css file, type "p.right" directly into Word Find, and it takes you there.  Using "ctrl-shift-[", you Back navigate to your previous file tab.  Shifting Back and Forward between the two tabs, you finally come to a satisfactory code.  Now you want to edit one part of your file while referencing another part in the same file.  You open Line Dance, save the current line, navigate to the next line, and save that one.  When you want to revisit the previous line, you simply double-click on the saved entry to "dance" back to your original position!
+Where did you put that "p.right" CSS tag?  You click on the .css file, type "p.right" directly into Word Find, and it takes you there.  Using "ctrl-shift-[", you Back navigate to your previous file tab.  Shifting Back and Forward between the two tabs, you finally come to a satisfactory code base.  Now you want to edit one part of your file while referencing another part in the same file.  You open Line Dance, save the current line, navigate to the next line, and save that one.  When you want to revisit the previous line, you simply double-click on the saved entry to "dance" back to your original position!
 
 You had also received an email of text that you wanted to include in a paragraph on the website.  Unfortunately, the text is several "replies" deep and embedded in multiple ">>" markers sometimes cutting into the middle of lines.  Fortunately, you have the Text Trix plugin, Extra Returns Remover.  It removes the reply markers and, detecting which areas are lists and which are unnecessary line breaks, removes the unnecessary ones.  A couple plugins for other specialized tasks and a couple minutes later, and your website is complete.
 
-v.0.7.0 seeks to meet this need for a "coding purist" ever more.  The refocused vision has retooled Text Trix with new features to help you organize your text so that you can manipulate it precisely.  Cataloged here are some of the features:
+v.0.7.0 introduces new features for visualizing text even more.  The refocused vision has retooled Text Trix with new features to help you organize your text so that you can manipulate it precisely.  Cataloged here are some of the features:
 
 Text Organization
--Line Dance (new): record your positions so that you can work in multiple places within the same file with the double-click of a button
--File Tabs and Group Tabs (new): file tabs are old, a way to open multiple files at once, but group tabs are a new feature for grouping these files by topic; right-click to rename these groups
--Word Find (new): a box for taking you directly to the typed word; use F3 to navigate
--Line Find (newly updated): a box that takes you directly to the given line number, say the one giving you a compilation error; now, right-click on the line number in the status bar to record that number in Line Find
--Wrap Indent: a tool to graphically indent wrapped lines, without modifying the underlying text
--Search and Stats: a plugin for finding/replacing text and keeping track of stats, whether for the document or just the selected area
--Tab Navigation: Back/Forward browser-style navigation between file tabs
+-Line Dance (new): Record your positions so that you can work in multiple places within the same file with the double-click of a button.
+-File Tabs and Group Tabs (new): File tabs are old, a way to open multiple files at once; group tabs are new, a way to group these files by topic.  Right-click to rename these groups.
+-Word Find (new): A box for taking you directly to the typed word; use F3 to navigate.
+-Line Find (newly updated): A box that takes you directly to the given line number, say the one giving you a compilation error; now.  Right-click on the line number in the status bar to record that number in Line Find.
+-Wrap Indent: A tool to graphically indent wrapped lines, without modifying the underlying text.
+-Search and Stats: A plugin for finding/replacing text and keeping track of stats, whether for the document or just the selected area.
+-Tab Navigation: Back/Forward browser-style navigation between file tabs.
 -Emacs/Pico/Standard/Hybrid Shortcuts: implements a variety of commonly used shortcuts from major text editors
--Reopen Tabs
--Auto-Save
+-Reopen Tabs: Remembers the file tabs opened during the previous session, similiar to Session HIstory in Firefox.
+-Auto-Save: Keeps your files up-to-date, all the time.
 
 Text Manipulation
--Plugin model for specially designed textual manipulation tasks
--Song Sheet (newly updated): a plugin for transposing chords in guitar music or removing those chords entirely for song sheets; updated to include flats ("b") and make half-stepping more user friendly
--Extra Returns Remover: a plugin for removing email reply markers (">>") and unnecessary line breaks, while preserving line breaks in lists
--HTML Stripper: a plugin that wades through HTML code to give you just the text
--HTML View: does just the opposite, converting your text into HTML code
+-Plugin model for specially designed textual manipulation tasks.
+-Song Sheet (newly updated): A plugin for transposing chords in guitar music or removing those chords entirely for song sheets; updated to include flats ("b") and make half-stepping more user friendly.
+-Extra Returns Remover: A plugin for removing email reply markers (">>") and unnecessary line breaks, while preserving line breaks in lists.
+-HTML Stripper: A plugin that wades through HTML code to give you just the text.
+-HTML View: Does just the opposite, converting your text into HTML code.
 
 Other Features and Fixes in v.0.7.0
--Duplicate File Detection: prevents opening the same file twice or saving over a currently opened file
--ALT-TAB workaround for bug in Java 6 builds
--Code cleanup for fixes and possible performance improvements
+-Duplicate File Detection: Prevents opening the same file twice or saving over a currently opened file.
+-ALT-TAB workaround for bug in Java 6 builds.
+-Code cleanup for fixes and possible performance improvements.
 
 ---------------------------------------------------------------------
 ----Family of Really Innovative ENDS (FRIENDS) Series----

@@ -3869,6 +3869,10 @@ public class TextTrix extends JFrame {
 					lineDanceButton.setBorderPainted(false);
 					LibTTx.setRollover(lineDanceButton,
 							"images/linedance-roll.png");
+					String lineDanceDetailedDesc = readText("desc-linedance.html");
+					if (lineDanceDetailedDesc != null) {
+						lineDanceButton.setToolTipText(lineDanceDetailedDesc);
+					}
 
 					
 					

@@ -80,6 +80,7 @@ v.0.7.0
 	-ability to search backward in text
 	-right-click to save current cursor location into Line Find; ADDED: right-click in status bar brings up popup menu that allows saving the current line number into Line Find
 	-navigate backward
+	-F3 should work within the text pad, too
 -group tabbing
 	-tab groups; ADDED: tabs can now be grouped into parent tabs so that one can organize, say, all web files in one tab, all personal documents in another, and all programming files in a third tab group; remembers tab grouping for next program launch
 	-rename and remember tab groups; ADDED: right-clicking on group tab brings up input dialog to enter group name; name saved and reapplied on next program start
@@ -99,7 +100,7 @@ v.0.7.0
 	-Alt-TAB shifts focus to the menu bar when the time gap between pressing Alt and TAB is small; WORKAROUND: based on workaround to Java bug #6458497 (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6458497), automatically shift focus from menubar back to original component when changing windows
 	-use single instance of TextPadDocumentListener to improve performance; FIXED: listener discovers the appropriate tab, so no need to create instance for each tab
 	-fix right-click popup error on first tab; FIXED (regression): the PopUpListener had been generalized to include popups from all sorts of components, but since the listener would be initialized for the first tab prior to the creation of the popup, the tab would have nothing to popup; now, each component has its own popup listener, tied into its own program-wide popup
-	-remove Non-Printing-Character Viewer plugin since confusing that actually modifies the underlying text
+	-remove Non-Printing-Character Viewer plugin since confusing that actually modifies the underlying text; FIXED: removed
 	-closing tab should take you to the last used tab
 
 ----Past Releases----
