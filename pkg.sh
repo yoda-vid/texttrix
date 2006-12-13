@@ -179,6 +179,7 @@ fi
 cp -rf "$TTX_DIR"/com readme.txt readme-src.txt todo.txt changelog.txt \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico "$BLD_DIR/$PKGDIR"
 
+
 # create the master package, which will eventually become the binary package
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
@@ -207,9 +208,9 @@ cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/desc-linedance.html
 else
-	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png
+	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/desc-linedance.html
 fi
 rm -rf com
 

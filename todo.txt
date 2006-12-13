@@ -24,7 +24,6 @@ Note: "./" is the "check-mark" symbol
 	-make HTML-view pulsing possible
 -check on Forward/Back when opening multiple tabs
 -Navigation
-	-Forward/Back icon?
 	-forward and back to previous edit positions
 -new, unsaved(?) files don't register in the tab history(?)
 -use java.util.ResourceBundle for internationalization and further keybinding customization
@@ -65,6 +64,15 @@ Note: "./" is the "check-mark" symbol
 ----Current Work----
 
 v.0.7.0
+-----------------
+Changes since v.0.7.0beta1
+-Line Dance should automatically highlight the latest entry
+-hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED: cycled to next row when user hits Enter, but now fixed to line dance instead
+-should only edit cell after double-click, not single-click; FIXED: follows more default spreadsheet table behavior
+-add "edit name" button to Line Dance
+-Navigation section on toolbar, including forward/Back icons and Line Dance
+-Icon refresh
+------------------
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab
 	-saving file over path of currently opened file should close the old version of the file; ADDED: checks whether to close other tab with identical path, warning of potentially unsaved changes, to see that tab, or to cancel

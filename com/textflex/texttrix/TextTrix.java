@@ -4442,15 +4442,6 @@ public class TextTrix extends JFrame {
 			};
 			addComponentListener(compListener);
 			
-			// Runs the plug-in if the user hits "Enter" in components with this adapter
-			KeyAdapter takeMeEnter = new KeyAdapter() {
-				public void keyPressed(KeyEvent evt) {
-					if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-					}
-				}
-			};
-	
-	
 			
 			// Runs the plug-in if the user hits the "Song Sheet Maker"
 			// button;
@@ -4496,8 +4487,7 @@ public class TextTrix extends JFrame {
 			Action lineDanceAction = 
 				new AbstractAction("Line Dance", null) {
 				public void actionPerformed(ActionEvent e) {
-					TextPad pad = getSelectedTextPad();
-					pad.lineDance();
+					lineDance();
 				}
 			};
 			LibTTx.setAcceleratedAction(
@@ -4545,6 +4535,11 @@ public class TextTrix extends JFrame {
 				100,
 				0,
 				contentPane);
+		}
+		
+		public void lineDance() {
+			TextPad pad = getSelectedTextPad();
+			pad.lineDance();
 		}
 		
 		public void updatePadPanel() {

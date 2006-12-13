@@ -98,7 +98,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyDocumentSettings();
 		
 		// Create Line Dance panel
-		lineDancePanel = new LineDancePanel();
+		
+		// Run the plug-in if the user hits "Enter" in components with this adapter
+		KeyAdapter takeMeEnter = new KeyAdapter() {
+			public void keyPressed(KeyEvent evt) {
+				if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+					lineDance();
+					evt.consume();
+				}
+			}
+		};
+		// makes the panel
+		lineDancePanel = new LineDancePanel(takeMeEnter);
+		// adds teh mouse listener
 		lineDancePanel.addTableMouseListener(new LineDanceMouseListener());
 		
 		// to allow multiple undos and listen for events

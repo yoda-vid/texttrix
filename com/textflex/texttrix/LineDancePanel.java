@@ -51,10 +51,10 @@ public class LineDancePanel extends JPanel {
 	private static final int COL_NAME = 2;
 	
 	DefaultTableModel tableModel = null;
-	JTable table = null;
+	LineDanceTable table = null;
 	JScrollPane scrollPane = null;
 	
-	public LineDancePanel() {
+	public LineDancePanel(KeyAdapter aKeyAdapter) {
 		super();
 		
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -71,13 +71,19 @@ public class LineDancePanel extends JPanel {
 		
 		tableModel = new DefaultTableModel(data, cols) {
 			public boolean isCellEditable(int row, int column) {
+				if (column == COL_NAME) {
+					return true;
+				}
+				return false;
+				/*
 				if (column == COL_LINE || column == COL_POSITION) {
 					return false;
 				}
 				return true;
+				*/
 			}
 		};
-		table = new JTable(tableModel);
+		table = new LineDanceTable(tableModel, aKeyAdapter);
 		scrollPane = new JScrollPane(table);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 150));
 		
@@ -124,4 +130,25 @@ public class LineDancePanel extends JPanel {
 	
 	
 	
+}
+
+
+class LineDanceTable extends JTable {
+	
+	public LineDanceTable(TableModel tableModel, KeyAdapter aKeyAdapter) {
+		super(tableModel);
+		addKeyListener(aKeyAdapter);
+	}
+
+	public boolean editCellAt(int row, int col, EventObject e) {
+		if (e instanceof MouseEvent) {
+			if (((MouseEvent)e).getClickCount() == 1) {
+//				return super.editCellAt(row, col, e);
+//				e.consume();
+			} else {
+				return super.editCellAt(row, col, e);
+			}
+		}
+		return false;
+	}
 }
