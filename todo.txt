@@ -70,8 +70,10 @@ Changes since v.0.7.0beta1
 -hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED: cycled to next row when user hits Enter, but now fixed to line dance instead
 -should only edit cell after double-click, not single-click; FIXED: follows more default spreadsheet table behavior
 -add "edit name" button to Line Dance
--Navigation section on toolbar, including forward/Back icons and Line Dance
--Icon refresh
+-Navigation section on toolbar, including forward/Back icons and Line Dance; ADDED: tab nav section on toolbar
+-Icon refresh; ADDED: updated open/close icons
+-Search applies Find and Replace All to selected area only, at least when selected area is one instance of the search term
+-fix first tab opened missed in tab history
 ------------------
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab

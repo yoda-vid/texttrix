@@ -220,7 +220,7 @@ public class TextTrix extends JFrame {
 		});
 
 		// set frame icon
-		ImageIcon im = LibTTx.makeIcon("images/minicon-16x16.png");
+		ImageIcon im = LibTTx.makeIcon("images/minicon-32x32.png");
 		if (im != null) {
 	    		setIconImage(im.getImage());
 		}
@@ -428,7 +428,8 @@ public class TextTrix extends JFrame {
 		TextTrix textTrix = new TextTrix(args);
 		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
-		/* Workaround for bug #4841881
+		/* Workaround for bug #4841881, where Alt-Tabs are captured as
+		 * menu shortcuts
 		 * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4841881
 		 * This bug existed in Java v.1.4.x, disappeared in v.1.5, but
 		 * reappeared in snapshots of v.1.6 (tested in b94).  The workaround
@@ -3415,6 +3416,7 @@ public class TextTrix extends JFrame {
 					fileMenu.add(newGroupAction);
 
 					// (ctrl-o) open file; use selected tab if empty
+					// file menu version
 					Action openAction = new FileOpenAction(TextTrix.this,
 							"Open", LibTTx
 									.makeIcon("images/openicon-roll-16x16.png"));
@@ -3422,6 +3424,7 @@ public class TextTrix extends JFrame {
 							KeyStroke.getKeyStroke("ctrl O"));
 					fileMenu.add(openAction);
 
+					// toolbar version
 					Action openActionForBtn = new FileOpenAction(TextTrix.this,
 							"Open", LibTTx
 									.makeIcon("images/openicon-16x16.png"));
@@ -3431,21 +3434,27 @@ public class TextTrix extends JFrame {
 					LibTTx.setRollover(openButton,
 							"images/openicon-roll-16x16.png");
 
-					// close file; check if saved
+
+
+
+
+					// Close file; check if saved
+					// file menu version
 					Action closeAction = new FileCloseAction("Close", LibTTx
-							.makeIcon("images/closeicon-16x16.png"));
+							.makeIcon("images/closeicon-roll-16x16.png"));
 					LibTTx.setAcceleratedAction(closeAction, "Close",
 							closeActionMnemonic, closeActionShortcut);
 					fileMenu.add(closeAction);
-
+					
+					// toolbar version
 					Action closeActionForBtn = new FileCloseAction("Close",
-							LibTTx.makeIcon("images/door-60deg-16x16.png"));
+							LibTTx.makeIcon("images/closeicon-16x16.png"));
 					LibTTx.setAction(closeActionForBtn, "Close file",
 							closeActionMnemonic);
 					JButton closeButton = toolBar.add(closeActionForBtn);
 					closeButton.setBorderPainted(false);
 					LibTTx.setRollover(closeButton,
-							"images/closeicon-16x16.png");
+							"images/closeicon-roll-16x16.png");
 
 
 					// close tab group
@@ -3689,6 +3698,22 @@ public class TextTrix extends JFrame {
 							'Y');
 					editMenu.add(prefsAction);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 					/* View menu items */
 
 					/*
@@ -3710,7 +3735,10 @@ public class TextTrix extends JFrame {
 					 */
 
 					// (ctrl-shift-[) switch back in the tab history
-					Action backTabAction = new AbstractAction("Back") {
+					Action backTabAction = new AbstractAction(
+						"Back",
+						LibTTx.makeIcon("images/backicon-16x16.png")) {
+						
 						/*
 						 * Switch back only up through the first record and keep
 						 * from recording the past selected tabs as newly
@@ -3736,12 +3764,25 @@ public class TextTrix extends JFrame {
 							}
 						}
 					};
-					LibTTx.setAcceleratedAction(backTabAction, "Back", 'B',
+					LibTTx.setAcceleratedAction(backTabAction, "Go back one tab", 'B',
 							KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
 					viewMenu.add(backTabAction);
 
+					JButton backButton = toolBar.add(backTabAction);
+					backButton.setBorderPainted(false);
+					LibTTx.setRollover(backButton,
+							"images/backicon-roll-16x16.png");
+
+
+
+
+
+
 					// (ctrl-shift-]) switch forwared in the tab history
-					Action forwardTabAction = new AbstractAction("Forward") {
+					Action forwardTabAction = new AbstractAction(
+						"Forward",
+						LibTTx.makeIcon("images/forwardicon-16x16.png")) {
+						
 						public void actionPerformed(ActionEvent evt) {
 							MotherTabbedPane pane = getSelectedTabbedPane();
 							int i = 0;
@@ -3770,6 +3811,17 @@ public class TextTrix extends JFrame {
 							'F', KeyStroke.getKeyStroke("ctrl shift "
 									+ "CLOSE_BRACKET"));
 					viewMenu.add(forwardTabAction);
+					
+					JButton forwardButton = toolBar.add(forwardTabAction);
+					forwardButton.setBorderPainted(false);
+					LibTTx.setRollover(forwardButton,
+							"images/forwardicon-roll-16x16.png");
+					
+					
+					
+					
+					
+					
 
 					// (ctrl-[) switch to the preceding tab
 					Action prevTabAction = new AbstractAction("Preceeding tab") {
@@ -3874,7 +3926,7 @@ public class TextTrix extends JFrame {
 						lineDanceButton.setToolTipText(lineDanceDetailedDesc);
 					}
 
-					
+					toolBar.addSeparator();
 					
 					
 					
