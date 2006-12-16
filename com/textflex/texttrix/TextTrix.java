@@ -3780,7 +3780,7 @@ public class TextTrix extends JFrame {
 
 					// (ctrl-shift-]) switch forwared in the tab history
 					Action forwardTabAction = new AbstractAction(
-						"Forward",
+						"Go forward one tab",
 						LibTTx.makeIcon("images/forwardicon-16x16.png")) {
 						
 						public void actionPerformed(ActionEvent evt) {

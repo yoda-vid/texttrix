@@ -178,7 +178,7 @@ then
 		script="${0#./}"
 		BASE_DIR="$PWD/$script"
 	fi
-	BASE_DIR="${BASE_DIR%/texttrix/configure}" # assumes the script's name is plug.sh
+	BASE_DIR="${BASE_DIR%/texttrix/configure}" # assumes the script's name is configure
 	BASE_DIR="${BASE_DIR%/.}"
 fi
 MAKEFILE="$PWD/Makefile" # name of resulting Makefile

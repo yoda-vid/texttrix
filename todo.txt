@@ -73,7 +73,7 @@ Changes since v.0.7.0beta1
 -Navigation section on toolbar, including forward/Back icons and Line Dance; ADDED: tab nav section on toolbar
 -Icon refresh; ADDED: updated open/close icons
 -Search applies Find and Replace All to selected area only, at least when selected area is one instance of the search term
--fix first tab opened missed in tab history
+-check whether tab history should keep ignoring tab initially opened
 ------------------
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab
