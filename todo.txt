@@ -60,6 +60,7 @@ Note: "./" is the "check-mark" symbol
 	-file locking
 	-read-only mode
 -integrate with Jar Ajar plug-in installation mode
+-check on duplicated actions to create different menu and toolbar icons (eg open, close; not in auto-wrap indent)
 
 ----Current Work----
 

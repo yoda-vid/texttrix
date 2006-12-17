@@ -3676,12 +3676,13 @@ public class TextTrix extends JFrame {
 								t.setAutoIndent(autoIndent.isSelected());
 						}
 					};
+					String autoIndentToolTipText = "<html>Automatically repeat tabs on the next line and "
+						+ "<br>graphically wraps the indentations,"
+						+ "<br>without modifying the underlying text.</html>";
 					LibTTx
 							.setAcceleratedAction(
 									autoIndentAction,
-									"<html>Automatically repeat tabs on the next line and "
-											+ "<br>graphically wraps the indentations,"
-											+ "<br>without modifying the underlying text.</html>",
+									autoIndentToolTipText, 
 									'I', KeyStroke.getKeyStroke("alt shift I"));
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 					editMenu.add(autoIndent);
@@ -3941,10 +3942,15 @@ public class TextTrix extends JFrame {
 					
 					// Add the Wrap Indent toolbar button, whose action
 					// was created earlier
+					/*
+					Action autoIndentActionForBtn = new AbstractAction("Wrap indent",
+							LibTTx.makeIcon("images/wrapindenticon-16x16.png"));
+					*/
 					JButton autoIndentButton = toolBar.add(autoIndentAction);
 					autoIndentButton.setBorderPainted(false);
 					LibTTx.setRollover(autoIndentButton,
 							"images/wrapindenticon-roll-16x16.png");
+					autoIndentButton.setToolTipText(autoIndentToolTipText);
 
 					
 					
