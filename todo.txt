@@ -71,7 +71,7 @@ Changes since v.0.7.0beta1
 -should only edit cell after double-click, not single-click; FIXED: follows more default spreadsheet table behavior
 -add "edit name" button to Line Dance
 -Navigation section on toolbar, including forward/Back icons and Line Dance; ADDED: tab nav section on toolbar
--Icon refresh; ADDED: updated open/close icons
+-Icon refresh; ADDED: updated open/close icons, larger frame icon
 -Search applies Find and Replace All to selected area only, at least when selected area is one instance of the search term
 -check whether tab history should keep ignoring tab initially opened
 ------------------

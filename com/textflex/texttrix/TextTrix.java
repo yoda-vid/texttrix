@@ -3668,7 +3668,8 @@ public class TextTrix extends JFrame {
 					// auto-indent
 					// apply the selection to the current TextPad
 					Action autoIndentAction = new AbstractAction(
-							"Auto Wrap Indent the selected file") {
+							"Auto Wrap Indent the selected file",
+							LibTTx.makeIcon("images/wrapindenticon-16x16.png")) {
 						public void actionPerformed(ActionEvent evt) {
 							TextPad t = getSelectedTextPad();
 							if (t != null)
@@ -3684,7 +3685,17 @@ public class TextTrix extends JFrame {
 									'I', KeyStroke.getKeyStroke("alt shift I"));
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 					editMenu.add(autoIndent);
-
+					
+					// Add the toolbar button later, after the navigation buttons
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					// Preferences panel starter;
 					// also reloads the plug-ins
 					Action prefsAction = new AbstractAction(
@@ -3926,7 +3937,22 @@ public class TextTrix extends JFrame {
 						lineDanceButton.setToolTipText(lineDanceDetailedDesc);
 					}
 
+					
+					
+					// Add the Wrap Indent toolbar button, whose action
+					// was created earlier
+					JButton autoIndentButton = toolBar.add(autoIndentAction);
+					autoIndentButton.setBorderPainted(false);
+					LibTTx.setRollover(autoIndentButton,
+							"images/wrapindenticon-roll-16x16.png");
+
+					
+					
 					toolBar.addSeparator();
+					
+					
+					
+					
 					
 					
 					
