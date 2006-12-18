@@ -83,12 +83,20 @@ BASE_DIR=""
 ##############################
 # System setup
 ##############################
+
 SYSTEM=`uname -s`
 CYGWIN="false"
+LINUX="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
+elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
+then
+	LINUX="true"
+	JAVA=/usr/java/default/bin
 fi
+
+
 READ_PARAMETER=0
 for arg in "$@"
 do
@@ -103,7 +111,15 @@ do
 	fi
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ]
 	then
-		echo "$HELP"
+		if [ "`command -v more`" != '' ]
+		then
+			echo "$HELP" | more
+		elif [ "`command -v less`" != "" ]
+		then
+			echo "$HELP" | less
+		else
+			echo "$HELP"
+		fi
 		exit 0
 	elif [ "x$arg" = "x--java" ]
 	then

@@ -76,6 +76,11 @@ Changes since v.0.7.0beta1
 -Search applies Find and Replace All only to selection when it is an instance of the query term, even when selected area only option isn't checked; FIXED: had routed to single replace, but now single replace checks for replace all option
 -Find and Replace All performance issues--seems extremely slow for small selected area; FIXED: updated the replace all functionality to reflect that of single replace, but over broader area; also, now only replaces query if fully within selected area, when selected area only option checked
 -check whether tab history should keep ignoring tab initially opened
+-prevent status bar text overlap between introductory phrase and Word Find; FIXED: changed welcome message
+-make Ocean the default L&F for all systems except for Windows to provide a more consistent look; ADDED: Ocean is relatively similar to Windows L&F, especially compared with GTK; also provides workaround for lack of multi-file selection feature in GTK as well as abnormally large buttons that go off the toolbar
+-package in Jar Ajar 0.3.1pre builds
+-check for lack of proper auto-wrap-indent detection on first launch
+-shift-tab doesn't unindent in Linux
 ------------------
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab

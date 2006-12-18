@@ -296,7 +296,7 @@ public class TextTrix extends JFrame {
 		// invoke worker thread to create status bar
 		statusBarPanel = new JPanel(); // worker builds on the panel
 		// other thread interacts with statusBar label, so need to create early
-		statusBar = new JLabel("Welcome to Text Trix, the super text tool chest!");
+		statusBar = new JLabel("Text Trix Welcomes You");
 		(statusBarCreator = new StatusBarCreator()).start();
 
 		// open the initial files and create the status bar;
@@ -399,26 +399,20 @@ public class TextTrix extends JFrame {
 			 * http://java.sun.com/j2se/1.4.2/docs/guide/swing/1.4/Post1.4.html,
 			 * UIManager.getSystemLookAndFeelClassName() will return GTK+ by
 			 * default in Java v.1.5.
-			 */
+			 *
 			if (System.getProperty("os.name").equals("Linux")
 					&& System.getProperty("java.vm.version").indexOf("1.4.2") != -1) {
 				// GTK+ only for available systems
-				/*
-				 * UIManager.setLookAndFeel("com.sun.java.swing.plaf" +
-				 * ".gtk.GTKLookAndFeel");
-				 */
-				//	    } else if (System.getProperty("mrj.version") != null) {
-				/*
-				 * } else if
-				 * (System.getProperty("java.vm.version").indexOf("1.5") != -1) { //
-				 * the new Java v.1.5.0, Tiger release, contains a revamped //
-				 * Swing look-and-feel called "Ocean," implemented by default
-				 */
 			} else { // default interface
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 			}
-			//	    SwingUtilities.updateComponentTreeUI(TextTrix.this);
+*/
+			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
+			} else { // default interface
+			}
 		} catch (Exception e) {
 			//	    e.printStackTrace();
 			String msg = "Sorry, couldn't find that look-and-feel."

@@ -93,6 +93,7 @@ then
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
+	JAVA=/usr/java/default/bin
 fi
 echo "found $SYSTEM"
 
@@ -109,7 +110,15 @@ do
 	# reads arguments
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
-		echo "$HELP" | more
+		if [ "`command -v more`" != '' ]
+		then
+			echo "$HELP" | more
+		elif [ "`command -v less`" != "" ]
+		then
+			echo "$HELP" | less
+		else
+			echo "$HELP"
+		fi
 		exit 0
 	elif [ `expr substr $arg 1 ${#PAR_JAVA}` \
 			= $PAR_JAVA \
@@ -128,7 +137,7 @@ do
 		then
 			JAVA=`expr substr $arg $n ${#arg}`
 			READ_JAVA=0
-			echo "...set to use $JAVA as the Java binary path..."
+			echo "...set to use $JAVA as the Java compiler path..."
 		fi
 		READ_PARAMETER=0
 	fi
