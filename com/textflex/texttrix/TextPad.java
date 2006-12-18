@@ -1390,6 +1390,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		lineDancePanel.removeSelectedRows();
 	}
 	
+	public void editLineName() {
+		lineDancePanel.editLineName();
+	}
+	
 	public void lineDance() {
 		int position = lineDancePanel.getPosition();
 		int len = getDocument().getLength();

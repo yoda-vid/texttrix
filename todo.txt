@@ -67,13 +67,14 @@ Note: "./" is the "check-mark" symbol
 v.0.7.0
 -----------------
 Changes since v.0.7.0beta1
--Line Dance should automatically highlight the latest entry
+-Line Dance should automatically highlight the latest entry; FIXED
 -hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED: cycled to next row when user hits Enter, but now fixed to line dance instead
--should only edit cell after double-click, not single-click; FIXED: follows more default spreadsheet table behavior
--add "edit name" button to Line Dance
+-should only edit cell after double-click, not single-click, to follow more default spreadsheet table behavior?
+-add "edit name" button to Line Dance; ADDED
 -Navigation section on toolbar, including forward/Back icons and Line Dance; ADDED: tab nav section on toolbar
 -Icon refresh; ADDED: updated open/close icons, larger frame icon
--Search applies Find and Replace All to selected area only, at least when selected area is one instance of the search term
+-Search applies Find and Replace All only to selection when it is an instance of the query term, even when selected area only option isn't checked; FIXED: had routed to single replace, but now single replace checks for replace all option
+-Find and Replace All performance issues--seems extremely slow for small selected area; FIXED: updated the replace all functionality to reflect that of single replace, but over broader area; also, now only replaces query if fully within selected area, when selected area only option checked
 -check whether tab history should keep ignoring tab initially opened
 ------------------
 -duplicate files

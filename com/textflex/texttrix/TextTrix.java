@@ -904,10 +904,10 @@ public class TextTrix extends JFrame {
 			PlugInOutcome outcome = null;
 			try {
 				t.startCompoundEdit();
-				// determines whether a region is selected or not;
-				// if not, or plug-in flags to works on the text pad's entire
-				// text,
-				// does so
+				
+				// By default, only sends the selected text;
+				// if no region is selected, or if plug-in flags to works on the text pad's entire
+				// text, sends the plugin all the text
 				if (start == end || pl.getAlwaysEntireText()) { // no selection
 					text = doc.getText(0, doc.getLength()); // all the text
 
@@ -934,6 +934,9 @@ public class TextTrix extends JFrame {
 						t.setCaretPosition(start);
 					}
 				} else {
+				
+					// Send plugin the selected text only
+					
 					int len = end - start; // length of selected region
 					text = doc.getText(start, len); // only get the region
 
@@ -4583,6 +4586,23 @@ public class TextTrix extends JFrame {
 			
 			
 			
+			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// button;
+			// creates a shortcut key (alt-L) as an alternative way to invoke
+			// the button
+			Action nameLineAction = 
+				new AbstractAction("Name Line", null) {
+				public void actionPerformed(ActionEvent e) {
+					getSelectedTextPad().editLineName();
+				}
+			};
+			LibTTx.setAcceleratedAction(
+				nameLineAction,
+				"Name Line",
+				'N',
+				KeyStroke.getKeyStroke("alt N"));
+			JButton nameLineBtn = new JButton(nameLineAction);
+			
 			
 			
 			
@@ -4599,9 +4619,20 @@ public class TextTrix extends JFrame {
 				contentPane);
 			
 			LibTTx.addGridBagComponent(
-				forgetSelLineBtn,
+				nameLineBtn,
 				constraints,
 				1,
+				1,
+				1,
+				1,
+				100,
+				0,
+				contentPane);
+			
+			LibTTx.addGridBagComponent(
+				forgetSelLineBtn,
+				constraints,
+				2,
 				1,
 				1,
 				1,
@@ -4614,7 +4645,7 @@ public class TextTrix extends JFrame {
 				constraints,
 				0,
 				2,
-				2,
+				3,
 				1,
 				100,
 				0,
@@ -4642,7 +4673,7 @@ public class TextTrix extends JFrame {
 					constraints,
 					0,
 					0,
-					2,
+					3,
 					1,
 					100,
 					0,

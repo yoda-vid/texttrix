@@ -104,6 +104,8 @@ public class LineDancePanel extends JPanel {
 	
 	public void addRow(Object[] rowData) {
 		tableModel.addRow(rowData);
+		int rowCount = table.getRowCount();
+		table.setRowSelectionInterval(rowCount - 1, rowCount -1);
 	}
 	
 	public void removeRow(int row) {
@@ -114,6 +116,15 @@ public class LineDancePanel extends JPanel {
 		int[] selectedRows = table.getSelectedRows();
 		for (int i = 0; i < selectedRows.length; i++) {
 			tableModel.removeRow(selectedRows[i]);
+		}
+	}
+	
+	public void editLineName() {
+		int row = table.getSelectedRow();
+//		System.out.println("row: " + row);
+		if (row != -1) {
+			table.editCellAt(row, COL_NAME);
+			table.requestFocusInWindow();
 		}
 	}
 	
@@ -138,17 +149,43 @@ class LineDanceTable extends JTable {
 	public LineDanceTable(TableModel tableModel, KeyAdapter aKeyAdapter) {
 		super(tableModel);
 		addKeyListener(aKeyAdapter);
+		/*
+		addFocusListener(new FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				int row = getSelectedRow();
+				if (row != -1) {
+					clearSelection();
+					setRowSelectionInterval(row, row);
+				}
+			}
+			
+		});
+		*/
 	}
-
+/*
 	public boolean editCellAt(int row, int col, EventObject e) {
+		if (e != null) System.out.println(e.toString());
+		return super.editCellAt(row, col, e);
+	}
+	public boolean editCellAt(int row, int col, EventObject e) {
+//		System.out.println(e.toString());
+		if (e instanceof KeyEvent) {
+		} else {
+			return super.editCellAt(row, col, e);
+		}
 		if (e instanceof MouseEvent) {
 			if (((MouseEvent)e).getClickCount() == 1) {
+				System.out.println("here");
 //				return super.editCellAt(row, col, e);
-//				e.consume();
+				((MouseEvent)e).consume();
 			} else {
 				return super.editCellAt(row, col, e);
 			}
+		} else {
+				System.out.println("also here");
+			return super.editCellAt(row, col, e);
 		}
 		return false;
 	}
+*/
 }
