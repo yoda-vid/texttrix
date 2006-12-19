@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-4
+# Portions created by the Initial Developer are Copyright (C) 2003-7
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -46,19 +46,23 @@ Syntax:
 the file pkg.sh does not have executable permissions.)
 
 Parameters:
-	--java java-compiler-binaries-path: Specifies the path to javac, 
+	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
-	specification.
+	specification.  On LInux, this path defaults to
+	"/usr/java/default", the new link found in Java 6.  
 	
+	--prefix=install-location: the directory in which to install Text Trix.
+	Defaults to "/usr/share".
+		
 	--help: Lends a hand by displaying yours truly.
 	
 Copyright:
-	Copyright (c) 2003-6 Text Flex
+	Copyright (c) 2003-7 Text Flex
 
 Last updated:
-	2006-09-05
+	2006-12-18
 "
 
 ##############################
@@ -68,11 +72,11 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-VER="0.7.0beta2-"$DATE
-#VER="0.7.0beta1"
+#VER="0.7.0beta2-"$DATE
+VER="0.7.0beta2"
 
-# the final destination of the resulting packages
-DEST="/home/share" 
+# the final PREFIXination of the resulting packages
+PREFIX="/home/share" 
 
 # the path to the compiler binaries
 JAVA=""
@@ -97,19 +101,15 @@ then
 fi
 
 
+echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	if [ $READ_PARAMETER -eq 1 ]
-	then
-		if [ "x$JAVA" = "x" ]
-		then
-			# no output b/c assuming plug.sh will be called
-			JAVA="$arg"
-		fi
-		READ_PARAMETER=0
-	fi
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ]
+	n=`expr index $arg "="`
+	n=`expr $n - 1`
+	
+	# reads arguments
+	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
 		if [ "`command -v more`" != '' ]
 		then
@@ -121,11 +121,40 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ "x$arg" = "x--java" ]
+	elif [ `expr substr $arg 1 ${#PAR_JAVA}` \
+			= $PAR_JAVA \
+		-a ${#PAR_JAVA} -eq $n ] # Java path
 	then
+		READ_JAVA=1
+		READ_PARAMETER=1
+	elif [ `expr substr $arg 1 ${#PAR_PREFIX}` \
+			= $PAR_PREFIX \
+		-a ${#PAR_PREFIX} -eq $n ] # specify the install location
+	then
+		READ_PREFIX=1
 		READ_PARAMETER=1
 	fi
+	
+	
+	n=`expr $n + 2`
+	# checks whether to read the option following an argument
+	if [ $READ_PARAMETER -eq 1 ]
+	then
+		if [ $READ_JAVA -eq 1 ]
+		then
+			JAVA=`expr substr $arg $n ${#arg}`
+			READ_JAVA=0
+			echo "...set to use $JAVA as the Java compiler path..."
+		elif [ $READ_PREFIX -eq 1 ]
+		then
+			PREFIX=`expr substr $arg $n ${#arg}`
+			echo "...set to use the $PREFIX prefix..."
+			READ_PREFIX=0
+		fi
+		READ_PARAMETER=0
+	fi
 done
+echo "...done"
 
 if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
 then
@@ -243,20 +272,20 @@ mv texttrix/*.txt .
 # Add PKGDIR-specific files
 cp $TTX_DIR/$DIR/images/minicon-32x32.png $BLD_DIR/$PKGDIR/icon.png
 
-# zip up and move to destination
+# zip up and move to PREFIXination
 cd $BLD_DIR
 cp $PKGDIR/$JAR $TTX_DIR
 zip -rq $PKG $PKGDIR
 zip -rq $SRCPKG $SRCPKGDIR
 echo ""
-if [ -d "$DEST" ]
+if [ -d "$PREFIX" ]
 then
-	cd "$DEST"
-	rm -rf $ALL # removes any lingering Text Trix build pkgs in dest dir
+	cd "$PREFIX"
+	rm -rf $ALL # removes any lingering Text Trix build pkgs in PREFIX dir
 	cd "$BLD_DIR"
-	mv $ALL "$DEST" # moves pkgs to dest
-	cd "$DEST"
-	echo "Packages output to $DEST"
+	mv $ALL "$PREFIX" # moves pkgs to PREFIX
+	cd "$PREFIX"
+	echo "Packages output to $PREFIX"
 else
 	echo "Packages output to $BLD_DIR"
 fi

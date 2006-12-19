@@ -87,6 +87,7 @@ Changes since v.0.7.0beta1
 	-shift-tab doesn't unindent in Linux
 	-check for lack of proper auto-wrap-indent detection on first launch
 	-should only edit cell after double-click, not single-click, to follow more default spreadsheet table behavior? (#1614443)
+	-update shortcuts page
 ------------------
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab

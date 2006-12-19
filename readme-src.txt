@@ -11,30 +11,21 @@ Copyright (c) 2002-5, Text Flex
 All rights reserved.
 
 -----------------
-Welcome to Text Trix[tm], the text tinker from Text Flex[tm]! Text Trix is a 
-one-stop tool chest of text tools. Pick from an array of Text Trix "plug-ins," 
-specialized tools that allow you to modify large amounts of text quickly and 
-specifically. The tool chest has its own built-in features to help you organize 
-and navigate through your code or text documents.
+Text Flex[tm] Text Trix[tm] is general purpose editor that makes coding easier and more precise.  Navigational tools help make large files easier to read and organize.  Special plugins manipulate text according to user-defined settings.
 
 System Req:
--Java[tm] 2 Standard Edition (J2SE) Software Development Kit (SDK), v.1.4+, 
-freely available from Sun Microsystems 
-(http://java.sun.com/j2se/downloads/index.html); also available from IBM 
-(https://www6.software.ibm.com/dl/lxdk/lxdk-p), offering the only major kit for 
-Linux PPC systems (IBM(R) SDK for 32-bit iSeries/pSeries)
+-Java[tm] Development Kit (JDK), v.1.4+, freely available from Sun Microsystems 
+(http://java.sun.com/javase/downloads/index.jsp).  Java 6 is recommended.
 -To use the build scripts on Windows(R) systems, use the Cygwin 
-environment (http://www.cygwin.com/)
+environment (http://www.cygwin.com/).
 
 Instructions for compilation:
--Unzip the Text Trix source package:
-	-Use a graphical unzip program, or
-	-Change to the directory holding the zip file ("cd [zip file path]"), 
-	and type "unzip texttrix-x.y.z-src.zip"
+-Unzip the Text Trix source package
 -Compile the Java classes:
 	-Change into the Text Trix directory: "cd texttrix-x.y.z"
 	-Auto-configure the build environment: "sh texttrix/configure".  To 
-	specify the location of the Java compiler, pass the argument, "--java=[path-to-java-compiler-binaries]".  Pass "--help" to see other options.
+	specify the location of the Java compiler, pass the argument, 
+	"--java=[path-to-java-compiler-binaries]".  Pass "--help" to see other options.
 	-Build Text Trix and its plug-ins: "make all".
 	-Text Trix is ready to go!  To run it, type: "sh texttrix/run.sh".
 
@@ -59,11 +50,6 @@ each use of the command, such as "[path to java]/java".
 -See "readme.txt" for information on running Text Trix
 -See http://textflex.com/texttrix/faq.html for more details
 
-Run...away?
--If any of the instructions have not worked, check out our website for the 
-FAQs and forums, or email us at support@textflex.com
--And please don't run away...help is just some text away!
-
 
 
 Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
@@ -74,5 +60,3 @@ Linux is a registered trademark of Linus Torvalds.
 Microsoft and Windows are registered trademarks of Microsoft Corporation in 
 the United States and/or other countries.
 Apple is a registered trademark of Apple Computer, Inc.
-IBM is a trademark of International Business Machines Corporation in the 
-United States, other countries, or both.

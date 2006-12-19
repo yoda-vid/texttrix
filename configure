@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-5
+# Portions created by the Initial Developer are Copyright (C) 2003-7
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -63,13 +63,17 @@ Parameters:
 	variable, TTX_VER.
 		
 	--java=java-compiler-path: Specifies the path to javac, 
-	jar, and other Java tools necessary for compilation.
+	jar, and other Java tools necessary for compilation.  
+	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	to specify the path, which would override any command-line 
+	specification.  On LInux, this path defaults to
+	"/usr/java/default", the new link found in Java 6. 
 
 Copyright:
-	Copyright (c) 2003-5 Text Flex
+	Copyright (c) 2003-7 Text Flex
 
 Last updated:
-	2005-04-17
+	2006-12-18
 "
 
 
@@ -395,7 +399,7 @@ $plgTargetFiles
 ########
 # API rule
 # links to online Java documentation
-LINK="-link http://java.sun.com/j2se/1.5.0/docs/api"
+LINK="-link http://java.sun.com/javase/6/docs/api"
 api='api: $(TARGET_FILES)'"\n\t"'mkdir -p docs/api'
 if [ $CYGWIN = true ]
 then

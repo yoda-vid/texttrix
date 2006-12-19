@@ -3776,7 +3776,7 @@ public class TextTrix extends JFrame {
 							}
 						}
 					};
-					LibTTx.setAcceleratedAction(backTabAction, "Go back one tab", 'B',
+					LibTTx.setAcceleratedAction(backTabAction, "Go to previously visited tab", 'B',
 							KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
 					viewMenu.add(backTabAction);
 
@@ -3792,7 +3792,7 @@ public class TextTrix extends JFrame {
 
 					// (ctrl-shift-]) switch forwared in the tab history
 					Action forwardTabAction = new AbstractAction(
-						"Go forward one tab",
+						"Forward",
 						LibTTx.makeIcon("images/forwardicon-16x16.png")) {
 						
 						public void actionPerformed(ActionEvent evt) {
@@ -3819,7 +3819,7 @@ public class TextTrix extends JFrame {
 							}
 						}
 					};
-					LibTTx.setAcceleratedAction(forwardTabAction, "Forward",
+					LibTTx.setAcceleratedAction(forwardTabAction, "Go to the next visited tab",
 							'F', KeyStroke.getKeyStroke("ctrl shift "
 									+ "CLOSE_BRACKET"));
 					viewMenu.add(forwardTabAction);
@@ -4197,6 +4197,8 @@ public class TextTrix extends JFrame {
 						doc = (AbstractDocument) fldDoc;
 						doc.setDocumentFilter(new DocumentSearchFilter(MAX_CHARS));
 					}
+					
+					wordFindFld.setToolTipText("Press F3 to find the next occurrence");
 					
 					
 					
