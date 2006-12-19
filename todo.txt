@@ -67,20 +67,26 @@ Note: "./" is the "check-mark" symbol
 v.0.7.0
 -----------------
 Changes since v.0.7.0beta1
--Line Dance should automatically highlight the latest entry; FIXED
--hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED: cycled to next row when user hits Enter, but now fixed to line dance instead
--should only edit cell after double-click, not single-click, to follow more default spreadsheet table behavior?
--add "edit name" button to Line Dance; ADDED
--Navigation section on toolbar, including forward/Back icons and Line Dance; ADDED: tab nav section on toolbar
--Icon refresh; ADDED: updated open/close icons, larger frame icon
--Search applies Find and Replace All only to selection when it is an instance of the query term, even when selected area only option isn't checked; FIXED: had routed to single replace, but now single replace checks for replace all option
--Find and Replace All performance issues--seems extremely slow for small selected area; FIXED: updated the replace all functionality to reflect that of single replace, but over broader area; also, now only replaces query if fully within selected area, when selected area only option checked
--check whether tab history should keep ignoring tab initially opened
--prevent status bar text overlap between introductory phrase and Word Find; FIXED: changed welcome message
--make Ocean the default L&F for all systems except for Windows to provide a more consistent look; ADDED: Ocean is relatively similar to Windows L&F, especially compared with GTK; also provides workaround for lack of multi-file selection feature in GTK as well as abnormally large buttons that go off the toolbar
--package in Jar Ajar 0.3.1pre builds
--check for lack of proper auto-wrap-indent detection on first launch
--shift-tab doesn't unindent in Linux
+-Line Dance additions and fixes
+	-Line Dance should automatically highlight the latest entry; FIXED (#1614445)
+	-hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED (#1614440): cycled to next row when user hits Enter, but now fixed to line dance instead
+	-add "edit name" button to Line Dance; ADDED (#1614446)
+-Search plugin fixes
+	-Search applies Find and Replace All only to selection when it is an instance of the query term, even when selected area only option isn't checked; FIXED (#1618480): had routed to single replace, but now single replace checks for replace all option
+	-Find and Replace All performance issues--seems extremely slow for small selected area; FIXED (#1618481): updated the replace all functionality to reflect that of single replace, but over broader area; also, now only replaces query if fully within selected area, when selected area only option checked
+-UI fixes
+	-Navigation section on toolbar, including forward/Back icons and Line Dance; ADDED: tab nav section on toolbar
+	-Icon refresh; ADDED: updated open/close icons, larger frame icon
+	-make Ocean the default L&F for all systems except for Windows to provide a more consistent look; ADDED: Ocean is relatively similar to Windows L&F, especially compared with GTK; also provides workaround for lack of multi-file selection feature in GTK as well as abnormally large buttons that go off the toolbar
+	-prevent status bar text overlap between introductory phrase and Word Find; FIXED (#1618476): changed welcome message
+-Build enhancements
+	-package in Jar Ajar 0.3.1pre builds; ADDED
+	-scripts should automatically detect Java binaries in Linux with new /usr/java/default link in Java 6; ADDED
+-Known issues
+	-check whether tab history should keep ignoring tab initially opened
+	-shift-tab doesn't unindent in Linux
+	-check for lack of proper auto-wrap-indent detection on first launch
+	-should only edit cell after double-click, not single-click, to follow more default spreadsheet table behavior? (#1614443)
 ------------------
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab

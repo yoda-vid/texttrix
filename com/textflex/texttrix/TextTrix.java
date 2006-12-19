@@ -3663,6 +3663,7 @@ public class TextTrix extends JFrame {
 					tabsPopup.add(chgGrpTabTitleAction);
 
 					// auto-indent
+					/*
 					// apply the selection to the current TextPad
 					Action autoIndentAction = new AbstractAction(
 							"Auto Wrap Indent the selected file",
@@ -3681,6 +3682,8 @@ public class TextTrix extends JFrame {
 									autoIndentAction,
 									autoIndentToolTipText, 
 									'I', KeyStroke.getKeyStroke("alt shift I"));
+					*/
+					Action autoIndentAction = getAutoIndentAction("images/wrapindenticon-roll-16x16.png", false);
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 					editMenu.add(autoIndent);
 					
@@ -3943,11 +3946,12 @@ public class TextTrix extends JFrame {
 					Action autoIndentActionForBtn = new AbstractAction("Wrap indent",
 							LibTTx.makeIcon("images/wrapindenticon-16x16.png"));
 					*/
-					JButton autoIndentButton = toolBar.add(autoIndentAction);
+					Action autoIndentActionForBtn = getAutoIndentAction("images/wrapindenticon-16x16.png", true);
+					JButton autoIndentButton = toolBar.add(autoIndentActionForBtn);
 					autoIndentButton.setBorderPainted(false);
 					LibTTx.setRollover(autoIndentButton,
 							"images/wrapindenticon-roll-16x16.png");
-					autoIndentButton.setToolTipText(autoIndentToolTipText);
+//					autoIndentButton.setToolTipText(autoIndentToolTipText);
 
 					
 					
@@ -4048,6 +4052,31 @@ public class TextTrix extends JFrame {
 					validate();
 				}
 			});
+		}
+		
+		public Action getAutoIndentAction(String iconPath, final boolean swapChkBox) {
+			Action autoIndentAction = new AbstractAction(
+					"Auto Wrap Indent the selected file",
+					LibTTx.makeIcon(iconPath)) {
+				public void actionPerformed(ActionEvent evt) {
+					TextPad t = getSelectedTextPad();
+					if (t != null) {
+						if (swapChkBox) {
+							autoIndent.setSelected(!autoIndent.isSelected());
+						}
+						t.setAutoIndent(autoIndent.isSelected());
+					}
+				}
+			};
+			String autoIndentToolTipText = "<html>Automatically repeat tabs on the next line and "
+				+ "<br>graphically wraps the indentations,"
+				+ "<br>without modifying the underlying text.</html>";
+			LibTTx
+					.setAcceleratedAction(
+							autoIndentAction,
+							autoIndentToolTipText, 
+							'I', KeyStroke.getKeyStroke("alt shift I"));
+			return autoIndentAction;
 		}
 	}
 	
@@ -4314,6 +4343,7 @@ public class TextTrix extends JFrame {
 			}
 			lastWord = seq;
 		}
+		
 	}
 
 	/**
