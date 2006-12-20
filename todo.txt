@@ -1,6 +1,6 @@
 Text Trix
 the text tinker
-Copyright (c) 2002-6, Text Flex
+Copyright (c) 2002-7, Text Flex
 http://textflex.com/texttrix
 
 Note: "./" is the "check-mark" symbol
@@ -9,7 +9,6 @@ Note: "./" is the "check-mark" symbol
 
 -drag selected text
 -drag-n-drop files to open them in Text Trix
--Bookmarks groups
 -check on lost I-bar after switching to HTML view
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
@@ -22,9 +21,6 @@ Note: "./" is the "check-mark" symbol
 -"Letter Pulse" plug-in
 	-check on auto-indent adjustments after switching tabs in the middle of a pulse session
 	-make HTML-view pulsing possible
--check on Forward/Back when opening multiple tabs
--Navigation
-	-forward and back to previous edit positions
 -new, unsaved(?) files don't register in the tab history(?)
 -use java.util.ResourceBundle for internationalization and further keybinding customization
 -auto-indent: adjust when single word spans multiple lines, including when hit enter in the middle
@@ -60,7 +56,7 @@ Note: "./" is the "check-mark" symbol
 	-file locking
 	-read-only mode
 -integrate with Jar Ajar plug-in installation mode
--check on duplicated actions to create different menu and toolbar icons (eg open, close; not in auto-wrap indent)
+-reopen tabs if exit canceled
 
 ----Current Work----
 

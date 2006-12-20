@@ -83,7 +83,7 @@ public class TextTrix extends JFrame {
 	/* General GUI components */
 	private static MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
 	private static ArrayList textAreas = new ArrayList(); // all the TextPads
-	private Container contentPane = getContentPane();
+	private Container contentPane = getContentPane(); // main frame content pane
 	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
 	private static JPopupMenu tabsPopup = null; // make popup menu
@@ -91,14 +91,12 @@ public class TextTrix extends JFrame {
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
 	private TextPadDocListener textPadDocListener = new TextPadDocListener();
 	private LineDanceDialog lineDanceDialog = null;
-//	private static ArrayList tabbedPaneGroups = new ArrayList();
-//	private boolean tmpActivated = false;
 	
 	/* Menu bar controls */
 	// menu and tool bar worker thread
 	private MenuBarCreator menuBarCreator = null;
-	private JMenuBar menuBar = null;
-	private static JCheckBoxMenuItem autoIndent = null;
+	private JMenuBar menuBar = null; // menu bar
+	private static JCheckBoxMenuItem autoIndent = null; // auto-wrap-indent
 	private JMenu trixMenu = null; // trix plugins
 	private JMenu toolsMenu = null; // tools plugins
 	private JToolBar toolBar = null; // icons
@@ -113,8 +111,8 @@ public class TextTrix extends JFrame {
 	private static Action prefsCancelAction = null; // prefs action to reject
 	
 	/* Plug-in controls */
-	private JDialog[] plugInDiags = null;
-	private int plugInDiagsIdx = 0;
+	private JDialog[] plugInDiags = null; // plugin dialog windows
+	private int plugInDiagsIdx = 0; // num of plugin windows
 	private static PlugIn[] plugIns = null; // plugins from jar archives
 	private static Action[] plugInActions = null; // plugin invokers
 	
@@ -129,12 +127,13 @@ public class TextTrix extends JFrame {
 	private JLabel statusBar = null; // the status label; not really a "bar"
 	private JTextField lineNumFld = null; // Line Find
 	private JTextField wordFindFld = null; // Word Find
-	private JPopupMenu statusBarPopup = null;
+	private JPopupMenu statusBarPopup = null; // status bar popup menu
 
 	/**
-	 * Constructs a new <code>TextTrix</code> frame and with
-	 * <code>TextPad</code> s for each of the specified paths or at least one
-	 * <code>TextPad</code>.
+	 * Constructs a new <code>TextTrix</code> frame and a 
+	 * (@link TextPad) for each of the specified paths or at least one
+	 * TextPad.
+	 * @param paths file paths to be opened at launch
 	 */
 	public TextTrix(final String[] paths) {
 
@@ -155,13 +154,16 @@ public class TextTrix extends JFrame {
 		// create the accept action
 		prefsOkayAction = new AbstractAction("Okay", null) {
 			public void actionPerformed(ActionEvent evt) {
+				// check whether to continue the update before proceeding
 				if (continuePrefsUpdate()) {
+					// store and apply the prefs before exiting them
 					getPrefs().storePrefs();
 					applyPrefs();
 					getPrefs().dispose();
 				}
 			}
 		};
+		// Set the action shortcuts
 		LibTTx.setAcceleratedAction(prefsOkayAction, "Okay", 'O', KeyStroke
 				.getKeyStroke("alt O"));
 
@@ -173,12 +175,15 @@ public class TextTrix extends JFrame {
 		// both dispose of and destroy the object
 		prefsApplyAction = new AbstractAction("Apply now", null) {
 			public void actionPerformed(ActionEvent evt) {
+				// check whether to continue the update before proceeding
 				if (continuePrefsUpdate()) {
+					// store and apply the prefs, then continue
 					getPrefs().storePrefs();
 					applyPrefs();
 				}
 			}
 		};
+		// Set the action shortcuts
 		LibTTx.setAcceleratedAction(prefsApplyAction,
 				"Apply the current tabs settings immediately", 'A', KeyStroke
 						.getKeyStroke("alt A"));
@@ -186,17 +191,19 @@ public class TextTrix extends JFrame {
 		// creates the reject action, something I'm all too familiar with
 		prefsCancelAction = new AbstractAction("No way", null) {
 			public void actionPerformed(ActionEvent evt) {
+				// Exit the prefs without saving or applying any changes
 				prefs.dispose();
 				prefs = null;
 			}
 		};
+		// Set the action shortcuts
 		LibTTx.setAcceleratedAction(prefsCancelAction, "Cancel", 'N', KeyStroke
 				.getKeyStroke("alt C"));
 		getPrefs();
 
 		/* Setup the main Text Trix window */
 
-		setTitle("Text Trix");
+		setTitle("Text Trix"); // frame title
 
 		// restore window size and location
 		setSize(getPrefs().getPrgmWidth(), getPrefs().getPrgmHeight());
@@ -227,13 +234,20 @@ public class TextTrix extends JFrame {
 
 		/* Create the main Text Trix frame components */
 		
+		// makes the tabbed pane for grouping tabs horizontally
+		// scrollable to help distinguish the tabs from the tabs in
+		// each individual group
 		groupTabbedPane = new MotherTabbedPane(
 			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		// adds a listener to update the title and status bars when
+		// switching among group tabs
 		groupTabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent evt) {
 				final TextPad t = getSelectedTextPad();
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
+						// Ensure that a tab is selected before updating
+						// the bars with its information
 						if (t != null) {
 							updateTitle(t.getFilename());
 							updateStatusBarLineNumbers(t);
@@ -243,6 +257,7 @@ public class TextTrix extends JFrame {
 			}
 		});
 		
+		// Add the group pane to the frame
 		addTabbedPane(groupTabbedPane, "");
 
 		// display tool tips for up to 100s
@@ -318,7 +333,6 @@ public class TextTrix extends JFrame {
 				// make first tab and text area;
 				// can only create after making several other user interface
 				// components, such as the autoIndent check menu item
-//				addTextArea(getSelectedTabbedPane(), makeNewFile());
 
 				// load files specified at start from command-line
 				if (paths != null) {
@@ -336,7 +350,6 @@ public class TextTrix extends JFrame {
 					
 					// Start at 1 b/c first token is the empty group splitter
 					for (int i = 1; i < grpTokens.length; i++) {
-//						System.out.println("grpTokens[" + i + "]:" + grpTokens[i]);
 						String[] tokens = grpTokens[i].split(FILE_SPLITTER);
 						// Blank group already open initally, so simply update title
 						// and start adding files
@@ -362,52 +375,21 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Publically executable starter method. Creates the <code>TextTrix</code>
+	 * Publically executable starter method. Creates the (@ link TextTrix)
 	 * object, displays it, an makes sure that it will still undergo its exit
-	 * routine when closed manually.
+	 * routine when closed manually.  Also sets up the Look & Feel for
+	 * Text Trix, which is the native look in Windows systems, and the
+	 * default Java Ocean look on all other platforms.
 	 * 
 	 * @param args
 	 *            command-line arguments; not yet used
 	 */
 	public static void main(String[] args) {
-		// set the look and feel;
+	
+		// Set the look and feel: native for Windows systems, default Java Ocean
+		// for all other platforms to provide a more consistent look, since Windows
+		// and Ocean themes aren't all that different from one another
 		try {
-
-			/*
-			 * JRE Bug 4275928, "RFE: Mnemonics for non-character keys are
-			 * displayed incorectly in the tooltip"
-			 * (http://developer.java.sun.com/developer/bugParade/bugs/435928.html)
-			 * notes that tool tips often append "Alt-" to the shortcut key,
-			 * even if the shortcut should be for "Ctrl-" or another modifier
-			 * key. In particular, Actions in JMenus display the correct
-			 * accelerator key in both the tool tip and the on the right side of
-			 * the menu item, but JToolBars show the accelerator key as using
-			 * "Alt-" instead of the true modifier. To avoid confusing the user,
-			 * the pseudo-workaround is to simply prevent the tool tips from
-			 * showing the accelerator keys. More extensive workarounds subclass
-			 * several swing and java package classes.
-			 */
-			UIManager.getDefaults().put("ToolTipUI",
-					"javax.swing.plaf.basic.BasicToolTipUI");
-
-			/* UPDATE: This code appears unnecessary now that JVM v.1.5 has
-			 * been released.
-			 * 
-			 * GTK+ look and feel for Java v.1.4.2 running on Linux, otherwise
-			 * the default look and feel, such as the new XP interface for
-			 * Microsoft Windows XP systems with Java v.1.4.2. According to
-			 * http://java.sun.com/j2se/1.4.2/docs/guide/swing/1.4/Post1.4.html,
-			 * UIManager.getSystemLookAndFeelClassName() will return GTK+ by
-			 * default in Java v.1.5.
-			 *
-			if (System.getProperty("os.name").equals("Linux")
-					&& System.getProperty("java.vm.version").indexOf("1.4.2") != -1) {
-				// GTK+ only for available systems
-			} else { // default interface
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			}
-*/
 			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
@@ -419,7 +401,13 @@ public class TextTrix extends JFrame {
 					+ "  Defaulting to the Metal one.";
 			System.out.println(msg);
 		}
+		
+		// Create Text Trix!
 		TextTrix textTrix = new TextTrix(args);
+		
+		// Close the program with customized exit operation when
+		// user hits close so can apply exit operations, such as remembering
+		// open file paths
 		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		/* Workaround for bug #4841881, where Alt-Tabs are captured as
@@ -440,7 +428,7 @@ public class TextTrix extends JFrame {
 			}
 		});
 		
-//		RepaintManager.setCurrentManager(new TTxRepaintManager());
+		// Make the frame visible
 		textTrix.setVisible(true);
 
 		/*
@@ -461,7 +449,7 @@ public class TextTrix extends JFrame {
 		if (fileHistStart != -1) {
 			fileHist.start(fileMenu); // assumes fileHistStart is up-to-date
 		}
-		setAutoIndent();
+		setAutoIndent(); // applies the auto-wrap-indent feature
 	}
 
 	/**
@@ -474,7 +462,10 @@ public class TextTrix extends JFrame {
 	 *            path to file
 	 */
 	private void openInitialFile(String path) {
+		// command-line feedback
 		System.out.print("Opening file from path " + path + "...");
+		
+		// Open the file if possible, or supply explanation if not
 		if (!openFile(new File(path), true, false, false)) {
 			String msg = newline + "Sorry, but " + path + " can't be read."
 					+ newline + "Is it a directory?  Does it have the right "
@@ -548,9 +539,9 @@ public class TextTrix extends JFrame {
 	 * menu and tool bars. Front end for several functions that update the
 	 * program to match the user's preferences settings.
 	 * 
-	 * @see #applyGeneralPrefs()
-	 * @see #applyShortsPrefs()
-	 * @see #reloadPlugIns()
+	 * @see #applyGeneralPrefs
+	 * @see #applyShortsPrefs
+	 * @see #reloadPlugIns
 	 */
 	public void applyPrefs() {
 		reloadPlugIns();
@@ -561,20 +552,24 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Applies preferences from the General tab in the preferences panel.
-	 * 
+	 * Applies preferences from the General tab in the preferences panel
+	 * to each and every tab open.
 	 *  
 	 */
 	public void applyGeneralPrefs() {
+		// Update the file history based on whether should save or not
 		fileHist.start(fileMenu);
+		
+		// Update all the tabs in each tab group
 		MotherTabbedPane pane = getGroupTabbedPane();
 		int origPaneIndex = pane.getSelectedIndex();
+		// access each tab by selecting it and applying settings
 		// TODO: access text pad directly, rather than through selection
 		for (int h = 0; h < pane.getTabCount(); h++) {
 			pane.setSelectedIndex(h);
-//			System.out.println("h: " + h);
 			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 				TextPad pad = getTextPadAt(i);
+				// restarts the save timer
 				if (getPrefs().getAutoSave()) {
 					if (pad.getChanged()) {
 						startTextPadAutoSaveTimer(pad);
@@ -584,6 +579,8 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
+		
+		// Re-select the originally selected tab
 		pane.setSelectedIndex(origPaneIndex);
 	}
 
@@ -595,11 +592,13 @@ public class TextTrix extends JFrame {
 	 *  
 	 */
 	public void applyShortsPrefs() {
+		// Cycle through each tab in each tab group
 		MotherTabbedPane pane = getGroupTabbedPane();
 		int origPaneIndex = pane.getSelectedIndex();
 		// applies shortcuts according to user choice in preferences
 		// TODO: access text pad directly, rather than through selection
 		if (prefs.isHybridKeybindings()) {
+			// Hybrid shortcuts, similar to that of Pico
 			for (int h = 0; h < pane.getTabCount(); h++) {
 				pane.setSelectedIndex(h);
 				// mix of standard + Emacs-style shortcuts
@@ -608,6 +607,7 @@ public class TextTrix extends JFrame {
 				}
 			}
 		} else if (prefs.isEmacsKeybindings()) {
+			// Emacs-style shortcuts, at least the more prominent ones
 			for (int h = 0; h < pane.getTabCount(); h++) {
 				pane.setSelectedIndex(h);
 				// Emacs-style shortcuts
@@ -616,6 +616,7 @@ public class TextTrix extends JFrame {
 				}
 			}
 		} else {
+			// Standard shortcuts
 			for (int h = 0; h < pane.getTabCount(); h++) {
 				pane.setSelectedIndex(h);
 				// standard shortcuts
@@ -1361,11 +1362,16 @@ public class TextTrix extends JFrame {
 	
 	
 	
-	
+	/** Gets the tabbed pane for tab groups.
+	 * @return the "mother" pane of all other tabs
+	 */
 	public static MotherTabbedPane getGroupTabbedPane() {
 		return groupTabbedPane;
 	}
 	
+	/** Gets the selected tab group.
+	 * @return the tab group tabbed pane
+	 */
 	public static MotherTabbedPane getSelectedTabbedPane() {
 		MotherTabbedPane pane = getGroupTabbedPane();
 		int i = pane.getSelectedIndex();
@@ -1410,10 +1416,18 @@ public class TextTrix extends JFrame {
 		
 	}
 	
+	/** Gets the tab group tabbed pane at the given index.
+	 * @param i the index of the group tab to retrieve
+	 * @return the tab group tabbed pane
+	 */
 	public static MotherTabbedPane getTabbedPaneAt(int i) {
 		return (MotherTabbedPane) getGroupTabbedPane().getComponentAt(i);
 	}
-
+	
+	/** Gets the mother tabbed pane that houses the given Text Pad.
+	 * @param textPad the text pad
+	 * @return the tabbed pane of the text pad's tabbed pane
+	 */
 	public static MotherTabbedPane getTabbedPane(TextPad textPad) {
 		int lenGroup = getGroupTabbedPane().getTabCount();
 		int tabIndex = -1;
@@ -1424,10 +1438,13 @@ public class TextTrix extends JFrame {
 				return pane;
 			}
 		}
-//		System.out.println("didn't find it");
 		return null;
 	}
 	
+	/** Gets the indext of the given Text Pad in the given tabbed pane.
+	 * @param pane the tabbed pane that holds the Text Pad
+	 * @return the index of the Text Pad
+	 */
 	public static int getTextPadIndex(JTabbedPane pane, TextPad textPad) {
 		return pane.indexOfComponent(textPad.getScrollPane());
 	}
@@ -1497,28 +1514,36 @@ public class TextTrix extends JFrame {
 	/**
 	 * Exits <code>TextTrix</code> by closing each tab individually, checking
 	 * for unsaved text areas in the meantime.
+	 * The tab filenames are stored as one continuous string, separated by the
+	 * names of their tab groups.
+	 * TODO: restore open tabs if close canceled
+	 * @return true if Text Trix exits successfully
 	 */
 	public boolean exitTextTrix() {
-		// closes each tab individually, using the function that checks
-		// for unsaved changes
+		// Get the open file history and prep for new entries
 		String openedPaths = "";
 		boolean reopenTabs = getPrefs().getReopenTabs();
-		//if (i <= 0 && reopenTabs) {
+		// resets open tabs history
 		getPrefs().storeReopenTabsList("");
-		//}
-		//int i = 0;
-		boolean b = true;
-		boolean newGrp = false;
+		boolean b = true; // flags whether ok to close tab
+		boolean newGrp = false; // flag for new tab group
+		
+		// Close the tabs
 		MotherTabbedPane pane = getGroupTabbedPane();
+		// cycles through the tab groups
 		for (int i = 0; i < pane.getTabCount() && b; i++) {
-			openedPaths = openedPaths + FILE_GROUP_SPLITTER + getGroupTabbedPane().getTitleAt(i);
-//			newGrp = true;
+			// appends the tab group name
+			openedPaths = openedPaths 
+				+ FILE_GROUP_SPLITTER 
+				+ getGroupTabbedPane().getTitleAt(i);
 			pane.setSelectedIndex(i);
+			// identifies the number of tabs in the tab group
 			int totTabs = getSelectedTabbedPane().getTabCount();
 	
-			// close the files and prepare to store their paths in the list
+			// closes the files and prepares to store their paths in the list
 			// of files left open at the end of the session
 			while (totTabs > 0 && b) {
+				// only stores if told to in prefs
 				if (reopenTabs) {
 					TextPad t = getTextPadAt(0);
 					if (t.fileExists()) {
@@ -1534,7 +1559,6 @@ public class TextTrix extends JFrame {
 		// successfully
 		if (b == true) {
 			if (reopenTabs) {
-//				openedPaths = "";
 				getPrefs().storeReopenTabsList(openedPaths);
 			}
 			System.exit(0);
@@ -1542,11 +1566,17 @@ public class TextTrix extends JFrame {
 		return b;
 	}
 	
+	/** Gets the title of the selected tab group.
+	 * @return the tab group name
+	 */
 	public String getSelectedTabbedPaneTitle() {
 		JTabbedPane pane = getGroupTabbedPane();
 		return pane.getTitleAt(pane.getSelectedIndex());
 	}
 	
+	/** Sets the name of the selected tab group.
+	 * @param title the new name of the tab group
+	 */
 	public void setSelectedTabbedPaneTitle(String title) {
 		JTabbedPane pane = getGroupTabbedPane();
 		pane.setTitleAt(pane.getSelectedIndex(), title);
@@ -1569,8 +1599,9 @@ public class TextTrix extends JFrame {
 	public boolean closeTextArea(int tabIndex, MotherTabbedPane tabbedPane) {
 		boolean successfulClose = false;
 		
-		TextPad t = getTextPadAt(tabbedPane, tabIndex);//(TextPad) tabbedPane.getComponentAt(tabIndex);// textAreas.get(tabIndex);
-		// check if unsaved text area
+		// Get the given Text Pad
+		TextPad t = getTextPadAt(tabbedPane, tabIndex);
+		// checks if unsaved text area
 		if (t.getChanged()) {
 			String s = "Please save first.";
 			tabbedPane.setSelectedIndex(tabIndex);
@@ -1670,12 +1701,17 @@ public class TextTrix extends JFrame {
 		return text;
 	}
 	
+	/** Adds a new tab group to the given tabbed pane.
+	 * @param tabbedPane the tabbed pane to receive the new tab group tabbed pane
+	 * @param title the title for the new tab group
+	 */
 	public void addTabbedPane(MotherTabbedPane tabbedPane, String title) {
 		final MotherTabbedPane newTabbedPane = new MotherTabbedPane(JTabbedPane.TOP);
 		
 		// keep the tabs the same width when substituting chars
 		newTabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
-
+		
+		// Appends a new tab group and selects it
 		int i = tabbedPane.getTabCount();
 		if (title.equals("")) {
 			title = "Group " + i;
@@ -1696,21 +1732,24 @@ public class TextTrix extends JFrame {
 	 * Creates a new <code>TextPad</code> object, a text area for writing, and
 	 * gives it a new tab. Can call for each new file; names the tab,
 	 * <code>Filen.txt</code>, where <code>n</code> is the tab number.
+	 * @param tabbedPane the tabbed pane to receive the new Text Pad
+	 * @param file the file to open in the new Text Pad
 	 */
 	public void addTextArea(MotherTabbedPane tabbedPane,
-			File file) {
+		File file) {
+	
+	// Create the new Text Pad		
 		final TextPad textPad = new TextPad(file, getPrefs());
-
+		
+		// Add the pad to a scroll pane
 		final JScrollPane scrollPane = new JScrollPane(textPad,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		textPad.setScrollPane(scrollPane);
-		DocumentListener listener = textPadDocListener;//new TextPadDocListener();
+		DocumentListener listener = textPadDocListener;
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
-//		tabbedPane.addTab(textPad);
-//		arrayList.add(textPad);
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
@@ -1732,19 +1771,11 @@ public class TextTrix extends JFrame {
 	 * has unsaved changes; appends "<code>  </code>" otherwise.
 	 * 
 	 * @param textPad
-	 *            tabbed pane to update
+	 *            Text Pad to update
 	 */
 	public static void updateTabTitle(TextPad textPad) {
 		MotherTabbedPane pane = getTabbedPane(textPad);
 		int tabIndex = getTextPadIndex(pane, textPad);
-		// if the tab index is given as -1, assumes that the current
-		// tab should be updated
-		/*
-		if (i < 0) {
-			i = tabbedPane.getSelectedIndex();
-		}
-		TextPad textPad = getTextPadAt(tabbedPane, i);//(TextPad) tabbedPane.getComponentAt(i);//arrayList.get(i);
-		*/
 
 		// updates the title with the filename and a flag indicating
 		// whether the file has unsaved changes
