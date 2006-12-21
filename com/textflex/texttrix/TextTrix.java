@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-6
+ * Portions created by the Initial Developer are Copyright (C) 2002-7
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -999,12 +999,6 @@ public class TextTrix extends JFrame {
 	 *            end point of selection, relative to baseline
 	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
-	/*
-		if (start == end) {
-			t.setCaretPosition(baseline + start);
-//			System.out.println("I'm here");
-		}
-	*/
 		if (end != -1&& start != end) {
 			t.setCaretPosition(baseline + start);
 			t.moveCaretPosition(baseline + end);
@@ -1163,7 +1157,7 @@ public class TextTrix extends JFrame {
 	 * a preferences panel.
 	 */
 	public void setupPlugIns() {
-		File plugInsFile = getPlugInsFile(); //refreshPlugIns();
+		File plugInsFile = getPlugInsFile();
 
 		// load the plugins and create actions for them
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
@@ -1172,7 +1166,6 @@ public class TextTrix extends JFrame {
 		getPrefs().updatePlugInsPanel(getPlugInPaths());
 		if (plugIns != null) {
 			for (int i = 0; i < plugIns.length; i++) {
-				//				plugIns[i].removeWindowAdapter();
 				makePlugInAction(plugIns[i]);
 			}
 		}
@@ -1345,7 +1338,11 @@ public class TextTrix extends JFrame {
 	
 	
 	
-	
+	/** Sets the selection to the given Text Pad index in
+	 * the given tab group.
+	 * @param motherIdx index of the tab group
+	 * @param padIdx index of the tab within the tab group
+	 */
 	public void setSelectedTextPad(int motherIdx, int padIdx) {
 		getGroupTabbedPane().setSelectedIndex(motherIdx);
 		getSelectedTabbedPane().setSelectedIndex(padIdx);
@@ -1391,7 +1388,7 @@ public class TextTrix extends JFrame {
 		MotherTabbedPane pane = getSelectedTabbedPane();
 		int i = pane.getSelectedIndex();
 		if (i != -1) {
-			return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();//textAreas.get(i);
+			return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();
 		} else {
 			return null;
 		}
@@ -1409,10 +1406,15 @@ public class TextTrix extends JFrame {
 		return getTextPadAt(getSelectedTabbedPane(), i);
 	}
 	
+	/** Gets the (@link TextPad) at the given index in the given tab group.
+	 * @param pane the tab group
+	 * @param i the tab index
+	 * @return the Text Pad
+	 */
 	public static TextPad getTextPadAt(JTabbedPane pane, int i) {
 		if (i < -1 || i >= pane.getTabCount())
 			return null;
-		return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();//(textAreas.get(i));
+		return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();
 		
 	}
 	
@@ -1432,6 +1434,8 @@ public class TextTrix extends JFrame {
 		int lenGroup = getGroupTabbedPane().getTabCount();
 		int tabIndex = -1;
 		MotherTabbedPane pane = null;
+		// finds the Text Pad by searching for the index of the component
+		// in each tab group
 		for (int i = 0; i < lenGroup; i++) {
 			pane = getTabbedPaneAt(i);
 			if (pane.indexOfComponent(textPad.getScrollPane()) != -1) {
@@ -1663,44 +1667,6 @@ public class TextTrix extends JFrame {
 		return successfulClose;
 	}
 
-	/**
-	 * Reads in text from a file and return the text as a string. Uses
-	 * <code>Class.getResourcesAsStream</code> so can read from JAR files; the
-	 * <code>path</code> is relative to the given class.
-	 * 
-	 * @param path
-	 *            text file stream
-	 * @return text from file
-	 */
-	public String readText(String path) {
-		String text = "";
-		InputStream in = null;
-		BufferedReader reader = null;
-		try {
-			in = TextTrix.class.getResourceAsStream(path);
-			if (in == null)
-				return "";
-			reader = new BufferedReader(new InputStreamReader(in));
-			String line;
-			while ((line = reader.readLine()) != null)
-				text = text + line + "\n";
-		} catch (IOException exception) {
-			//	    exception.printStackTrace();
-			return "";
-		} finally { // stream closure operations
-			try {
-				if (reader != null)
-					reader.close();
-				if (in != null)
-					in.close();
-			} catch (IOException exception) {
-				//	    exception.printStackTrace();
-				return "";
-			}
-		}
-		return text;
-	}
-	
 	/** Adds a new tab group to the given tabbed pane.
 	 * @param tabbedPane the tabbed pane to receive the new tab group tabbed pane
 	 * @param title the title for the new tab group
@@ -1903,9 +1869,9 @@ public class TextTrix extends JFrame {
 	 */
 	public static void removeTextArea(int i, MotherTabbedPane tp) {
 		TextPad t = getSelectedTextPad();
+		// stops the pad's save timer and removes the pad
 		if (t != null) {
 			stopTextPadAutoSaveTimer(t);
-//			l.remove(i);
 			tp.remove(i);
 		}
 	}
@@ -1919,8 +1885,7 @@ public class TextTrix extends JFrame {
 	 *            the pad to save; if <code>null</code>, defaults to the
 	 *            currently selected pad
 	 * @return true for a successful save, false if otherwise
-	 * @see #saveFile(TextPad)
-	 * @see #saveFile(String)
+	 * @see #saveFile
 	 */
 	public boolean saveFile(String path, TextPad t) {
 		//	System.out.println("printing");
@@ -2054,12 +2019,13 @@ public class TextTrix extends JFrame {
 		// Check to see if the file is already open before creating new tab
 		if (!path.equals("")) {
 			int len = getGroupTabbedPane().getTabCount();
+			// checks through each tab group
 			for (int i = 0; i < len; i++) {
 				MotherTabbedPane pane = getTabbedPaneAt(i);
+				// checks through each tab in each group
 				if (pane.getTabCount() > 0 && !reuseTab) {
 					int idPath = getIdenticalTextPadIndex(path, i);
 					if (idPath != -1) {
-//						pane.insertTab("new", null, getTextPadAt(pane, idPath).getScrollPane(), "", 1);
 						setSelectedTextPad(i, idPath);
 						return true;
 					}
@@ -2071,15 +2037,19 @@ public class TextTrix extends JFrame {
 			TextPad t = getSelectedTextPad();
 			BufferedReader reader = null;
 			try {
+				// Resources are read as input streams, while
+				// non-resources are read with file readers
 				if (resource) {
+					// Attempt to get the resource as a stream
 					InputStream in = TextTrix.class.getResourceAsStream(path);
 					if (in != null) {
+						// if unable, read the resource with a buffered reader
 						reader = new BufferedReader(new InputStreamReader(in));
 					} else {
 						return false;
 					}
 				} else {
-					// assumes can read file b/c of earler if condition
+					// Read non-resources through a buffered reader
 					reader = new BufferedReader(new FileReader(path));
 				}
 
@@ -2186,10 +2156,9 @@ public class TextTrix extends JFrame {
 	 *            <code>true</code> if the file should be accessed as a
 	 *            resource, via
 	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
-	 * @see #openFile(File, boolean, boolean, boolean)
+	 * @see #openFile
 	*/
 	public boolean openFile(File file, boolean editable, boolean resource) {
-//		return openFile(file, true, false, false);
 		return openFile(file, editable, resource, false);
 	}
 	
@@ -3964,7 +3933,7 @@ public class TextTrix extends JFrame {
 					lineDanceButton.setBorderPainted(false);
 					LibTTx.setRollover(lineDanceButton,
 							"images/linedance-roll.png");
-					String lineDanceDetailedDesc = readText("desc-linedance.html");
+					String lineDanceDetailedDesc = LibTTx.readText("desc-linedance.html");
 					if (lineDanceDetailedDesc != null) {
 						lineDanceButton.setToolTipText(lineDanceDetailedDesc);
 					}
@@ -4006,7 +3975,7 @@ public class TextTrix extends JFrame {
 							.makeIcon("images/minicon-16x16.png")) {
 						public void actionPerformed(ActionEvent evt) {
 							String path = "about.txt";
-							String text = readText(path);
+							String text = LibTTx.readText(path);
 							if (text == "") {
 								text = "Text Trix" + "\nthe text tinker"
 										+ "\nCopyright (c) 2002-4, Text Flex"

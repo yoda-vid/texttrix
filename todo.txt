@@ -62,6 +62,10 @@ Note: "./" is the "check-mark" symbol
 
 v.0.7.0
 -----------------
+Changes since v.0.7.0beta2
+-Line Dance should highlight previous line after deleting a line memory
+
+-----------------
 Changes since v.0.7.0beta1
 -Line Dance additions and fixes
 	-Line Dance should automatically highlight the latest entry; FIXED (#1614445)
