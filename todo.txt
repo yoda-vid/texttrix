@@ -64,6 +64,9 @@ v.0.7.0
 -----------------
 Changes since v.0.7.0beta2
 -Line Dance should highlight previous line after deleting a line memory
+-make clean should cleanup inner/anonymous classes
+-api documentation
+-clean up changelog, readmes
 
 -----------------
 Changes since v.0.7.0beta1
