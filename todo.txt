@@ -67,6 +67,8 @@ Changes since v.0.7.0beta2
 -make clean should cleanup inner/anonymous classes
 -api documentation
 -clean up changelog, readmes
+-set font face and size in prefs
+-add line saver to view menu; ADDED
 
 -----------------
 Changes since v.0.7.0beta1

@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-5
+ * Portions created by the Initial Developer are Copyright (C) 2002-7
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -77,12 +77,12 @@ public class TextPad extends JTextPane implements StateEditable {
 	private ActionMap amap = null; // map of actions
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
-	private static boolean JVM_15 = false; // flags that running on JVM 1.5
+//	private static boolean JVM_15 = false; // flags that running on JVM 1.5
 	private StoppableThread autoSaveTimer = null; // timer to auto save the text
-	private CompoundEdit compoundEdit = null;
-	private boolean compoundEditing = false;
-	private JScrollPane scrollPane = null;
-	private LineDancePanel lineDancePanel = null;
+	private CompoundEdit compoundEdit = null; // group editing tasks for single undo
+	private boolean compoundEditing = false; // flags whether editing as group
+	private JScrollPane scrollPane = null; // the scroll pane that houses this pad
+	private LineDancePanel lineDancePanel = null; // the Line Dance panel
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -93,7 +93,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// TODO: decide whether to check JVM within each TextPad or only once,
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
 		
-		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
+//		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
 		applyDocumentSettings();
 		
@@ -113,11 +113,18 @@ public class TextPad extends JTextPane implements StateEditable {
 		// adds teh mouse listener
 		lineDancePanel.addTableMouseListener(new LineDanceMouseListener());
 		
+		
+		
+		
 		// to allow multiple undos and listen for events
 		// for new key-bindings
 		imap = getInputMap(JComponent.WHEN_FOCUSED);
 		amap = getActionMap();
 		createActionTable(this);
+		
+		
+		
+		
 		
 		/* WORKAROUND:
 		 * The paragraph that follows a word-wrapped line may overlap it.  With each
@@ -129,6 +136,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		 * for the proposed workaround.
 		*/
 //		setFont(getFont().deriveFont(11.5f));
+		// TODO: set font face and size in prefs
 		setFont(new Font("Arial,SansSerif", Font.PLAIN, 11));
 
 		// (ctrl-backspace) delete from caret to current word start
@@ -170,7 +178,7 @@ public class TextPad extends JTextPane implements StateEditable {
 					&& isLeadingTab()) {
 					// no longer should JVM_15 b/c the behavior also applies
 					// to < JVM v.1.4.2 in keyPressed
-					indentCurrentParagraph(getTabSize(), true);//JVM_15);
+					indentCurrentParagraph(getTabSize(), true);
 					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
@@ -632,8 +640,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		boolean decrementTab) {
 		String s = getAllText();
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
-//		System.out.println("caret position: " + getCaretPosition());
-//		if (start == -1) start = 0;
 		int tabs = leadingTabsCount(s, start);
 		// the tab has already been deleted in JVM >= v.1.5;
 		// tabs should equal the final number of tab characters, so tabs

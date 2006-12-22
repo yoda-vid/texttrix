@@ -4569,15 +4569,23 @@ public class TextTrix extends JFrame {
 
 	}
 	
-	
+	/** Change listener for events in the (@link Text Pad).
+	 */
 	private class TextPadChangeListener implements ChangeListener {
 	
-		private MotherTabbedPane pane = null;
+		private MotherTabbedPane pane = null; // tab gropu
 		
+		/** Constructs a listener. 
+		 * @param aPane the tab group 
+		 */
 		public TextPadChangeListener(MotherTabbedPane aPane) {
 			pane = aPane;
 		}
 		
+		/** Updates the tab history, auto-wrap-indent, Line Dance dialog,
+		 * and the focus of the Text Pad.
+		 * @param evt the change event
+		 */
 		public void stateChanged(ChangeEvent evt) {
 			final TextPad t = getSelectedTextPad();
 			EventQueue.invokeLater(new Runnable() {
@@ -4621,21 +4629,31 @@ public class TextTrix extends JFrame {
 	}
 	
 	
-	
+	/** The dialog window that holds the Line Dance components.
+	 * The dialog is modeled after PlugInWindow dialogs.
+	 * One dialog is created for all Text Pads, but each pad has
+	 * its own Line Dance panel and associated table.
+	 */
 	private class LineDanceDialog extends JDialog {
 		
-		JPanel padPanel = new JPanel();
-		Container contentPane = null;
+		JPanel padPanel = new JPanel(); // Line Dance panel
+		Container contentPane = null; // content pane for the dialog
 		
+		/** Constructs a Line Dance dialog, including its main panel
+		 * and table.
+		 */
 		public LineDanceDialog() {
+			// Setup the owner and title
 			super(getThis(), "Line Dance");
-//			setSize(350, 300);
+			
+			// Setup the content pane and its layout
 			contentPane = getContentPane();
 			contentPane.setLayout(new GridBagLayout());
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.fill = GridBagConstraints.HORIZONTAL;
 			constraints.anchor = GridBagConstraints.SOUTH;
 			
+			// Get the size from the saved preferences
 			getPrefs().applyPlugInSizeLoc(this, LINE_DANCE, 350, 300);
 
 			// store window size and location with each movement
@@ -4735,7 +4753,7 @@ public class TextTrix extends JFrame {
 			
 			
 			
-			
+			// Add the components
 			LibTTx.addGridBagComponent(
 				remCurrLineBtn,
 				constraints,
@@ -4781,22 +4799,34 @@ public class TextTrix extends JFrame {
 				contentPane);
 		}
 		
+		/** Moves the cursor to the position remembered in 
+		 * the selected table line entry.
+		 */
 		public void lineDance() {
 			TextPad pad = getSelectedTextPad();
 			pad.lineDance();
 		}
 		
+		/** Updates the panel dialog with the current
+		 * Text Pad's panel.
+		 */
 		public void updatePadPanel() {
+			// Remove the old panel
 			contentPane.remove(padPanel);
 			contentPane.validate();
+			
+			// Retrieve and add the current pad's panel
 			TextPad pad = getSelectedTextPad();
+			// gets panel only if pad exists and is selected
 			if (pad != null) {
+				// gets the panel
 				padPanel = pad.getLineDancePanel();
-//				padPanel = getSelectedTextPad().getLineDancePanel();
+				// sets up the layout
 				GridBagConstraints constraints = new GridBagConstraints();
 				constraints.fill = GridBagConstraints.HORIZONTAL;
 				constraints.anchor = GridBagConstraints.NORTH;
 				
+				// adds the panel
 				LibTTx.addGridBagComponent(
 					padPanel,
 					constraints,
