@@ -1330,8 +1330,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Gets the number of the current newline in the given pad. Word-wrapped
 	 * lines are not counted, but only lines with hard breaks.
 	 * 
-	 * @param pad
-	 *            the pad
 	 * @return the line number, relative to 1 as the first line of the document
 	 */
 	public int getLineNumber() {
@@ -1344,8 +1342,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Gets the number of newlines in the given pad. Word-wrapped lines are not
 	 * counted, but only lines with hard breaks.
 	 * 
-	 * @param pad
-	 *            the pad
 	 * @return the number of lines with hard breaks
 	 */
 	public int getTotalLineNumber() {
@@ -1353,7 +1349,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 	
 	/**Gets the index position within the document, given the line number.
-	 * @param pad the text pad to search for the given line number
 	 * @param line the number of the line, starting at 1; add 1 to the
 	 * document element number
 	 * @return a <code>Point</code> object whose X value corresponds
