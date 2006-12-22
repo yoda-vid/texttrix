@@ -97,6 +97,7 @@ public class TextTrix extends JFrame {
 	private MenuBarCreator menuBarCreator = null;
 	private JMenuBar menuBar = null; // menu bar
 	private static JCheckBoxMenuItem autoIndent = null; // auto-wrap-indent
+	private JMenu viewMenu = null; // view menu
 	private JMenu trixMenu = null; // trix plugins
 	private JMenu toolsMenu = null; // tools plugins
 	private JToolBar toolBar = null; // icons
@@ -139,7 +140,9 @@ public class TextTrix extends JFrame {
 
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
-		fileMenu = new JMenu("File");
+		resetMenus(); // resets file and view menus
+//		fileMenu = new JMenu("File");
+//		viewMenu = 
 
 		// adds a window listener that responds to closure of the main
 		// window by calling the exit function
@@ -437,6 +440,11 @@ public class TextTrix extends JFrame {
 		 * window seems to restore this focus at least most of the time.
 		 */
 		focuser();
+	}
+	
+	private void resetMenus() {
+		fileMenu = new JMenu("File");
+		viewMenu = new JMenu("View");
 	}
 
 	/**
@@ -2449,19 +2457,26 @@ public class TextTrix extends JFrame {
 				// check whether a file by the chosen name already exists
 				if (f.exists()) {
 					int len = getGroupTabbedPane().getTabCount();
-					int idPath = -1;
-					int paneIdx = -1;
+					int idPath = -1; // a pad with the same file
+					int paneIdx = -1; // the pad's tab group
 					while (idPath == -1&& ++paneIdx < len) {
 						if (getTabbedPaneAt(paneIdx).getTabCount() > 0) {
 							idPath = getIdenticalTextPadIndex(path, paneIdx);
 						}
 					}
+					// Warn user that another pad has the same file as
+					// the file that is being written to from the currently
+					// selected tab.  This should only happen when the
+					// selected tab has not been saved previously.
+					// Ask if the identical pad should be closed before
+					// saving the selected tab.
 					if (idPath != -1) {
 						String closeIDTabWarning = 
 							"A text pad saved to the path you have chosen"
 							+ NEWLINE + "is already open.  Should I close it?  It may have"
 							+ NEWLINE + "unsaved changes.";
 						String[] closeIDTabOptions = { "Close it anyway", "Show me", "Cancel" };
+						// retrieves the user's choice
 						int closeIDTabChoice = JOptionPane.showOptionDialog(
 							owner, closeIDTabWarning,
 							"Close?", JOptionPane.YES_NO_CANCEL_OPTION,
@@ -2469,16 +2484,20 @@ public class TextTrix extends JFrame {
 							closeIDTabOptions[1]);
 						switch (closeIDTabChoice) {
 							case 0:
+								// Close the duplicate pad in deference to the current one
 								removeTextArea(idPath, getTabbedPaneAt(paneIdx));
-							System.out.println("paneIdx: " + paneIdx);
+//							System.out.println("paneIdx: " + paneIdx);
 								break;
 							case 1:
+								// Shows the other, duplicate file and exit
 								setSelectedTextPad(paneIdx, idPath);
 								return false;
 							case 2:
+								// Cancel the save
 								return false;
 						}
 					}
+					// Aks user whether to overwrite the original file
 					String overwrite = path
 							+ "\nalready exists.  Should I overwrite it?";
 					String[] options = { "But of course", "Please, no!",
@@ -2499,27 +2518,12 @@ public class TextTrix extends JFrame {
 					boolean success = false;
 					success = saveFile(path, pad);
 					
-					/*
-					int idx = tabIndex;//-1;
-					if (pad == null) {
-						success = saveFile(path, tabIndex);
-						idx = getSelectedTabbedPane().getSelectedIndex();
-					} else {
-						success = saveFile(path, pad, tabIndex);
-//						idx = textAreas.indexOf(pad);
-					}
-					*/
 					if (success) {
 						setSaveDir(chooser.getSelectedFile().getParent());
 						// update graphical components
 						MotherTabbedPane pane = getTabbedPane(pad);
 						pane.setToolTipTextAt(getTextPadIndex(pane, pad), path);
 						updateTitle(owner, f.getName());
-						/*
-						if (idx == getSelectedTabbedPane().getSelectedIndex()) {
-							updateTitle(owner, f.getName());
-						}
-						*/
 						getPrefs().storeFileHist(path);
 						fileHist.start(fileMenu);
 
@@ -3078,7 +3082,6 @@ public class TextTrix extends JFrame {
 								}
 							}
 							
-//							int tabIndex = getTextPadIndex(textPad);
 							// saves the pad directly if it already exists;
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
@@ -3140,16 +3143,15 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Listener to pop up a context menu when right-clicking.
+	 * Listener to pop up a context menu when right-clicking
+	 * in a Text Pad.
 	 * 
 	 * @author davit
 	 */
 	private class TextPadPopupListener extends MouseAdapter {
-//		private JPopupMenu popup = null;
 		
 		public TextPadPopupListener() {
 			super();
-//			popup = aPopup;
 		}
 	
 		/**
@@ -3176,16 +3178,15 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Listener to pop up a context menu when right-clicking.
+	 * Listener to pop up a context menu when right-clicking
+	 * on a tabbed pane.
 	 * 
 	 * @author davit
 	 */
 	private class TabsPopupListener extends MouseAdapter {
-//		private JPopupMenu popup = null;
 		
 		public TabsPopupListener() {
 			super();
-//			popup = aPopup;
 		}
 	
 		/**
@@ -3212,16 +3213,15 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Listener to pop up a context menu when right-clicking.
+	 * Listener to pop up a context menu when right-clicking
+	 * on the status bar.
 	 * 
 	 * @author davit
 	 */
 	private class StatusBarPopupListener extends MouseAdapter {
-//		private JPopupMenu popup = null;
 		
 		public StatusBarPopupListener() {
 			super();
-//			popup = aPopup;
 		}
 	
 		/**
@@ -3279,47 +3279,66 @@ public class TextTrix extends JFrame {
 					/* Shortcuts */
 
 					// Standard keybindings
-					char fileMenuMnemonic = 'F';
-					char newActionMnemonic = 'N';
+					
+					char fileMenuMnemonic = 'F'; // file menu
+					
+					char newActionMnemonic = 'N'; // new file
 					KeyStroke newActionShortcut = KeyStroke
 							.getKeyStroke("ctrl N");
-					char newGroupActionMnemonic = 'G';
+							
+					char newGroupActionMnemonic = 'G'; // tab group
 					KeyStroke newGroupActionShortcut = KeyStroke
 							.getKeyStroke("ctrl G");
-					char closeActionMnemonic = 'C';
+							
+					char closeActionMnemonic = 'C'; // close file
 					KeyStroke closeActionShortcut = KeyStroke
 							.getKeyStroke("ctrl W");
-					char closeGroupActionMnemonic = 'R';
+							
+					char closeGroupActionMnemonic = 'R'; // close tab group
 					KeyStroke closeGroupActionShortcut = KeyStroke
 							.getKeyStroke("ctrl shift W");
-					String exitActionTxt = "Exit";
+							
+					String exitActionTxt = "Exit"; // exit Text Trix
 					char exitActionMnemonic = 'X';
-					KeyStroke exitActionShortcut = KeyStroke
+					
+					KeyStroke exitActionShortcut = KeyStroke // exit
 							.getKeyStroke("ctrl Q");
-					char cutActionMnemonic = 'T';
+							
+					KeyStroke redoActionShortcut = KeyStroke // redo
+							.getKeyStroke("ctrl Y");
+							
+					char cutActionMnemonic = 'T'; // cut
 					KeyStroke cutActionShortcut = KeyStroke
 							.getKeyStroke("ctrl X");
-					KeyStroke redoActionShortcut = KeyStroke
-							.getKeyStroke("ctrl Y");
-					char copyActionMnemonic = 'C';
+							
+					char copyActionMnemonic = 'C'; // copy
 					KeyStroke copyActionShortcut = KeyStroke
 							.getKeyStroke("ctrl C");
-					char pasteActionMnemonic = 'P';
+							
+					char pasteActionMnemonic = 'P'; // paste
 					KeyStroke pasteActionShortcut = KeyStroke
 							.getKeyStroke("ctrl V");
-					char selectAllActionMnemonic = 'A';
+							
+					char selectAllActionMnemonic = 'A'; // select all
 					KeyStroke selectAllActionShortcut = KeyStroke
 							.getKeyStroke("ctrl A");
-					char printActionMnemonic = 'P';
+							
+					char printActionMnemonic = 'P'; // print
 					KeyStroke printActionShortcut = KeyStroke
 							.getKeyStroke("ctrl P");
-					char printPreviewActionMnemonic = 'R';
-					char printSettingsActionMnemonic = 'I';
+							
+					char printPreviewActionMnemonic = 'R'; // print preview
+					char printSettingsActionMnemonic = 'I'; // print settings
+
+
+
 
 					// Alternate keybindings: shortcuts added to and with
 					// preference over the standard shortcuts
 					// TODO: add Mac-sytle shortcuts
 					if (prefs.isHybridKeybindings()) {
+					
+					
 						// Hybrid: standard + Emacs for single char and line
 						// navigation
 						fileMenuMnemonic = 'I';
@@ -3334,6 +3353,8 @@ public class TextTrix extends JFrame {
 						printActionShortcut = KeyStroke
 								.getKeyStroke("ctrl shift P");
 					} else if (prefs.isEmacsKeybindings()) {
+					
+					
 						//						System.out.println("applying emacs shortcuts");
 						// Emacs: Hybrid + Emacs single-key shortcuts
 						// TODO: create double-key shortcuts, such as ctrl-x,
@@ -3357,13 +3378,20 @@ public class TextTrix extends JFrame {
 								.getKeyStroke("ctrl shift P");
 					}
 
+
+
+
+
+
+
+
 					/* Create new menu and tool bars */
 
 					// remove the old components if necessary
 					if (menuBar != null) {
 						contentPane.remove(menuBar);
-						fileMenu = new JMenu("File");
 						contentPane.remove(toolBar);
+						resetMenus(); // resets file and view menus
 					}
 
 					// make menu bar and menus
@@ -3371,7 +3399,6 @@ public class TextTrix extends JFrame {
 					fileMenu.setMnemonic(fileMenuMnemonic);
 					JMenu editMenu = new JMenu("Edit");
 					editMenu.setMnemonic('E');
-					JMenu viewMenu = new JMenu("View");
 					viewMenu.setMnemonic('V');
 					trixMenu = new JMenu("Trix");
 					trixMenu.setMnemonic('T');
@@ -3382,13 +3409,20 @@ public class TextTrix extends JFrame {
 
 					// make tool bar
 					toolBar = new JToolBar("Trix and Tools");
-//					toolBar.addMouseListener(new PopupListener());
 					toolBar.setBorderPainted(false);
 
 					// create pop-up menu for right-mouse-clicking
 					popup = new JPopupMenu();
 					tabsPopup = new JPopupMenu();
 					getGroupTabbedPane().addMouseListener(new TabsPopupListener());
+
+
+
+
+
+
+
+
 
 					/* File menu items */
 
@@ -3472,10 +3506,15 @@ public class TextTrix extends JFrame {
 						public void actionPerformed(ActionEvent evt) {
 							TextPad t = getSelectedTextPad(); //null;
 							// can't use getSelectedTabbedPane().getSelectedComponent() b/c
-							// returns JScrollPane
+							// returns JScrollPane;
+							// check if pad exists
 							if (t != null) {
+								// Check if file exists
 								if (t.fileExists()) {
+									// file exists, so attempt to save to file path
 									if (!saveFile(t.getPath())) {
+										// error dialog to user if can't save, for 
+										// whatever reason
 										String msg = t.getPath()
 												+ " couldn't be written.\n"
 												+ "Would you like to try saving it somewhere else?";
@@ -3484,8 +3523,9 @@ public class TextTrix extends JFrame {
 												title))
 											fileSaveDialog(t, TextTrix.this);
 									}
-									// otherwise, request filename for new file
+									
 								} else {
+									// otherwise, request filename for new file
 									fileSaveDialog(t, TextTrix.this);
 								}
 							}
@@ -3499,6 +3539,14 @@ public class TextTrix extends JFrame {
 					LibTTx.setRollover(saveButton,
 							"images/saveicon-roll-16x16.png");
 
+
+
+
+
+
+
+
+
 					// Tool Bar: begin plug-ins
 					toolBar.addSeparator();
 
@@ -3509,9 +3557,17 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(saveAsAction, "Save as...", '.');
 					fileMenu.add(saveAsAction);
 
+
+
+
+
+
+
+
 					// Menu: begin print entries
 					fileMenu.addSeparator();
-
+					
+					// Print action
 					Action printAction = new AbstractAction("Print...") {
 						public void actionPerformed(ActionEvent e) {
 							printTextPad();
@@ -3520,7 +3576,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(printAction, "Print...",
 							printActionMnemonic, printActionShortcut);
 					fileMenu.add(printAction);
-
+					
+					// Print preview action
 					Action printPreviewAction = new AbstractAction(
 							"Print preview...") {
 						public void actionPerformed(ActionEvent e) {
@@ -3530,7 +3587,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(printAction, "Print...",
 							printPreviewActionMnemonic);
 					fileMenu.add(printPreviewAction);
-
+					
+					// Printer settings action
 					Action printSettingsAction = new AbstractAction(
 							"Print settings...") {
 						public void actionPerformed(ActionEvent e) {
@@ -3559,6 +3617,17 @@ public class TextTrix extends JFrame {
 
 					fileMenu.addSeparator();
 					//System.out.println("About to create the menu entries");
+
+
+
+
+
+
+
+
+
+
+
 
 					/* Edit menu items */
 
@@ -3662,27 +3731,7 @@ public class TextTrix extends JFrame {
 					editMenu.add(chgGrpTabTitleAction);
 					tabsPopup.add(chgGrpTabTitleAction);
 
-					// auto-indent
-					/*
-					// apply the selection to the current TextPad
-					Action autoIndentAction = new AbstractAction(
-							"Auto Wrap Indent the selected file",
-							LibTTx.makeIcon("images/wrapindenticon-16x16.png")) {
-						public void actionPerformed(ActionEvent evt) {
-							TextPad t = getSelectedTextPad();
-							if (t != null)
-								t.setAutoIndent(autoIndent.isSelected());
-						}
-					};
-					String autoIndentToolTipText = "<html>Automatically repeat tabs on the next line and "
-						+ "<br>graphically wraps the indentations,"
-						+ "<br>without modifying the underlying text.</html>";
-					LibTTx
-							.setAcceleratedAction(
-									autoIndentAction,
-									autoIndentToolTipText, 
-									'I', KeyStroke.getKeyStroke("alt shift I"));
-					*/
+					// auto-indent (menu item; toolbar button is below)
 					Action autoIndentAction = getAutoIndentAction("images/wrapindenticon-roll-16x16.png", false);
 					autoIndent = new JCheckBoxMenuItem(autoIndentAction);
 					editMenu.add(autoIndent);
@@ -3779,7 +3828,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(backTabAction, "Go to previously visited tab", 'B',
 							KeyStroke.getKeyStroke("ctrl shift OPEN_BRACKET"));
 					viewMenu.add(backTabAction);
-
+					
+					// Back toolbar button
 					JButton backButton = toolBar.add(backTabAction);
 					backButton.setBorderPainted(false);
 					LibTTx.setRollover(backButton,
@@ -3824,6 +3874,7 @@ public class TextTrix extends JFrame {
 									+ "CLOSE_BRACKET"));
 					viewMenu.add(forwardTabAction);
 					
+					// Forward toolbar button
 					JButton forwardButton = toolBar.add(forwardTabAction);
 					forwardButton.setBorderPainted(false);
 					LibTTx.setRollover(forwardButton,
@@ -3877,7 +3928,8 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(refreshTabAction, "Refresh tab", 'R',
 							KeyStroke.getKeyStroke("F5"));
 					viewMenu.add(refreshTabAction);
-
+					
+					// Start pad view types
 					viewMenu.addSeparator();
 
 					// view as plain text
@@ -3912,23 +3964,25 @@ public class TextTrix extends JFrame {
 					viewMenu.add(toggleRTFViewAction);
 					
 					
-					
+					// Start view menu navigational aids
 					viewMenu.addSeparator();
 					
+					// Line Dance action
 					Action lineDanceViewAction = new AbstractAction(
 							"Line Dance...", LibTTx.makeIcon("images/linedance.png")) {
 						public void actionPerformed(ActionEvent evt) {
+							// Line Dance for the current Text Pad
 							if (lineDanceDialog == null) {
 								lineDanceDialog = new LineDanceDialog();
 							}
 							lineDanceDialog.updatePadPanel();
-//							lineDanceDialog.validate();
 							lineDanceDialog.setVisible(true);
 						}
 					};
 					LibTTx.setAction(lineDanceViewAction, "Line Dance", 'L');
 					viewMenu.add(lineDanceViewAction);
 					
+					// Line Dance toolbar button
 					JButton lineDanceButton = toolBar.add(lineDanceViewAction);
 					lineDanceButton.setBorderPainted(false);
 					LibTTx.setRollover(lineDanceButton,
@@ -3951,10 +4005,19 @@ public class TextTrix extends JFrame {
 					autoIndentButton.setBorderPainted(false);
 					LibTTx.setRollover(autoIndentButton,
 							"images/wrapindenticon-roll-16x16.png");
-//					autoIndentButton.setToolTipText(autoIndentToolTipText);
 
 					
 					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					// Start toolbar plugins
 					toolBar.addSeparator();
 					
 					
@@ -3978,7 +4041,7 @@ public class TextTrix extends JFrame {
 							String text = LibTTx.readText(path);
 							if (text == "") {
 								text = "Text Trix" + "\nthe text tinker"
-										+ "\nCopyright (c) 2002-4, Text Flex"
+										+ "\nCopyright (c) 2002-7, Text Flex"
 										+ "\nhttp://textflex.com/texttrix";
 								displayMissingResourceDialog(path);
 							}
@@ -4054,16 +4117,27 @@ public class TextTrix extends JFrame {
 			});
 		}
 		
+		/** Gets an action for the auto-wrap-indent tool.
+		 * @param iconPath the path to the normal, non-rollover icon; note that
+		 * the check box only dispalys this non-rollover icon
+		 * @param swapChkBox if true, the auto-wrap-indent check box will change
+		 * to its oppositive selection just prior to determining whether to start or stop
+		 * wrap-indent.
+		 * @return the auto-wrap-indent action
+		 */
 		public Action getAutoIndentAction(String iconPath, final boolean swapChkBox) {
 			Action autoIndentAction = new AbstractAction(
 					"Auto Wrap Indent the selected file",
 					LibTTx.makeIcon(iconPath)) {
 				public void actionPerformed(ActionEvent evt) {
 					TextPad t = getSelectedTextPad();
+					// Check if a pad is selected
 					if (t != null) {
+						// If necessary, swap the selection of the check box
 						if (swapChkBox) {
 							autoIndent.setSelected(!autoIndent.isSelected());
 						}
+						// Retrieve the auto-wrap-indent setting
 						t.setAutoIndent(autoIndent.isSelected());
 					}
 				}
@@ -4087,8 +4161,8 @@ public class TextTrix extends JFrame {
 	*/
 	private class StatusBarCreator implements Runnable {
 		
-		private int lastLine = 0;
-		private String lastWord = "";
+		private int lastLine = 0; // most recent line highlighted
+		private String lastWord = ""; // most recent word found
 
 		/**
 		 * Begins creating the bars.
@@ -4180,6 +4254,7 @@ public class TextTrix extends JFrame {
 							}
 						}
 						
+						// Advance to next ocurrance with F3
 						public void keyPressed(KeyEvent evt) {
 							String lineStr = wordFindFld.getText();
 							if (evt.getKeyCode() == KeyEvent.VK_F3) {
@@ -4190,6 +4265,7 @@ public class TextTrix extends JFrame {
 						}
 					});
 					
+					// Filter input to ensure <=256 characters
 					AbstractDocument doc = null;
 					final int MAX_CHARS = 256;
 					Document fldDoc = wordFindFld.getDocument();
@@ -4198,23 +4274,27 @@ public class TextTrix extends JFrame {
 						doc.setDocumentFilter(new DocumentSearchFilter(MAX_CHARS));
 					}
 					
+					// tool tip for the input field
 					wordFindFld.setToolTipText("Press F3 to find the next occurrence");
 					
 					
 					
-					
+					// status bar popup for the line saver
 					statusBarPopup = new JPopupMenu();
 					statusBar.addMouseListener(new StatusBarPopupListener());
 					
 					// line saver
-					Action lineSaverAction = new AbstractAction("Save this line number") {
+					Action lineSaverAction = new AbstractAction("Save current line number") {
 						public void actionPerformed(ActionEvent evt) {
 							lineNumFld.setText("" + getSelectedTextPad().getLineNumber());
 						}
 					};
 					LibTTx.setAcceleratedAction(lineSaverAction, "Save this line number", 'L',
 							KeyStroke.getKeyStroke("ctrl shift L"));
+					// adds action to status bar popup
 					statusBarPopup.add(lineSaverAction);
+					// adds action to view menu
+					viewMenu.add(lineSaverAction);
 					
 					
 					
@@ -4314,6 +4394,10 @@ public class TextTrix extends JFrame {
 			});
 		}
 		
+		/** Selects the given line.
+		 * Highlights the entire line.
+		 * @param line the line to highlight
+		 */
 		public void selectLine(int line) {
 			TextPad t = getSelectedTextPad();
 			if (t != null) {
@@ -4325,16 +4409,33 @@ public class TextTrix extends JFrame {
 			}
 		}
 		
+		/** Finds the first occurrence of a sequence from the
+		 * given starting point, ignoring case.
+		 * @param seq the sequence to find
+		 * @param start the position number from which to start 
+		 * searching; if -1, the search will begin from the current 
+		 * caret posiion.
+		 */
 		public void findSeq(String seq, int start) {
+			// Prepare the search
 			TextPad t = getSelectedTextPad();
+			// shifts text to lower case
 			String text = t.getAllText().toLowerCase();
+			// shifts quarry to lower case
 			seq = seq.toLowerCase();
+			// saves the caret position
 			int origCaretPosition = t.getCaretPosition();
+			// starts from 0 flagged not to start at caret position
 			if (start == -1) start = 0;
+			
+			// Find the quarry
 			int i = text.indexOf(seq, start);
+			// if can't find, wraps to the beginning
 			if (i == -1) {
 				i = text.indexOf(seq, 0);
 			}
+			// if still can't find, turns field pink and sounds an audible
+			// warning; otherwise, highlights the word
 			if (i != -1) {
 				wordFindFld.setBackground(Color.white);
 				textSelection(t, 0, i, i + seq.length());
@@ -4343,6 +4444,8 @@ public class TextTrix extends JFrame {
 				wordFindFld.setBackground(Color.pink);
 				t.setCaretPosition(origCaretPosition);
 			}
+			
+			// Save the quarry
 			lastWord = seq;
 		}
 		
