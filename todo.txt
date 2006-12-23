@@ -5,7 +5,7 @@ http://textflex.com/texttrix
 
 Note: "./" is the "check-mark" symbol
 
-----Future Work----
+----Ideas----
 
 -drag selected text
 -drag-n-drop files to open them in Text Trix
@@ -58,18 +58,20 @@ Note: "./" is the "check-mark" symbol
 -integrate with Jar Ajar plug-in installation mode
 -reopen tabs if exit canceled
 
-----Current Work----
+----Future releases----
+
+v.0.7.1
+-set font face and size in prefs
+
+----Current release----
 
 v.0.7.0
------------------
 Changes since v.0.7.0beta2
 -Line Dance should highlight previous line after deleting a line memory
 -make clean should cleanup inner/anonymous classes
 -api documentation
--clean up changelog, readmes
--set font face and size in prefs
+-clean up changelog, readmes, shortcuts
 -add line saver to view menu; ADDED
-
 -----------------
 Changes since v.0.7.0beta1
 -Line Dance additions and fixes

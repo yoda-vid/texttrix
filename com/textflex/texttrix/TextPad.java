@@ -682,8 +682,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public boolean isLeadingTab() {
 		//System.out.println("caret: " + getCaretPosition() + ", selectionEnd: " + getSelectionEnd());
-		//int i = getCaretPosition() - 1;
-		//int i = getSelectionEnd() - 1;
 		int i = getLeadingCharIndex();
 		try {
 			if (i >= 0 && !getDocument().getText(i, 1).equals("\t")) return false;
@@ -925,28 +923,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void setFile(String path) {
 		file = new File(path);
 	}
-
-	/**Execute an edit, capture the state changes, and make the changes
-	 * undoable.
-	 * @param text text to edit
-	 *
-	public void setUndoableText(String text) {
-		StateEdit stateEdit = new StateEdit(this);
-		setText(text);
-		stateEdit.end();
-		undoManager.addEdit((UndoableEdit) stateEdit);
-	}
-	
-	
-	public StateEdit startUndoableEdit() {
-		return new StateEdit(this);
-	}
-	
-	public void endUndoableEdit(StateEdit stateEdit) {
-		stateEdit.end();
-		undoManager.addEdit((UndoableEdit) stateEdit);
-	}
-	*/
 
 	/**Sets the auto-indent selection.
 	 * @param b <code>true</code> to auto-indent
@@ -1375,11 +1351,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		// otherwise, returns the boundary indices of the line
 		Element lineElt = elt.getElement(line);
 		int end = lineElt.getEndOffset() - 1;
-//		if (end >= len) end--;
 		return new Point(lineElt.getStartOffset(), end);
 	}
 	
+	/** Remembers a line number and caret position in the 
+	 * Line Dance table.
+	 */
 	public void remLineNum() {
+		// adds a new entry in the table
 		lineDancePanel.addRow(new String[] {
 			"" + getLineNumber(),
 			"" + getCaretPosition(),
@@ -1387,22 +1366,35 @@ public class TextPad extends JTextPane implements StateEditable {
 		});
 	}
 	
+	/** Removes Line Dance table entry(ies).
+	 */
 	public void forgetSelectedLines() {
 		lineDancePanel.removeSelectedRows();
 	}
 	
+	/** Edits the name of a the selected entry in Line Dance.
+	 */
 	public void editLineName() {
 		lineDancePanel.editLineName();
 	}
 	
+	/** Jumps the cursor to the caret position recorded in the
+	 * selected row of the Line Dance table.
+	 */
 	public void lineDance() {
+		// gets the position from the table
 		int position = lineDancePanel.getPosition();
+		// checks the position against the length of the document,
+		// in case enough characters have been deleted from the
+		// document that the caret position would exceed the length
 		int len = getDocument().getLength();
+		// sets the position
 		if (position > len) {
 			setCaretPosition(len);
 		} else if (position != -1) {
 			setCaretPosition(position);
 		}
+		// shifts focus from the Line Dance panel to this pad
 		requestFocus();
 		requestFocusInWindow();
 	}
@@ -1482,6 +1474,9 @@ public class TextPad extends JTextPane implements StateEditable {
 		autoSaveTimer = aAutoSaveTimer;
 	}
 	
+	/** Sets the scroll pane that houses this pad.
+	 * @param aScrollPane the pane that houses this pad
+	 */
 	public void setScrollPane(JScrollPane aScrollPane) {
 		scrollPane = aScrollPane;
 	}
@@ -1498,11 +1493,17 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	
 	
-	
+	/** Gets the scroll pane that houses this pad.
+	 * @return the scroll pane
+	 */
 	public JScrollPane getScrollPane() {
 		return scrollPane;
 	}
 	
+	/** Gets the Line Dance panel associated with this pad.
+	 * @return the Line Dance panel, which includes a table
+	 * of saved line numbers for editing in this pad
+	 */
 	public LineDancePanel getLineDancePanel() {
 		return lineDancePanel;
 	}
@@ -1598,11 +1599,12 @@ public class TextPad extends JTextPane implements StateEditable {
 		public void setEnabled(boolean b) { }
 	}
 	
+	
+	/** A mouse listener for detecting double clicks in the Line Dance panel.
+	 */
 	private class LineDanceMouseListener extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
-//				Point p = e.getPoint();
-//				int row = lineDancePanel.getTable().rowAtPoint(p);
 				lineDance();
 			}
 		}

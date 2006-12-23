@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2004-6
+ * Portions created by the Initial Developer are Copyright (C) 2006-7
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -44,15 +44,25 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.table.*;
 
+/** A panel that contains the table for the LIne Dance function.
+ * The table records the line numbers, caret positions, and 
+ * user-defined names to help record multiple locations in a
+ * given file.  The assumption is that each (@link TextPad)
+ * contains its own Line Dance panel, which is incorporated
+ * into the Line Dance dialog from (@link TextTrix) each
+ * time a new Text Pad is selected.
+ */
 public class LineDancePanel extends JPanel {
 
-	private static final int COL_LINE = 0;
-	private static final int COL_POSITION = 1;
-	private static final int COL_NAME = 2;
+	/* Constants */
+	private static final int COL_LINE = 0; // index of line column
+	private static final int COL_POSITION = 1; // index of position column
+	private static final int COL_NAME = 2; // index of name column
 	
-	DefaultTableModel tableModel = null;
-	LineDanceTable table = null;
-	JScrollPane scrollPane = null;
+	/* GUI components */
+	DefaultTableModel tableModel = null; // table model
+	LineDanceTable table = null; // the table
+	JScrollPane scrollPane = null; // scroll pane holding the table
 	
 	public LineDancePanel(KeyAdapter aKeyAdapter) {
 		super();

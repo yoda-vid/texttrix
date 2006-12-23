@@ -1860,7 +1860,12 @@ public class TextTrix extends JFrame {
 		textPad.applyDocumentSettings();
 		addExtraTextPadDocumentSettings(textPad);
 	}
-
+	
+	/** Removes the currently selected tabbed pane from the
+	 * given group tabbed pane.
+	 * @param tp the group tabbed pane that contains other
+	 * tabbed panes
+	 */
 	public static void removeTabbedPane(MotherTabbedPane tp) {
 		int i = tp.getSelectedIndex();
 		if (i >= 0 && i < tp.getTabCount()) {
