@@ -63,7 +63,7 @@ public class TextTrix extends JFrame {
 	private static final String FILE_GROUP_SPLITTER_REGEX = "\\{\\}";
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
-	private static final String LINE_DANCE = "line dance";
+	private static final String LINE_DANCE = "LineDance";
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -3432,22 +3432,22 @@ public class TextTrix extends JFrame {
 					/* File menu items */
 
 					// make new tab and text area
-					Action newAction = new AbstractAction("New") {
+					Action newAction = new AbstractAction("New tab") {
 						public void actionPerformed(ActionEvent evt) {
 							addTextArea(getSelectedTabbedPane(), makeNewFile());
 						}
 					};
-					LibTTx.setAcceleratedAction(newAction, "New",
+					LibTTx.setAcceleratedAction(newAction, "New tab",
 							newActionMnemonic, newActionShortcut);
 					fileMenu.add(newAction);
 
 					// make new tab group
-					Action newGroupAction = new AbstractAction("New group") {
+					Action newGroupAction = new AbstractAction("New tab group") {
 						public void actionPerformed(ActionEvent evt) {
 							addTabbedPane(getGroupTabbedPane(), "");
 						}
 					};
-					LibTTx.setAcceleratedAction(newGroupAction, "New group",
+					LibTTx.setAcceleratedAction(newGroupAction, "New tab group",
 							newGroupActionMnemonic, newGroupActionShortcut);
 					fileMenu.add(newGroupAction);
 

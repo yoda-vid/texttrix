@@ -62,18 +62,24 @@ Note: "./" is the "check-mark" symbol
 
 v.0.7.1
 -set font face and size in prefs
+-incorporate JEdit Syntax Package (OSS: MIT-style license)
 
 ----Current release----
 
 v.0.7.0
-Changes since v.0.7.0beta2
+Changes since v.0.7.0beta2:
 -Line Dance should highlight previous line after deleting a line memory
 -make clean should cleanup inner/anonymous classes
 -api documentation
 -clean up changelog, readmes, shortcuts
 -add line saver to view menu; ADDED
+-Search dialog window should be smaller; FIXED
+-import/export/reset preferences option; ADDED
+-Code cleanup
+	-make BrowseFiles an interface or abstract class, and create subclasses of it for FileOpenAction and the current BrowseFiles action
+	-shift yesNoDialog from Text Trix to LibTTx
 -----------------
-Changes since v.0.7.0beta1
+Changes since v.0.7.0beta1:
 -Line Dance additions and fixes
 	-Line Dance should automatically highlight the latest entry; FIXED (#1614445)
 	-hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED (#1614440): cycled to next row when user hits Enter, but now fixed to line dance instead

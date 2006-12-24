@@ -87,7 +87,8 @@ public class LibTTx {
 		   String into a URL no longer works.
 		*/
 		try {
-			URL url = new File(path).toURL();
+//			URL url = new File(path).toURL();
+			URL url = new File(path).toURI().toURL();
 			loader = new URLClassLoader(new URL[] { url });
 		} catch (MalformedURLException e) {
 		}
@@ -135,7 +136,8 @@ public class LibTTx {
 		*/
 		try {
 			path = plugInDir.toString() + File.separator + plugInName;
-			URL url = new File(path).toURL();
+//			URL url = new File(path).toURL();
+			URL url = new File(path).toURI().toURL();
 			loader = new URLClassLoader(new URL[] { url });
 		} catch (MalformedURLException e) {
 		}
@@ -779,6 +781,29 @@ public class LibTTx {
 	public static String pickWeightedStr(String[] strings, int weightFront) {
 		int n = (int) (strings.length * Math.pow(Math.random(), weightFront));
 		return strings[n];
+	}
+	
+	
+	/**
+	 * Front-end, helper function to ask yes/no questions.
+	 * 
+	 * @param owner
+	 *            parent frame; can be null
+	 * @param msg
+	 *            message to display in the main window section
+	 * @param title
+	 *            title to display in the title bar
+	 * @return true for "Yes", false for "No"
+	 */
+	public static boolean yesNoDialog(Component owner, String msg, String title) {
+		int choice = JOptionPane.showConfirmDialog(owner, msg, title,
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		// true for Yes, false for No
+		if (choice == JOptionPane.YES_OPTION) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 
