@@ -72,14 +72,15 @@ v.0.7.0
 -----------------
 Changes since v.0.7.0beta2:
 -Line Dance should highlight previous line after deleting a line memory
--api documentation
--clean up changelog, readmes
--shift Shortcuts link to an HTML file with a table of shortcuts; ADDED
 -add line saver to view menu; ADDED
 -Search dialog window should be smaller; FIXED
 -import/export/reset preferences options; ADDED
 -when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
--provide PlugInWindow template for creating new plug-ins more easily; ADDED
+-Documentation enhancements
+	-provide PlugInWindow template for creating new plug-ins more easily; ADDED
+	-shift Shortcuts link to an HTML file with a table of shortcuts; ADDED
+	-api documentation
+	-clean up changelog, readmes
 -Code cleanup
 	-make an abstract BrowseFiles class for file open and browsing actions; ADDED
 	-shift yesNoDialog from Text Trix to LibTTx; ADDED

@@ -36,10 +36,22 @@
 # ***** END LICENSE BLOCK *****
 
 ##################
+# User-editable variables
+##################
+
+# Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
+# sensitive format.
+# Ex: add "PlugInWindowTemplate" for the template window, after including the 
+# necessary files in the appropriate directory structure.
+# Deprecated/removed plugins: NonPrintingChars
+PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
+
+TTX_VER=0.7.0rc1 # curr ver num; only used for default install loc
+
+##################
 # Overview Variables
 ##################
 
-TTX_VER=0.7.0beta2 # curr ver num; only used for default install loc
 HELP="
 Generates a customized Makefile to build Text Trix, the super tool 
 chest for text.
@@ -66,7 +78,7 @@ Parameters:
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
-	specification.  On LInux, this path defaults to
+	specification.  On Linux, this path defaults to
 	"/usr/java/default", the new link found in Java 6. 
 
 Copyright:
@@ -313,10 +325,6 @@ clean="" # prep for building up the clean rule
 
 #########
 # Plug-in rules
-# Each plug-in gets its own rule.  New plug-ins should be added to this line, in case-
-# sensitive format
-# Deprecated/removed plugins: NonPrintingChars
-PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 plgSrcFiles=""
 plgTargetFiles=""
 plgRules="Plugs plugs: $PLGS""\n"

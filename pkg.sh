@@ -50,7 +50,7 @@ Parameters:
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
-	specification.  On LInux, this path defaults to
+	specification.  On Linux, this path defaults to
 	"/usr/java/default", the new link found in Java 6.  
 	
 	--prefix=install-location: the directory in which to install Text Trix.
@@ -253,9 +253,9 @@ cd $BLD_DIR/$PKGDIR
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/desc-linedance.html
+	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html
 else
-	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/desc-linedance.html
+	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html
 fi
 rm -rf com
 
