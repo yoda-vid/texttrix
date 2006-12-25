@@ -397,6 +397,14 @@ public class LibTTx {
 		return i;
 	}
 	
+	/** Searches backward in a text to find a given normal-oriented string.
+	 * For example, in the text, text = "Mr. Smith went to the door went out,"
+	 * reverseIndexOf(text, "went", 14) would return 10. 
+	 * @param doc Document in which to search
+	 * @param searchStr string to find
+	 * @param offset index of first character not included in the search
+	 * @return index of found string; -1 if not found
+	 */
 	public static int reverseIndexOf(
 		Document doc,
 		String searchStr,

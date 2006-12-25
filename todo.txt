@@ -8,7 +8,6 @@ Note: "./" is the "check-mark" symbol
 ----Ideas----
 
 -drag selected text
--drag-n-drop files to open them in Text Trix
 -check on lost I-bar after switching to HTML view
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
@@ -42,7 +41,6 @@ Note: "./" is the "check-mark" symbol
 	-truncate filenames on tabs
 -print images and multi-formatted text
 -rename files in place
--new icons!
 -TablePad for spreadsheets, including tXtFL player-creation plug-in
 -Wrap-indent
 	-update indents when paste over selected area
@@ -57,6 +55,7 @@ Note: "./" is the "check-mark" symbol
 	-read-only mode
 -integrate with Jar Ajar plug-in installation mode
 -reopen tabs if exit canceled
+-internationalization
 
 ----Future releases----
 
@@ -64,10 +63,13 @@ v.0.7.1
 -set font face and size in prefs
 -incorporate JEdit Syntax Package (OSS: MIT-style license)
 -make clean should cleanup inner/anonymous classes
+-drag-n-drop files to open them in Text Trix
+-backward Search/Word Find
 
 ----Current release----
 
 v.0.7.0
+-----------------
 Changes since v.0.7.0beta2:
 -Line Dance should highlight previous line after deleting a line memory
 -api documentation
@@ -77,6 +79,7 @@ Changes since v.0.7.0beta2:
 -Search dialog window should be smaller; FIXED
 -import/export/reset preferences options; ADDED
 -when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
+-provide PlugInWindow template for creating new plug-ins more easily; ADDED
 -Code cleanup
 	-make an abstract BrowseFiles class for file open and browsing actions; ADDED
 	-shift yesNoDialog from Text Trix to LibTTx; ADDED

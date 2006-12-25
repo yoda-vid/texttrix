@@ -48,7 +48,9 @@ public class BrowseFilesFromTextPad extends BrowseFiles {
 	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
 	 * is placed at the center of the screen
 	 * @param aName the file browser and accept button will use this name
-	 * @param icon the icon for the file browser; apparently not used
+	 * @param aIcon the icon for the file browser; apparently not used
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
 	 */
 	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon aIcon, JFileChooser aChooser) {
 		super(aOwner, aName, aIcon, aChooser);
@@ -60,9 +62,7 @@ public class BrowseFilesFromTextPad extends BrowseFiles {
 	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
 	 * is placed at the center of the screen
 	 * @param aName the file browser and accept button will use this name
-	 * @param icon the icon for the file browser; apparently not used
-	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
-	 * approve button set to <code>name</code>
+	 * @param aIcon the icon for the file browser; apparently not used
 	 */
 	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon aIcon) {
 		super(aOwner, aName, aIcon);
@@ -74,15 +74,15 @@ public class BrowseFilesFromTextPad extends BrowseFiles {
 	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
 	 * is placed at the center of the screen
 	 * @param aName the file browser and accept button will use this name
-	 * @param icon the icon for the file browser; apparently not used
+	 * @param aIcon the icon for the file browser; apparently not used
 	 * @param aCurrentDir a directory that the file chooser can open to
 	 * @param aDefaultFile a file that the chooser can automatically try to select
 	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
 	 * approve button set to <code>name</code>
 	 */
-	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon icon, 
+	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon aIcon, 
 		File aCurrentDir, File aDefaultFile, JFileChooser aChooser) {
-		super(aOwner, aName, icon, aCurrentDir, aDefaultFile, aChooser);
+		super(aOwner, aName, aIcon, aCurrentDir, aDefaultFile, aChooser);
 	}
 	
 	/** Constructor for browsing multiple files, using a Text Pad as a reference
@@ -91,12 +91,12 @@ public class BrowseFilesFromTextPad extends BrowseFiles {
 	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
 	 * is placed at the center of the screen
 	 * @param aName the file browser and accept button will use this name
-	 * @param icon the icon for the file browser; apparently not used
+	 * @param aIcon the icon for the file browser; apparently not used
 	 * @param aCurrentDir a directory that the file chooser can open to
 	 * @param aDefaultFile a file that the chooser can automatically try to select
 	 */
-	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon icon, File aCurrentDir, File aDefaultFile) {
-		super(aOwner, aName, icon, aCurrentDir, aDefaultFile);
+	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon aIcon, File aCurrentDir, File aDefaultFile) {
+		super(aOwner, aName, aIcon, aCurrentDir, aDefaultFile);
 	}
 	
 	

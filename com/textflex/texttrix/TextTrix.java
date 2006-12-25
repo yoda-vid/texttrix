@@ -132,7 +132,7 @@ public class TextTrix extends JFrame {
 
 	/**
 	 * Constructs a new <code>TextTrix</code> frame and a 
-	 * (@link TextPad) for each of the specified paths or at least one
+	 * {@link TextPad} for each of the specified paths or at least one
 	 * TextPad.
 	 * @param paths file paths to be opened at launch
 	 */
@@ -1414,7 +1414,7 @@ public class TextTrix extends JFrame {
 		return getTextPadAt(getSelectedTabbedPane(), i);
 	}
 	
-	/** Gets the (@link TextPad) at the given index in the given tab group.
+	/** Gets the {@link TextPad} at the given index in the given tab group.
 	 * @param pane the tab group
 	 * @param i the tab index
 	 * @return the Text Pad
@@ -2737,7 +2737,9 @@ public class TextTrix extends JFrame {
 	
 	
 	
-	
+	/** Gets the main file chooser, which includes file filters.
+	 * @return the main file chooser
+	 */
 	public JFileChooser getChooser() {
 		return chooser;
 	}
@@ -4525,7 +4527,7 @@ public class TextTrix extends JFrame {
 
 	}
 	
-	/** Change listener for events in the (@link Text Pad).
+	/** Change listener for events in the {@link Text Pad}.
 	 */
 	private class TextPadChangeListener implements ChangeListener {
 	

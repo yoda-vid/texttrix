@@ -15,10 +15,10 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2006
+ * Portions created by the Initial Developer are Copyright (C) 2006-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -40,31 +40,67 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 
-/** Filters text component input to make it useful for text searches.
- * Originally based on code from the Sun Java Tutorial:
- * http://java.sun.com/docs/books/tutorial/uiswing/components/generaltext.html#filter
+/** Filters user input into a text component to make the input
+ * more useful when searching through text.
+ * Originally based on 
+ * <a href="http://java.sun.com/docs/books/tutorial/uiswing/components/generaltext.html#filter">code
+ * from the Sun Java Tutorial</a>.
+ * 
  */
 public class DocumentSearchFilter extends DocumentFilter {
-	int maxChars = 1000;
+	int maxChars = 1000; // max characters allowed as input
 	
+	/** Creates a new filter with the given limit on search characters.
+	 * @param aMaxChars the maximum number of characters allowed
+	 * in the input field document
+	 */
 	public DocumentSearchFilter(int aMaxChars) {
 		maxChars = aMaxChars;
 	}
 	
+	/** Overrides the insertString method to check that the number of input
+	 * characters is less than or equal to the maximum allowed characters.
+	 * If not, a beep will sound.
+	 * @param fb the filter bypass
+	 * @param offset the offset in which to add the text
+	 * @param s the string being input
+	 * @param attr the input attribute set
+	 */
 	public void insertString(FilterBypass fb, int offset, String s, AttributeSet attr) 
 		throws BadLocationException {
+		
+		// checks the length of input, adding the original length and
+		// the length of the new input
 		if ((fb.getDocument().getLength() + s.length()) <= maxChars) {
+			// if within the limit, calls the original method
 			super.insertString(fb, offset, s, attr);
 		} else {
+			// if not, sounds a beep
 			Toolkit.getDefaultToolkit().beep();
 		}
 	}
 	
+	/** Overrides the replace method to check that the number of input
+	 * characters is less than or equal to the maximum allowed characters,
+	 * when text is being added in place of other text, such as over
+	 * selected text.
+	 * If the maximal limit is exceeded, a beep will sound.
+	 * @param fb the filter bypass
+	 * @param offset the offset in which to add the text
+	 * @param len the length of text that will be replaced
+	 * @param s the string being input
+	 * @param attr the input attribute set
+	 */
 	public void replace(FilterBypass fb, int offset, int len, String s, AttributeSet attr)
 		throws BadLocationException {
+		
+		// checks the length of input, adding the length of the new input
+		// and the original text, minus the amound of text being replaced
 		if ((fb.getDocument().getLength() + s.length() - len) <= maxChars) {
+			// if within the limit, calls the original method
 			super.replace(fb, offset, len, s, attr);
 		} else {
+			// if not, sounds a beep
 			Toolkit.getDefaultToolkit().beep();
 		}
 	}

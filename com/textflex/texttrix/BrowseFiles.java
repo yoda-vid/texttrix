@@ -192,7 +192,7 @@ public abstract class BrowseFiles extends AbstractAction {
 		name = aName;
 	}
 	
-	/** Sets a (@link TextPad) for reference, such as file paths.
+	/** Sets a {@link TextPad} for reference, such as file paths.
 	 * @param aTextPad a Text Pad
 	 */
 	public void setTextPad(TextPad aTextPad) {
@@ -264,7 +264,7 @@ public abstract class BrowseFiles extends AbstractAction {
 		return name;
 	}
 	
-	/** Gets a (@link TextPad) for reference, such as file paths.
+	/** Gets a {@link TextPad} for reference, such as file paths.
 	 * @return a Text Pad
 	 */
 	public TextPad getTextPad() {

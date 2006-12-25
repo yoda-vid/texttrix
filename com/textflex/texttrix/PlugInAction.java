@@ -15,10 +15,10 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003
+ * Portions created by the Initial Developer are Copyright (C) 2003-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -43,25 +43,9 @@ package com.textflex.texttrix;
     Defines a function from the <code>PlugInListener</code> interface 
     to override.
 */
-public abstract class PlugInAction implements PlugInListener {//, WindowListener {
+public abstract class PlugInAction implements PlugInListener {
     /** Runs the plug in.
      */
     public abstract void runPlugIn(PlugInEvent event);
-    /*
-    public void windowOpened(WindowEvent e) {
-    }
-	public void windowClosed(WindowEvent e) {
-	}
-	public void windowIconified(WindowEvent e) {
-	}
-	public void windowDeiconified(WindowEvent e) {
-	}
-	public void windowActivated(WindowEvent e) {
-	}
-	public void windowDeactivated(WindowEvent e) {
-	}	
-	public void windowClosing(WindowEvent e) {
-	}
-	*/
 
 }

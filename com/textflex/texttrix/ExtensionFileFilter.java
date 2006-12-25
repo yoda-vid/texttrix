@@ -43,11 +43,9 @@ import java.io.*;
 /**
  * Filters for files with specific extensions.
  */
-
 public class ExtensionFileFilter extends FileFilter {
-	private String description = "";
-
-	private ArrayList extensions = new ArrayList();
+	private String description = ""; // description of the file type grouping
+	private ArrayList extensions = new ArrayList(); // the extensions
 
 	/**
 	 * Add extension to include for file display. May need to modify to check
