@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2006-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -47,9 +47,9 @@ import javax.swing.table.*;
 /** A panel that contains the table for the LIne Dance function.
  * The table records the line numbers, caret positions, and 
  * user-defined names to help record multiple locations in a
- * given file.  The assumption is that each (@link TextPad)
+ * given file.  The assumption is that each {@link TextPad}
  * contains its own Line Dance panel, which is incorporated
- * into the Line Dance dialog from (@link TextTrix) each
+ * into the Line Dance dialog from {@link TextTrix} each
  * time a new Text Pad is selected.
  */
 public class LineDancePanel extends JPanel {
@@ -64,35 +64,39 @@ public class LineDancePanel extends JPanel {
 	LineDanceTable table = null; // the table
 	JScrollPane scrollPane = null; // scroll pane holding the table
 	
+	/** Creates the Line Dance panel to be included in the Line
+	 * Dance dialog.
+	 * @param aKeyAdapter an adapter that can launch
+	 * Line Dance functionality
+	 */
 	public LineDancePanel(KeyAdapter aKeyAdapter) {
 		super();
 		
+		// preps the graphics layout
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.anchor = GridBagConstraints.NORTH;
 		
+		// the table column names
 		String[] cols = {
 			"Line",
 			"Position",
 			"Name"
 		};
 		
+		// an empty data set for constructing the table model
 		Object[][] data = new Object[0][3];
-		
 		tableModel = new DefaultTableModel(data, cols) {
+			// only the name column is editable
 			public boolean isCellEditable(int row, int column) {
 				if (column == COL_NAME) {
 					return true;
 				}
 				return false;
-				/*
-				if (column == COL_LINE || column == COL_POSITION) {
-					return false;
-				}
-				return true;
-				*/
 			}
 		};
+		
+		// creates the table and places it in a scroll pane
 		table = new LineDanceTable(tableModel, aKeyAdapter);
 		scrollPane = new JScrollPane(table);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 150));
@@ -116,16 +120,23 @@ public class LineDancePanel extends JPanel {
 		tableModel.addRow(rowData);
 		int rowCount = table.getRowCount();
 		table.setRowSelectionInterval(rowCount - 1, rowCount -1);
+		Rectangle rect = table.getCellRect(rowCount - 1, 0, true);
+		table.scrollRectToVisible(rect);
 	}
 	
 	public void removeRow(int row) {
 		tableModel.removeRow(row);
+		if (--row >= 0) {
+			table.setRowSelectionInterval(row, row);
+		} else if (table.getRowCount() > 0) {
+			table.setRowSelectionInterval(0, 0);
+		}
 	}
 	
 	public void removeSelectedRows() {
 		int[] selectedRows = table.getSelectedRows();
 		for (int i = 0; i < selectedRows.length; i++) {
-			tableModel.removeRow(selectedRows[i]);
+			removeRow(selectedRows[i]);
 		}
 	}
 	

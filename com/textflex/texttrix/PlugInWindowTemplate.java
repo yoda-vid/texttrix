@@ -66,7 +66,7 @@ public class PlugInWindowTemplate extends PlugInWindow {
 	private TemplateDialog diag = null; // the dialog window for user options
 
 
-	/** Runs the plugin
+	/** Runs the plugin.
 	@param s text to search
 	@param x start position
 	@param y end position, non-inclusive
@@ -93,14 +93,16 @@ public class PlugInWindowTemplate extends PlugInWindow {
 	 * bottom of this file.
 	 */
 
-	/** Creates the search plug-in.
-	Sets <code>ignoreSelection</code> to <code>false</code> so that
-	<code>TextTrix</code> sends the entire body of text.  The plug-in
-	chooses which sections on which to work according to user-set
-	options.  The constructor also creates the <code>Action</code>s
-	and <code>Listener</code>s
-	to place in the dialog window so that the plug-in can directly
-	listen for user commands to run the search tool.
+	/** Creates the template plug-in based on predefined variables editable in
+	 * the top section of this source code file.
+	 * Sets <code>setAlwaysEntireText</code> to <code>retrieveAllText</code>
+	 * so that <code>TextTrix</code> sends the appropriate body of text.  If set to
+	 * <code>true</code>, the plug-in always receives the entire body of text and
+	 * chooses which sections on which to work according to user options.  This 
+	 * constructor should also create the <code>Action</code>s
+	 * and <code>Listener</code>s	to place in the dialog window so that the 
+	 * plug-in can directly listen for user commands before running.
+	 * @see #setAlwaysEntireText
 	*/
 	public PlugInWindowTemplate() {
 		super(
@@ -149,7 +151,7 @@ public class PlugInWindowTemplate extends PlugInWindow {
 		return super.getDetailedDescription(getDetailedDescriptionPath());
 	}
 
-	/** Runs the search tool.
+	/** Runs the plugin with the text selection set to (0,0).
 	 * @param s text to search
 	 * @return the plugin output
 	 * @see #run(String, int, int)

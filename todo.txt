@@ -65,14 +65,17 @@ v.0.7.1
 -make clean should cleanup inner/anonymous classes
 -drag-n-drop files to open them in Text Trix
 -backward Search/Word Find
+-add line saver to popup menu
 
 ----Current release----
 
 v.0.7.0
 -----------------
 Changes since v.0.7.0beta2:
--Line Dance should highlight previous line after deleting a line memory
--add line saver to view menu; ADDED
+-Line Dance fixes
+	-Line Dance should highlight previous line after deleting a line memory; FIXED
+	-table should scroll to bottom each time a new entry is added; FIXED
+	-add line saver to view menu; ADDED
 -Search dialog window should be smaller; FIXED
 -import/export/reset preferences options; ADDED
 -when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
