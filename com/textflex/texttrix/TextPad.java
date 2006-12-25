@@ -1457,6 +1457,35 @@ public class TextPad extends JTextPane implements StateEditable {
 			LibTTx.getPrintableLines(this),
 			new Font(getFont().getAttributes()));
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public void setCaretPositionTop(int position) {
+		setCaretPosition(position);
+		try {
+			Rectangle rect = modelToView(position);
+			if (rect != null) {
+//				System.out.println("rect: " + rect.x + ", " + rect.y);
+				getScrollPane().getViewport().scrollRectToVisible(rect);
+			}
+//			getScrollPane().getViewport().setViewPosition(new Point(rect.x, rect.y));
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**Gets the current auto-save timer.
 	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>

@@ -1008,12 +1008,12 @@ public class TextTrix extends JFrame {
 	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
 		if (end != -1&& start != end) {
-			t.setCaretPosition(baseline + start);
+			t.setCaretPositionTop(baseline + start);
 			t.moveCaretPosition(baseline + end);
 			t.getCaret().setSelectionVisible(true);
 			// to ensure selection visibility
 		} else {
-			t.setCaretPosition(baseline + start);
+			t.setCaretPositionTop(baseline + start);
 		}
 	}
 	
@@ -2421,7 +2421,7 @@ public class TextTrix extends JFrame {
 								+ "that location.\nWould you like to try "
 								+ "another directory or filename?";
 						String title = "Couldn't save";
-						repeat = yesNoDialog(owner, msg, title);
+						repeat = LibTTx.yesNoDialog(owner, msg, title);
 					}
 				}
 			} else { // cancel button chosen
@@ -2539,7 +2539,7 @@ public class TextTrix extends JFrame {
 								+ "that location.\nWould you like to try "
 								+ "another directory or filename?";
 						String title = "Couldn't save";
-						repeat = yesNoDialog(owner, msg, title);
+						repeat = LibTTx.yesNoDialog(owner, msg, title);
 					}
 				}
 			} else { // cancel button chosen
@@ -2547,28 +2547,6 @@ public class TextTrix extends JFrame {
 			}
 		} while (repeat); // repeat if retrying save after failure
 		return false;
-	}
-
-	/**
-	 * Front-end, helper function to ask yes/no questions.
-	 * 
-	 * @param owner
-	 *            parent frame; can be null
-	 * @param msg
-	 *            message to display in the main window section
-	 * @param title
-	 *            title to display in the title bar
-	 * @return true for "Yes", false for "No"
-	 */
-	private static boolean yesNoDialog(JFrame owner, String msg, String title) {
-		int choice = JOptionPane.showConfirmDialog(owner, msg, title,
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-		// true for Yes, false for No
-		if (choice == JOptionPane.YES_OPTION) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/**
@@ -2712,7 +2690,7 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @return the main program
 	 */
-	private JFrame getThis() {
+	private TextTrix getThis() {
 		return this;
 	}
 
@@ -2757,8 +2735,7 @@ public class TextTrix extends JFrame {
 	 * display in the currently selected tab's text area. Filters for text
 	 * files, though provides option to display all files.
 	 */
-	private class FileOpenAction extends AbstractAction {
-		JFrame owner;
+	private class FileOpenAction extends BrowseFilesFromTextPad {
 
 		/**
 		 * Constructs the file open action
@@ -2770,10 +2747,8 @@ public class TextTrix extends JFrame {
 		 * @param icon
 		 *            the action's icon
 		 */
-		public FileOpenAction(JFrame aOwner, String name, Icon icon) {
-			owner = aOwner;
-			putValue(Action.NAME, name);
-			putValue(Action.SMALL_ICON, icon);
+		public FileOpenAction(Component aOwner, String aName, Icon icon) {
+			super(aOwner, aName, icon);
 		}
 
 		/**
@@ -2785,58 +2760,19 @@ public class TextTrix extends JFrame {
 		 *            action invocation
 		 */
 		public void actionPerformed(ActionEvent evt) {
-			TextPad t = getSelectedTextPad();
-			// File("") evidently brings file dialog to last path,
-			// whether last saved or opened path
-
-			/*
-			 * getSelectedFiles() returns an array of length 0 with the
-			 * following sequence: -file opened -file saved via save chooser
-			 * -same file opened by double-clicking
-			 * 
-			 * In other words, a file just saved cannot be reopened.
-			 * 
-			 * The problem does not appear when the chooser accept button is
-			 * chosen, a directory is changed before the file is chosen, or the
-			 * name in the text input area is altered in any way.
-			 * 
-			 * UPDATED: Workaround by calling setMultiSelectionEnabled with
-			 * "true", "false", and "true" arguments in succession.
-			 * 
-			 * OLD: The workaround is to use getSelectedFile() if the array has
-			 * length 0; getSelectedFile() for some reason works though its
-			 * multi-partner does not. The file-not-found dialogs refrain from
-			 * specifying the chosen file name since it cannot be retrieved from
-			 * chooser.getSelectedFile() in the situation where the array has
-			 * length 0.
-			 */
-
-			/*
-			 * WORKAROUND: call true, false, true on setMultiSelectionEnabled to
-			 * ensure that the same file can be opened
-			 */
-			chooser.setMultiSelectionEnabled(true);
-			chooser.setMultiSelectionEnabled(false);
-			chooser.setMultiSelectionEnabled(true);
-			String dir = openDir;
-			if (t != null && (dir = t.getDir()).equals(""))
-				dir = openDir;
-			chooser.setCurrentDirectory(new File(dir));
-			chooser.setSelectedFile(new File(""));
-			// allows one to open multiple files;
-			// must disable for save dialog
+			
+			setTextPad(getSelectedTextPad());
+			setOpenDir(getThis().getOpenDir());
 
 			// displays the dialog and opens all files selected
 			boolean repeat = false;
 			do {
-				int result = chooser.showOpenDialog(owner);
+				super.actionPerformed(evt);
+				String msg = "";
+				File[] files = getSelectedFiles();
 				// bring up the dialog and retrieve the result
-				if (result == JFileChooser.APPROVE_OPTION) {
+				if (files != null) {
 					// Open button
-					String msg = "";
-					String title = "Couldn't open";
-					File[] files = chooser.getSelectedFiles();
-					boolean allFound = true;
 					for (int i = 0; i < files.length; i++) {
 						if (!openFile(files[i]))
 							// record unopened files
@@ -2848,30 +2784,14 @@ public class TextTrix extends JFrame {
 						repeat = false;
 					} else { // some files left unopened
 						// notify the user which files couldn't be opened
+						String title = "Couldn't open";
 						msg = "The following files couldn't be opened:\n" + msg
 								+ "Would you like to try again?";
 						// request another chance to open them or other files
-						repeat = yesNoDialog(owner, msg, title);
+						repeat = LibTTx.yesNoDialog(getOwner(), msg, title);
 					}
 					fileHist.start(fileMenu);
 					setAutoIndent();
-					/*
-					 * Original workaround. Utilizes the fact that
-					 * getSelectedFiles() returns an array of length 0, while
-					 * getSelectedFile() returns the intended file object.
-					 */
-					/*
-					 * if (files.length == 0) { File f1 =
-					 * chooser.getSelectedFile();
-					 * System.out.println(f1.getPath()); // OLDDO: dialog
-					 * informing that the file doesn't exist if (f1 != null) {
-					 * openFile(f1); repeat = false; } else { repeat =
-					 * yesNoDialog(owner, msg, title); } } else { boolean
-					 * allFound = true; for (int i = 0; i < files.length; i++) {
-					 * if (!openFile(files[i])) allFound = false; } if
-					 * (allFound) { repeat = false; } else { repeat =
-					 * yesNoDialog(owner, msg, title); } }
-					 */
 				} else { // Cancel button
 					repeat = false;
 				}
@@ -3496,7 +3416,13 @@ public class TextTrix extends JFrame {
 					// close tab group
 					Action closeGroupAction = new AbstractAction("Close tab group") {
 						public void actionPerformed(ActionEvent evt) {
-							removeTabbedPane(getGroupTabbedPane());
+							if (LibTTx.yesNoDialog(
+								getThis(),
+								"You are about to close the tab group and all its tabs."
+									+ "\nAre you sure you want to continue?",
+								"Close tab group?")) {
+								removeTabbedPane(getGroupTabbedPane());
+							}
 						}
 					};
 					LibTTx.setAcceleratedAction(closeGroupAction, "Close tab group",
@@ -3524,7 +3450,7 @@ public class TextTrix extends JFrame {
 												+ " couldn't be written.\n"
 												+ "Would you like to try saving it somewhere else?";
 										String title = "Couldn't write";
-										if (yesNoDialog(TextTrix.this, msg,
+										if (LibTTx.yesNoDialog(TextTrix.this, msg,
 												title))
 											fileSaveDialog(t, TextTrix.this);
 									}
@@ -4064,12 +3990,16 @@ public class TextTrix extends JFrame {
 					// reads from "shortcuts.txt" in same dir as this class
 					Action shortcutsAction = new AbstractAction("Shortcuts") {
 						public void actionPerformed(ActionEvent evt) {
-							String path = "shortcuts.txt";
+							String path = "shortcuts.html";
 							// ArrayIndexOutOfBoundsException while opening file
 							// from
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642)
 							if (!openFile(new File(path), false, true)) {
 								displayMissingResourceDialog(path);
+							} else {
+								TextPad textPad = getSelectedTextPad();
+								textPad.viewHTML();
+								textPad.setCaretPosition(0);
 							}
 						}
 					};
@@ -4447,7 +4377,7 @@ public class TextTrix extends JFrame {
 			} else {
 				Toolkit.getDefaultToolkit().beep();
 				wordFindFld.setBackground(Color.pink);
-				t.setCaretPosition(origCaretPosition);
+				t.setCaretPositionTop(origCaretPosition);
 			}
 			
 			// Save the quarry

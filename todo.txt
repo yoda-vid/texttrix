@@ -63,21 +63,23 @@ Note: "./" is the "check-mark" symbol
 v.0.7.1
 -set font face and size in prefs
 -incorporate JEdit Syntax Package (OSS: MIT-style license)
+-make clean should cleanup inner/anonymous classes
 
 ----Current release----
 
 v.0.7.0
 Changes since v.0.7.0beta2:
 -Line Dance should highlight previous line after deleting a line memory
--make clean should cleanup inner/anonymous classes
 -api documentation
--clean up changelog, readmes, shortcuts
+-clean up changelog, readmes
+-shift Shortcuts link to an HTML file with a table of shortcuts; ADDED
 -add line saver to view menu; ADDED
 -Search dialog window should be smaller; FIXED
 -import/export/reset preferences option; ADDED
+-when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
 -Code cleanup
-	-make BrowseFiles an interface or abstract class, and create subclasses of it for FileOpenAction and the current BrowseFiles action
-	-shift yesNoDialog from Text Trix to LibTTx
+	-make an abstract BrowseFiles class for file open and browsing actions; ADDED
+	-shift yesNoDialog from Text Trix to LibTTx; ADDED
 -----------------
 Changes since v.0.7.0beta1:
 -Line Dance additions and fixes
