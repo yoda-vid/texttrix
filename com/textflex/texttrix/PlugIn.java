@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003-4
+ * Portions created by the Initial Developer are Copyright (C) 2003-7
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <dvd@textflex.com>
@@ -112,79 +112,6 @@ public abstract class PlugIn extends JComponent {
 		listenerList.remove(PlugInListener.class, listener);
 	}
 
-	/**Stub method to add the window adapter that allows other classes to respond
-	 * to this plug in's windowing events.
-	 * @see PlugInWindow
-	 *
-	public void addWindowAdapter() {
-	}
-	/**Stub method to add the component listener that allows other classes to respond
-	 * to this plug in's windowing events.
-	 * @see PlugInWindow
-	 *
-	public void addWindowComponentListener() {
-	}
-	/**Stub method to activate the plug-in's window.
-	 * @see PlugInWindow
-	 *
-	public void activateWindow() {
-	}
-	/**Stub method to check if the plug-in's window is visible.
-	 * @see PlugInWindow
-	 *
-	public boolean isWindowVisible() {
-		return false;
-	}
-	/**Stub method to close the plug-in's window.
-	 * @see PlugInWindow
-	 *
-	public void closeWindow() {
-	}
-	/**Stub method to remove the plug-in's window adapter.
-	 * @see PlugInWindow
-	 *
-	public void removeWindowAdapter() {
-	}
-	/**Stub method to set the plug-in's window adapter.
-	 * @see PlugInWindow
-	 *
-	public void setWindowAdapter(WindowAdapter adapter) {
-	}
-
-	/**Checks the flag that indicates that the plug-in
-	 * has just been activated.
-	 * 
-	 * @return <code>true</code> if the plug-in has just been flagged as 
-	 * activated
-	 *
-	public boolean isTmpActivated() {
-		return tmpActivated;
-	}
-	/**Sets the flag that indicates that the plug-in has just been
-	 * activated.
-	 * After a pause of 1 s (1000 ms), the flag will revert to <code>false</code>.
-	 * 
-	 * @param b <code>true</code> indicates that the plug-in has just
-	 * been activated
-	 * @see TextTrix#focusAllWindows(PlugIn)
-	 *
-	public void setTmpActivated(boolean b) {
-		if (tmpActivated = b) {
-			Thread runner = new Thread() {
-				public void run() {
-					try {
-						Thread.sleep(1000);
-						tmpActivated = false;
-					} catch (InterruptedException e) {
-						// ensures that an interrupt during the sleep is still flagged
-						Thread.currentThread().interrupt();
-					}
-				}
-			};
-			runner.start();
-		}
-	}
-	*/
 
 	/** Runs the plugin on a given section of the text.
 	 * To use, must override or else the function will simply call <code>run(s)</code>.
@@ -283,33 +210,39 @@ public abstract class PlugIn extends JComponent {
 	public String getName() {
 		return name;
 	}
+	
 	/** Gets the plugin path to the main icon.
 	@return path to the main icon
 	*/
 	public String getIconPath() {
 		return iconPath;
 	}
+	
 	/** Gets the plugin path to the rollover icon.
 	 * The roll-over icon displays when the mouse rolls over the plug-in's button.
 	 * This icon can also serve simply as an alternate icon, independent of any
 	 * roll-over mechanism.
 	@return path to the rollover icon
 	*/
+	
 	public String getRollIconPath() {
 		return rollIconPath;
 	}
+	
 	/** Gets the plugin short description.
 	@return short description
 	*/
 	public String getDescription() {
 		return description;
 	}
+	
 	/** Gets the plugin category.
 	@return category
 	*/
 	public String getCategory() {
 		return category;
 	}
+	
 	/** Gets the plugin selection status.
 	<code>true</code> indicates that all of the next, not merely
 	the selected text, should be retrieved.
@@ -372,6 +305,7 @@ public abstract class PlugIn extends JComponent {
 			icon = getImageIcon(path);
 		return icon;
 	}
+	
 	/** Gets the roll-over icon and stores it in <code>icon</code>
 	 * 
 	 * @param path path to the icon, relative to the plug-in's class file
@@ -474,6 +408,7 @@ public abstract class PlugIn extends JComponent {
 	public String getPath() {
 		return path;
 	}
+	
 	/**Gets the filename from the current path setting.
 	 * 
 	 * @return the filename; if the file separator does not exist or is only
@@ -485,15 +420,8 @@ public abstract class PlugIn extends JComponent {
 		return lastSep != -1
 			&& lastSep != path.length() - 1 ? path.substring(lastSep + 1) : path;
 	}
-	/**Stub method to get the plug-in's window adapter.
-	 * 
-	 * @return <code>null</code>
-	 * @see PlugInWindow
-	 *
-	public WindowAdapter getWindowAdapter() {
-		return null;
-	}
-	*/
+	
+	
 
 	/**Stub method to set the plug-in's window size.
 	 * 
@@ -503,6 +431,7 @@ public abstract class PlugIn extends JComponent {
 	 */
 	public void setWindowSize(int width, int height) {
 	}
+	
 	/**Stub method to set the plug-in's window location.
 	 * 
 	 * @param p the (x,y) location of the window
@@ -510,6 +439,7 @@ public abstract class PlugIn extends JComponent {
 	 */
 	public void setWindowLocation(Point p) {
 	}
+	
 	/**Stub method to get the width of the plug-in's window.
 	 * 
 	 * @return 0
@@ -518,6 +448,7 @@ public abstract class PlugIn extends JComponent {
 	public int getWindowWidth() {
 		return 0;
 	}
+	
 	/**Stub method to get the height of the plug-in's window.
 	 * 
 	 * @return 0
@@ -526,6 +457,7 @@ public abstract class PlugIn extends JComponent {
 	public int getWindowHeight() {
 		return 0;
 	}
+	
 	/**Stub method to get the location of the plug-in's window.
 	 * 
 	 * @return <code>null</code>
@@ -534,6 +466,7 @@ public abstract class PlugIn extends JComponent {
 	public Point getWindowLocation() {
 		return null;
 	}
+	
 	/**Stub method to get the plug-in's window.
 	 * @return <code>null</code>
 	 * @see PlugInWindow

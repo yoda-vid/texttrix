@@ -75,11 +75,12 @@ Changes since v.0.7.0beta2:
 -shift Shortcuts link to an HTML file with a table of shortcuts; ADDED
 -add line saver to view menu; ADDED
 -Search dialog window should be smaller; FIXED
--import/export/reset preferences option; ADDED
+-import/export/reset preferences options; ADDED
 -when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
 -Code cleanup
 	-make an abstract BrowseFiles class for file open and browsing actions; ADDED
 	-shift yesNoDialog from Text Trix to LibTTx; ADDED
+	-make separate ExtensionFileFilter public class; ADDED
 -----------------
 Changes since v.0.7.0beta1:
 -Line Dance additions and fixes

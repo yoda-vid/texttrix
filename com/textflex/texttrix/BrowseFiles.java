@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2006-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -42,59 +42,87 @@ import java.awt.event.*;
 import java.awt.*;
 
 /**
- * Evokes a open file dialog, from which the user can select a file to
- * display in the currently selected tab's text area. Filters for text
- * files, though provides option to display all files.
+ * An abstract class for opening a file browser window,  from which 
+ * the user can select a file or files.  Subclasses should manage what
+ * to do with the selected files and how to filters for specific file types.
  */
 public abstract class BrowseFiles extends AbstractAction {
-	private Component owner;
-	private TextPad textPad = null;
-	private String name = "";
-	private String openDir = "";
+	private Component owner; // the owner for placement of the chooser
+	private TextPad textPad = null; // the Text Pad
+	private String name = ""; // name of the dialog and accept button
+//	private String openDir = ""; // the last opened directory
 	
-	private File selectedFile = null;
-	private File[] selectedFiles = null;
+	private File selectedFile = null; // user-chosen file
+	private File[] selectedFiles = null; // user-chosen files
 	private JFileChooser chooser = null; // file dialog
-	private File currentDir = new File("");
-	private File defaultFile = new File("");
+	private File currentDir = new File(""); // current directory
+	private File defaultFile = new File(""); // default file to select
 
-	/**
-	 * Constructs the file open action
-	 * 
-	 * @param aOwner
-	 *            the parent frame
-	 * @param name
-	 *            the action's name
-	 * @param icon
-	 *            the action's icon
+	/** Creates a file browser.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
 	 */
-	public BrowseFiles(Component aOwner, String aName, Icon icon) {
+	public BrowseFiles(Component aOwner, String aName, Icon icon, JFileChooser aChooser) {
 		owner = aOwner;
 		name = aName;
 		putValue(Action.NAME, name);
 		putValue(Action.SMALL_ICON, icon);
-		chooser = new JFileChooser();
-		chooser.setApproveButtonText(name);
+		chooser = aChooser;
+		if (chooser == null) {
+			chooser = new JFileChooser();
+			chooser.setApproveButtonText(name);
+		}
 	}
 	
-	public BrowseFiles(Component aOwner, String aName, Icon icon, File aCurrentDir, File aDefaultFile) {
-		this(aOwner, aName, icon);
+	/** Creates a file browser.
+	 * A generic chooser will be created.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 */
+	public BrowseFiles(Component aOwner, String aName, Icon icon) {
+		this(aOwner, aName, icon, null);
+	}
+	
+	/** Creates a file browser.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aCurrentDir a directory that the file chooser can open to
+	 * @param aDefaultFile a file that the chooser can automatically try to select
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
+	 */
+	public BrowseFiles(Component aOwner, String aName, Icon icon, 
+		File aCurrentDir, File aDefaultFile, JFileChooser aChooser) {
+		
+		this(aOwner, aName, icon, aChooser);
 		currentDir = aCurrentDir;
 		defaultFile = aDefaultFile;
 	}
 	
-	/*
-	public BrowseFiles(Component aOwner, String aName, Icon icon, TextPad aTextPad, String aOpenDir) {
-		this(aOwner, aName, icon);
-		textPad = aTextPad;
-		openDir = aOpenDir;
+	/** Creates a file browser.
+	 * A generic chooser will be created.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aCurrentDir a directory that the file chooser can open to
+	 * @param aDefaultFile a file that the chooser can automatically try to select
+	 */
+	public BrowseFiles(Component aOwner, String aName, Icon icon, File aCurrentDir, File aDefaultFile) {
+		this(aOwner, aName, icon, aCurrentDir, aDefaultFile, null);
 	}
-	*/
 	
 	/**
-	 * Displays a file open chooser when the action is invoked. Defaults to
-	 * the directory from which the last file was opened or, if no files
-	 * have been opened, to the user's home directory.
+	 * Performs the action, usually opening a file chooser and
+	 * allowing the user to select one or more files.
 	 * 
 	 * @param evt
 	 *            action invocation
@@ -108,83 +136,146 @@ public abstract class BrowseFiles extends AbstractAction {
 	
 	
 	
-	
+	/** Sets the selected file, usually the first file that
+	 * the user selected.
+	 * @param aSelectedFile a file to save as the user-selected file
+	 */
 	public void setSelectedFile(File aSelectedFile) {
 		selectedFile = aSelectedFile;
 	}
 	
+	/** Sets the selected files, usually useful when mult-file
+	 * selection is enabled in the chooser
+	 * @param aSelectedFiles the files to save as the user-selected file
+	 */
 	public void setSelectedFiles(File[] aSelectedFiles) {
 		selectedFiles = aSelectedFiles;
 	}
 	
+	/** Sets the current directory so that the chooser can reference
+	 * a directory to open to by default.
+	 * @param aCurrentDir a directory
+	 */
 	public void setCurrentDir(File aCurrentDir) {
 		currentDir = aCurrentDir;
 	}
 	
+	/** Sets the default file so that the chooser can enter a default
+	 * file for the user to select.
+	 * @param aDefaultFile a file
+	 */
 	public void setDefaultFile(File aDefaultFile) {
 		defaultFile = aDefaultFile;
 	}
 	
+	/** Sets the file chooser.
+	 * Choosers with pre-embedded file filters or approve button
+	 * names can be set here.
+	 * @param aChooser a chooser
+	 */
 	public void setChooser(JFileChooser aChooser) {
 		chooser = aChooser;
 	}
 	
+	/** Sets the owner, which is usually the component that
+	 * the file chooser is centered on.
+	 * @param aOwner a component
+	 */
 	public void setOwner(Component aOwner) {
 		owner = aOwner;
 	}
 	
+	/** Sets the name.
+	 * @param aName the name
+	 */	
 	public void setName(String aName) {
 		name = aName;
 	}
 	
+	/** Sets a (@link TextPad) for reference, such as file paths.
+	 * @param aTextPad a Text Pad
+	 */
 	public void setTextPad(TextPad aTextPad) {
 		textPad = aTextPad;
 	}
 	
+	/** Sets the open directory
 	public void setOpenDir(String aOpenDir) {
 		openDir = aOpenDir;
 	}
+	*/
 	
 	
 	
 	
-	
-	
+	/** Gets the selected file, usually the first file that
+	 * the user selected.
+	 * @return a file to save as the user-selected file
+	 */
 	public File getSelectedFile() {
 		return selectedFile;
 	}
 	
+	/** Gets the selected files, usually useful when mult-file
+	 * selection is enabled in the chooser
+	 * @return the files to save as the user-selected file
+	 */
 	public File[] getSelectedFiles() {
 		return selectedFiles;
 	}
 	
+	/** Gets the current directory so that the chooser can reference
+	 * a directory to open to by default.
+	 * @return a directory
+	 */
 	public File getCurrentDir() {
 		return currentDir;
 	}
 	
+	/** Gets the default file so that the chooser can enter a default
+	 * file for the user to select.
+	 * @return a file
+	 */
 	public File getDefaultFile() {
 		return defaultFile;
 	}
 	
+	/** Sets the file chooser.
+	 * Choosers with pre-embedded file filters or approve button
+	 * names can be set here.
+	 * @return the chooser
+	 */
 	public JFileChooser getChooser() {
 		return chooser;
 	}
 	
+	/** Gets the owner, which is usually the component that
+	 * the file chooser is centered on.
+	 * @return a component
+	 */
 	public Component getOwner() {
 		return owner;
 	}
 	
+	/** Gets the name.
+	 * @return the name
+	 */	
 	public String getName() {
 		return name;
 	}
 	
+	/** Gets a (@link TextPad) for reference, such as file paths.
+	 * @return a Text Pad
+	 */
 	public TextPad getTextPad() {
 		return textPad;
 	}
 	
+	/*
 	public String getOpenDir() {
 		return openDir;
 	}
+	*/
 		
 
 }

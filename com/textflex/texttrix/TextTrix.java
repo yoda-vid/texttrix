@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2002-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -2729,6 +2729,27 @@ public class TextTrix extends JFrame {
 				"Really sorry, but I couldn't find that",
 				JOptionPane.INFORMATION_MESSAGE);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public JFileChooser getChooser() {
+		return chooser;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * Evokes a open file dialog, from which the user can select a file to
@@ -2742,13 +2763,13 @@ public class TextTrix extends JFrame {
 		 * 
 		 * @param aOwner
 		 *            the parent frame
-		 * @param name
+		 * @param aName
 		 *            the action's name
-		 * @param icon
+		 * @param aIcon
 		 *            the action's icon
 		 */
-		public FileOpenAction(Component aOwner, String aName, Icon icon) {
-			super(aOwner, aName, icon);
+		public FileOpenAction(Component aOwner, String aName, Icon aIcon) {
+			super(aOwner, aName, aIcon, getThis().getChooser());
 		}
 
 		/**
@@ -2762,7 +2783,7 @@ public class TextTrix extends JFrame {
 		public void actionPerformed(ActionEvent evt) {
 			
 			setTextPad(getSelectedTextPad());
-			setOpenDir(getThis().getOpenDir());
+			setCurrentDir(new File(getOpenDir()));
 
 			// displays the dialog and opens all files selected
 			boolean repeat = false;
@@ -4780,69 +4801,4 @@ public class TextTrix extends JFrame {
 
 	
 	
-}
-
-/**
- * Filters for files with specific extensions.
- */
-
-class ExtensionFileFilter extends FileFilter {
-	private String description = "";
-
-	private ArrayList extensions = new ArrayList();
-
-	/**
-	 * Add extension to include for file display. May need to modify to check
-	 * whether extension has already been added.
-	 * 
-	 * @param file
-	 *            extension, such as <code>.txt</code>, though the period is
-	 *            optional
-	 */
-	public void addExtension(String extension) {
-		if (!extension.startsWith("."))
-			extension = "." + extension;
-		extensions.add(extension.toLowerCase());
-	}
-
-	/**
-	 * Sets the file type description.
-	 * 
-	 * @param aDescription
-	 *            file description, such as <code>text
-	 * files</code> for
-	 *            <code>.txt</code> files
-	 */
-	public void setDescription(String aDescription) {
-		description = aDescription;
-	}
-
-	/**
-	 * Gets file type's description.
-	 * 
-	 * @return file type description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * Accept a given file to display if it has the extension currently being
-	 * filtered for.
-	 * 
-	 * @param f
-	 *            file whose extension need to check
-	 * @return <code>true</code> if accepts file, <code>false</code> if
-	 *         don't
-	 */
-	public boolean accept(File f) {
-		if (f.isDirectory())
-			return true;
-		String name = f.getName().toLowerCase();
-
-		for (int i = 0; i < extensions.size(); i++)
-			if (name.endsWith((String) extensions.get(i)))
-				return true;
-		return false;
-	}
 }

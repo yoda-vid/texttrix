@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2006-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -41,21 +41,71 @@ import java.io.*;
 import java.awt.event.*;
 import java.awt.*;
 
+/** Allows the user to browse for a single file.
+ * @see BrowseFilesFromTextPad
+ */
 public class BrowseSingleFile extends BrowseFiles {
 	
-	public BrowseSingleFile(Component aOwner, String name, Icon icon) {
-		super(aOwner, name, icon);
+	/** Constructor for browsing a single file.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
+	 */
+	public BrowseSingleFile(Component aOwner, String aName, Icon icon, JFileChooser aChooser) {
+		super(aOwner, aName, icon, aChooser);
+	}
+	
+	/** Constructor for browsing a single file.
+	 * A generic chooser will be created.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 */
+	public BrowseSingleFile(Component aOwner, String aName, Icon icon) {
+		super(aOwner, aName, icon);
 	}
 	
 	
-	public BrowseSingleFile(Component aOwner, String name, Icon icon, File aCurrentDir, File aDefaultFile) {
-		super(aOwner, name, icon, aCurrentDir, aDefaultFile);
+	/** Constructor for browsing a single file.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aCurrentDir a directory that the file chooser can open to
+	 * @param aDefaultFile a file that the chooser can automatically try to select
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
+	 */
+	public BrowseSingleFile(Component aOwner, String aName, Icon icon, 
+		File aCurrentDir, File aDefaultFile, JFileChooser aChooser) {
+		super(aOwner, aName, icon, aCurrentDir, aDefaultFile, aChooser);
+	}
+	
+	/** Constructor for browsing a single file.
+	 * A generic chooser will be created.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aCurrentDir a directory that the file chooser can open to
+	 * @param aDefaultFile a file that the chooser can automatically try to select
+	 */
+	public BrowseSingleFile(Component aOwner, String aName, Icon icon, 
+		File aCurrentDir, File aDefaultFile) {
+		super(aOwner, aName, icon, aCurrentDir, aDefaultFile);
 	}
 	
 	/**
-	 * Displays a file open chooser when the action is invoked. Defaults to
-	 * the directory from which the last file was opened or, if no files
-	 * have been opened, to the user's home directory.
+	 * Displays a file open chooser when the action is invoked.
+	 * Defaults to the directory set as the current directory
+	 * (@see #setCurrentDir).  Only allows the user to open a 
+	 * single file, which is recorded as a selected file
+	 * (@see #getSelectedFile) if the user presses the approve button.
+	 * If no file is selected, the selected file will be null.
 	 * 
 	 * @param evt
 	 *            action invocation
@@ -64,7 +114,9 @@ public class BrowseSingleFile extends BrowseFiles {
 	
 		// clears any previously selected files
 		setSelectedFile(null);
-
+		
+		// gets, displays, and records the selected file
+		// from the chooser
 		JFileChooser chooser = getChooser();
 		chooser.setCurrentDirectory(getCurrentDir());
 		chooser.setSelectedFile(getDefaultFile());

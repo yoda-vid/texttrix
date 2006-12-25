@@ -18,7 +18,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2002-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -1392,12 +1392,34 @@ public class TextPad extends JTextPane implements StateEditable {
 		if (position > len) {
 			setCaretPosition(len);
 		} else if (position != -1) {
-			setCaretPosition(position);
+			setCaretPositionTop(position);
 		}
 		// shifts focus from the Line Dance panel to this pad
 		requestFocus();
 		requestFocusInWindow();
 	}
+	
+
+	/**Creates a print pad for this <code>TextPad</code> object.
+	 * The text pad needs to create its own print pad so that the 
+	 * text pad can pass its contents array of each visible line
+	 * and also pass the current font. 
+	 * @return the print pad, including the current text, broken
+	 * up according to the visible, soft breaks in the 
+	 * <code>TextPad</code>, and the current font
+	 */
+	public PrintPad createPrintPad() {
+		return new PrintPad(
+			//LibTTx.getVisibleLines(this),
+			LibTTx.getPrintableLines(this),
+			new Font(getFont().getAttributes()));
+	}
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1442,29 +1464,15 @@ public class TextPad extends JTextPane implements StateEditable {
 	public int getTabSize() {
 		return tabSize;
 	}
-
-	/**Creates a print pad for this <code>TextPad</code> object.
-	 * The text pad needs to create its own print pad so that the 
-	 * text pad can pass its contents array of each visible line
-	 * and also pass the current font. 
-	 * @return the print pad, including the current text, broken
-	 * up according to the visible, soft breaks in the 
-	 * <code>TextPad</code>, and the current font
+	
+	
+	
+	
+	
+	/** Sets the caret position and scrolls the scroll pane that contains this Text Pad
+	 * so that the caret is at the top of the pad's viewable area.
+	 * @param position the new caret position
 	 */
-	public PrintPad createPrintPad() {
-		return new PrintPad(
-			//LibTTx.getVisibleLines(this),
-			LibTTx.getPrintableLines(this),
-			new Font(getFont().getAttributes()));
-	}
-	
-	
-	
-	
-	
-	
-	
-	
 	public void setCaretPositionTop(int position) {
 		setCaretPosition(position);
 		try {

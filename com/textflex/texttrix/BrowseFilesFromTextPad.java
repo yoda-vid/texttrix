@@ -43,26 +43,70 @@ import java.awt.*;
 
 public class BrowseFilesFromTextPad extends BrowseFiles {
 	
-	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon icon) {
-		super(aOwner, aName, icon);
+	/** Constructor for browsing multiple files, using a Text Pad as a reference
+	 * for default directories and the link.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 */
+	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon aIcon, JFileChooser aChooser) {
+		super(aOwner, aName, aIcon, aChooser);
+	}
+	
+	/** Constructor for browsing multiple files, using a Text Pad as a reference
+	 * for default directories and the link.
+	 * A generic chooser will be created.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
+	 */
+	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon aIcon) {
+		super(aOwner, aName, aIcon);
 	}
 	
 	
+	/** Constructor for browsing multiple files, using a Text Pad as a reference
+	 * for default directories and the link.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aCurrentDir a directory that the file chooser can open to
+	 * @param aDefaultFile a file that the chooser can automatically try to select
+	 * @param aChooser a file chooser; if null, a new chooser will be created wtih the 
+	 * approve button set to <code>name</code>
+	 */
+	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon icon, 
+		File aCurrentDir, File aDefaultFile, JFileChooser aChooser) {
+		super(aOwner, aName, icon, aCurrentDir, aDefaultFile, aChooser);
+	}
+	
+	/** Constructor for browsing multiple files, using a Text Pad as a reference
+	 * for default directories and the link.
+	 * A generic chooser will be created.
+	 * @param aOwner the chooser will be centered on this owner; if null, the chooser
+	 * is placed at the center of the screen
+	 * @param aName the file browser and accept button will use this name
+	 * @param icon the icon for the file browser; apparently not used
+	 * @param aCurrentDir a directory that the file chooser can open to
+	 * @param aDefaultFile a file that the chooser can automatically try to select
+	 */
 	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon icon, File aCurrentDir, File aDefaultFile) {
 		super(aOwner, aName, icon, aCurrentDir, aDefaultFile);
 	}
 	
-	/*
-	public BrowseFilesFromTextPad(Component aOwner, String aName, Icon icon, 
-		TextPad aTextPad, String aOpenDir) {
-		super(aOwner, aName, icon, aTextPad, aOpenDir);
-	}
-	*/
 	
 	/**
-	 * Displays a file open chooser when the action is invoked. Defaults to
-	 * the directory from which the last file was opened or, if no files
-	 * have been opened, to the user's home directory.
+	 * Displays a file open chooser when the action is invoked.
+	 * Defaults to the directory set as the current directory
+	 * (@see #setCurrentDir).  Allows the user to open multiple
+	 * file, which are recorded as an array of selected files
+	 * (@see #getSelectedFile) if the user presses the approve button.
+	 * If no file is selected, the selected file array will be null.
 	 * 
 	 * @param evt
 	 *            action invocation
@@ -94,19 +138,24 @@ public class BrowseFilesFromTextPad extends BrowseFiles {
 		 * length 0.
 		 */
 		JFileChooser chooser = getChooser();
+		// allows one to open multiple files;
+		// must disable for save dialog
 		chooser.setMultiSelectionEnabled(true);
 		chooser.setMultiSelectionEnabled(false);
 		chooser.setMultiSelectionEnabled(true);
-		String dir = "";
-		if (getTextPad() != null && (dir = getTextPad().getDir()).equals(""))
-			dir = getOpenDir();
-		chooser.setCurrentDirectory(new File(dir));
+		
+		// sets the default directory to the parent directory of the file in
+		// the currently selected Text Pad; if not possible, falls back on
+		// the user-defined (@see #getCurrentDir).
+		File dir = new File("");
+		if (getTextPad() != null && !(dir = new File(getTextPad().getDir())).exists()) {
+			dir = getCurrentDir();
+		}
+		chooser.setCurrentDirectory(dir);
 		chooser.setSelectedFile(new File(""));
-		// allows one to open multiple files;
-		// must disable for save dialog
 
-		int result = chooser.showOpenDialog(getOwner());
 		// bring up the dialog and retrieve the result
+		int result = chooser.showOpenDialog(getOwner());
 		if (result == JFileChooser.APPROVE_OPTION) {
 			setSelectedFiles(chooser.getSelectedFiles());
 		}
