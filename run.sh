@@ -168,4 +168,4 @@ then
 fi
 
 cd "$BASE_DIR"
-"$JAVA"java -cp . com/textflex/texttrix/TextTrix
+"$JAVA"java -cp . com/textflex/texttrix/TextTrix $@

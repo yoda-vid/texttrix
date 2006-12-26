@@ -74,7 +74,7 @@ public class TextTrix extends JFrame {
 	private int[] tabIndexHistory = new int[10]; // records for back/forward
 	private int tabIndexHistoryIndex = 0; // index of next record
 	private boolean updateTabIndexHistory = true; // flag to update the record
-	private boolean updateForTextPad = true;
+	private boolean updateForTextPad = true; // flag to update UI and Hx for pad
 	// flag to update file history menu entries
 	private static boolean updateFileHist = false;
 	private FileHist fileHist = null; // file history
@@ -338,14 +338,30 @@ public class TextTrix extends JFrame {
 				// can only create after making several other user interface
 				// components, such as the autoIndent check menu item
 
-				// load files specified at start from command-line
-				setUpdateForTextPad(false);
-				if (paths != null) {
+				// Load files specified at start from command-line
+				
+				// first uncouples the change listener from responding to
+				// the Text Pad additions; need to uncouple when opening
+				// multiple files at once because change listener is on an
+				// EvokeLater and can't respond to text pads as they're added
+//				setUpdateForTextPad(false);
+				
+				// opens paths given as cmd-line args, placing them in their own 
+				// tab group and preparing to create a new tab group for other startup files
+				// TODO: keep track of cmd-line files so don't reopen them automatically
+				// on next startup
+				boolean cmdLineFiles = paths != null && paths.length > 0;
+				if (cmdLineFiles) {
+					openFiles(paths, 0, true);
+					/*
 					for (int i = 0; i < paths.length; i++) {
 						openInitialFile(paths[i]);
 						updateTabHistory(getSelectedTabbedPane(), i);
-						addTabbedPane(getGroupTabbedPane(), "Cmd-line");
 					}
+					*/
+					// distinguishes the tab group as files given as arguments
+					getGroupTabbedPane().setTitleAt(0, "Args");
+//					addTabbedPane(getGroupTabbedPane(), "");
 				}
 
 				// load files left open at the close of the last session
@@ -359,21 +375,30 @@ public class TextTrix extends JFrame {
 					for (int i = 1; i < grpTokens.length; i++) {
 						String[] tokens = grpTokens[i].split(FILE_SPLITTER);
 						// Blank group already open initally, so simply update title
-						// and start adding files
-						if (i == 1) {
+						// and start adding files, unless cmd-line files were opened
+						if (i == 1 && !cmdLineFiles) {
 							setSelectedTabbedPaneTitle(tokens[0]);
 						} else {
+							// adds a new tab group for other startup files if
+							// cmd-line files already occupy a group
 							addTabbedPane(getGroupTabbedPane(), tokens[0]);
 						}
+						openFiles(tokens, 1, true);
+						/*
 						for (int h = 1; h < tokens.length; h++) {
 							openInitialFile(tokens[h]);
 							updateTabHistory(getSelectedTabbedPane(), h - 1);
 						}
+						*/
 					}
 				}
+				// selects the first tab group and updates the UI for the 
+				// currently selected tab
 				getGroupTabbedPane().setSelectedIndex(0);
-				setUpdateForTextPad(true);
-				updateForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
+//				updateUIForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
+				
+				// recouples the change listener to respond to tab events
+//				setUpdateForTextPad(true);
 
 				// make the file history menu entries and set the auto-indent
 				// check box
@@ -473,22 +498,37 @@ public class TextTrix extends JFrame {
 	 * the user may not have expected the opening in the first place and thus
 	 * does not have to be needlessly concerned.
 	 * 
-	 * @param path
-	 *            path to file
+	 * @param file file to open
 	 */
-	private void openInitialFile(String path) {
+	private boolean openInitialFile(File file) {
 		// command-line feedback
+		String path = file.getPath();
 		System.out.print("Opening file from path " + path + "...");
 		
 		// Open the file if possible, or supply explanation if not
-		if (!openFile(new File(path), true, false, false)) {
+		if (!openFile(file, true, false, false)) {
 			String msg = newline + "Sorry, but " + path + " can't be read."
 					+ newline + "Is it a directory?  Does it have the right "
 					+ "permsissions for reading?";
 			System.out.println(msg);
+			return false;
 		} else {
 			System.out.println("got it!");
+			return true;
 		}
+	}
+	
+	/**
+	 * Opens the given file from the given path. 
+	 * Useful for opening files at program start-up
+	 * because only gives command-line feedback if the file cannot be opened;
+	 * the user may not have expected the opening in the first place and thus
+	 * does not have to be needlessly concerned.
+	 * 
+	 * @param path path of file to open
+	 */
+	private boolean openInitialFile(String path) {
+		return openInitialFile(new File(path));
 	}
 
 	/**
@@ -1703,13 +1743,13 @@ public class TextTrix extends JFrame {
 		
 		// TODO: focus in newly created tab
 		addTextArea(newTabbedPane, makeNewFile());
-		updateForTextPad(newTabbedPane, getSelectedTextPad());
+		updateUIForTextPad(newTabbedPane, getSelectedTextPad());
 		updateTabHistory(getSelectedTabbedPane());
 		
 		/*
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				updateForTextPad(newTabbedPane, getSelectedTextPad());
+				updateUIForTextPad(newTabbedPane, getSelectedTextPad());
 				updateTabHistory(getGroupTabbedPane());
 			}
 		});
@@ -1764,7 +1804,15 @@ public class TextTrix extends JFrame {
 		tabbedPane.setToolTipTextAt(i, textPad.getPath());
 	}
 
-	public void updateForTextPad(MotherTabbedPane pane, TextPad t) {
+	/** Updates the user interface for the give Text Pad.
+	 * The menu entries, including the auto-wrap-indent check box,
+	 * and status bar line numbers are updates.  The main window
+	 * title takes on the name of the file in the tab.  The Line Dance
+	 * panel corresponding to the pad is added.  The pad
+	 * also requests focus.
+	 * @see #updateTabHistory
+	 */
+	public void updateUIForTextPad(MotherTabbedPane pane, TextPad t) {
 		if (t != null) {
 			setAutoIndent();
 			updateTitle(t.getFilename());
@@ -1783,6 +1831,14 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/** Updates the tab history for the given Text Pad.
+	 * If the <code>updateTabIndexHistory</code> flag is set
+	 * to false, no history will be added, but the flag will be
+	 * reset to true.
+	 * @param pane the tab group
+	 * @param i the index of the tab to add to the history; if
+	 * -1, then the currently selected tab index will be stored
+	 */
 	public void updateTabHistory(MotherTabbedPane pane, int i) {
 		// update the tab index record;
 		// addTabIndexHistory increments the record index;
@@ -1797,6 +1853,13 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/** Updates the tab history for the currently selected Text Pad.
+	 * If the <code>updateTabIndexHistory</code> flag is set
+	 * to false, no history will be added, but the flag will be
+	 * reset to true.
+	 * @param pane the tab group
+	 * @param i the index of the tab to add to the history
+	 */
 	public void updateTabHistory(MotherTabbedPane pane) {
 		updateTabHistory(pane, -1);
 	}
@@ -2072,20 +2135,22 @@ public class TextTrix extends JFrame {
 	 * Opens a file into a text pad. Calls the file open dialog. Opens the file
 	 * into a new pad unless the currently selected one is empty. Sets the
 	 * file's name as a the tab's title and the path as the tab's tool tip.
-	 * Assumes that the file is readable as text.
+	 * Assumes that the file is readable as text.  Anytime multiple files are
+	 * opened at once, the <code>updateForTextPad</code> flag should
+	 * be set to false to prevent the change listener from responding
+	 * after the fact, since the listener is on an EvokeLater.  The tab history
+	 * should be updated manually for each file, and the UI should be
+	 * updated after opening the last file, just before resetting the flag 
+	 * to true.
 	 * 
-	 * @param file
-	 *            file to open
-	 * @param editable
-	 *            <code>true</code> if the resulting text pad should be
+	 * @param file file to open
+	 * @param editable <code>true</code> if the resulting text pad should be
 	 *            editable
-	 * @param resource
-	 *            <code>true</code> if the file should be accessed as a
-	 *            resource, via
-	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
+	 * @param resource <code>true</code> if the file should be accessed as a
+	 *            resource, via <code>TextTrix.class.getResourceAsStream(path)</code>
 	 * @param reuseTab <code>true</code> if a tab should be reused, even
 	 * if it is isn't empty or is empty but with unsaved changes
-	 * @see #openFile(File)
+	 * @see #openFile
 	 * @return true if the file is successfully opened or already open
 	 */
 	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
@@ -2200,28 +2265,39 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Opens a file into a text pad. Calls the file open dialog. Opens the file
+	 * Opens a file into a text pad, making the file editable, treating
+	 * it not as a resource, and not reusing any tabs. 
+	 * Calls the file open dialog. Opens the file
 	 * into a new pad unless the currently selected one is empty. Sets the
 	 * file's name as a the tab's title and the path as the tab's tool tip.
-	 * Assumes that the file is readable as text and should be accessed
-	 * directly, rather than as as a resource. Also assumed that the resulting
-	 * text pad should be editable and that the currently selected tab should not 
-	 * be force reused.  Front-end for <code>openFile(File, boolean, boolean, 
-	 * boolean)</code>, with the arguments, 
-	 * <code>openFile(File, true, false, false)</code>.
+	 * Assumes that the file is readable as text.  Anytime multiple files are
+	 * opened at once, the <code>updateForTextPad</code> flag should
+	 * be set to false to prevent the change listener from responding
+	 * after the fact, since the listener is on an EvokeLater.  The tab history
+	 * should be updated manually for each file, and the UI should be
+	 * updated after opening the last file, just before resetting the flag 
+	 * to true.
 	 * 
 	 * @param file
 	 *            file to open
-	 * @see #openFile(File, boolean, boolean)
+	 * @see #openFile
 	 */
 	public boolean openFile(File file) {
 		return openFile(file, true, false, false);
 	}
 	
-	/**Opens a file as editable and not from a resource.
-	 * Simply acts as a front end to 
-	 * <code>openFile(File, boolean, boolean, boolean)</code>,
-	 * with <code>resueTab</code> set to false.
+	 /** Opens a file into a text pad, without reusing any tabs. 
+	 * Calls the file open dialog. Opens the file
+	 * into a new pad unless the currently selected one is empty. Sets the
+	 * file's name as a the tab's title and the path as the tab's tool tip.
+	 * Assumes that the file is readable as text.  Anytime multiple files are
+	 * opened at once, the <code>updateForTextPad</code> flag should
+	 * be set to false to prevent the change listener from responding
+	 * after the fact, since the listener is on an EvokeLater.  The tab history
+	 * should be updated manually for each file, and the UI should be
+	 * updated after opening the last file, just before resetting the flag 
+	 * to true.
+	 * 
 	 * @param file
 	 *            file to open
 	 * @param editable
@@ -2800,7 +2876,13 @@ public class TextTrix extends JFrame {
 	
 	
 	
-	
+	/** Sets the <code>updateForTextPad</code> flag to the given value
+	 * to let the <code>TextPadChangeListener</code> know whether
+	 * or not to update the UI and tab history based during a change event.
+	 * @param aUpdateForTextPad true if the listener should respond
+	 * events; false if the UI and tab updates will be taken care of
+	 * independently
+	 */
 	public void setUpdateForTextPad(boolean aUpdateForTextPad) {
 		updateForTextPad = aUpdateForTextPad;
 	}
@@ -2818,17 +2900,92 @@ public class TextTrix extends JFrame {
 		return chooser;
 	}
 	
+	/** Gets the <code>updateForTextPad</code> flag, which tells
+	 * whether the <code>TextPadChangeListener</code> should 
+	 * update the UI and tab history based during a change event.
+	 * @return true if the listener should respond
+	 * events; false if the UI and tab updates will be taken care of
+	 * independently
+	 */
 	public boolean getUpdateForTextPad() {
 		return updateForTextPad;
 	}
 	
 	
+	/** Opens multiple files, waiting until the final file has been
+	 * opened before updating the UI, but updating the tab
+	 * history continuously.
+	 * The <code>TextPadChangeListener</code> is uncoupled
+	 * during this operation to prevent it from updating the
+	 * UI and tab history after the fact, since the listener is
+	 * on an <code>EvokeLater</code>.  The Text Pad will
+	 * still be added, but the title and menu settings won't be
+	 * updated until the last file, since the other files' updates will
+	 * be replaced by each successively opened file, and they will 
+	 * each update the UI whenever they are brought to focus.
+	 * @param files the files to open
+	 * @param offset starting index in the files array
+	 * @param initialFiles if true, the files will be opened by 
+	 * the openInitialFile method
+	 * @see #openInitialFile
+	 */
+	public String openFiles(File[] files, int offset, boolean initialFiles) {
+		String msg = "";
+		
+		// first uncouples the change listener from responding to
+		// the Text Pad additions; need to uncouple when opening
+		// multiple files at once because change listener is on an
+		// EvokeLater and can't respond to text pads as they're added
+		setUpdateForTextPad(false);
+		
+		// opens the files, starting from the offset
+		for (int i = offset; i < files.length; i++) {
+			// opens the file
+			boolean success = initialFiles ?
+				openInitialFile(files[i]) : openFile(files[i]);
+			if (success) {
+				// if successful, updates the tab history
+				updateTabHistory(getSelectedTabbedPane());
+			} else {
+				// record unopened files
+				msg = msg + files[i] + "\n";
+			}
+		}
+		// updates the UI to reflect the last opened tab
+		updateUIForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
+		
+		// recouples the listener
+		setUpdateForTextPad(true);
+		
+		return msg;
+	}
 	
-	
-	
-	
-	
-	
+	/** Opens multiple files from the given paths, waiting until the 
+	 * final file has been
+	 * opened before updating the UI, but updating the tab
+	 * history continuously.
+	 * The <code>TextPadChangeListener</code> is uncoupled
+	 * during this operation to prevent it from updating the
+	 * UI and tab history after the fact, since the listener is
+	 * on an <code>EvokeLater</code>.  The Text Pad will
+	 * still be added, but the title and menu settings won't be
+	 * updated until the last file, since the other files' updates will
+	 * be replaced by each successively opened file, and they will 
+	 * each update the UI whenever they are brought to focus.
+	 * @param paths the paths of the files to open
+	 * @param offset starting index in the files array
+	 * @param initialFiles if true, the files will be opened by 
+	 * the openInitialFile method
+	 * @see #openInitialFile
+	 */
+	public String openFiles(String[] paths, int offset, boolean initialFiles) {
+		File[] files = new File[paths.length];
+		// converts paths to files, starting from the offset
+		for (int i = offset; i < paths.length && paths[i] != null; i++) {
+			files[i] = new File(paths[i]);
+		}
+		return openFiles(files, offset, initialFiles);
+	}
 
 	/**
 	 * Evokes a open file dialog, from which the user can select a file to
@@ -2872,18 +3029,36 @@ public class TextTrix extends JFrame {
 				File[] files = getSelectedFiles();
 				// bring up the dialog and retrieve the result
 				if (files != null) {
-					// Open button
+					
+					msg = openFiles(files, 0, false);
+					
+					
+					/*
+					// first uncouples the change listener from responding to
+					// the Text Pad additions; need to uncouple when opening
+					// multiple files at once because change listener is on an
+					// EvokeLater and can't respond to text pads as they're added
 					setUpdateForTextPad(false);
+					
+					// opens the files
 					for (int i = 0; i < files.length; i++) {
+						// opens the file
 						if (openFile(files[i])) {
+							// if successful, updates the tab history
 							updateTabHistory(getSelectedTabbedPane());
 						} else {
 							// record unopened files
 							msg = msg + files[i] + "\n";
 						}
 					}
+					// updates the UI to reflect the last opened tab
+					updateUIForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
+					
+					// recouples the listener
 					setUpdateForTextPad(true);
-					updateForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
+					*/
+					
+					
 					// request another opportunity to open files if any
 					// failures
 					if (msg.equals("")) { // no unopened files
@@ -4654,7 +4829,7 @@ public class TextTrix extends JFrame {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 //						if (getUpdateForTextPad()) {
-							updateForTextPad(pane, t);
+							updateUIForTextPad(pane, t);
 							updateTabHistory(pane);
 //						}
 					}

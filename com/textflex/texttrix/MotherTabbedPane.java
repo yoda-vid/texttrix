@@ -84,22 +84,21 @@ public class MotherTabbedPane extends JTabbedPane {
 	 * a complete cycle in one direction. The history expands as necessary,
 	 * allowing an unlimited number of records.
 	 * 
+	 * <p>The current tabHistoryIndex value refers to the next available
+	 * element in the tabHistory array in which to add tab selections.
+	 * Adding a tab selection places the tab index value into this element
+	 * and increments tabHistoryIndex so that it continues to point to
+	 * the next available position. "tabHistoryIndex - 1" refers to
+	 * the current tab, while "tabHistoryIndex - 2" refers to the last
+	 * tab, the one to return to while going "Back". The "Back" method must
+	 * therefore not only decrement tabHistoryIndex, but also refer to
+	 * the position preceding the new index.
+	*
 	 * @param mostRecent
 	 *            the tab selection index to record
 	 * @see #removeTabHistory(int)
 	 */
 	public void addTabHistory(int mostRecent) {
-		/*
-		 * The current tabHistoryIndex value refers to the next available
-		 * element in the tabHistory array in which to add tab selections.
-		 * Adding a tab selection places the tab index value into this element
-		 * and increments tabHistoryIndex so that it continues to point to
-		 * the next available position. "tabHistoryIndex - 1" now refers to
-		 * the current tab, while "tabHistoryIndex - 2" refers to the last
-		 * tab, the one to return to while going "Back". The "Back" method must
-		 * therefore not only decrement tabHistoryIndex, but also refer to
-		 * the position preceding the new index.
-		 */
 		boolean repeat = true;
 		boolean shift = false;
 		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
@@ -181,19 +180,36 @@ public class MotherTabbedPane extends JTabbedPane {
 		}
 	}
 	
+	/** Shifts the tab history backward by one and returns the 
+	 * recorded index.
+	 */
 	public int goBackward() {
 		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+		// decrements the history index
 		decrementTabHistoryIndex();
+		// refers to the index prior to the decremented one since that
+		// index points to the currently selected tab
 		return getTabHistoryAt(getTabHistoryIndex() - 1);
 	}
 	
+	/** Shifts the tab history forward by one and returns the 
+	 * recorded index.
+	 */
 	public int goForward() {
 		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+		// increments the history index
 		incrementTabHistoryIndex();
+		// the current index pointed to the next history entry, so
+		// the incremented one points to the next, next entry;
+		// the index prior to the incremented should be accessed
+		// to get the next entry
 		return getTabHistoryAt(getTabHistoryIndex() - 1);
 	}
 	
-	/** Increments the tab index history by one.
+	/** Increments the tab index history by one, so long
+	 * as the current index is less than the number of tabs,
+	 * and the history entry at the resulting index is not -1.
+	 * @see #getTabCount
 	 */
 	public void incrementTabHistoryIndex() {
 		if (tabHistoryIndex < getTabCount()
@@ -202,7 +218,8 @@ public class MotherTabbedPane extends JTabbedPane {
 		}
 	}
 	
-	/** Decrements the tab index history by one.
+	/** Decrements the tab index history by one, so long
+	 * as the resulting index is >= 0.
 	 */
 	public void decrementTabHistoryIndex() {
 		if (tabHistoryIndex > 1)	tabHistoryIndex--;
