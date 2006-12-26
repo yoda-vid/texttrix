@@ -101,7 +101,7 @@ public class MotherTabbedPane extends JTabbedPane {
 	public void addTabHistory(int mostRecent) {
 		boolean repeat = true;
 		boolean shift = false;
-		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+//		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
 		if (tabHistoryIndex >= tabHistory.length) {
 			// increase the array size if necessary
 			System.out.println("growing array");
@@ -118,7 +118,7 @@ public class MotherTabbedPane extends JTabbedPane {
 				}
 			} else { // find where to start shifting, if necessary
 				if (tabHistory[i] == mostRecent) {
-					System.out.println("shift");
+//					System.out.println("shift");
 					shift = true;
 				} else if (tabHistory[i] == -1) {
 					repeat = false;
@@ -137,13 +137,13 @@ public class MotherTabbedPane extends JTabbedPane {
 		for (int i = ++tabHistoryIndex; i < tabHistory.length; i++) {
 			tabHistory[i] = -1;
 		}
-		
+/*		
 		System.out.print("tab Hx: ");
 		for (int i = 0; i < tabHistory.length; i++) {
 			 System.out.print(tabHistory[i] + ", ");
 		}
 		System.out.println("");
-		
+*/		
 	}
 
 	/**
@@ -176,7 +176,7 @@ public class MotherTabbedPane extends JTabbedPane {
 			if (tabHistory[i] > removed) {
 				tabHistory[i] = --tabHistory[i];
 			}
-			//	    System.out.print(tabHistory[i] + ",");
+//	    System.out.print(tabHistory[i] + ",");
 		}
 	}
 	
@@ -184,7 +184,7 @@ public class MotherTabbedPane extends JTabbedPane {
 	 * recorded index.
 	 */
 	public int goBackward() {
-		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+//		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
 		// decrements the history index
 		decrementTabHistoryIndex();
 		// refers to the index prior to the decremented one since that
@@ -196,7 +196,7 @@ public class MotherTabbedPane extends JTabbedPane {
 	 * recorded index.
 	 */
 	public int goForward() {
-		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+//		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
 		// increments the history index
 		incrementTabHistoryIndex();
 		// the current index pointed to the next history entry, so

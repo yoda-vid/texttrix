@@ -138,7 +138,8 @@ public class TextTrix extends JFrame {
 	 * @param paths file paths to be opened at launch
 	 */
 	public TextTrix(final String[] paths) {
-
+//File baseDir = getPlugInsFile();
+//System.out.println("plugIns: " + baseDir.getPath());
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
 		resetMenus(); // resets file and view menus
@@ -1233,7 +1234,7 @@ public class TextTrix extends JFrame {
 	 * installing a new version of Text Trix.
 	 * 
 	 * @return <code>plugins</code> folder
-	 */
+	 *
 	public File getPlugInsFile() {
 		/*
 		 * The code has a relatively elaborate mechanism to locate the plugins
@@ -1258,8 +1259,7 @@ public class TextTrix extends JFrame {
 		 * with v.1.4 comes new String regex tools to make the operation simple,
 		 * but prior versions crash after a NoSuchMethodError. The replacement
 		 * must be done manually.
-		 */
-
+		 *
 		// this class's location
 		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
 		URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
@@ -1280,7 +1280,7 @@ public class TextTrix extends JFrame {
 		 * necessary starting with JRE v.1.4.0 (see
 		 * http://developer.java.sun.com/developer/ //
 		 * bugParade/bugs/4466485.html)
-		 */
+		 *
 		String strBaseDir = baseDir.toString();
 		int space = 0;
 		// continue while still have "%20", the spaces symbol
@@ -1295,11 +1295,11 @@ public class TextTrix extends JFrame {
 		/*
 		 * Though simpler, this alternative solution crashes after a
 		 * NoSuchMethodError under JRE <= 1.3.
-		 */
+		 *
 		/*
 		 * baseDir = new File(baseDir.toString().replaceAll("%20", " ")); File
 		 * plugInsFile = new File(baseDir, "plugins");
-		 */
+		 *
 
 		// plugins directory;
 		// considered nonexistent since baseDir's path in URL syntax
@@ -1336,7 +1336,7 @@ public class TextTrix extends JFrame {
 		 * file or directory names with their "8.3" formatted equivalents. For
 		 * example, "Program Files" is converted to "PROGRA~1", which some
 		 * systems might map to the intended file.
-		 */
+		 *
 		/*
 		 * if (!plugInsFile.exists()) { String seg = ""; StringTokenizer tok =
 		 * new StringTokenizer(plugInsPath, "/\\"); StringBuffer buf = new
@@ -1346,7 +1346,19 @@ public class TextTrix extends JFrame {
 		 * buf.append(File.separator + seg); } plugInsPath = buf.toString();
 		 * plugInsFile = new File(plugInsPath); // the actual file //
 		 * System.out.println(plugInsPath); }
-		 */
+		 *
+//System.out.println("plugInsPath: " + plugInsFile.getPath());		
+		return plugInsFile;
+	}
+	*/
+	
+	public File getPlugInsFile() {
+		File plugInsFile = new File(LibTTx.getBaseFile(), "plugins");
+		if (!plugInsFile.exists()) {
+			System.out.println("We truly apologize, but we haven't been able to locate"
+				+ newline + plugInsFile.toString()
+				+ newline + "for your plug-ins.");
+		}
 		return plugInsFile;
 	}
 
@@ -1846,7 +1858,7 @@ public class TextTrix extends JFrame {
 		// all selections are recorded
 		if (i == -1) i = pane.getSelectedIndex();
 		if (updateTabIndexHistory) {
-			System.out.println("Updating tab index: " + i);
+//			System.out.println("Updating tab index: " + i);
 			pane.addTabHistory(i);
 		} else {
 			updateTabIndexHistory = true;
@@ -1858,7 +1870,6 @@ public class TextTrix extends JFrame {
 	 * to false, no history will be added, but the flag will be
 	 * reset to true.
 	 * @param pane the tab group
-	 * @param i the index of the tab to add to the history
 	 */
 	public void updateTabHistory(MotherTabbedPane pane) {
 		updateTabHistory(pane, -1);

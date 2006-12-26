@@ -74,8 +74,10 @@ Changes in v.0.7.0rc1 (since beta2):
 	-table should scroll to bottom each time a new entry is added; FIXED (#1622105)
 -add line saver to view menu; ADDED
 -Search dialog window should be smaller; FIXED (#1184709)
--import/export/reset preferences options; ADDED
 -when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
+-Preferences additions
+	-import/export/reset preferences options; ADDED
+	-records install location for accessing during plug-in installation; ADDED
 -General fixes
 	-fix exception when removing the only remaining tab group; FIXED (#1622219)
 	-fix exception when adding new tab when no tab group exists; FIXED (#1622221)

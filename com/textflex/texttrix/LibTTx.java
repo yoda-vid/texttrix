@@ -182,6 +182,114 @@ public class LibTTx {
 		return plugIn;
 	}
 
+	/** Gets the base directory, the root directory of the program
+	 * TODO: Add preferences mechanism to specify alternative or additional
+	 * <code>plugins</code> folder location, such as a permanent storage place
+	 * to reuse plug-ins after installing a new version of Text Trix.
+	 *
+	 * The code has a relatively elaborate mechanism to locate the plugins
+	 * folder and its JAR files. Why not use the URL that the Text Trix
+	 * class supplies? Text Trix needs to locate each JAR plugin's absolute
+	 * path and name. Text Trix's URL must be truncated to its root
+	 * directory's location and built back up through the plugins directory.
+	 * Using getParentFile() to the program's root and appending the rest of
+	 * the path to the plugins allows one to use URLClassLoader directly
+	 * with the resulting URL.
+	 * 
+	 * Unfortunately, some systems do not locate local files with this
+	 * method. The following elaborate system works around this apparent JRE
+	 * bug by further breaking the URL into a normal path and loading a file
+	 * from it.
+	 * 
+	 * Unfortunately again, a new feature from JRE v.1.4 causes spaces in
+	 * URL strings to be converted to "%20" turning URL's into strings. The
+	 * JRE cannot load files with "%20" in them, however; for example,
+	 * "c:\Program Files\texttrix-x.y.z\plugins" never gets loaded. The
+	 * workaround is to replace all "%20"'s in the string with " ". Along
+	 * with v.1.4 comes new String regex tools to make the operation simple,
+	 * but prior versions crash after a NoSuchMethodError. The replacement
+	 * must be done manually.
+	 *
+	 * @return <code>plugins</code> folder
+	 */
+	public static File getBaseFile() {
+
+		// this class's location
+		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
+		URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
+		String strClassDir = urlClassDir.getPath();
+		// to check whether JAR
+		File fileClassDir = new File(urlClassDir.getPath());
+		File baseDir = null;
+		// move into JAR's parent directory only if launched from a JAR
+		if (strClassDir.indexOf(".jar!/" + relClassLoc) != -1) {
+			baseDir =
+				fileClassDir
+					.getParentFile()
+					.getParentFile()
+					.getParentFile()
+					.getParentFile()
+					.getParentFile();
+		} else { // not from JAR; one less parent directory
+			baseDir =
+				fileClassDir
+					.getParentFile()
+					.getParentFile()
+					.getParentFile()
+					.getParentFile();
+		}
+		/* convert "%20", the escape character for a space, into " ";
+		   conversion necessary starting with JRE v.1.4.0
+		   (see http://developer.java.sun.com/developer/ //
+		   bugParade/bugs/4466485.html)
+		*/
+		String strBaseDir = baseDir.toString();
+		int space = 0;
+		// continue while still have "%20", the spaces symbol
+		while ((space = strBaseDir.indexOf("%20")) != -1) {
+			if (strBaseDir.length() > space + 3) {
+				strBaseDir =
+					strBaseDir.substring(0, space)
+						+ " "
+						+ strBaseDir.substring(space + 3);
+			} else {
+				strBaseDir = strBaseDir.substring(0, space) + " ";
+			}
+		}
+		/* Though simpler, this alternative solution crashes 
+		   after a NoSuchMethodError under JRE <= 1.3.
+		*/
+		/*
+		baseDir = new File(baseDir.toString().replaceAll("%20", " "));
+		File plugInsFile = new File(baseDir, "plugins");
+		*/
+
+		// base directory;
+		// considered nonexistent since baseDir's path in URL syntax
+		baseDir = new File(strBaseDir);
+		String basePath = baseDir.getPath();
+
+		// directory path given as URL; need to parse into normal syntax
+		String protocol = "file:";
+		int pathStart = basePath.indexOf(protocol);
+		// check if indeed given as URL;
+		// if so, delete protocol and any preceding info
+		if (pathStart != -1)
+			basePath = basePath.substring(pathStart + protocol.length());
+		// plugInsPath now in normal syntax
+		baseDir = new File(basePath); // the actual file
+
+		// If necessary, adjust path to properly navigate across the network
+		if (!baseDir.exists()) {
+			// According to testing on Windows XP, an extra backslash needs
+			// to be added to the start of the path to create the format: 
+			// "\\COMPUTER_NAME\ShareName"
+			baseDir = new File("\\" + basePath);
+		}
+		
+		return baseDir;
+	}
+
 	/** Gets a list of all the plug-ins in a given directory.
 	 * 
 	 * @param plugInDir the plug-in directory
