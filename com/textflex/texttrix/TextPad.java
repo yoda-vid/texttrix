@@ -1474,6 +1474,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param position the new caret position
 	 */
 	public void setCaretPositionTop(int position) {
+		if (getCaretPosition() == position) return;
 		setCaretPosition(position);
 		try {
 			Rectangle rect = modelToView(position);

@@ -8,17 +8,13 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
---------------------------------------
-----The Home Stretch Series----
---------------------------------------
-
-----v.0.7.0 (beta1: 2006-09-05)----
+----v.0.7.0 (rc1: 2006-12-25)----
 
 Text Trix is general purpose editor that makes coding easier and more precise.  Navigational tools help make large files easier to read and organize.  Special plugins manipulate text according to user-defined settings.
 
 v.0.7.0 introduces new features for visualizing text even more.  Key features are Line Dance, a tool to jump between multiple lines in a given file; Group Tabs, for organizing large numbers of files; and Word Find, a quick-find tool built into the status bar.  Cataloged here are these and other features:
 
-Text Organization
+Text Organization:
 -Line Dance (new): Record your positions so that you can jump between multiple places in the same file.
 -File Tabs and Group Tabs (new): File tabs allow one to open multiple files at once; group tabs collect these files by topic.  Right-click to rename these groups.
 -Word Find (new): A box for taking you directly to the typed word; use F3 to navigate.
@@ -30,19 +26,32 @@ Text Organization
 -Reopen Tabs: Remembers the file tabs opened during the previous session, similiar to Session HIstory in Firefox.
 -Auto-Save: Keeps your files up-to-date, all the time.
 
-Text Manipulation
+Text Manipulation:
 -Plugin model for specially designed textual manipulation tasks.
 -Song Sheet (newly updated): A plugin for transposing chords in guitar music or removing those chords entirely for song sheets; updated to include flats ("b") and make half-stepping more user friendly.
 -Extra Returns Remover: A plugin for removing email reply markers (">>") and unnecessary line breaks, while preserving line breaks in lists.
 -HTML Stripper: A plugin that wades through HTML code to give you just the text.
 -HTML View: Does just the opposite, converting your text into HTML code.
 
-Other Features and Fixes in v.0.7.0
+Other Features and Fixes in v.0.7.0:
 -Duplicate File Detection: Prevents opening the same file twice or saving over a currently opened file.
--ALT-TAB workaround for bug in Java 6 builds.
+-ALT-TAB workaround for Java bug in v.1.4 and now again in Java 6.
+-Compiled and tested on Windows, Fedora Core Linux 6, and MacOS X 10.4 systems with Java 5 and 6.
 -Code cleanup for fixes and possible performance improvements.
 
-Changes since v.0.7.0beta1 (see "todo.txt" for more details)
+Changes in v.0.7.0rc1 (since beta2):
+-Import/export/reset preferences buttons for backing up preferred settings
+-During a search, scrolls text found text to near the top of the text area
+-PlugInWindowTemplate, a new template for creating plug-ins with option windows
+-Added Line Find line saver to the View menu
+-Shortcuts documentation now in an HTML-tabular format for easier viewing
+-Bug fixes:
+	-Line Dance fixes: automatic selection and scrolling of entries
+	-Fixed the default Search size window
+	-Fixed tab history failures
+-Code and API cleanup
+
+Changes in v.0.7.0beta2 (since beta1) (see "todo.txt" for more details):
 -Line Dance additions and fixes, including better highlighting and an Name Line button
 -Search plugin fixes (see above)
 -UI fixes and features, including a new Navigation toolbar section and switch to Ocean theme on all but Windows platforms

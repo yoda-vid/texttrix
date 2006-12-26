@@ -15,10 +15,10 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2006
+ * Portions created by the Initial Developer are Copyright (C) 2006-7
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -39,26 +39,40 @@ package com.textflex.texttrix;
 import javax.swing.*;
 import java.awt.*;
 
+/** A tabbed pane that can contain other tabbed panes (hence "Mother")
+ * or other objects and which keeps a history a selected tabs for 
+ * easier navigation among tabs.
+ */
 public class MotherTabbedPane extends JTabbedPane {
 //	private ArrayList arrayList = new ArrayList();
-	private int[] tabIndexHistory = new int[10]; // records for back/forward
-	private int tabIndexHistoryIndex = 0; // index of next record
+	private int[] tabHistory = new int[10]; // records for back/forward
+	private int tabHistoryIndex = 0; // index of next record
+//	private int tabHistoryTot = 0; // total num of tab history entries
 	
+	/** Constructs a Mother tabbed pane and initializes a tab history.
+	 * @param tabPlacement the JTabbedPane placement setting
+	 * @param tabLayoutPolicy the JTabbedPane layout setting
+	 */
 	public MotherTabbedPane(int tabPlacement, int tabLayoutPolicy) {
 		super(tabPlacement, tabLayoutPolicy);
-		for (int i = 0; i < tabIndexHistory.length; i++)
-			tabIndexHistory[i] = -1;
-		
-		
+		for (int i = 0; i < tabHistory.length; i++)
+			tabHistory[i] = -1;
 	}
 	
+	/** Constructs a Mother tabbed pane with the wrap-tab layout,
+	 * and initializes a tab history.
+	 * @param tabPlacement the JTabbedPane placement setting
+	 */
 	public MotherTabbedPane(int tabPlacement) {
 		this(tabPlacement, JTabbedPane.WRAP_TAB_LAYOUT);
 	}
 	
+	/** Adds a tab.
+	 * @param title a title to display in the tab
+	 * @param component the component to place in the tab
+	 */
 	public void addTab(String title, Component component) {
 		super.addTab(title, component);
-//		arrayList.add(component);
 	}
 	
 	/**
@@ -72,54 +86,65 @@ public class MotherTabbedPane extends JTabbedPane {
 	 * 
 	 * @param mostRecent
 	 *            the tab selection index to record
-	 * @see #removeTabIndexHistory(int)
+	 * @see #removeTabHistory(int)
 	 */
-	public void addTabIndexHistory(int mostRecent) {
+	public void addTabHistory(int mostRecent) {
 		/*
-		 * The current tabIndexHistoryIndex value refers to the next available
-		 * element in the tabIndexHistory array in which to add tab selections.
+		 * The current tabHistoryIndex value refers to the next available
+		 * element in the tabHistory array in which to add tab selections.
 		 * Adding a tab selection places the tab index value into this element
-		 * and increments tabIndexHistoryIndex so that it continues to point to
-		 * the next available position. "tabIndexHistoryIndex - 1" now refers to
-		 * the current tab, while "tabIndexHistoryIndex - 2" refers to the last
+		 * and increments tabHistoryIndex so that it continues to point to
+		 * the next available position. "tabHistoryIndex - 1" now refers to
+		 * the current tab, while "tabHistoryIndex - 2" refers to the last
 		 * tab, the one to return to while going "Back". The "Back" method must
-		 * therefore not only decrement tabIndexHistoryIndex, but also refer to
+		 * therefore not only decrement tabHistoryIndex, but also refer to
 		 * the position preceding the new index.
 		 */
 		boolean repeat = true;
 		boolean shift = false;
-		for (int i = 0; i < tabIndexHistoryIndex && repeat; i++) {
+		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+		if (tabHistoryIndex >= tabHistory.length) {
+			// increase the array size if necessary
+			System.out.println("growing array");
+			tabHistory = (int[]) LibTTx.growArray(tabHistory);
+		}
+		for (int i = 0; i < tabHistoryIndex && repeat; i++) {
 			// shift the records as necessary to move a potential
 			// duplicate to the front of the history
 			if (shift) { // shift the records
-				if (tabIndexHistory[i] == -1) {
+				if (tabHistory[i] == -1) {
 					repeat = false;
 				} else {
-					tabIndexHistory[i - 1] = tabIndexHistory[i];
+					tabHistory[i - 1] = tabHistory[i];
 				}
 			} else { // find where to start shifting, if necessary
-				if (tabIndexHistory[i] == mostRecent) {
+				if (tabHistory[i] == mostRecent) {
+					System.out.println("shift");
 					shift = true;
-				} else if (tabIndexHistory[i] == -1) {
+				} else if (tabHistory[i] == -1) {
 					repeat = false;
 				}
 			}
 		}
 		// add the tab selection
 		if (shift) { // add the potential duplicate to the front of the record
-			tabIndexHistory[--tabIndexHistoryIndex] = mostRecent;
-		} else if (tabIndexHistoryIndex >= tabIndexHistory.length) {
-			// increase the array size if necessary
-			tabIndexHistory = (int[]) LibTTx.growArray(tabIndexHistory);
-			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
-		} else if (tabIndexHistoryIndex >= 0) {
+			tabHistory[--tabHistoryIndex] = mostRecent;
+		} else if (tabHistoryIndex >= 0) {
 			// ensure that the tab during TextTrix's startup has no entry;
 			// otherwise, the 0 tab selection index duplicates
-			tabIndexHistory[tabIndexHistoryIndex] = mostRecent;
+			tabHistory[tabHistoryIndex] = mostRecent;
+//			tabHistoryTot++;
 		}
-		for (int i = ++tabIndexHistoryIndex; i < tabIndexHistory.length; i++) {
-			tabIndexHistory[i] = -1;
+		for (int i = ++tabHistoryIndex; i < tabHistory.length; i++) {
+			tabHistory[i] = -1;
 		}
+		
+		System.out.print("tab Hx: ");
+		for (int i = 0; i < tabHistory.length; i++) {
+			 System.out.print(tabHistory[i] + ", ");
+		}
+		System.out.println("");
+		
 	}
 
 	/**
@@ -128,62 +153,83 @@ public class MotherTabbedPane extends JTabbedPane {
 	 * 
 	 * @param removed
 	 *            index of removed tab
-	 * @see #addTabIndexHistory(int)
+	 * @see #addTabHistory(int)
 	 */
-	public void removeTabIndexHistory(int removed) {
+	public void removeTabHistory(int removed) {
 		boolean shift = false;
 		// cycle through the entire history, removing the tab and shifting
 		// both the tab indices and the tab history index appropriately
-		for (int i = 0; i < tabIndexHistory.length; i++) {
+		for (int i = 0; i < tabHistory.length; i++) {
 			// flag for a record shift and check whether to decrement
 			// the tab history index
-			if (tabIndexHistory[i] == removed) {
-				if (i <= tabIndexHistoryIndex)
-					--tabIndexHistoryIndex;
+			if (tabHistory[i] == removed) {
+//				tabHistoryTot--;
+				if (i <= tabHistoryIndex)
+					--tabHistoryIndex;
 				shift = true;
 			}
 			// shift the tab record
 			if (shift) {
-				tabIndexHistory[i] = (i < tabIndexHistory.length - 1) ? tabIndexHistory[i + 1]
+				tabHistory[i] = (i < tabHistory.length - 1) ? tabHistory[i + 1]
 						: -1;
 			}
 			// decrease tab indices for those above the that of the removed tab
-			if (tabIndexHistory[i] > removed) {
-				tabIndexHistory[i] = --tabIndexHistory[i];
+			if (tabHistory[i] > removed) {
+				tabHistory[i] = --tabHistory[i];
 			}
-			//	    System.out.print(tabIndexHistory[i] + ",");
+			//	    System.out.print(tabHistory[i] + ",");
 		}
 	}
 	
-	public void incrementTabIndexHistoryIndex() {
-		tabIndexHistoryIndex++;
+	public int goBackward() {
+		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+		decrementTabHistoryIndex();
+		return getTabHistoryAt(getTabHistoryIndex() - 1);
 	}
 	
-	public void decrementTabIndexHistoryIndex() {
-		tabIndexHistoryIndex--;
+	public int goForward() {
+		System.out.println("tabhxidx (at start): " + tabHistoryIndex);
+		incrementTabHistoryIndex();
+		return getTabHistoryAt(getTabHistoryIndex() - 1);
 	}
 	
-	public int getTabIndexHistoryIndex() {
-		return tabIndexHistoryIndex;
+	/** Increments the tab index history by one.
+	 */
+	public void incrementTabHistoryIndex() {
+		if (tabHistoryIndex < getTabCount()
+			&& getTabHistoryAt(tabHistoryIndex) != -1)	{
+			tabHistoryIndex++;
+		}
 	}
 	
-	public int getTabIndexHistoryCount() {
-		return tabIndexHistory.length;
+	/** Decrements the tab index history by one.
+	 */
+	public void decrementTabHistoryIndex() {
+		if (tabHistoryIndex > 1)	tabHistoryIndex--;
 	}
 	
-	public int getTabIndexHistoryAt(int i) {
-		if (i < tabIndexHistory.length) {
-			return tabIndexHistory[i];
+	/** Gets the tab index history.
+	 * @return the index
+	 */
+	public int getTabHistoryIndex() {
+		return tabHistoryIndex;
+	}
+	
+	/** Gets the tab index history total count.
+	 * @return the length of the index history array
+	 */
+	public int getTabHistoryCount() {
+		return tabHistory.length;
+	}
+	
+	/** Gets the history value at the given index.
+	 * @return the history value
+	 */
+	public int getTabHistoryAt(int i) {
+		if (i >= 0 && i < tabHistory.length) {
+			return tabHistory[i];
 		} else {
 			return -1;
 		}
 	}
-	
-	/*
-	public Object getSelectedComponent() {
-		return arrayList.get(getSelectedIndex());
-	}
-	
-	public Object getComponent
-	*/
 }

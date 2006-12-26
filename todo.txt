@@ -65,31 +65,39 @@ v.0.7.1
 -make clean should cleanup inner/anonymous classes
 -drag-n-drop files to open them in Text Trix
 -backward Search/Word Find
+-regex in Search/Word Find
 -add line saver to popup menu
 
 ----Current release----
 
 v.0.7.0
 -----------------
-Changes since v.0.7.0beta2:
+Changes in v.0.7.0rc1 (since beta2):
 -Line Dance fixes
 	-Line Dance should highlight previous line after deleting a line memory; FIXED
 	-table should scroll to bottom each time a new entry is added; FIXED
-	-add line saver to view menu; ADDED
+-add line saver to view menu; ADDED
 -Search dialog window should be smaller; FIXED
 -import/export/reset preferences options; ADDED
 -when searching through text, scroll the text pane so that the cursor is near the top of the view area; ADDED
+-General fixes
+	-fix exception when removing the only remaining tab group; FIXED
+	-fix exception when adding new tab when no tab group exists; FIXED
+	-update UI after adding a new tab group; FIXED
+	-first tab should be included in tab history; FIXED
+	-fix various tab history failures; FIXED
 -Documentation enhancements
 	-provide PlugInWindow template for creating new plug-ins more easily; ADDED
 	-shift Shortcuts link to an HTML file with a table of shortcuts; ADDED
-	-api documentation
-	-clean up changelog, readmes
+	-api documentation; UPDATED
+	-clean up changelog, readmes; UPDATED
 -Code cleanup
 	-make an abstract BrowseFiles class for file open and browsing actions; ADDED
 	-shift yesNoDialog from Text Trix to LibTTx; ADDED
 	-make separate ExtensionFileFilter public class; ADDED
+	-when opening multiple files, wait until opened last file before updating UI; FIXED
 -----------------
-Changes since v.0.7.0beta1:
+Changes in v.0.7.0beta2 (since beta1):
 -Line Dance additions and fixes
 	-Line Dance should automatically highlight the latest entry; FIXED (#1614445)
 	-hitting Enter while in the Name cell in Line Dance shouldn't highlight the first entry in the table; FIXED (#1614440): cycled to next row when user hits Enter, but now fixed to line dance instead
@@ -112,6 +120,7 @@ Changes since v.0.7.0beta1:
 	-should only edit cell after double-click, not single-click, to follow more default spreadsheet table behavior? (#1614443)
 	-update shortcuts page
 ------------------
+Changes in v.0.7.0beta1:
 -duplicate files
 	-opening file should check whether the file has already been opened and, if so, switch to that tab instead; ADDED: checks for open file in all tab groups before creating new tab
 	-saving file over path of currently opened file should close the old version of the file; ADDED: checks whether to close other tab with identical path, warning of potentially unsaved changes, to see that tab, or to cancel

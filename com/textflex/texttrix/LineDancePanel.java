@@ -101,7 +101,7 @@ public class LineDancePanel extends JPanel {
 		scrollPane = new JScrollPane(table);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 150));
 		
-		
+		// adds the scroll pane and table
 		LibTTx.addGridBagComponent(
 			scrollPane,
 			constraints,
@@ -113,17 +113,32 @@ public class LineDancePanel extends JPanel {
 			0,
 			this);
 		
+		// validates the layout
 		validate();
 	}
 	
+	/** Adds a new row to the table.
+	 * The new roll is selected, and if the new entry is beyond
+	 * the fold, the scroll pane is scrolled to the new addition.
+	 * @param rowData the data to add, usually a String of
+	 * line number, position, name
+	 */
 	public void addRow(Object[] rowData) {
+		// adds the row
 		tableModel.addRow(rowData);
+		// selects the row
 		int rowCount = table.getRowCount();
 		table.setRowSelectionInterval(rowCount - 1, rowCount -1);
+		// scrolls to the row
 		Rectangle rect = table.getCellRect(rowCount - 1, 0, true);
 		table.scrollRectToVisible(rect);
 	}
 	
+	/** Removes the given row.
+	 * The previous entry is selected, or if none exist, the next
+	 * row will be selected, if possible.
+	 * @param row the number of the row to remove
+	 */
 	public void removeRow(int row) {
 		tableModel.removeRow(row);
 		if (--row >= 0) {
@@ -133,6 +148,9 @@ public class LineDancePanel extends JPanel {
 		}
 	}
 	
+	/** Removes the selected rows.
+	 * @see #removeRow
+	 */
 	public void removeSelectedRows() {
 		int[] selectedRows = table.getSelectedRows();
 		for (int i = 0; i < selectedRows.length; i++) {
@@ -140,22 +158,32 @@ public class LineDancePanel extends JPanel {
 		}
 	}
 	
+	/** Allows the user to edit the name cell of the currently 
+	 * selected row.
+	 */
 	public void editLineName() {
 		int row = table.getSelectedRow();
 //		System.out.println("row: " + row);
 		if (row != -1) {
+			// opens the cell for editing
 			table.editCellAt(row, COL_NAME);
 			table.requestFocusInWindow();
 		}
 	}
 	
+	/** Adds a mouse listener to the table.
+	 * @param listener a listener for mouse events
+	 */
 	public void addTableMouseListener(MouseAdapter listener) {
 		table.addMouseListener(listener);
 	}
 	
+	/** Gets the position number from the currently selected entry.
+	 */
 	public int getPosition() {
 		int row = table.getSelectedRow();
-		if (row == -1) return -1;
+		if (row == -1) return -1; // if none selected
+		// gets the recorded value
 		int position = Integer.parseInt((String) tableModel.getValueAt(row, COL_POSITION));
 		return position;
 	}
@@ -164,9 +192,14 @@ public class LineDancePanel extends JPanel {
 	
 }
 
-
+/** A table to record line memory entries.
+ */
 class LineDanceTable extends JTable {
 	
+	/** Constructs a new table.
+	 * @param tableModel a table model
+	 * @param aKeyAdapter an adapter for responding to key events
+	 */
 	public LineDanceTable(TableModel tableModel, KeyAdapter aKeyAdapter) {
 		super(tableModel);
 		addKeyListener(aKeyAdapter);
