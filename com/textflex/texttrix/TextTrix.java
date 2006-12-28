@@ -127,9 +127,12 @@ public class TextTrix extends JFrame {
 	private StatusBarCreator statusBarCreator = null; // worker thread
 	private JPanel statusBarPanel = null; // the panel
 	private JLabel statusBar = null; // the status label; not really a "bar"
-	private JTextField lineNumFld = null; // Line Find
+	private JTextField lineNumFld = new JTextField(5); // Line Find
 	private JTextField wordFindFld = null; // Word Find
 	private JPopupMenu statusBarPopup = null; // status bar popup menu
+	
+	/* Actions */
+	Action lineSaverAction = null; // Line Find saver action
 
 	/**
 	 * Constructs a new <code>TextTrix</code> frame and a 
@@ -310,6 +313,15 @@ public class TextTrix extends JFrame {
 		// prepare the file history
 		fileHist = new FileHist();
 
+		// line saver
+		lineSaverAction = new AbstractAction("Save current line number") {
+			public void actionPerformed(ActionEvent evt) {
+				lineNumFld.setText("" + getSelectedTextPad().getLineNumber());
+			}
+		};
+		LibTTx.setAcceleratedAction(lineSaverAction, "Saves this line number in Line Find", 'L',
+				KeyStroke.getKeyStroke("ctrl shift L"));
+		
 		// invoke the worker thread to create the initial menu bar;
 		(menuBarCreator = new MenuBarCreator()).start();
 		
@@ -3662,15 +3674,8 @@ public class TextTrix extends JFrame {
 							newActionMnemonic, newActionShortcut);
 					fileMenu.add(newAction);
 
-					// make new tab group
-					Action newGroupAction = new AbstractAction("New tab group") {
-						public void actionPerformed(ActionEvent evt) {
-							addTabbedPane(getGroupTabbedPane(), "");
-						}
-					};
-					LibTTx.setAcceleratedAction(newGroupAction, "New tab group",
-							newGroupActionMnemonic, newGroupActionShortcut);
-					fileMenu.add(newGroupAction);
+
+
 
 					// (ctrl-o) open file; use selected tab if empty
 					// file menu version
@@ -3712,6 +3717,21 @@ public class TextTrix extends JFrame {
 					closeButton.setBorderPainted(false);
 					LibTTx.setRollover(closeButton,
 							"images/closeicon-roll-16x16.png");
+
+
+
+
+
+
+					// make new tab group
+					Action newGroupAction = new AbstractAction("New tab group") {
+						public void actionPerformed(ActionEvent evt) {
+							addTabbedPane(getGroupTabbedPane(), "");
+						}
+					};
+					LibTTx.setAcceleratedAction(newGroupAction, "New tab group",
+							newGroupActionMnemonic, newGroupActionShortcut);
+					fileMenu.add(newGroupAction);
 
 
 					// close tab group
@@ -4261,6 +4281,8 @@ public class TextTrix extends JFrame {
 
 					
 					
+					// adds action to view menu
+					viewMenu.add(lineSaverAction);
 					
 					
 					
@@ -4305,16 +4327,17 @@ public class TextTrix extends JFrame {
 											.makeIcon(iconPath));
 						}
 					};
-					LibTTx.setAction(aboutAction, "About...", 'A');
+					LibTTx.setAction(aboutAction, "About", 'A');
 					helpMenu.add(aboutAction);
 
 					// shortcuts description; opens new tab;
 					// reads from "shortcuts.txt" in same dir as this class
-					Action shortcutsAction = new AbstractAction("Shortcuts") {
+					Action shortcutsAction = new AbstractAction("Shortcuts...", 
+						LibTTx.makeIcon("images/shortcuts-16x16.png")) {
+						
 						public void actionPerformed(ActionEvent evt) {
 							String path = "shortcuts.html";
 							// ArrayIndexOutOfBoundsException while opening file
-							// from
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642)
 							if (!openFile(new File(path), false, true)) {
 								displayMissingResourceDialog(path);
@@ -4330,11 +4353,12 @@ public class TextTrix extends JFrame {
 
 					// license; opens new tab;
 					// reads from "license.txt" in same directory as this class
-					Action licenseAction = new AbstractAction("License") {
+					Action licenseAction = new AbstractAction("License...", 
+						LibTTx.makeIcon("images/license-16x16.png")) {
+						
 						public void actionPerformed(ActionEvent evt) {
 							String path = "license.txt";
 							// ArrayIndexOutOfBoundsException while opening file
-							// from
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642)
 							if (!openFile(new File(path), false, true)) {
 								displayMissingResourceDialog(path);
@@ -4452,7 +4476,7 @@ public class TextTrix extends JFrame {
 					// Line Find
 					JLabel lineNumLbl = new JLabel("Line Find:");
 					lineNumLbl.setToolTipText("GoTo the line number as it's typed");
-					lineNumFld = new JTextField(5);
+//					lineNumFld = new JTextField(5);
 					// caret listener to find-as-you-type the line number into the text box
 					lineNumFld.addCaretListener(new CaretListener() {
 						public void caretUpdate(CaretEvent e) {
@@ -4541,6 +4565,8 @@ public class TextTrix extends JFrame {
 					statusBar.addMouseListener(new StatusBarPopupListener());
 					
 					// line saver
+					statusBarPopup.add(lineSaverAction);
+					/*
 					Action lineSaverAction = new AbstractAction("Save current line number") {
 						public void actionPerformed(ActionEvent evt) {
 							lineNumFld.setText("" + getSelectedTextPad().getLineNumber());
@@ -4552,6 +4578,7 @@ public class TextTrix extends JFrame {
 					statusBarPopup.add(lineSaverAction);
 					// adds action to view menu
 					viewMenu.add(lineSaverAction);
+					*/
 					
 					
 					

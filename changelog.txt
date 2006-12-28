@@ -15,12 +15,12 @@ Text Trix is general purpose editor that makes coding easier and more precise.  
 v.0.7.0 introduces new features for visualizing text even more.  Key features are Line Dance, a tool to jump between multiple lines in a given file; Group Tabs, for organizing large numbers of files; and Word Find, a quick-find tool built into the status bar.  Cataloged here are these and other features:
 
 Text Organization:
--Line Dance (new): Record your positions so that you can jump between multiple places in the same file.
--File Tabs and Group Tabs (new): File tabs allow one to open multiple files at once; group tabs collect these files by topic.  Right-click to rename these groups.
+-Line Dance (new): Bookmark positions so that you can jump between multiple places in the same file.
+-File Tabs and Group Tabs (new): File tabs are a familiar way to open multiple files at once; group tabs are a new way to group these files by topic.  Right-click to rename these groups.
 -Word Find (new): A box for taking you directly to the typed word; use F3 to navigate.
--Line Find (newly updated): A box that takes you directly to the given line number.  Right-click on the line number in the status bar to record that number in Line Find.
+-Line Find (updated): A box that takes you directly to the given line number.  Right-click on the line number in the status bar to record that number in Line Find.
 -Wrap Indent: A tool to graphically indent wrapped lines, without modifying the underlying text.
--Tab Navigation (new icons): Back/Forward browser-style navigation between file tabs.
+-Tab Navigation (updated): Back/Forward browser-style navigation between file tabs.  Many bug fixes.
 -Emacs/Pico/Standard Shortcuts: In the Preferences, one can choose from a variety of commonly used shortcuts styles.
 -Reopen Tabs: Remembers the file tabs opened during the previous session, similiar to Session HIstory in Firefox.
 -Auto-Save: Keeps your files up-to-date, all the time.
