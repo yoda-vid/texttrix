@@ -72,8 +72,8 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-VER="0.7.0rc1-"$DATE
-#VER="0.7.0rc1"
+VER="0.7.0-"$DATE
+#VER="0.7.0"
 
 # the final PREFIXination of the resulting packages
 PREFIX="/home/share" 

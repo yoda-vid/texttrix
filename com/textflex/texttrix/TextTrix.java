@@ -1352,10 +1352,19 @@ public class TextTrix extends JFrame {
 	}
 	*/
 	
+	/** Gets the <code>plugins</code> file for accessing Text Trix plugins.
+	 * Notifies the user if the folder could not be located.
+	 *
+	 * <p>TODO: Add preferences mechanism to specify alternative or additional
+	 * <code>plugins</code> folder location, such as a permanent storage place
+	 * to reuse plug-ins after installing a new version of Text Trix.
+	 * 
+	 * @return the plugins folder
+	 */
 	public File getPlugInsFile() {
 		File plugInsFile = new File(LibTTx.getBaseFile(), "plugins");
 		if (!plugInsFile.exists()) {
-			System.out.println("We truly apologize, but we haven't been able to locate"
+			System.out.println("I haven't been able to locate"
 				+ newline + plugInsFile.toString()
 				+ newline + "for your plug-ins.");
 		}

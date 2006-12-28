@@ -55,7 +55,7 @@ know about your experience.
 -See http://textflex.com/texttrix/faq.html for more details
 
 
-
+-----------------
 Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
 Sun Microsystems, Java, and all Java-based marks are trademarks or 
 registered trademarks of Sun Microsystems, Inc. in the United States and 

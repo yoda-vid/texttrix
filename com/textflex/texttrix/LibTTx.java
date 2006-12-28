@@ -58,6 +58,8 @@ import javax.swing.text.*;
  */
 public class LibTTx {
 	
+	/** System-indenpendent newline.
+	 */
 	public static final String NEWLINE = System.getProperty("line.separator");
 
 	/** Constructs the library object, almost never necessary since
@@ -182,12 +184,9 @@ public class LibTTx {
 		return plugIn;
 	}
 
-	/** Gets the base directory, the root directory of the program
-	 * TODO: Add preferences mechanism to specify alternative or additional
-	 * <code>plugins</code> folder location, such as a permanent storage place
-	 * to reuse plug-ins after installing a new version of Text Trix.
+	/** Gets the base directory, the root directory of the program.
 	 *
-	 * The code has a relatively elaborate mechanism to locate the plugins
+	 * <p>The code has a relatively elaborate mechanism to locate the plugins
 	 * folder and its JAR files. Why not use the URL that the Text Trix
 	 * class supplies? Text Trix needs to locate each JAR plugin's absolute
 	 * path and name. Text Trix's URL must be truncated to its root
@@ -196,12 +195,12 @@ public class LibTTx {
 	 * the path to the plugins allows one to use URLClassLoader directly
 	 * with the resulting URL.
 	 * 
-	 * Unfortunately, some systems do not locate local files with this
+	 * <p>Unfortunately, some systems do not locate local files with this
 	 * method. The following elaborate system works around this apparent JRE
 	 * bug by further breaking the URL into a normal path and loading a file
 	 * from it.
 	 * 
-	 * Unfortunately again, a new feature from JRE v.1.4 causes spaces in
+	 * <p>Unfortunately again, a new feature from JRE v.1.4 causes spaces in
 	 * URL strings to be converted to "%20" turning URL's into strings. The
 	 * JRE cannot load files with "%20" in them, however; for example,
 	 * "c:\Program Files\texttrix-x.y.z\plugins" never gets loaded. The
