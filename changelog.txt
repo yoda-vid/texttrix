@@ -10,45 +10,68 @@ plans for future ones.)
 
 ----v.0.7.0 (2007-?-?)----
 
-Text Trix is general purpose editor that makes coding easier and more precise.  Navigational tools help make large files easier to read and organize.  Special plugins manipulate text according to user-defined settings.
+Text Trix is general purpose editor that makes coding easier and more precise.  
+Navigational tools help make large files easier to read and organize.  Special 
+plugins manipulate text according to user-defined settings.
 
-v.0.7.0 introduces new features for visualizing text even more.  Key features are Line Dance, a tool to jump between multiple lines in a given file; Group Tabs, for organizing large numbers of files; and Word Find, a quick-find tool built into the status bar.  Cataloged here are these and other features:
+v.0.7.0 introduces new features for better visualization of text.  Key features 
+are Line Dance, a tool to jump between multiple lines in a given file; Group Tabs, 
+for organizing large numbers of files; and Word Find, a quick-find tool built into 
+the status bar.  Cataloged here are these and other features:
 
 Text Organization:
--Line Dance (new): Bookmark positions so that you can jump between multiple places in the same file.
--File Tabs and Group Tabs (new): File tabs are a familiar way to open multiple files at once; group tabs are a new way to group these files by topic.  Right-click to rename these groups.
--Word Find (new): A box for taking you directly to the typed word; use F3 to navigate.
--Line Find (updated): A box that takes you directly to the given line number.  Right-click on the line number in the status bar to record that number in Line Find.
--Wrap Indent: A tool to graphically indent wrapped lines, without modifying the underlying text.
--Tab Navigation (updated): Back/Forward browser-style navigation between file tabs.  Many bug fixes.
--Emacs/Pico/Standard Shortcuts: In the Preferences, one can choose from a variety of commonly used shortcuts styles.
--Reopen Tabs: Remembers the file tabs opened during the previous session, similiar to Session HIstory in Firefox.
+-Line Dance (new): Bookmark positions so that you can jump between multiple 
+places in the same file.
+-File Tabs and Group Tabs (new): File tabs are a familiar way to open multiple 
+files at once; group tabs are a new way to group these files by topic.  
+Right-click to rename these groups.
+-Word Find (new): A box for taking you directly to the typed word.
+-Line Find (updated): A box that takes you directly to the given line number.  
+Right-click on the line number in the status bar to record it in Line Find.
+-Tab Navigation (updated): Back/Forward browser-style navigation between 
+file tabs.  Many bug fixes.
+-Wrap Indent: A tool to graphically indent wrapped lines, without modifying the 
+underlying text.
+-Emacs/Pico/Standard Shortcuts: A variety of commonly used shortcuts styles 
+are offered in the Preferences.
+-Reopen Tabs: Remembers the file tabs opened during the previous session, 
+similiar to Session HIstory in Firefox.
 -Auto-Save: Keeps your files up-to-date, all the time.
 
 Text Manipulation:
 -Plugin model for specially designed textual manipulation tasks.
--PlugInWindowTemplate (new): A template for creating plug-ins with option windows.
--Song Sheet (newly updated): A plugin for transposing chords in guitar music or removing those chords entirely for song sheets; updated to include flats ("b") and make half-stepping more user friendly.
--Search and Stats (newly updated): A plugin for finding/replacing text and keeping track of stats, whether for the document or just the selected area.  Updates include fixes fixes in the replace all function.
--Extra Returns Remover: A plugin for removing email reply markers (">>") and unnecessary line breaks, while preserving line breaks in lists.
--HTML Stripper: A plugin that wades through HTML code to give you just the text.
--HTML View: Does just the opposite, converting your text into HTML code.
+-PlugInWindowTemplate (new): A template for creating plug-ins with option 
+windows.
+-Song Sheet (newly updated): A plugin for transposing chords in guitar music 
+or removing those chords entirely for song sheets.  Updated for better 
+identification of chords and easier chord transposition.
+-Search and Stats (newly updated): A plugin for finding/replacing text and 
+keeping track of text stats.  Updates include fixes in the replace all function.
+-Extra Returns Remover: A plugin for removing email reply markers (">>") and 
+unnecessary line breaks, while preserving line breaks in lists.
+-HTML Stripper: A plugin that wades through HTML code to give just the text.
+-HTML View: Does just the opposite, converting plain text into HTML code.
 
 Other Features and Fixes in v.0.7.0:
--Duplicate File Detection: Prevents opening the same file twice or saving over a currently opened file.
+-Duplicate File Detection: Prevents opening the same file twice or saving over a 
+currently opened file.
 -Import/export/reset preferences buttons for backing up preferred settings.
--During a search, Text Trix scrolls the found text to the top.
+-During a search, found text is automatically scrolled to the top.
+-Easier to read Shortcuts tips.
 -ALT-TAB workaround for Java bug in v.1.4 and now again in Java 6.
--Compiled and tested on Windows, Fedora Core Linux 6, and MacOS X 10.4 systems with Java 5 and 6.
+-Compiled and tested on Windows, Fedora Core Linux 6, and MacOS X 10.4 
+systems with Java 5 and 6.
 -Code cleanup for fixes and possible performance improvements.
 
 Changes in v.0.7.0 (since rc1):
+-Fixed line saver action bug
 -Documentation cleanup
 
 Changes in v.0.7.0rc1 (since beta2):
 -Import/export/reset preferences buttons for backing up preferred settings
 -During a search, scrolls the found text to the top
--PlugInWindowTemplate, a new template for creating plug-ins with option windows
+-PlugInWindowTemplate, a new template for creating plug-ins with option 
+windows
 -Added Line Find line saver to the View menu
 -Shortcuts documentation now in an HTML-tabular format for easier viewing
 -Bug fixes:
@@ -58,16 +81,20 @@ Changes in v.0.7.0rc1 (since beta2):
 -Code and API cleanup
 
 Changes in v.0.7.0beta2 (since beta1) (see "todo.txt" for more details):
--Line Dance additions and fixes, including better highlighting and an Name Line button
+-Line Dance additions and fixes, including better highlighting and an Name Line 
+button
 -Search plugin fixes (see above)
--UI fixes and features, including a new Navigation toolbar section and switch to Ocean theme on all but Windows platforms
--Build enhancements, including streamlined scripts and Jar Ajar 0.3.1pre packaging for immediate launch after install
+-UI fixes and features, including a new Navigation toolbar section and switch to 
+Ocean theme on all but Windows platforms
+-Build enhancements, including streamlined scripts and Jar Ajar 0.3.1pre 
+packaging for immediate launch after install
 -Known issues
 	-check whether tab history should keep ignoring tab initially opened
 	-shift-tab doesn't unindent in Linux
 	-check for lack of proper auto-wrap-indent detection on first launch
 	-update shortcuts page
-	-may stall while loading immediately after installation; workaround is to close the readme
+	-may stall while loading immediately after installation; workaround is to close 
+	the readme
 
 ---------------------------------------------------------------------
 ----Family of Really Innovative ENDS (FRIENDS) Series----

@@ -68,7 +68,7 @@ v.0.7.1
 
 v.0.7.0
 Changes in v.0.7.0final (since rc1):
--Make Line Find saver action more thread-safe; FIXED: may also fix sporadic launch failures and variable placement of the line saver action in the View menu
+-Make Line Find saver action more thread-safe; FIXED (#1624027): may also fix sporadic launch failures and variable placement of the line saver action in the View menu
 -More icons
 -Docs cleanup
 -----------------

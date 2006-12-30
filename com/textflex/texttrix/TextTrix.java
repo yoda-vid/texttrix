@@ -4309,7 +4309,7 @@ public class TextTrix extends JFrame {
 					/* Help menu items */
 
 					// about Text Trix, incl copyright notice and version number
-					Action aboutAction = new AbstractAction("About...", LibTTx
+					Action aboutAction = new AbstractAction("About", LibTTx
 							.makeIcon("images/minicon-16x16.png")) {
 						public void actionPerformed(ActionEvent evt) {
 							String path = "about.txt";
@@ -4332,7 +4332,7 @@ public class TextTrix extends JFrame {
 
 					// shortcuts description; opens new tab;
 					// reads from "shortcuts.txt" in same dir as this class
-					Action shortcutsAction = new AbstractAction("Shortcuts...", 
+					Action shortcutsAction = new AbstractAction("Shortcuts", 
 						LibTTx.makeIcon("images/shortcuts-16x16.png")) {
 						
 						public void actionPerformed(ActionEvent evt) {
@@ -4353,7 +4353,7 @@ public class TextTrix extends JFrame {
 
 					// license; opens new tab;
 					// reads from "license.txt" in same directory as this class
-					Action licenseAction = new AbstractAction("License...", 
+					Action licenseAction = new AbstractAction("License", 
 						LibTTx.makeIcon("images/license-16x16.png")) {
 						
 						public void actionPerformed(ActionEvent evt) {
