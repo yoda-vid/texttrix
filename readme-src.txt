@@ -26,6 +26,7 @@ environment (http://www.cygwin.com/).
 Instructions for compilation:
 -Unzip the Text Trix source package
 -Compile the Java classes:
+	-cd to the source directory.
 	-Auto-configure the build environment: "sh texttrix/configure".  To 
 	specify the location of the Java compiler, pass the argument, 
 	"--java=[path-to-java-compiler-binaries]".  See "--help" for other options.

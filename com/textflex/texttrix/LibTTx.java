@@ -43,6 +43,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import javax.swing.text.*;
+import javax.imageio.*;
 
 /** Library class to act as a tool chest for Text Trix functions.
  * Most <code>LibTTx</code> functions are potentially relevant to multiple
@@ -681,7 +682,25 @@ public class LibTTx {
 	 */
 	public static ImageIcon makeIcon(String path) {
 		URL iconURL = LibTTx.class.getResource(path);
-		return (iconURL != null) ? new ImageIcon(iconURL) : null;
+		
+		/* Workaround for possibly applicable Java bug #6231864
+		 * (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6231864)
+		 *
+		 * Image loading is slower when creating directly with ImageIcon.
+		 * The ImageIO method appears to be faster, reducing icon creation
+		 * times during start-up by approx. 50%.
+		 */
+		try {
+			if (iconURL != null) {
+				ImageIcon icon = new ImageIcon(ImageIO.read(iconURL));
+				return icon;
+			}
+		} catch(IllegalArgumentException e) {
+		} catch(IOException e1) {
+		}
+		return null;
+		
+//		return (iconURL != null) ? new ImageIcon(iconURL) : null;
 	}
 
 	/**Adds a new component to the <code>GridBagLayout</code> manager.

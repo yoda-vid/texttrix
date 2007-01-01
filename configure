@@ -131,7 +131,7 @@ echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=`expr index $arg "="`
+	n=`expr index "$arg" "="`
 	n=`expr $n - 1`
 	
 	# reads arguments
@@ -147,13 +147,13 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ `expr substr $arg 1 ${#PAR_JAVA}` \
+	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
 			= $PAR_JAVA \
 		-a ${#PAR_JAVA} -eq $n ] # Java path
 	then
 		READ_JAVA=1
 		READ_PARAMETER=1
-	elif [ `expr substr $arg 1 ${#PAR_PREFIX}` \
+	elif [ `expr substr "$arg" 1 ${#PAR_PREFIX}` \
 			= $PAR_PREFIX \
 		-a ${#PAR_PREFIX} -eq $n ] # specify the install location
 	then
@@ -168,12 +168,12 @@ do
 	then
 		if [ $READ_JAVA -eq 1 ]
 		then
-			JAVA=`expr substr $arg $n ${#arg}`
+			JAVA=`expr substr "$arg" $n ${#arg}`
 			READ_JAVA=0
 			echo "...set to use $JAVA as the Java compiler path..."
 		elif [ $READ_PREFIX -eq 1 ]
 		then
-			PREFIX=`expr substr $arg $n ${#arg}`
+			PREFIX=`expr substr "$arg" $n ${#arg}`
 			echo "...set to use the $PREFIX prefix..."
 			READ_PREFIX=0
 		fi

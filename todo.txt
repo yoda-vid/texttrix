@@ -3,7 +3,7 @@ the text tinker
 Copyright (c) 2002-7, Text Flex
 http://textflex.com/texttrix
 
-Note: "./" is the "check-mark" symbol
+(See "Current Work" below for latest changes)
 
 ----Ideas----
 
@@ -69,8 +69,10 @@ v.0.7.1
 v.0.7.0
 Changes in v.0.7.0final (since rc1):
 -Make Line Find saver action more thread-safe; FIXED (#1624027): may also fix sporadic launch failures and variable placement of the line saver action in the View menu
--More icons
--Docs cleanup
+-speed up icon loading; ADDED
+-allow Java binary paths with spaces in run/pkg scripts; FIXED
+-More icons; ADDED
+-Docs cleanup; UPDATED
 -----------------
 Changes in v.0.7.0rc1 (since beta2):
 -Line Dance fixes

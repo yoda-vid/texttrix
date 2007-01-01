@@ -68,7 +68,7 @@ Last updated:
 
 
 ##################
-# Prep the Makefile
+# Prep the Environment
 ##################
 
 ###############
@@ -104,7 +104,7 @@ echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=`expr index $arg "="`
+	n=`expr index "$arg" "="`
 	n=`expr $n - 1`
 	
 	# reads arguments
@@ -120,8 +120,8 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ `expr substr $arg 1 ${#PAR_JAVA}` \
-			= $PAR_JAVA \
+	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
+			= "$PAR_JAVA" \
 		-a ${#PAR_JAVA} -eq $n ] # Java path
 	then
 		READ_JAVA=1
@@ -135,7 +135,7 @@ do
 	then
 		if [ $READ_JAVA -eq 1 ]
 		then
-			JAVA=`expr substr $arg $n ${#arg}`
+			JAVA=`expr substr "$arg" $n ${#arg}`
 			READ_JAVA=0
 			echo "...set to use $JAVA as the Java compiler path..."
 		fi
@@ -167,5 +167,9 @@ then
 	BASE_DIR="${BASE_DIR%/.}"
 fi
 
+##############
+# Run Text Trix
+##############
+
 cd "$BASE_DIR"
-"$JAVA"java -cp . com/textflex/texttrix/TextTrix $@
+"$JAVA"java -cp . com.textflex.texttrix.TextTrix $@

@@ -35,7 +35,7 @@ underlying text.
 -Emacs/Pico/Standard Shortcuts: A variety of commonly used shortcuts styles 
 are offered in the Preferences.
 -Reopen Tabs: Remembers the file tabs opened during the previous session, 
-similiar to Session HIstory in Firefox.
+similar to Session History in Firefox.
 -Auto-Save: Keeps your files up-to-date, all the time.
 
 Text Manipulation:
@@ -64,6 +64,7 @@ systems with Java 5 and 6.
 -Code cleanup for fixes and possible performance improvements.
 
 Changes in v.0.7.0 (since rc1):
+-Speedier image icon loading
 -Fixed line saver action bug
 -Documentation cleanup
 
