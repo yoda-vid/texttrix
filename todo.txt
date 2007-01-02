@@ -55,7 +55,12 @@ http://textflex.com/texttrix
 
 ----Future releases----
 
+v.0.7.2
+
+----Current release----
+
 v.0.7.1
+-fix duplication of shortcuts/license tabs when open from Help menu
 -set font face and size in prefs
 -incorporate JEdit Syntax Package (OSS: MIT-style license)
 -make clean should cleanup inner/anonymous classes
@@ -63,8 +68,9 @@ v.0.7.1
 -backward Search/Word Find
 -regex in Search/Word Find
 -add line saver to popup menu
+-when closing tab, should select previous tab in tab history
 
-----Current release----
+----Past Releases----
 
 v.0.7.0
 Changes in v.0.7.0final (since rc1):
@@ -161,8 +167,6 @@ Changes in v.0.7.0beta1:
 	-fix right-click popup error on first tab; FIXED (regression): the PopUpListener had been generalized to include popups from all sorts of components, but since the listener would be initialized for the first tab prior to the creation of the popup, the tab would have nothing to popup; now, each component has its own popup listener, tied into its own program-wide popup
 	-remove Non-Printing-Character Viewer plugin since confusing that actually modifies the underlying text; FIXED: removed
 	-closing tab should take you to the last used tab
-
-----Past Releases----
 
 v.0.5.1
 -fix Refresh Tab from creating a new tab rather than refreshing the current copy; FIXED: updated the main openFile method not to reuse tabs by default, but only if flagged, or the current tab is empty and unchanged
