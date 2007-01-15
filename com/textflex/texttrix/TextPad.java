@@ -1456,15 +1456,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		tabSize = aTabSize;
 	}
 
-	/** Gets the number of characters that each tab represents.
-	 * 
-	 * @return the number of characters
-	 * @see #setTabSize(int)
-	 */
-	public int getTabSize() {
-		return tabSize;
-	}
-	
 	
 	
 	
@@ -1488,12 +1479,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 
@@ -1530,6 +1515,15 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	
 	
+	
+	/** Gets the number of characters that each tab represents.
+	 * 
+	 * @return the number of characters
+	 * @see #setTabSize(int)
+	 */
+	public int getTabSize() {
+		return tabSize;
+	}
 	
 	
 	/** Gets the scroll pane that houses this pad.

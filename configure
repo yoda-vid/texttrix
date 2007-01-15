@@ -46,7 +46,7 @@
 # Deprecated/removed plugins: NonPrintingChars
 PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 
-TTX_VER=0.7.0 # curr ver num; only used for default install loc
+TTX_VER=0.7.1alpha1 # curr ver num; only used for default install loc
 
 ##################
 # Overview Variables
@@ -312,7 +312,7 @@ ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$t
 ttxClassRule='texttrix/$(PKG_DIR)/%.class: $(BASE_DIR)/texttrix/$(PKG_DIR)/%.java'
 if [ $CYGWIN = true ]
 then
-	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(shell cygpath -wp $(BASE_DIR)/texttrix) -classpath $(shell cygpath -wp texttrix) $(shell cygpath -wp $?) -d $(shell cygpath -wp texttrix)'
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(shell cygpath -mp $(BASE_DIR)/texttrix) -classpath $(shell cygpath -mp texttrix) $(shell cygpath -mp $?) -d $(shell cygpath -mp texttrix)'
 else
 	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(BASE_DIR)/texttrix -classpath texttrix $? -d texttrix'
 fi
@@ -363,7 +363,7 @@ do
 	plgClassRules="$plgClassRules""\nplugins/$plgDir"'/$(PKG_DIR)/%.class: $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/%.java'
 	if [ $CYGWIN = true ]
 	then
-		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -wp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -wp '"$plgClasspath)'"' $(shell cygpath -wp $?) -d $(shell cygpath -wp plugins/'"$plgDir"')'
+		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -mp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -mp '"$plgClasspath)'"' $(shell cygpath -mp $?) -d $(shell cygpath -mp plugins/'"$plgDir"')'
 	else
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath"' -classpath '"$plgSrcpath"' $? -d plugins/'"$plgDir"
 	fi
@@ -411,7 +411,7 @@ LINK="-link http://java.sun.com/javase/6/docs/api"
 api='api: $(TARGET_FILES)'"\n\t"'mkdir -p docs/api'
 if [ $CYGWIN = true ]
 then
-	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -wp docs/api) '$LINK' -classpath $(shell cygpath -wp texttrix) $(PKG)'
+	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -mp docs/api) '$LINK' -classpath $(shell cygpath -mp texttrix) $(PKG)'
 else
 	api="$api""\n\t"'$(JAVADOC) -d docs/api '$LINK' -classpath texttrix $(PKG)'
 fi

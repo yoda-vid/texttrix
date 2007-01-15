@@ -158,6 +158,9 @@ public class TextTrix extends JFrame {
 		});
 
 		/* Load preferences to create prefs panel */
+		// The prefs must be loaded as early as possible since
+		// many of the preference settings are used to setup
+		// the rest of the GUI
 
 		// create the accept action
 		prefsOkayAction = new AbstractAction("Okay", null) {
@@ -259,6 +262,13 @@ public class TextTrix extends JFrame {
 						if (t != null) {
 							updateTitle(t.getFilename());
 							updateStatusBarLineNumbers(t);
+							// updates the Line Dance table only if visible;
+							// otherwise table will update when the panel
+							// becomes visible
+							if (lineDanceDialog != null && lineDanceDialog.isVisible()) {
+								lineDanceDialog.updatePadPanel();
+							}
+							
 						}
 					}
 				});
@@ -4505,6 +4515,12 @@ public class TextTrix extends JFrame {
 							}
 						}
 					});
+					lineNumFld.addFocusListener(new FocusAdapter() {
+						public void focusGained(FocusEvent e) {
+							lineNumFld.selectAll();
+						}
+					});
+					
 					
 					
 					// Word Find
@@ -4543,6 +4559,11 @@ public class TextTrix extends JFrame {
 //								System.out.println("end: " + getSelectedTextPad().getSelectionEnd());
 								findSeq(lineStr, getSelectedTextPad().getSelectionEnd());
 							}
+						}
+					});
+					wordFindFld.addFocusListener(new FocusAdapter() {
+						public void focusGained(FocusEvent e) {
+							wordFindFld.selectAll();
 						}
 					});
 					
@@ -4939,7 +4960,7 @@ public class TextTrix extends JFrame {
 			addComponentListener(compListener);
 			
 			
-			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// Runs the plug-in if the user hits the "Remember Line"
 			// button;
 			// creates a shortcut key (alt-L) as an alternative way to invoke
 			// the button
@@ -4958,7 +4979,7 @@ public class TextTrix extends JFrame {
 			
 			
 			
-			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// Runs the plug-in if the user hits the "Forget Line"
 			// button;
 			// creates a shortcut key (alt-L) as an alternative way to invoke
 			// the button
@@ -4976,7 +4997,7 @@ public class TextTrix extends JFrame {
 			JButton forgetSelLineBtn = new JButton(forgetSelLineAction);
 			
 			
-			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// Runs the plug-in if the user hits the "Line Dance"
 			// button;
 			// creates a shortcut key (alt-L) as an alternative way to invoke
 			// the button
@@ -4995,7 +5016,7 @@ public class TextTrix extends JFrame {
 			
 			
 			
-			// Runs the plug-in if the user hits the "Song Sheet Maker"
+			// Runs the plug-in if the user hits the "Name Line"
 			// button;
 			// creates a shortcut key (alt-L) as an alternative way to invoke
 			// the button

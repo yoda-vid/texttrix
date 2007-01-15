@@ -35,7 +35,28 @@
 #
 # ***** END LICENSE BLOCK *****
 
-# Text Trix packager
+##############################
+# User-defined variables
+# Check them!
+##############################
+
+# version number
+DATE=`date +'%Y-%m-%d'`
+VER="0.7.1alpha1-"$DATE
+#VER="0.7.1alpha1"
+
+# the final destination of the resulting packages
+PREFIX="/home/share" 
+
+# the path to the compiler binaries
+JAVA=""
+
+# the root directory of the source files
+BASE_DIR=""
+
+################################
+# Help
+################################
 
 HELP="
 Packages both binary and source code archives of Text Trix.
@@ -64,25 +85,6 @@ Copyright:
 Last updated:
 	2006-12-18
 "
-
-##############################
-# User-defined variables
-# Check them!
-##############################
-
-# version number
-DATE=`date +'%Y-%m-%d'`
-#VER="0.7.0-"$DATE
-VER="0.7.0"
-
-# the final destination of the resulting packages
-PREFIX="/home/share" 
-
-# the path to the compiler binaries
-JAVA=""
-
-# the root directory of the source files
-BASE_DIR=""
 
 ##############################
 # System setup
