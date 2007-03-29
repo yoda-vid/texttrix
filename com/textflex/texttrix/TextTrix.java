@@ -47,6 +47,8 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import java.awt.print.*;
 import javax.print.attribute.*;
+import javax.swing.plaf.*;
+import javax.swing.plaf.metal.*;
 
 /**
  * The main Text Trix class. Takes care of all basic graphical user interface
@@ -282,7 +284,7 @@ public class TextTrix extends JFrame {
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
 
 		// set text and web file filters for open/save dialog boxes
-		chooser = new JFileChooser();
+		chooser = getChooser();//new JFileChooser();
 		allFilter = chooser.getFileFilter();
 		final ExtensionFileFilter webFilter = new ExtensionFileFilter();
 		webFilter.addExtension("html");
@@ -2939,6 +2941,42 @@ public class TextTrix extends JFrame {
 	 * @return the main file chooser
 	 */
 	public JFileChooser getChooser() {
+		if (chooser == null) {
+			/** WORKAROUND:
+			 *	For Sun Java bug #6210674:
+			 *	"FileChooser fails to load custom harddrive icon and gets NullPointerException"
+			 *	(http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674)
+			 *	Workaround from Sun Java bug #4711700
+			 *	(http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4711700)
+			 *
+			 * This bug causes Text Trix to crash inconsistently during loading.
+			 * Apparently the problem is a timing issue in loading an image icon
+			 * for the file chooser.  The problem has occurred sporadically during
+			 * tests in Windows XP SP2, but more conistently in Windows Vista.
+			 * An alternative workaround is to repeatedly catch the exception and
+			 * try again to produce the chooser until it works.
+			 */
+		    class JF extends JFileChooser {
+		        protected void setUI(ComponentUI newUI) {
+		            try {
+		                super.setUI(newUI);
+		            } catch (NullPointerException e) {
+		                if (newUI.getClass().getName().equals(
+								"com.sun.java.swing.plaf.windows.WindowsFileChooserUI")) {
+		                    try {
+		                        super.setUI(null);
+		                    } catch (NullPointerException ee) {
+		                        ui = null;
+		                    }
+		                    super.setUI(new MetalFileChooserUI(this));
+		                } else {
+		                    throw e;
+		                }
+		            }
+		        }
+		    }
+			chooser = new JF();
+		}
 		return chooser;
 	}
 	
