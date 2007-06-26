@@ -7,7 +7,6 @@ http://textflex.com/texttrix
 
 ----Ideas----
 
--drag selected text
 -check on lost I-bar after switching to HTML view
 -MacOS X compatibility
 	-check on lack of shortcuts in MacOS X
@@ -75,6 +74,7 @@ v.0.7.1
 -setCaretPositionTop should set to beginning of selected regions
 -automatically highlight Word Find and Line Find text when place cursor inside; ADDED
 -fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
+-Drag-n-drop text; ADDED
 
 ----Past Releases----
 

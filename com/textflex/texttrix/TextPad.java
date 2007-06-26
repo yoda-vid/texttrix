@@ -110,8 +110,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		};
 		// makes the panel
 		lineDancePanel = new LineDancePanel(takeMeEnter);
-		// adds teh mouse listener
+		// adds thh mouse listener
 		lineDancePanel.addTableMouseListener(new LineDanceMouseListener());
+		
+		// adds dran-n-drop support for text
+		setDragEnabled(true);
 		
 		
 		
