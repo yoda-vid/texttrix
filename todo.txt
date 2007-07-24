@@ -69,9 +69,11 @@ v.0.7.1
 -add line saver to popup menu
 -when closing tab, should select previous tab in tab history
 -Line Dance appears to insert a tab into text after hitting enter while editing line name
--Line Dance table doesn't update when shift between groups; FIXED (#1631008)
 -check on Line Dance exception when forget line while editing its name
--setCaretPositionTop should set to beginning of selected regions
+-fix sporadic delay in startup on Vista
+
+-Line Dance table doesn't update when shift between groups; FIXED (#1631008)
+-setCaretPositionTop should set to beginning of selected regions; FIXED
 -automatically highlight Word Find and Line Find text when place cursor inside; ADDED
 -fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Drag-n-drop text; ADDED

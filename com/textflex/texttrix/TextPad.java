@@ -1469,10 +1469,17 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void setCaretPositionTop(int position) {
 		int origCaretPosition = getCaretPosition();
-		setCaretPosition(position);
+		setCaretPosition(position); // if cursor out of view, need to bring it back in
+		// if cursor didn't move, don't want screen to move any farther
 		if (origCaretPosition == position) return;
 		try {
-			Rectangle rect = modelToView(position);
+//			int selectionStart = getSelectionStart();
+			// moves caret to start of selection, which is equal to the new position
+			
+			// if no selection, in case selection spans > 1 line
+			// TODO: still seems to scroll to end of selection
+//			System.out.println("selection start: " + getAllText().substring(getSelectionStart(), getSelectionStart() + 3) + ", position: " + position);
+			Rectangle rect = modelToView(getSelectionStart());//position);
 			if (rect != null) {
 //				System.out.println("rect: " + rect.x + ", " + rect.y);
 				getScrollPane().getViewport().scrollRectToVisible(rect);

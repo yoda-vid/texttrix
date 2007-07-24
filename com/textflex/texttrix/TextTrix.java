@@ -839,7 +839,9 @@ public class TextTrix extends JFrame {
 						}
 						diag.setVisible(true);
 						if (t != null && selectionStart != selectionEnd) {
-							textSelection(t, 0, selectionStart, selectionEnd);
+							// reverse selection to prevent selected area from
+							// scrolling off screen if area > 1 line
+							textSelectionReverse(t, 0, selectionStart, selectionEnd);
 						}
 					}
 				}
