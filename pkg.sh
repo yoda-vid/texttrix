@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1/GPL 2.0/LGPL 2.1
 #
@@ -101,6 +101,10 @@ then
 	LINUX="true"
 	JAVA=/usr/java/default/bin
 fi
+
+# --java parameter
+PAR_JAVA="--java"
+READ_JAVA=0
 
 
 echo "Parsing user arguments..."
@@ -243,15 +247,15 @@ mv texttrix $SRCPKGDIR # copy to source package
 cd "$TTX_DIR"
 cp configure pkg.sh run.sh manifest-additions.mf \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
-cp plugins/*.jar "$BLD_DIR/$PKGDIR"/plugins # only want jars in binary package
 cd "$BLD_DIR"
 cp -rf $PLGS_DIR $SRCPKGDIR/plugins
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 
 # create binary package
 
-# create binaries
+# create/package binaries
 cd $BLD_DIR/$PKGDIR
+cp "$TTX_DIR"/plugins/*.jar plugins # only want jars in binary package
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then

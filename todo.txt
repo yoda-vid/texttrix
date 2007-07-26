@@ -71,12 +71,15 @@ v.0.7.1
 -Line Dance appears to insert a tab into text after hitting enter while editing line name
 -check on Line Dance exception when forget line while editing its name
 -fix sporadic delay in startup on Vista
+-Generalize configure and pkg script directory identification
+-Plug-in dialog first launches should open somewhere near the main window position
 
 -Line Dance table doesn't update when shift between groups; FIXED (#1631008)
 -setCaretPositionTop should set to beginning of selected regions; FIXED
 -automatically highlight Word Find and Line Find text when place cursor inside; ADDED
 -fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Drag-n-drop text; ADDED
+-build scripts should be set explicitly to /bin/bash; FIXED
 
 ----Past Releases----
 

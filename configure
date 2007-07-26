@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1/GPL 2.0/LGPL 2.1
 #
@@ -44,7 +44,7 @@
 # Ex: add "PlugInWindowTemplate" for the template window, after including the 
 # necessary files in the appropriate directory structure.
 # Deprecated/removed plugins: NonPrintingChars
-PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
+PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse" # SongSheet
 
 TTX_VER=0.7.1alpha1 # curr ver num; only used for default install loc
 
@@ -207,8 +207,6 @@ then
 	BASE_DIR="${BASE_DIR%/.}"
 fi
 MAKEFILE="$PWD/Makefile" # name of resulting Makefile
-
-
 
 
 #############
