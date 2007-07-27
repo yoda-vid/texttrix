@@ -99,7 +99,18 @@ then
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
-	JAVA=/usr/java/default/bin
+
+	# Java binary detection mechanism
+	if [ "`command -v java`" != '' ]
+	then
+		JAVA=""
+	elif [ "`command -v /usr/bin/java`" != "" ]
+	then
+		JAVA="/usr/bin"
+	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
+	then
+		JAVA="/usr/java/default/bin"
+	fi
 fi
 
 # --java parameter
