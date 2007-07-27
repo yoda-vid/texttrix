@@ -70,6 +70,8 @@ v.0.7.1
 -when closing tab, should select previous tab in tab history
 -Line Dance appears to insert a tab into text after hitting enter while editing line name
 -check on Line Dance exception when forget line while editing its name
+-Line Dance should automatically name line if text is highlighted
+-option to make group tabs invisible
 -fix sporadic delay in startup on Vista
 -Generalize configure and pkg script directory identification
 -Plug-in dialog first launches should open somewhere near the main window position
@@ -79,6 +81,7 @@ v.0.7.1
 -automatically highlight Word Find and Line Find text when place cursor inside; ADDED
 -fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Drag-n-drop text; ADDED
+-Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default L&F file chooser when Vista one fails
 -build scripts should be set explicitly to /bin/bash; FIXED
 
 ----Past Releases----
