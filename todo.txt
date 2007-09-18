@@ -1,4 +1,3 @@
-<<<<<<< todo.txt
 Text Trix
 the text tinker
 Copyright (c) 2002-7, Text Flex
