@@ -182,13 +182,16 @@ public class TextPad extends JTextPane implements StateEditable {
 					// no longer should JVM_15 b/c the behavior also applies
 					// to < JVM v.1.4.2 in keyPressed
 					indentCurrentParagraph(getTabSize(), true);
-/*					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
 					&& evt.isShiftDown()) {
-					// un-tab entire region if selected in auto-indent
-					// mode, or current line if none selected
+					// Unindent action has been shifted to the universal shortcuts
+					// action map.  Even though keyPressed doesn't invoke the action,
+					// still need to grab the keystroke so that it won't be passed on
+					// to the TAB action.
+					
 					System.out.println("shift tab");
+/*					
 					evt.consume();
 					try {
 						if (getSelectionStart() != getSelectionEnd()) {

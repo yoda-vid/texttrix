@@ -1,3 +1,4 @@
+<<<<<<< todo.txt
 Text Trix
 the text tinker
 Copyright (c) 2002-7, Text Flex
@@ -75,6 +76,7 @@ v.0.7.1
 -fix sporadic delay in startup on Vista
 -Generalize configure and pkg script directory identification
 -Plug-in dialog first launches should open somewhere near the main window position
+-Check file timestamps and warn if open file modified elsewhere
 
 -Line Dance table doesn't update when shift between groups; FIXED (#1631008)
 -setCaretPositionTop should set to beginning of selected regions; FIXED
