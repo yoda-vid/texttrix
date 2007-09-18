@@ -182,13 +182,13 @@ public class TextPad extends JTextPane implements StateEditable {
 					// no longer should JVM_15 b/c the behavior also applies
 					// to < JVM v.1.4.2 in keyPressed
 					indentCurrentParagraph(getTabSize(), true);
-					
+/*					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
 					&& evt.isShiftDown()) {
 					// un-tab entire region if selected in auto-indent
 					// mode, or current line if none selected
-					
+					System.out.println("shift tab");
 					evt.consume();
 					try {
 						if (getSelectionStart() != getSelectionEnd()) {
@@ -199,12 +199,16 @@ public class TextPad extends JTextPane implements StateEditable {
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
-					
+*/					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
 					&& getSelectionStart() != getSelectionEnd()) {
 					// tab entire region
+					// Unindent code needs to be placed in the action map
+					// because shift+TAB is normally captured by the 
+					// focusing mechanism
 					
+					System.out.println("tab");
 					evt.consume();
 					try {
 						tabRegion();
@@ -317,6 +321,43 @@ public class TextPad extends JTextPane implements StateEditable {
 		amap.put(
 			"deletePrevChar",
 			getActionByName(DefaultEditorKit.deletePrevCharAction));
+			
+		// (Shfit+TAB): unindents the highlighted region
+		// This action could be placed in the general keyPressed
+		// method in Windows, but tests on Linux (Fedora 7, GNOME)
+		// indicate that standard practice is to place shift+TAB code
+		// in the action map to override the focus mechanism from
+		// taking over the shortcut.
+		Action unidentTabsAction = new AbstractAction() {
+			/** Unindents the entire selected region.
+			 * Each line to be unindented should be selected
+			 * in its entirety.
+			 * TODO: Check the start of any line even partially
+			 * highlighted rather than just checking up the start
+			 * of the selected area.
+			 * @param evt the action event
+			 */
+			public void actionPerformed(ActionEvent evt) {
+				if (autoIndent) {
+					System.out.println("shift tab");
+					try {
+						if (getSelectionStart() != getSelectionEnd()) {
+							tabRegionReverse();
+						} else {
+							unindentLeadingTab();
+						}
+					} catch (BadLocationException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_TAB, Event.SHIFT_MASK),
+			"unindentTabs");
+		amap.put(
+			"unindentTabs",
+			unidentTabsAction);
 			
 	}
 
@@ -725,6 +766,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// the previous newline, or if none exists, the first character
 		// of the document
 		int lineLeadingChar = LibTTx.reverseIndexOf(doc, "\n", i) + 1;
+		System.out.println("lineLeadingChar: " + lineLeadingChar);
 		// removes the first tab
 		if (doc.getText(lineLeadingChar, 1).equals("\t")) {
 			doc.remove(lineLeadingChar, 1);
