@@ -207,17 +207,10 @@ fi
 # Any "/." used to invoke the script are removed for Cygwin compatibility.
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
-	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
-	then
-		BASE_DIR="$0"
-	else # assume that script path is relative to current dir
-		script="${0#./}"
-		BASE_DIR="$PWD/$script"
-	fi
-	BASE_DIR="${BASE_DIR%/texttrix/configure}" # assumes the script's name is configure
-	BASE_DIR="${BASE_DIR%/.}"
+	BASE_DIR=`dirname $0`
 fi
 MAKEFILE="$PWD/Makefile" # name of resulting Makefile
+echo $BASE_DIR
 
 
 #############
@@ -292,10 +285,10 @@ fi
 
 PKG_DIR="com/textflex/texttrix"
 PKG="com.textflex.texttrix"
-srcFiles='SRC_FILES=$(wildcard $(BASE_DIR)/texttrix/$(PKG_DIR)/*.java)'
+srcFiles='SRC_FILES=$(wildcard $(BASE_DIR)/$(PKG_DIR)/*.java)'
 targetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SRC_FILES))'
 
-ttxBaseDir='$(BASE_DIR)/texttrix'
+ttxBaseDir='$(BASE_DIR)'
 ttxBasePkgDir="$ttxBaseDir"'/$(PKG_DIR)'
 
 #############
@@ -308,22 +301,22 @@ ttxRule='TextTrix texttrix: TextTrix_setup $(TARGET_FILES)'
 # setup rule
 # Ensures proper placement of files
 ttxSetupRule='TextTrix_setup: '
-ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/$(PKG_DIR)'
-ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/plugins'
-ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/*.txt texttrix/"'$(PKG_DIR); fi'
-ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p texttrix/$(PKG_DIR)/images'
-ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$ttxBasePkgDir/images/*.png"' texttrix/$(PKG_DIR)/images; fi'
+ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p $(PKG_DIR)'
+ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p plugins'
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) -ef $$PWD ]; then cp -u '"$ttxBasePkgDir/*.txt "'$(PKG_DIR); fi'
+ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p $(PKG_DIR)/images'
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) -ef $$PWD ]; then cp -u '"$ttxBasePkgDir/images/*.png"' $(PKG_DIR)/images; fi'
 
 # class rule
 # Customized for building w/i Cygwin or Linux environments.
 # "-source 1.3" is used to allow for maximal build versatility, though Text Trix does have
 # classes only introduced since JVM 1.4
-ttxClassRule='texttrix/$(PKG_DIR)/%.class: $(BASE_DIR)/texttrix/$(PKG_DIR)/%.java'
+ttxClassRule='$(PKG_DIR)/%.class: $(BASE_DIR)/$(PKG_DIR)/%.java'
 if [ $CYGWIN = true ]
 then
-	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(shell cygpath -mp $(BASE_DIR)/texttrix) -classpath $(shell cygpath -mp texttrix) $(shell cygpath -mp $?) -d $(shell cygpath -mp texttrix)'
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(shell cygpath -mp $(BASE_DIR)) -classpath $(shell cygpath -mp texttrix) $(shell cygpath -mp $?) -d $(shell cygpath -mp texttrix)'
 else
-	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(BASE_DIR)/texttrix -classpath texttrix $? -d texttrix'
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 $?'
 fi
 
 #########
