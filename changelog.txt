@@ -8,6 +8,23 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
+----v.0.7.1 (2007-10-??)----
+
+A bug fix and minor enhancements release to Text Trix.  This release features fixes to startup on Vista and build errors.  Enhancements include Line Dance improvements and text drag-n-drop.
+
+Enhancements:
+-Line Dance automatically names line if text is highlighted
+-Automatically highlights Word Find and Line Find text when place cursor inside
+-Drag-n-drop text
+-New open-file/close-tab icons
+
+Bugs fixed:
+-Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default L&F file chooser when Vista one fails
+-Line Dance table doesn't update when shift between groups; FIXED (#1631008)
+-setCaretPositionTop should set to beginning of selected regions; FIXED
+-Fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
+-Build scripts should be set explicitly to /bin/bash; FIXED
+
 ----v.0.7.0 (2007-01-01)----
 
 Text Trix is general purpose editor that makes coding easier and more precise.  
