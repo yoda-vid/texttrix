@@ -1405,12 +1405,13 @@ public class TextPad extends JTextPane implements StateEditable {
 	/** Remembers a line number and caret position in the 
 	 * Line Dance table.
 	 */
-	public void remLineNum() {
+	public void remLineNum(String name) {
+		if (name == null) name = "";
 		// adds a new entry in the table
 		lineDancePanel.addRow(new String[] {
 			"" + getLineNumber(),
 			"" + getCaretPosition(),
-			""
+			name
 		});
 	}
 	

@@ -5007,7 +5007,8 @@ public class TextTrix extends JFrame {
 			Action remCurrLineAction = 
 				new AbstractAction("Remember line", null) {
 				public void actionPerformed(ActionEvent e) {
-					getSelectedTextPad().remLineNum();
+					TextPad p = getSelectedTextPad();
+					p.remLineNum(p.getSelectedText());
 				}
 			};
 			LibTTx.setAcceleratedAction(
