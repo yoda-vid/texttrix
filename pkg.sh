@@ -42,7 +42,7 @@
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-VER="0.7.1alpha1-"$DATE
+VER="0.7.1beta1-"$DATE
 #VER="0.7.1alpha1"
 
 # the final destination of the resulting packages
@@ -112,10 +112,7 @@ then
 		JAVA="/usr/java/default/bin"
 	fi
 fi
-
-# --java parameter
-PAR_JAVA="--java"
-READ_JAVA=0
+echo "found $SYSTEM"
 
 
 echo "Parsing user arguments..."
@@ -178,23 +175,24 @@ then
 	JAVA="$JAVA"/
 fi
 
-# Determine the base dir if not specified above
+# The working directory is the directory from which this script is run
+WK_DIR="$PWD"
+
+# Source directories
+# The base directory is the directory containing this script
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
-	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
-	then
-		BASE_DIR="$0"
-	else # assume that script path is relative to current dir
-		script="${0#./}"
-		BASE_DIR="$PWD/$script"
-	fi
-	BASE_DIR="${BASE_DIR%/texttrix/pkg.sh}" # set base dir to main Text Trix dir
-	# BASE_DIR="${BASE_DIR%/.}"
-	echo $BASE_DIR
+	BASE_DIR=`dirname $0`
 fi
-BLD_DIR="$BASE_DIR/build" # initial output directory
-TTX_DIR="$BASE_DIR/texttrix" # root directory of main Text Trix source files
-PLGS_DIR="$BASE_DIR/plugins" # root directory of Text Trix plug-in source files
+
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
+
+BRANCH="trunk"
+PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
+
+BLD_DIR="$WK_DIR/build" # initial output directory
+TTX_DIR="$BASE_DIR" # root directory of main Text Trix source files
 
 ##############################
 # Build operations
@@ -232,20 +230,15 @@ echo "Packaging the files..."
 rm -rf $ALL
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
-if [ -e "$TTX_DIR/readme.txt" ]
-then
-	cd "$TTX_DIR"
-else
-	cd "$BASE_DIR"
-fi
-cp -rf "$TTX_DIR"/com readme.txt readme-src.txt todo.txt changelog.txt \
+cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
+	"$TTX_DIR"/todo.txt "$TTX_DIR"/changelog.txt \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico "$BLD_DIR/$PKGDIR"
 
 
 # create the master package, which will eventually become the binary package
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
-rm -rf com/CVS com/textflex/CVS $DIR/CVS $DIR/images/CVS $DIR/images/bak $DIR/*~
+rm -rf com/.svn com/textflex/.svn $DIR/.svn $DIR/images/.svn
 # make files readable in all sorts of systems
 unix2dos *.txt $DIR/*.txt
 chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files
@@ -255,9 +248,12 @@ cd $BLD_DIR
 cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
 mv texttrix $SRCPKGDIR # copy to source package
+
 cd "$TTX_DIR"
+sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix
 cp configure pkg.sh run.sh manifest-additions.mf \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
+	
 cd "$BLD_DIR"
 cp -rf $PLGS_DIR $SRCPKGDIR/plugins
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
