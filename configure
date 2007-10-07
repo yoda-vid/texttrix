@@ -200,27 +200,30 @@ then
 	JAVA="$JAVA"/
 fi
 
+# The working directory is the directory from which this script is run
+WK_DIR="$PWD"
+
 # Source directories
-# Note that currently requires the user to remain case-sensitive with the name
-# of the base dir, even if Cygwin navigates w/o regard to case.
-# Determine the base dir if not specified above.
-# Any "/." used to invoke the script are removed for Cygwin compatibility.
+# The base directory is the directory containing this script
 if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
 then
 	BASE_DIR=`dirname $0`
 fi
-MAKEFILE="$PWD/Makefile" # name of resulting Makefile
+
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
 echo $BASE_DIR
 
+BRANCH="trunk"
+PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
+echo $PLGS_DIR
 
-#############
-# Setup links
-cd "$BASE_DIR"
 
 #############
 # Create $MAKEFILE
 #############
 
+MAKEFILE="$WK_DIR/Makefile" # name of resulting Makefile
 echo -n "Removing old Makefile..."
 rm -f $MAKEFILE
 echo "done"
@@ -303,7 +306,7 @@ ttxRule='TextTrix texttrix: TextTrix_setup $(TARGET_FILES)'
 ttxSetupRule='TextTrix_setup: '
 ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p $(PKG_DIR)'
 ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p plugins'
-ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) -ef $$PWD ]; then cp -u '"$ttxBasePkgDir/*.txt "'$(PKG_DIR); fi'
+ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) -ef $$PWD ]; then cp -u '"$ttxBasePkgDir/*.txt $ttxBasePkgDir/*.html "'$(PKG_DIR); fi'
 ttxSetupRule="$ttxSetupRule""\n\t"'mkdir -p $(PKG_DIR)/images'
 ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) -ef $$PWD ]; then cp -u '"$ttxBasePkgDir/images/*.png"' $(PKG_DIR)/images; fi'
 
@@ -337,20 +340,22 @@ do
 	# plug-in directories have all-lower cases, while the vars have just the opposite
 	plgDir=`echo "$plg" | tr "[:upper:]" "[:lower:]"`
 	plgVar=`echo "$plg" | tr "[:lower:]" "[:upper:]"`
+	plgBaseDir='$(PLGS_DIR)/'"$plgDir"'/$(BRANCH)'
+	plgPkgBaseDir="$plgBaseDir/"'$(PKG_DIR)'
+	plgTargetDir=plugins/"$plgDir"
+	plgPkgTargetDir="$plgTargetDir/"'$(PKG_DIR)'
 	
 	# plug-in source files
 	plgSrcFilesVar="$plgVar"_SRC_FILES
-	plgSrcFiles="$plgSrcFiles""\n$plgSrcFilesVar"'=$(wildcard $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/*.java)'
+	plgSrcFiles="$plgSrcFiles""\n$plgSrcFilesVar"'=$(wildcard '"$plgBaseDir/"'$(PKG_DIR)'"/*.java)"
 	
 	# plug-in target files
 	plgTargetFilesVar="$plgVar"_TARGET_FILES
-	plgTargetFiles="$plgTargetFiles""\n$plgTargetFilesVar"'=$(patsubst $(BASE_DIR)/%.java,%.class,$('"$plgSrcFilesVar"'))'
+	plgTargetFiles="$plgTargetFiles""\n$plgTargetFilesVar="'$(patsubst $(PLGS_DIR)/'"$plgDir"'/$(BRANCH)/%.java,'"plugins/$plgDir"'/%.class,$('"$plgSrcFilesVar"'))'
 	
 	# parsing arguments to javac from directory information
-	plgSrcpath='$(BASE_DIR)/texttrix:$(BASE_DIR)/plugins/'"$plgDir"
-	plgClasspath=texttrix:plugins/"$plgDir"
-	plgBaseDir='$(BASE_DIR)/plugins/'"$plgDir"
-	plgBasePkgDir="$plgBaseDir"'/$(PKG_DIR)'
+	plgSrcpath='$(BASE_DIR):'"$plgBaseDir"
+	plgClasspath='.:'"$plgTargetDir"
 	
 	# main rule, which includes dependency on texttrix to ensure PlugIn and 
 	# related class updating
@@ -358,21 +363,21 @@ do
 	
 	# setup rule
 	plgSetupRules="$plgSetupRules""\n$plg"'_setup:'
-	plgSetupRules="$plgSetupRules""\n\t"'mkdir -p plugins/'"$plgDir"'/$(PKG_DIR)'
-	plgSetupRules="$plgSetupRules""\n\tif [ ! "'$(BASE_DIR) = $$PWD ]; then cp -u '"$plgBasePkgDir/*.html $plgBasePkgDir/*.png plugins/$plgDir/"'$(PKG_DIR); fi'"\n"
+	plgSetupRules="$plgSetupRules""\n\tmkdir -p $plgPkgTargetDir"
+	plgSetupRules="$plgSetupRules""\n\tcp -u $plgPkgBaseDir/*.html $plgPkgBaseDir/*.png $plgPkgTargetDir\n"
 	
 	# class rule
-	plgClassRules="$plgClassRules""\nplugins/$plgDir"'/$(PKG_DIR)/%.class: $(BASE_DIR)/plugins/'"$plgDir"'/$(PKG_DIR)/%.java'
+	plgClassRules="$plgClassRules""\n$plgPkgTargetDir/%.class: $plgPkgBaseDir/%.java"
 	if [ $CYGWIN = true ]
 	then
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -mp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -mp '"$plgClasspath)'"' $(shell cygpath -mp $?) -d $(shell cygpath -mp plugins/'"$plgDir"')'
 	else
-		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath"' -classpath '"$plgSrcpath"' $? -d plugins/'"$plgDir"
+		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath -classpath $plgClasspath "'$?'" -d $plgTargetDir"
 	fi
 	# each plug-in must be packaged in a JAR file and moved to the "plugins" folder
 	# within "texttrix"
-	plgClassRules="$plgClassRules""\n\tcd plugins/$plgDir; "'$(JAR)'" -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
-	plgClassRules="$plgClassRules""\n\tmv plugins/$plgDir/$plg.jar texttrix/plugins"
+	plgClassRules="$plgClassRules""\n\tcd $plgTargetDir; "'$(JAR)'" -0cvf $plg.jar"' $(PKG_DIR)/*.class $(PKG_DIR)/*.html $(PKG_DIR)/*.png'
+	plgClassRules="$plgClassRules""\n\tmv $plgTargetDir/$plg.jar plugins"
 	plgClassRules="$plgClassRules""\n"
 	
 	# add to list of phony args
@@ -394,6 +399,8 @@ echo "Setting the installation path to...$PREFIX"
 # Common macros collections
 COMMON_VARS="TTX_VER=$TTX_VER
 BASE_DIR=$BASE_DIR
+PLGS_DIR=$PLGS_DIR
+BRANCH=$BRANCH
 PREFIX=$PREFIX
 JAVAC="$JAVA"javac
 JAR="$JAVA"jar
@@ -438,7 +445,7 @@ phony="$phony clean all install install_setup"
 # Clean-up rule
 
 clean='clean: '"\n\t""rm -f $clean"' $(TARGET_FILES)'
-clean="$clean""\n\t"'rm -f $(BASE_DIR)/texttrix/plugins/*.jar'
+clean="$clean""\n\t"'rm -f plugins/*.jar'
 
 
 

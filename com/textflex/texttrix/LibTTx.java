@@ -545,10 +545,12 @@ public class LibTTx {
 		// read in lines until none remain
 		try {
 			in = TextTrix.class.getResourceAsStream(path);
+			if (in != null) {
 			reader = new BufferedReader(new InputStreamReader(in));
 			String line;
 			while ((line = reader.readLine()) != null)
 				text = text + line + "\n";
+			}
 		} catch (IOException exception) {
 			exception.printStackTrace();
 			return "";
