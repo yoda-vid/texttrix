@@ -54,6 +54,9 @@ JAVA=""
 # the root directory of the source files
 BASE_DIR=""
 
+# the current working branch for packaging
+BRANCH="trunk"
+
 ################################
 # Help
 ################################
@@ -188,7 +191,6 @@ fi
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-BRANCH="trunk"
 PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
 
 BLD_DIR="$WK_DIR/build" # initial output directory
@@ -249,13 +251,21 @@ cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
 mv texttrix $SRCPKGDIR # copy to source package
 
+# add the build files
 cd "$TTX_DIR"
 sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix
 cp configure pkg.sh run.sh manifest-additions.mf \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
-	
+
+# add the plugins
 cd "$BLD_DIR"
-cp -rf $PLGS_DIR $SRCPKGDIR/plugins
+cp -rf $PLGS_DIR $SRCPKGDIR
+# move the working branch to the each plugin's root folder, removing all other branches
+for file in `ls -d $SRCPKGDIR/plugins`
+do
+	mv $SRCPKGDIR/plugins/$file/$BRANCH/* $SRCPKGDIR/plugins/$file
+	rm -rf $SRCPKGDIR/plugins/$file/tags $SRCPKGDIR/plugins/$file/branches $SRCPKGDIR/plugins/$file/trunk
+done
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 
 # create binary package
@@ -272,13 +282,14 @@ else
 fi
 rm -rf com
 
-# convert master package to binary one
-cd $BLD_DIR/$SRCPKGDIR # remove all but source and related files
+# finish the source package
+# remove all but source and related files
+cd $BLD_DIR/$SRCPKGDIR 
 rm -rf texttrix/$DIR/*.class
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins
-rm -rf plugins/CVS plugins/*/CVS plugins/*/com/CVS plugins/*/com/textflex/CVS \
-	plugins/*/$DIR/CVS plugins/*/$DIR/*.class plugins/*/$DIR/*~ \
+rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \
+	plugins/*/$DIR/.svn plugins/*/$.svn/*.class plugins/*/$DIR/*~ \
 	plugins/*.jar
 mv texttrix/*.txt .
 

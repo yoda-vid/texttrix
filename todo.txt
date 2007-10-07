@@ -68,7 +68,6 @@ v.0.7.2
 -check on Line Dance exception when forget line while editing its name
 -option to make group tabs invisible
 -fix sporadic delay in startup on Vista
--Generalize configure and pkg script directory identification
 -Plug-in dialog first launches should open somewhere near the main window position
 -Check file timestamps and warn if open file modified elsewhere
 
@@ -84,6 +83,8 @@ v.0.7.1
 -Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default L&F file chooser when Vista one fails
 -build scripts should be set explicitly to /bin/bash; FIXED
 -Clarify open/close icons; ADDED: new open-file/close-tab icons
+-Allow compilation and packaging from any directory; ADDED
+-Migrate code repository from CVS to Subversion; ADDED
 
 ----Past Releases----
 
