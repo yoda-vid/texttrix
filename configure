@@ -370,7 +370,7 @@ do
 	plgClassRules="$plgClassRules""\n$plgPkgTargetDir/%.class: $plgPkgBaseDir/%.java"
 	if [ $CYGWIN = true ]
 	then
-		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -mp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -mp '"$plgClasspath)'"' $(shell cygpath -mp $?) -d $(shell cygpath -mp plugins/'"$plgDir"')'
+		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"'"'$(shell cygpath -mp '"$plgSrcpath)'"' -classpath '"'"'$(shell cygpath -mp '"$plgClasspath)'"' $(shell cygpath -mp $?) -d $(shell cygpath -mp '"$plgTargetDir)"
 	else
 		plgClassRules="$plgClassRules""\n\t"'$(JAVAC) -source 1.4 -sourcepath '"$plgSrcpath -classpath $plgClasspath "'$?'" -d $plgTargetDir"
 	fi
