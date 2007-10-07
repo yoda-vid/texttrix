@@ -44,7 +44,7 @@
 # Ex: add "PlugInWindowTemplate" for the template window, after including the 
 # necessary files in the appropriate directory structure.
 # Deprecated/removed plugins: NonPrintingChars
-PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse" # SongSheet
+PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 
 TTX_VER=0.7.1beta1 # curr ver num; only used for default install loc
 
@@ -215,7 +215,13 @@ fi
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
+PLGS_DIR=""
+if [ $BRANCH = "." ]
+then
+	PLGS_DIR="${BASE_DIR%texttrix}"plugins
+else
+	PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
+fi
 
 
 #############
@@ -337,24 +343,26 @@ plgClassRules=""
 for plg in $PLGS
 do
 	# plug-in directories have all-lower cases, while the vars have just the opposite
-	plgDir=`echo "$plg" | tr "[:upper:]" "[:lower:]"`
-	plgVar=`echo "$plg" | tr "[:lower:]" "[:upper:]"`
-	plgBaseDir='$(PLGS_DIR)/'"$plgDir"'/$(BRANCH)'
-	plgPkgBaseDir="$plgBaseDir/"'$(PKG_DIR)'
-	plgTargetDir=plugins/"$plgDir"
-	plgPkgTargetDir="$plgTargetDir/"'$(PKG_DIR)'
+	plgDir=`echo "$plg" | tr "[:upper:]" "[:lower:]"` # name of plugin dir
+	plgVar=`echo "$plg" | tr "[:lower:]" "[:upper:]"` # name of plugin Makefile variable
+	plgBaseDir='$(PLGS_DIR)/'"$plgDir"'/$(BRANCH)' # path to class root plugin folder (ie with "com")
+	plgPkgBaseDir="$plgBaseDir/"'$(PKG_DIR)' # plus package path
+	plgTargetDir=plugins/"$plgDir" # destination folder
+	plgPkgTargetDir="$plgTargetDir/"'$(PKG_DIR)' # destination folder plus pkg path
 	
 	# plug-in source files
 	plgSrcFilesVar="$plgVar"_SRC_FILES
+	# expands to all java files in plugin package dir
 	plgSrcFiles="$plgSrcFiles""\n$plgSrcFilesVar"'=$(wildcard '"$plgBaseDir/"'$(PKG_DIR)'"/*.java)"
 	
 	# plug-in target files
 	plgTargetFilesVar="$plgVar"_TARGET_FILES
+	# maps src files to paths in target dir
 	plgTargetFiles="$plgTargetFiles""\n$plgTargetFilesVar="'$(patsubst $(PLGS_DIR)/'"$plgDir"'/$(BRANCH)/%.java,'"plugins/$plgDir"'/%.class,$('"$plgSrcFilesVar"'))'
 	
 	# parsing arguments to javac from directory information
-	plgSrcpath='$(BASE_DIR):'"$plgBaseDir"
-	plgClasspath='.:'"$plgTargetDir"
+	plgSrcpath='$(BASE_DIR):'"$plgBaseDir" # source code root dir
+	plgClasspath='.:'"$plgTargetDir" # target class output root dir
 	
 	# main rule, which includes dependency on texttrix to ensure PlugIn and 
 	# related class updating
@@ -362,8 +370,10 @@ do
 	
 	# setup rule
 	plgSetupRules="$plgSetupRules""\n$plg"'_setup:'
+	#makes directory and as many parent dirs as needed, with no error output
 	plgSetupRules="$plgSetupRules""\n\tmkdir -p $plgPkgTargetDir"
-	plgSetupRules="$plgSetupRules""\n\tcp -u $plgPkgBaseDir/*.html $plgPkgBaseDir/*.png $plgPkgTargetDir\n"
+	# if src plugins folder is same as output plugins folder, no need for file copy
+	plgSetupRules="$plgSetupRules""\n\tif [ ! "'$(PLGS_DIR)'" -ef plugins ]; then cp -u $plgPkgBaseDir/*.html $plgPkgBaseDir/*.png $plgPkgTargetDir; fi\n"
 	
 	# class rule
 	plgClassRules="$plgClassRules""\n$plgPkgTargetDir/%.class: $plgPkgBaseDir/%.java"

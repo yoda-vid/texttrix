@@ -86,7 +86,7 @@ Copyright:
 	Copyright (c) 2003-7 Text Flex
 
 Last updated:
-	2006-12-18
+	2007-10-07
 "
 
 ##############################
@@ -188,13 +188,25 @@ then
 	BASE_DIR=`dirname $0`
 fi
 
+# sets the base direction to the script location
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
+# sets the plugins directory based on the location found from the script
+PLGS_DIR=""
+if [ $BRANCH = "." ]
+then
+	PLGS_DIR="${BASE_DIR%texttrix}"plugins
+else
+	PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
+fi
 
-BLD_DIR="$WK_DIR/build" # initial output directory
-TTX_DIR="$BASE_DIR" # root directory of main Text Trix source files
+# initial output directory
+BLD_DIR="$WK_DIR/build" 
+
+# root directory of main Text Trix source files
+# Same directory as base directory for now.
+TTX_DIR="$BASE_DIR" 
 
 ##############################
 # Build operations
@@ -217,7 +229,7 @@ if [ -d "$BLD_DIR" ]
 then
 	cd "$BLD_DIR" # base of operations
 else
-	echo "Sorry, but $BASE_DIR isn't a directory,"
+	echo "Sorry, but $BLD_DIR isn't a directory,"
 	echo "so I won't be very useful."
 	echo "Goodbye."
 	exit 1
@@ -253,15 +265,20 @@ mv texttrix $SRCPKGDIR # copy to source package
 
 # add the build files
 cd "$TTX_DIR"
-sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix
-cp configure pkg.sh run.sh manifest-additions.mf \
+sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix/configure
+cp pkg.sh run.sh manifest-additions.mf \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
+chmod 755 "$BLD_DIR/$SRCPKGDIR"/texttrix/configure \
+	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
+	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh
 
-# add the plugins
+# add the plugins, copying the entire folder
+# WARNING: Remove any unwanted contents from this folder, as the whole folder
+# is currently copied, with only specific files later removed.
 cd "$BLD_DIR"
 cp -rf $PLGS_DIR $SRCPKGDIR
 # move the working branch to the each plugin's root folder, removing all other branches
-for file in `ls -d $SRCPKGDIR/plugins`
+for file in `ls $SRCPKGDIR/plugins`
 do
 	mv $SRCPKGDIR/plugins/$file/$BRANCH/* $SRCPKGDIR/plugins/$file
 	rm -rf $SRCPKGDIR/plugins/$file/tags $SRCPKGDIR/plugins/$file/branches $SRCPKGDIR/plugins/$file/trunk
