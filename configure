@@ -314,9 +314,9 @@ ttxSetupRule="$ttxSetupRule""\n\tif [ ! "'$(BASE_DIR) -ef $$PWD ]; then cp -u '"
 ttxClassRule='$(PKG_DIR)/%.class: $(BASE_DIR)/$(PKG_DIR)/%.java'
 if [ $CYGWIN = true ]
 then
-	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 $(shell cygpath -mp $?)'
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(shell cygpath -mp $(BASE_DIR)) -classpath . $(shell cygpath -mp $?) -d .'
 else
-	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 $?'
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(BASE_DIR) -classpath . $? -d .'
 fi
 
 #########
