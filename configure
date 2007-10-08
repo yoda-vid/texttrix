@@ -68,8 +68,6 @@ environment, even if the resulting executables will run in the Windows
 envrionemnt.
 
 Parameters:
-	--help: Lends a hand by displaying yours truly.
-	
 	--branch=path/to/branch: The branch (or trunk) from which to
 	compile source code.  For example, to compile from the 0.7.1
 	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
@@ -78,10 +76,8 @@ Parameters:
 	not contain branches and tags, \"--branch=.\" (single period) suffices.  
 	Defaults to \"trunk\".
 	
-	--prefix=install-location: The directory in which to install Text Trix.
-	Defaults to /usr/local/texttrix-x.y.z, where x.y.z is set by the 
-	variable, TTX_VER.
-		
+	--help: Lends a hand by displaying yours truly.
+	
 	--java=java-compiler-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
@@ -89,6 +85,10 @@ Parameters:
 	specification.  On Linux, this path defaults to
 	"/usr/java/default", the new link found in Java 6. 
 
+	--prefix=install-location: The directory in which to install Text Trix.
+	Defaults to /usr/local/texttrix-x.y.z, where x.y.z is set by the 
+	variable, TTX_VER.
+		
 Copyright:
 	Copyright (c) 2003-7 Text Flex
 

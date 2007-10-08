@@ -42,20 +42,26 @@
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-#VER="0.7.1beta1-"$DATE
-VER="0.7.1beta1"
+VER="0.7.1rc1-"$DATE
+#VER="0.7.1rc1"
 
 # the final destination of the resulting packages
-PREFIX="/home/share" 
+PREFIX="/home/share" # change to absolute path of target dir
+PAR_PREFIX="--prefix"
+READ_PREFIX=0
 
 # the path to the compiler binaries
-JAVA=""
+JAVA="" # change to name of dir with java binaries
+PAR_JAVA="--java"
+READ_JAVA=0
 
 # the root directory of the source files
 BASE_DIR=""
 
 # the current working branch for packaging
-BRANCH="trunk"
+BRANCH="trunk" # change to branch relative path
+PAR_BRANCH="--branch"
+READ_BRANCH=0
 
 ################################
 # Help
@@ -70,6 +76,16 @@ Syntax:
 the file pkg.sh does not have executable permissions.)
 
 Parameters:
+	--branch=path/to/branch: The branch (or trunk) from which to
+	compile source code.  For example, to compile from the 0.7.1
+	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
+	simply specify \"--branch=trunk\".  When compiling from the source code 
+	release package, which unlike the Subversion repository does 
+	not contain branches and tags, \"--branch=.\" (single period) suffices.  
+	Defaults to \"trunk\".
+	
+	--help: Lends a hand by displaying yours truly.
+	
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
@@ -80,8 +96,6 @@ Parameters:
 	--prefix=install-location: the directory in which to install Text Trix.
 	Defaults to "/usr/share".
 		
-	--help: Lends a hand by displaying yours truly.
-	
 Copyright:
 	Copyright (c) 2003-7 Text Flex
 
@@ -150,6 +164,12 @@ do
 	then
 		READ_PREFIX=1
 		READ_PARAMETER=1
+	elif [ `expr substr "$arg" 1 ${#PAR_BRANCH}` \
+			= $PAR_BRANCH \
+		-a ${#PAR_BRANCH} -eq $n ] # specify the install location
+	then
+		READ_BRANCH=1
+		READ_PARAMETER=1
 	fi
 	
 	
@@ -167,6 +187,11 @@ do
 			PREFIX=`expr substr "$arg" $n ${#arg}`
 			echo "...set to use the $PREFIX prefix..."
 			READ_PREFIX=0
+		elif [ $READ_BRANCH -eq 1 ]
+		then
+			PREFIX=`expr substr "$arg" $n ${#arg}`
+			echo "...set to compile from $BRANCH..."
+			READ_BRANCH=0
 		fi
 		READ_PARAMETER=0
 	fi
