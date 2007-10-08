@@ -41,6 +41,9 @@ import java.io.*;
 import java.awt.event.*;
 import java.awt.*;
 
+/** Extends the multiple file browser to browse files based on settings
+ * found in a given Text Pad.
+ */
 public class BrowseFilesFromTextPad extends BrowseFiles {
 	
 	/** Constructor for browsing multiple files, using a Text Pad as a reference

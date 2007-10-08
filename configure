@@ -70,7 +70,15 @@ envrionemnt.
 Parameters:
 	--help: Lends a hand by displaying yours truly.
 	
-	--prefix=install-location: the directory in which to install Text Trix.
+	--branch=path/to/branch: The branch (or trunk) from which to
+	compile source code.  For example, to compile from the 0.7.1
+	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
+	simply specify \"--branch=trunk\".  When compiling from the source code 
+	release package, which unlike the Subversion repository does 
+	not contain branches and tags, \"--branch=.\" (single period) suffices.  
+	Defaults to \"trunk\".
+	
+	--prefix=install-location: The directory in which to install Text Trix.
 	Defaults to /usr/local/texttrix-x.y.z, where x.y.z is set by the 
 	variable, TTX_VER.
 		
@@ -99,15 +107,17 @@ echo "text tinkerer.  Let's start configuring your build environment."
 ###############
 # User argument variables
 
-PAR_JAVA="--java"
 JAVA=""
+PAR_JAVA="--java"
 READ_JAVA=0
 
-PAR_PREFIX="--prefix"
 PREFIX=""
+PAR_PREFIX="--prefix"
 READ_PREFIX=0
 
 BRANCH="trunk"
+PAR_BRANCH="--branch"
+READ_BRANCH=0
 
 ################
 # Automatically detect the Cygwin environment
@@ -172,6 +182,12 @@ do
 	then
 		READ_PREFIX=1
 		READ_PARAMETER=1
+	elif [ `expr substr "$arg" 1 ${#PAR_BRANCH}` \
+			= $PAR_BRANCH \
+		-a ${#PAR_BRANCH} -eq $n ] # specify the install location
+	then
+		READ_BRANCH=1
+		READ_PARAMETER=1
 	fi
 	
 	
@@ -189,6 +205,11 @@ do
 			PREFIX=`expr substr "$arg" $n ${#arg}`
 			echo "...set to use the $PREFIX prefix..."
 			READ_PREFIX=0
+		elif [ $READ_BRANCH -eq 1 ]
+		then
+			PREFIX=`expr substr "$arg" $n ${#arg}`
+			echo "...set to compile from $BRANCH..."
+			READ_BRANCH=0
 		fi
 		READ_PARAMETER=0
 	fi
@@ -429,9 +450,9 @@ LINK="-link http://java.sun.com/javase/6/docs/api"
 api='api: $(TARGET_FILES)'"\n\t"'mkdir -p docs/api'
 if [ $CYGWIN = true ]
 then
-	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -mp docs/api) '$LINK' -classpath $(shell cygpath -mp texttrix) $(PKG)'
+	api="$api""\n\t"'$(JAVADOC) -d $(shell cygpath -mp docs/api) '$LINK' -classpath $(shell cygpath -mp $(BASE_DIR)) $(PKG)'
 else
-	api="$api""\n\t"'$(JAVADOC) -d docs/api '$LINK' -classpath texttrix $(PKG)'
+	api="$api""\n\t"'$(JAVADOC) -d docs/api '$LINK' -classpath $(BASE_DIR) $(PKG)'
 fi
 
 
@@ -439,10 +460,10 @@ fi
 # Installation rules
 
 install='install: install_setup'
-install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/$(PKG_DIR)/*.class $(PREFIX)/$(PKG_DIR)'
-install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/$(PKG_DIR)/images/*.* $(PREFIX)/$(PKG_DIR)/images'
-install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/plugins/*.jar $(PREFIX)/plugins'
-install="$install""\n\t"'cp -f $(BASE_DIR)/texttrix/run.sh $(PREFIX)/run.sh'
+install="$install""\n\t"'cp -f $(BASE_DIR)/$(PKG_DIR)/*.class $(PREFIX)/$(PKG_DIR)'
+install="$install""\n\t"'cp -f $(BASE_DIR)/$(PKG_DIR)/images/*.* $(PREFIX)/$(PKG_DIR)/images'
+install="$install""\n\t"'cp -f $(BASE_DIR)/plugins/*.jar $(PREFIX)/plugins'
+install="$install""\n\t"'cp -f $(BASE_DIR)/run.sh $(PREFIX)/run.sh'
 
 installSetup='install_setup:'
 installSetup="$installSetup""\n\t"'mkdir -p $(PREFIX)/$(PKG_DIR)/images'

@@ -17,6 +17,8 @@ Enhancements:
 -Automatically highlights Word Find and Line Find text when place cursor inside
 -Drag-n-drop text
 -New open-file/close-tab icons
+-Code migrated from CVS to Subversion repository
+-Compilation can target user chosen directory
 
 Bugs fixed:
 -Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default L&F file chooser when Vista one fails

@@ -42,8 +42,8 @@
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-VER="0.7.1beta1-"$DATE
-#VER="0.7.1alpha1"
+#VER="0.7.1beta1-"$DATE
+VER="0.7.1beta1"
 
 # the final destination of the resulting packages
 PREFIX="/home/share" 
