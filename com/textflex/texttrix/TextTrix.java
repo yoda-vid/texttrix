@@ -449,6 +449,7 @@ public class TextTrix extends JFrame {
 		// Set the look and feel: native for Windows systems, default Java Ocean
 		// for all other platforms to provide a more consistent look, since Windows
 		// and Ocean themes aren't all that different from one another
+		String errorMsg = "Defaulting to the Java Ocean Look & Feel.";
 		try {
 			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
 				UIManager.setLookAndFeel(UIManager
@@ -459,14 +460,18 @@ public class TextTrix extends JFrame {
 			}
 		} catch (UnsupportedLookAndFeelException e) {
 			// Many systems may not have the new Nimbus L&F
-			String msg = "Defaulting to the Java Metal Look And Feel.";
-			System.out.println(msg);
+			System.out.println(errorMsg);
 		} catch (ClassNotFoundException e1) {
-			System.out.println("class not found exception in main");
+			// Java 6u2 without Nimbus throws this exception rather than 
+			// the unsupported L&F one
+			errorMsg = "Class not found exception in main..." + NEWLINE + errorMsg;
+			System.out.println(errorMsg);
 		} catch (InstantiationException e2) {
-			System.out.println("instantiation exception in main");
+			errorMsg = "Instantiation exception in main..." + NEWLINE + errorMsg;
+			System.out.println(errorMsg);
 		} catch (IllegalAccessException e3) {
-			System.out.println("illegal access exception in main");
+			errorMsg = "Illegal access exception exception in main..." + NEWLINE + errorMsg;
+			System.out.println(errorMsg);
 		}
 		
 		// Create Text Trix!

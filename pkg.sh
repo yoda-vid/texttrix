@@ -270,7 +270,7 @@ rm -rf $ALL
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
-	"$TTX_DIR"/todo.txt "$TTX_DIR"/changelog.txt \
+	"$TTX_DIR"/changelog.txt \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico "$BLD_DIR/$PKGDIR"
 
 
