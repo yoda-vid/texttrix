@@ -453,13 +453,20 @@ public class TextTrix extends JFrame {
 			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
-			} else { // default interface
+			} else { // default interface            
+				UIManager.setLookAndFeel(
+                    "sun.swing.plaf.nimbus.NimbusLookAndFeel");
 			}
-		} catch (Exception e) {
-			//	    e.printStackTrace();
-			String msg = "Sorry, couldn't find that look-and-feel."
-					+ "  Defaulting to the Metal one.";
+		} catch (UnsupportedLookAndFeelException e) {
+			// Many systems may not have the new Nimbus L&F
+			String msg = "Defaulting to the Java Metal Look And Feel.";
 			System.out.println(msg);
+		} catch (ClassNotFoundException e1) {
+			System.out.println("class not found exception in main");
+		} catch (InstantiationException e2) {
+			System.out.println("instantiation exception in main");
+		} catch (IllegalAccessException e3) {
+			System.out.println("illegal access exception in main");
 		}
 		
 		// Create Text Trix!
