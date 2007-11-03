@@ -46,6 +46,11 @@ import java.io.*;
 public class ExtensionFileFilter extends FileFilter {
 	private String description = ""; // description of the file type grouping
 	private ArrayList extensions = new ArrayList(); // the extensions
+	
+	/** Creates an empty extension file filter.
+	 */
+	public ExtensionFileFilter() {
+	}
 
 	/**
 	 * Add extension to include for file display. May need to modify to check

@@ -8,7 +8,7 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-----v.0.7.1 (2007-10-??)----
+----v.0.7.1 (rc1: 2007-11-??; beta1: 2007-10-07)----
 
 A bug fix and minor enhancements release to Text Trix.  This release features fixes to startup on Vista and build errors.  Enhancements include Line Dance improvements and text drag-n-drop.
 
@@ -26,6 +26,10 @@ Bugs fixed:
 -setCaretPositionTop should set to beginning of selected regions; FIXED
 -Fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Build scripts should be set explicitly to /bin/bash; FIXED
+
+Since beta1:
+-Documentation updates
+-Package file streamlining
 
 ----v.0.7.0 (2007-01-01)----
 
