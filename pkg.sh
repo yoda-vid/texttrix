@@ -322,6 +322,8 @@ then
 else
 	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html
 fi
+# make executable so can be run as binary on systems where jexec is installed
+chmod 755 $JAR
 rm -rf com
 
 # finish the source package

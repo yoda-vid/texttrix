@@ -50,6 +50,7 @@ public class ExtensionFileFilter extends FileFilter {
 	/** Creates an empty extension file filter.
 	 */
 	public ExtensionFileFilter() {
+		super();
 	}
 
 	/**

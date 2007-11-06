@@ -462,9 +462,9 @@ public class TextTrix extends JFrame {
 			// Many systems may not have the new Nimbus L&F
 			System.out.println(errorMsg);
 		} catch (ClassNotFoundException e1) {
-			// Java 6u2 without Nimbus throws this exception rather than 
-			// the unsupported L&F one
-			errorMsg = "Class not found exception in main..." + NEWLINE + errorMsg;
+			// Java 6 without Nimbus throws this exception rather than 
+			// the unsupported L&F one, so error message will suffice
+//			errorMsg = "Class not found exception in main..." + NEWLINE + errorMsg;
 			System.out.println(errorMsg);
 		} catch (InstantiationException e2) {
 			errorMsg = "Instantiation exception in main..." + NEWLINE + errorMsg;
