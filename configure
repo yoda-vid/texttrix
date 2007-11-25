@@ -46,7 +46,7 @@
 # Deprecated/removed plugins: NonPrintingChars
 PLGS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 
-TTX_VER=0.7.1beta1 # curr ver num; only used for default install loc
+TTX_VER=0.7.1 # curr ver num; only used for default install loc
 
 ##################
 # Overview Variables
