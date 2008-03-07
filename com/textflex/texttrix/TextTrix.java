@@ -2040,6 +2040,8 @@ public class TextTrix extends JFrame {
 	public void read(TextPad textPad, Reader in, Object desc)
 			throws IOException {
 //		textPad.setHighlightedDocument();
+		// reads in text and sets manually, assuming newly created
+		// HighlightedDocument in TextPad
 		String text = LibTTx.readText(new BufferedReader(in));
 //		textPad.createHighlightedDocument(text);
 		textPad.setText(text);

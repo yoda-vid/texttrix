@@ -277,7 +277,7 @@ public class ToHTML {
     /**
      * Cache of BTE files.
      */    
-   private com.Ostermiller.bte.Compiler compiler = null;
+//   private com.Ostermiller.bte.Compiler compiler = null;
     
     /**
      * Write a full HTML document to the output location that has been set for this class.
@@ -313,9 +313,11 @@ public class ToHTML {
             if (bteSuper == null){
                 noBTE = true;
             } else {
+/*
                 if (compiler == null){
                     compiler = new com.Ostermiller.bte.Compiler();
                 }
+*/
                 if (circularBuffer == null){
                     circularBuffer = new CircularCharBuffer(CircularCharBuffer.INFINITE_SIZE);
                 } else {
@@ -342,7 +344,7 @@ public class ToHTML {
                 bteOut.print("<%/bte.doc%>\n");
                 bteOut.close();
                 Reader bteIn = circularBuffer.getReader();
-                compiler.compile(bteIn, out);
+//                compiler.compile(bteIn, out);
             } 
         } catch (NoClassDefFoundError x){ 
             noBTE = true;
