@@ -1,0 +1,1 @@
+javac.exe -source 1.4 com/textflex/texttrix/*.java

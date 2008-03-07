@@ -46,6 +46,8 @@ import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
 
+import com.Ostermiller.Syntax.*;
+
 /**The writing pad, complete with keyboard shortcuts, auto-wrap indent
  * functions, and text sytle changes.
  * 
@@ -83,6 +85,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	private boolean compoundEditing = false; // flags whether editing as group
 	private JScrollPane scrollPane = null; // the scroll pane that houses this pad
 	private LineDancePanel lineDancePanel = null; // the Line Dance panel
+	
+	private HighlightedDocument highlightedDoc = new HighlightedDocument();
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -226,7 +230,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 		
+		setStyledDocument(highlightedDoc);
 	}
+
+/*	
+	public void createHighlightedDocument(String s) {
+		highlightedDoc = new HighlightedDocument();
+		try {
+		highlightedDoc.insertString(0, s, null);
+		} catch (BadLocationException e) {
+		}
+		setStyledDocument(highlightedDoc);
+	}
+*/	
 
 	/** Sets the keybindings to the preferred value.
 	 * 

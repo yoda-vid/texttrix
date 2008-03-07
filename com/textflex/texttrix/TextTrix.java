@@ -456,7 +456,7 @@ public class TextTrix extends JFrame {
 						.getSystemLookAndFeelClassName());
 			} else { // default interface            
 				UIManager.setLookAndFeel(
-                    "sun.swing.plaf.nimbus.NimbusLookAndFeel");
+                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 			}
 		} catch (UnsupportedLookAndFeelException e) {
 			// Many systems may not have the new Nimbus L&F
@@ -2039,7 +2039,11 @@ public class TextTrix extends JFrame {
 	 */
 	public void read(TextPad textPad, Reader in, Object desc)
 			throws IOException {
-		textPad.read(in, desc);
+//		textPad.setHighlightedDocument();
+		String text = LibTTx.readText(new BufferedReader(in));
+//		textPad.createHighlightedDocument(text);
+		textPad.setText(text);
+//		textPad.read(in, desc);
 		textPad.applyDocumentSettings();
 		addExtraTextPadDocumentSettings(textPad);
 	}

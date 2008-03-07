@@ -57,7 +57,6 @@ http://textflex.com/texttrix
 v.0.7.2
 -fix duplication of shortcuts/license tabs when open from Help menu
 -set font face and size in prefs
--incorporate JEdit Syntax Package (OSS: MIT-style license)
 -make clean should cleanup inner/anonymous classes
 -drag-n-drop files to open them in Text Trix
 -backward Search/Word Find
@@ -85,6 +84,7 @@ v.0.7.1
 -Clarify open/close icons; ADDED: new open-file/close-tab icons
 -Allow compilation and packaging from any directory; ADDED
 -Migrate code repository from CVS to Subversion; ADDED
+-Syntax Highlighted from ostermiller.org package (GPL-licensed); ADDED
 
 ----Past Releases----
 
