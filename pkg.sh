@@ -42,8 +42,8 @@
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-#VER="0.7.1rc1-"$DATE
-VER="0.7.1rc1"
+VER="0.7.1beta2-"$DATE
+#VER="0.7.1rc1"
 
 # the final destination of the resulting packages
 PREFIX="/home/share" # change to absolute path of target dir
@@ -318,9 +318,9 @@ cp "$TTX_DIR"/plugins/*.jar plugins # only want jars in binary package
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html
+	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html com/Ostermiller
 else
-	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html
+	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html com/Ostermiller
 fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $JAR

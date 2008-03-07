@@ -51,6 +51,7 @@ http://textflex.com/texttrix
 	-read-only mode
 -integrate with Jar Ajar plug-in installation mode
 -reopen tabs if exit canceled
+-group copy: copy multiple, separated lines
 
 ----Future releases----
 
