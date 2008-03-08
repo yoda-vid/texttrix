@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-7
+ * Portions created by the Initial Developer are Copyright (C) 2002-8
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -233,16 +233,17 @@ public class TextPad extends JTextPane implements StateEditable {
 		setStyledDocument(highlightedDoc);
 	}
 
-/*	
+/*
 	public void createHighlightedDocument(String s) {
-		highlightedDoc = new HighlightedDocument();
+		HighlightedDocument doc = new HighlightedDocument();
 		try {
-		highlightedDoc.insertString(0, s, null);
+		doc.insertString(0, s, null);
 		} catch (BadLocationException e) {
 		}
+		highlightedDoc = doc;
 		setStyledDocument(highlightedDoc);
 	}
-*/	
+*/
 
 	/** Sets the keybindings to the preferred value.
 	 * 

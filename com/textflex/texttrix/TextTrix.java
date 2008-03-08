@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-7
+ * Portions created by the Initial Developer are Copyright (C) 2002-8
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -475,7 +475,7 @@ public class TextTrix extends JFrame {
 		}
 		
 		// Create Text Trix!
-		TextTrix textTrix = new TextTrix(args);
+		final TextTrix textTrix = new TextTrix(args);
 		
 		// Close the program with customized exit operation when
 		// user hits close so can apply exit operations, such as remembering
@@ -500,8 +500,12 @@ public class TextTrix extends JFrame {
 			}
 		});
 		
-		// Make the frame visible
-		textTrix.setVisible(true);
+		// Make the frame visible from the event dispatch thread
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				textTrix.setVisible(true);
+			}
+		});
 
 		/*
 		 * Something apparently grabs focus after he tabbed pane ChangeListener
@@ -2037,18 +2041,58 @@ public class TextTrix extends JFrame {
 	 * @param desc
 	 *            reader stream description
 	 */
-	public void read(TextPad textPad, Reader in, Object desc)
+	public void read(final TextPad textPad, Reader in, Object desc)
 			throws IOException {
+		final String text = LibTTx.readText(new BufferedReader(in));
 //		textPad.setHighlightedDocument();
-		// reads in text and sets manually, assuming newly created
-		// HighlightedDocument in TextPad
-		String text = LibTTx.readText(new BufferedReader(in));
 //		textPad.createHighlightedDocument(text);
-		textPad.setText(text);
+//		HighlighterWorker hiWorker = new HighlighterWorker(textPad, text);
+//		hiWorker.execute();
+		// reads in text and sets it manually, assuming newly created
+		// HighlightedDocument in TextPad;
+		// runs in EDT to prevent GUI lock-up during loading
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				textPad.setText(text);
+				textPad.applyDocumentSettings();
+				addExtraTextPadDocumentSettings(textPad);
+				// resets caret and modification flags, assuming that
+				// the read in text is the same as that from the
+				// original file
+				textPad.setCaretPosition(0);
+				textPad.setChanged(false);
+				updateTabTitle(textPad);
+			}
+		});
 //		textPad.read(in, desc);
-		textPad.applyDocumentSettings();
-		addExtraTextPadDocumentSettings(textPad);
 	}
+	
+/*	
+	private class HighlighterWorker extends SwingWorker<String, Void> {
+		TextPad pad = null;
+		String text = "";
+		
+		public HighlighterWorker(TextPad aPad, String aText) {
+			setTextPad(aPad);
+			setText(aText);
+		}
+		
+		protected String doInBackground() throws Exception {
+			System.out.println("starting...");
+			pad.setText(text);
+			System.out.println("done");
+			return "true";
+		}
+		
+		public void setTextPad(TextPad aPad) {
+			pad = aPad;
+		}
+		
+		public void setText(String aText) {
+			text = aText;
+		}
+	}
+*/	
 	
 	/** Removes the currently selected tabbed pane from the
 	 * given group tabbed pane.

@@ -542,6 +542,7 @@ public class LibTTx {
 		String text = "";
 		InputStream in = null;
 		BufferedReader reader = null;
+		StringBuilder builder = new StringBuilder();
 		// read in lines until none remain
 		try {
 			in = TextTrix.class.getResourceAsStream(path);
@@ -549,7 +550,8 @@ public class LibTTx {
 			reader = new BufferedReader(new InputStreamReader(in));
 			String line;
 			while ((line = reader.readLine()) != null)
-				text = text + line + "\n";
+				builder.append(line + "\n");
+//				text = text + line + "\n";
 			}
 		} catch (IOException exception) {
 			exception.printStackTrace();
@@ -565,6 +567,7 @@ public class LibTTx {
 				return "";
 			}
 		}
+		text = builder.toString();
 		return text;
 	}
 
@@ -576,15 +579,19 @@ public class LibTTx {
 	 */
 	public static String readText(BufferedReader reader) {
 		String text = "";
+		StringBuilder builder = new StringBuilder();
 		String line;
 		// read lines until none remain;
-		// the calling function should handle clean-up code for the reader stream
+		// the calling function should handle clean-up code for the reader stream.
+		// StringBuilder greatly improves performance over simple String concatenation.
 		try {
 			while ((line = reader.readLine()) != null)
-				text = text + line + "\n";
+				builder.append(line + "\n");
+//				text = text + line + "\n";
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
+		text = builder.toString();
 		return text;
 	}
 
