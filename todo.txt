@@ -70,6 +70,7 @@ v.0.7.2
 -fix sporadic delay in startup on Vista
 -Plug-in dialog first launches should open somewhere near the main window position
 -Check file timestamps and warn if open file modified elsewhere
+-fix ctrl-bkspace to delete entire selected region if text is highlighted
 
 ----Current release----
 

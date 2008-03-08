@@ -455,8 +455,8 @@ public class TextTrix extends JFrame {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 			} else { // default interface            
-				UIManager.setLookAndFeel(
-                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+//				UIManager.setLookAndFeel(
+//                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 			}
 		} catch (UnsupportedLookAndFeelException e) {
 			// Many systems may not have the new Nimbus L&F
