@@ -248,10 +248,11 @@ public class TextPad extends JTextPane implements StateEditable {
 			highlightedDoc.setHighlightStyle(HighlightedDocument.LATEX_STYLE);
 		} else if (ext.equals("sql")) {
 			highlightedDoc.setHighlightStyle(HighlightedDocument.SQL_STYLE);
-		} else if (ext.equals("properties") || ext.equals("cpp")) {
+		} else if (ext.equals("properties") || ext.equals("sh")) {
 			highlightedDoc.setHighlightStyle(HighlightedDocument.PROPERTIES_STYLE);
 		} else {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.PLAIN_STYLE);
+			// defaults to Java style
+			highlightedDoc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		}
 	}
 	

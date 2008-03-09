@@ -8,7 +8,12 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
--modify/add build scripts for compiling plugins simply and separately
+-allow building plugins individually
+-test build scripts
+-prevent change flag on initially loaded files
+-check on default styles to improve performance
+-add styling for shell scripts and other extensions
+-prevent exceptions when no tabs
 
 ----Ideas----
 

@@ -233,8 +233,7 @@ if [ "x$BASE_DIR" = "x" ] # empty string
 then
 	BASE_DIR=`dirname $0`
 fi
-TTX_DIR="$BASE_DIR/texttrix" # texttrix folder within main dir
-PLGS_DIR="$BASE_DIR/plugins" # plugins folder within main dir
+
 DIR="com/textflex/texttrix" # src package structure
 
 #####################
