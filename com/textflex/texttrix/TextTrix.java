@@ -417,6 +417,7 @@ public class TextTrix extends JFrame {
 						*/
 					}
 				}
+				
 				// selects the first tab group and updates the UI for the 
 				// currently selected tab
 				getGroupTabbedPane().setSelectedIndex(0);
@@ -541,13 +542,13 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @param file file to open
 	 */
-	private boolean openInitialFile(File file) {
+	private boolean openInitialFile(File file, boolean reuseTab) {
 		// command-line feedback
 		String path = file.getPath();
 		System.out.print("Opening file from path " + path + "...");
 		
 		// Open the file if possible, or supply explanation if not
-		if (!openFile(file, true, false, false)) {
+		if (!openFile(file, true, false, reuseTab)) {
 			String msg = newline + "Sorry, but " + path + " can't be read."
 					+ newline + "Is it a directory?  Does it have the right "
 					+ "permsissions for reading?";
@@ -557,6 +558,10 @@ public class TextTrix extends JFrame {
 			System.out.println("got it!");
 			return true;
 		}
+	}
+	
+	private boolean openInitialFile(File file) {
+		return openInitialFile(file, false);
 	}
 	
 	/**
@@ -2053,6 +2058,7 @@ public class TextTrix extends JFrame {
 		// runs in EDT to prevent GUI lock-up during loading
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				textPad.setHighlightStyle();
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
 				addExtraTextPadDocumentSettings(textPad);
@@ -2271,7 +2277,7 @@ public class TextTrix extends JFrame {
 			for (int i = 0; i < len; i++) {
 				MotherTabbedPane pane = getTabbedPaneAt(i);
 				// checks through each tab in each group
-				if (pane.getTabCount() > 0 && !reuseTab) {
+				if (pane.getTabCount() > 0) {// && !reuseTab) {
 					int idPath = getIdenticalTextPadIndex(path, i);
 					if (idPath != -1) {
 						setSelectedTextPad(i, idPath);
@@ -2309,7 +2315,7 @@ public class TextTrix extends JFrame {
 				 * Defaults to creating a new tab, unless a tab already exists and 
 				 * tab reuse is forced or the tab is empty or has no unsaved changes.
 				 */
-				if (t != null && (reuseTab || (t.isEmpty() && !t.getChanged()))) {
+				if (t != null && (reuseTab && (t.isEmpty() && !t.getChanged()))) {
 					read(t, reader, path);
 				} else {
 					addTextArea(getSelectedTabbedPane(), file);
@@ -2500,7 +2506,7 @@ public class TextTrix extends JFrame {
 	 */
 	public boolean isAutoIndentExt(String path) {
 		// get the file extension index
-		int extIndex = LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
+		int extIndex = path.lastIndexOf(".") + 1;//LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
 		// stop searching if no extension
 		if (extIndex < 0 || extIndex >= path.length())
 			return false;
@@ -3083,10 +3089,12 @@ public class TextTrix extends JFrame {
 		setUpdateForTextPad(false);
 		
 		// opens the files, starting from the offset
+		boolean reuseTab = true;
 		for (int i = offset; i < files.length; i++) {
 			// opens the file
 			boolean success = initialFiles ?
-				openInitialFile(files[i]) : openFile(files[i]);
+				openInitialFile(files[i], reuseTab) : openFile(files[i], true, false, reuseTab);
+			reuseTab = false;
 			if (success) {
 				// if successful, updates the tab history
 				updateTabHistory(getSelectedTabbedPane());

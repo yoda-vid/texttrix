@@ -99,7 +99,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 //		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
-		applyDocumentSettings();
 		
 		// Create Line Dance panel
 		
@@ -145,7 +144,8 @@ public class TextPad extends JTextPane implements StateEditable {
 //		setFont(getFont().deriveFont(11.5f));
 		// TODO: set font face and size in prefs
 		setFont(new Font("Arial,SansSerif", Font.PLAIN, 11));
-
+		
+		
 		// (ctrl-backspace) delete from caret to current word start
 		// First discard JTextComponent's usual dealing with ctrl-backspace.
 		// (enter) Auto-indent if Text Trix's option selected.
@@ -215,7 +215,7 @@ public class TextPad extends JTextPane implements StateEditable {
 					// because shift+TAB is normally captured by the 
 					// focusing mechanism
 					
-					System.out.println("tab");
+//					System.out.println("tab");
 					evt.consume();
 					try {
 						tabRegion();
@@ -231,6 +231,38 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyKeybindings(prefs);
 		
 		setStyledDocument(highlightedDoc);
+		applyDocumentSettings();
+	}
+	
+	public void setHighlightStyle() {
+		String ext = getFileExtension();
+		if (ext.equals("")) return;
+		ext = ext.toLowerCase();
+		if (ext.equals("java")) {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
+		} else if (ext.equals("c") || ext.equals("cpp")) {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.C_STYLE);
+		} else if (ext.equals("html") || ext.equals("htm")) {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
+		} else if (ext.equals("ltx")) {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.LATEX_STYLE);
+		} else if (ext.equals("sql")) {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.SQL_STYLE);
+		} else if (ext.equals("properties") || ext.equals("cpp")) {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.PROPERTIES_STYLE);
+		} else {
+			highlightedDoc.setHighlightStyle(HighlightedDocument.PLAIN_STYLE);
+		}
+	}
+	
+	public String getFileExtension() {
+		String path = getFile().getPath();
+		int exti = path.lastIndexOf(".") + 1;
+		String ext = "";
+		if (exti > 0) {
+			ext = path.substring(exti);
+		}
+		return ext;
 	}
 
 /*
@@ -1033,8 +1065,19 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * if appropriate.
 	 */
 	public void applyDocumentSettings() {
-		Document doc = getDocument();
+		StyledDocument doc = getStyledDocument();
+/*		
+		UndoableEditListener[] undos = doc.getUndoableEditListeners();
+		for (int i = 0; i < undos.length; i++) {
+			doc.removeUndoableEditListener(undos[i]);
+		}
+*/
+		// need to remove and re-add the undo manager to properly
+		// undo events after reading in new text
+		doc.removeUndoableEditListener(undoManager);	
+		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
+//		System.out.println("undoble added for " + getFile().getPath());
 		if (autoIndent) {
 			setIndentTabs(getTabSize());
 			setNoTabs();
@@ -1637,9 +1680,10 @@ public class TextPad extends JTextPane implements StateEditable {
 			if (anEdit instanceof AbstractDocument.DefaultDocumentEvent) {
 				AbstractDocument.DefaultDocumentEvent de =
 					(AbstractDocument.DefaultDocumentEvent) anEdit;
-				// ignore if flag set and a change event
+				// ignore style attribute changes by ignoring if change event
+				// or flagged specifically as a style change
 				if (de.getType() == DocumentEvent.EventType.CHANGE
-					&& ignoreNextStyleChange) {
+					|| ignoreNextStyleChange) {
 					ignoreNextStyleChange = false; // reset the ignore flag
 					return false;
 				}
