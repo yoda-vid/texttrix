@@ -6,6 +6,10 @@ http://textflex.com/texttrix
 This file is no longer used for tracking releases, but rather for recording immediate ToDo's.
 See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-release updates.
 
+----Immediate Tasks----
+
+-modify/add build scripts for compiling plugins simply and separately
+
 ----Ideas----
 
 -check on lost I-bar after switching to HTML view

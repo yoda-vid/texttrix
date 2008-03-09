@@ -726,7 +726,7 @@ public class ToHTML {
                     File f = new File(opts.getOptarg());
                     if (f.exists()){
                         try {
-                            toHTML.setTemplate(f.toURL().toString());
+                            toHTML.setTemplate(f.toURI().toURL().toString());
                         } catch (MalformedURLException mfue){
                             toHTML.setTemplate(template);
                         }

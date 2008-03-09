@@ -61,10 +61,10 @@ Parameters:
 	--help: Lends a hand by displaying yours truly.
 	
 Copyright:
-	Copyright (c) 2004 Text Flex
+	Copyright (c) 2004, 2008 Text Flex
 
 Last updated:
-	2004-06-24
+	2008-03-08
 "
 
 #####################
@@ -85,49 +85,142 @@ BASE_DIR=""
 # System setup
 ####################
 
+echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
-PLUG="false"
-PKG="false"
+LINUX="false"
+MAC="false"
+GUI_WIN="win"
+GUI_MOTIF="motif"
+GUI_GTK="gtk"
+GUI_MAC="mac"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
-fi
+	GUI=$GUI_WIN
+elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
+then
+	LINUX="true"
+	GUI=$GUI_GTK # GTK is the new default GUI for Linux tXtFL builds
 
-echo "Set to compile the Text Trix program"
+	# Java binary detection mechanism
+	if [ "`command -v java`" != '' ]
+	then
+		JAVA=""
+	elif [ "`command -v /usr/bin/java`" != "" ]
+	then
+		JAVA="/usr/bin"
+	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
+	then
+		JAVA="/usr/java/default/bin"
+	elif [ "`command -v /usr/lib/jvm/java-1.7.0/bin/java`" != "" ]
+	then
+		# Java Iced Tea directory on Fedora distributions
+		JAVA="/usr/lib/jvm/java-1.7.0/bin"
+	else
+		echo "Java software doesn't appear to be installed..."
+		echo "Please download it (for free!) from http://java.com."
+		echo "Or if it's already installed, please add it to your"
+		echo "PATH or to the JAVA variable in this script."
+		read -p "Press Enter to exit this script..."
+		exit 1
+	fi
+elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
+then
+	MAC="true"
+	GUI=$GUI_MAC
+fi
+echo "found $SYSTEM"
+
+##############
+# Respond to user arguments
+
+echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
+	n=`expr index "$arg" "="`
+	n=`expr $n - 1`
+	# reads arguments
+	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
+	then
+		if [ "`command -v more`" != '' ]
+		then
+			echo "$HELP" | more
+		elif [ "`command -v less`" != "" ]
+		then
+			echo "$HELP" | less
+		else
+			echo "$HELP"
+		fi
+		exit 0
+	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
+			= "$PAR_JAVA" \
+		-a ${#PAR_JAVA} -eq $n ] # Java path
+	then
+		READ_JAVA=1
+		READ_PARAMETER=1
+	elif [ `expr substr "$arg" 1 ${#PAR_GCJ_BIN_DIR}` \
+			= $PAR_GCJ_BIN_DIR \
+		-a ${#PAR_GCJ_BIN_DIR} -eq $n ] # GCJ path
+	then
+		READ_GCJ_BIN_DIR=1
+		READ_PARAMETER=1
+	elif [ `expr substr "$arg" 1 ${#PAR_GCJ_BIN}` \
+			= $PAR_GCJ_BIN \
+		-a ${#PAR_GCJ_BIN} -eq $n ] # GCJ binary
+	then
+		READ_GCJ_BIN=1
+		READ_PARAMETER=1
+	elif [ `expr substr "$arg" 1 ${#PAR_GUI}` \
+			= $PAR_GUI \
+		-a ${#PAR_GUI} -eq $n ] # specify the graphical environment
+	then
+		READ_GUI=1
+		READ_PARAMETER=1
+	elif [ `expr substr "$arg" 1 ${#PAR_PREFIX}` \
+			= $PAR_PREFIX \
+		-a ${#PAR_PREFIX} -eq $n ] # specify the graphical environment
+	then
+		READ_PREFIX=1
+		READ_PARAMETER=1
+	fi
+	
+	
+	n=`expr $n + 2`
 	# checks whether to read the option following an argument
 	if [ $READ_PARAMETER -eq 1 ]
 	then
-		if [ "x$JAVA" = "x" ]
+		if [ $READ_JAVA -eq 1 ]
 		then
-			JAVA=$arg
+			JAVA=`expr substr "$arg" $n ${#arg}`
+			READ_JAVA=0
+			echo "...set to use $JAVA as the Java compiler path..."
+		elif [ $READ_GCJ_BIN_DIR -eq 1 ]
+		then
+			GCJ_BIN_DIR=`expr substr "$arg" $n ${#arg}`
+			READ_GCJ_BIN_DIR=0
+			echo "...set to use $GCJ_BIN_DIR as the GCJ compiler path..."
+		elif [ $READ_GCJ_BIN -eq 1 ]
+		then
+			GCJ_BIN=`expr substr "$arg" $n ${#arg}`
+			READ_GCJ_BIN=0
+			echo "...set to use $GCJ_BIN as the GCJ binary..."
+		elif [ $READ_GUI -eq 1 ]
+		then
+			GUI=`expr substr "$arg" $n ${#arg}`
+			echo "...set to use the $GUI gui..."
+			READ_GUI=0
+		elif [ $READ_PREFIX -eq 1 ]
+		then
+			PREFIX=`expr substr "$arg" $n ${#arg}`
+			echo "...set to use the $PREFIX prefix..."
+			READ_PREFIX=0
 		fi
 		READ_PARAMETER=0
 	fi
-	
-	# reads arguments
-	
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
-	then
-		echo "$HELP"
-		exit 0
-	elif [ "x$arg" = "x--java" ] # Java path
-	then
-		READ_PARAMETER=1
-	elif [ "x$arg" = "x--pkg" ] # create packages
-	then
-		PKG="true"
-		echo "Set to create packages"
-	elif [ "x$arg" = "x--plug" ] # create plug-ins
-	then
-		PLUG="true"
-		echo "Set to compile and create plug-in packages"
-	fi
 done
-echo ""
+echo "...done"
 
 # Appends a file separator to end of Java compiler path if none there
 if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
@@ -138,13 +231,7 @@ fi
 # Source directories
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
-	if [ `expr index "$0" "/"` -eq 1 ]
-	then
-		BASE_DIR="$0"
-	else
-		BASE_DIR="$PWD/$0"
-	fi
-	BASE_DIR="${BASE_DIR%/texttrix/build.sh}" # assumes the script's name is plug.sh
+	BASE_DIR=`dirname $0`
 fi
 TTX_DIR="$BASE_DIR/texttrix" # texttrix folder within main dir
 PLGS_DIR="$BASE_DIR/plugins" # plugins folder within main dir
@@ -162,25 +249,11 @@ echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
 if [ "$CYGWIN" = "true" ]
 then
+	"$JAVA"javac -cp gnu/getopt:. -source 1.5 "`cygpath -p -w com/Ostermiller/Syntax`"/*.java
 	"$JAVA"javac -source 1.4 "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
 else
-	"$JAVA"javac -source 1.4 "$TTX_DIR/$DIR/"*.java
-fi
-
-#############
-# Plug-in building
-if [ "$PLUG" = "true" ]
-then
-	echo "Compiling and packaging plug-ins..."
-	sh "$TTX_DIR/plug.sh" -java "$JAVA" # build the plugins
-fi
-
-#############
-# Packaging
-if [ "$PKG" = "true" ]
-then
-	echo "Creating the Text Trix binary and source packages..."
-	sh "$TTX_DIR/pkg.sh" -java "$JAVA" # build the packages
+	"$JAVA"javac -cp gnu/getopt:. -source 1.5 com/Ostermiller/Syntax/*.java
+	"$JAVA"javac -source 1.4 com/textflex/texttrix/*.java
 fi
 
 exit 0

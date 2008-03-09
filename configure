@@ -316,6 +316,8 @@ PKG_DIR="com/textflex/texttrix"
 PKG="com.textflex.texttrix"
 srcFiles='SRC_FILES=$(wildcard $(BASE_DIR)/$(PKG_DIR)/*.java)'
 targetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SRC_FILES))'
+syntaxFiles='SYNTAX_FILES=$(wildcard $(BASE_DIR)/com/Ostermiller/*/*.java)'
+syntaxTargetFiles='TARGET_FILES=$(patsubst $(BASE_DIR)/%.java,%.class,$(SYNTAX_FILES))'
 
 ttxBaseDir='$(BASE_DIR)'
 ttxBasePkgDir="$ttxBaseDir"'/$(PKG_DIR)'
@@ -345,6 +347,7 @@ if [ $CYGWIN = true ]
 then
 	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(shell cygpath -mp $(BASE_DIR)) -classpath . $(shell cygpath -mp $?) -d .'
 else
+	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.5 -sourcepath $(BASE_DIR) -classpath gnu/getopt:. $(SYNTAX_FILES) -d .'
 	ttxClassRule="$ttxClassRule""\n\t"'$(JAVAC) -source 1.4 -sourcepath $(BASE_DIR) -classpath . $? -d .'
 fi
 
@@ -439,6 +442,8 @@ PKG_DIR=$PKG_DIR
 PKG=$PKG
 $srcFiles
 $targetFiles
+$syntaxFiles
+$syntaxTargetFiles
 $plgSrcFiles
 $plgTargetFiles
 "
