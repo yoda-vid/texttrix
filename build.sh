@@ -214,8 +214,8 @@ then
 	"$JAVA"javac -cp gnu/getopt:. -source 1.5 "`cygpath -p -w com/Ostermiller/Syntax`"/*.java
 	"$JAVA"javac -source 1.4 "`cygpath -p -w $TTX_DIR/$DIR`"/*.java
 else
-	"$JAVA"javac -cp gnu/getopt:. -source 1.5 com/Ostermiller/Syntax/*.java
-	"$JAVA"javac -source 1.4 com/textflex/texttrix/*.java
+	"$JAVA"javac -cp gnu/getopt:. -target 1.5 -source 1.5 com/Ostermiller/Syntax/*.java
+	"$JAVA"javac -target 1.5 -source 1.4 com/textflex/texttrix/*.java
 fi
 
 exit 0

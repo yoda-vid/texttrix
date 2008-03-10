@@ -9,9 +9,9 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 ----Immediate Tasks----
 
 -prevent exceptions when no tabs; WFM
--fix build scripts to work on src pkg; FIXED: ported pkg.sh BASE_DIR parsing to build.sh and plug.sh, along with dir finding fixes
--check compiling/running on Java 1.5
--build Lexer files using JFlex software
+-check compiling/running on Java 1.5; BUILT: set target explicity to 1.5 (though probably unnecessary because source already set) and recompiled all files, including lexers
+-build Lexer files using JFlex software; BUILT
+-restore Nimbus; RESTORED: Java 6uN-b13 includes many Nimbus fixes
 -port paramater parsing improvements from build scripts to pkg.sh
 -prep for 0.7.1beta2 release
 
