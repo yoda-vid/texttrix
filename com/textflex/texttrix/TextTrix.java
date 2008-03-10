@@ -4840,6 +4840,7 @@ public class TextTrix extends JFrame {
 		public void findSeq(String seq, int start) {
 			// Prepare the search
 			TextPad t = getSelectedTextPad();
+			if (t == null) return;
 			// shifts text to lower case
 			String text = t.getAllText().toLowerCase();
 			// shifts quarry to lower case

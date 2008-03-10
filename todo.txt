@@ -8,12 +8,12 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
--allow building plugins individually
--test build scripts
--prevent change flag on initially loaded files when have multiple grouped tabs; FIXED
--check on default styles to improve performance; ADDED by defaulting to non-styled except for appropriate file extensions
--add styling for shell scripts and other extensions; WORKAROUND: Java properties styling for shell scripts
--prevent exceptions when no tabs
+-allow building plugins individually; ADDED: plugins list parameter, as well as separate texttrix and plugins branch parameters
+-test build scripts; ADDED: new parameter parsing
+-prevent exceptions when no tabs; WFM
+-fix shortcuts.html display as HTML view
+-port paramater parsing improvements from build scripts to pkg.sh
+-prep for 0.7.1beta2 release
 
 ----Ideas----
 

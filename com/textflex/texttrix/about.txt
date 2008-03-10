@@ -1,5 +1,5 @@
 Text Trix
 the text tinker
-version 0.7.1beta2pre
+version 0.7.1beta2
 Copyright (c) 2002-8, Text Flex
 http://textflex.com/texttrix

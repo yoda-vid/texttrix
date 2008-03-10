@@ -47,13 +47,17 @@ Syntax:
 the file pkg.sh does not have executable permissions.)
 
 Parameters:
-	--java java-compiler-binaries-path: Specifies the path to javac, 
+	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
 	
 	--help: Lends a hand by displaying yours truly.
+	
+	--plugins=\"list-of-plugins\": Specifies the list of plugins
+	to build and package.  Defaults to the full set of plugins
+	included by default in the Text Trix editor.
 	
 Copyright:
 	Copyright (c) 2003-4, 2008 Text Flex
@@ -67,11 +71,26 @@ Last updated:
 # Check them!
 ####################
 
-JAVA="" # compiler location
+# compiler location
+JAVA=""
+
+# the chosen plugins
+PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
+
+# SVN texttrix src branch directory
+BRANCH_DIR="trunk"
+
+# SVN plugins src branch directory
+PLUGINS_BRANCH_DIR="$BRANCH_DIR"
+
+####################
+# Setup variables
+####################
 
 PAR_JAVA="--java"
-JAVA=""
-READ_JAVA=0
+PAR_PLUGINS="--plugins"
+PAR_BRANCH_DIR="--branch"
+PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
@@ -120,8 +139,6 @@ echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=${#${arg`expr index "$arg" "="`
-	n=`expr $n - 1`
 	# reads arguments
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
@@ -135,79 +152,40 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ ${arg:0:${#PAR_JAVA}} \
-			= "$PAR_JAVA" \
-		-a ${#PAR_JAVA} -eq $n ] # Java path
+		
+	# Java path
+	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 	then
-		READ_JAVA=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_GCJ_BIN_DIR}` \
-			= $PAR_GCJ_BIN_DIR \
-		-a ${#PAR_GCJ_BIN_DIR} -eq $n ] # GCJ path
+		JAVA="${arg#${PAR_JAVA}=}"
+		echo "...set to use \"$JAVA\" as the Java compiler path"
+		
+	# plugins list
+	elif [ ${arg:0:${#PAR_PLUGINS}} = "$PAR_PLUGINS" ]
 	then
-		READ_GCJ_BIN_DIR=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_GCJ_BIN}` \
-			= $PAR_GCJ_BIN \
-		-a ${#PAR_GCJ_BIN} -eq $n ] # GCJ binary
-	then
-		READ_GCJ_BIN=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_GUI}` \
-			= $PAR_GUI \
-		-a ${#PAR_GUI} -eq $n ] # specify the graphical environment
-	then
-		READ_GUI=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_PREFIX}` \
-			= $PAR_PREFIX \
-		-a ${#PAR_PREFIX} -eq $n ] # specify the graphical environment
-	then
-		READ_PREFIX=1
-		READ_PARAMETER=1
-	fi
+		PLUGINS="${arg#${PAR_PLUGINS}=}"
+		echo "...set to use \"$PLUGINS\" as the list of plugins"
 	
-	
-	n=`expr $n + 2`
-	# checks whether to read the option following an argument
-	if [ $READ_PARAMETER -eq 1 ]
+	# texttrix branch dir
+	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 	then
-		if [ $READ_JAVA -eq 1 ]
-		then
-			JAVA=`expr substr "$arg" $n ${#arg}`
-			READ_JAVA=0
-			echo "...set to use $JAVA as the Java compiler path..."
-		elif [ $READ_GCJ_BIN_DIR -eq 1 ]
-		then
-			GCJ_BIN_DIR=`expr substr "$arg" $n ${#arg}`
-			READ_GCJ_BIN_DIR=0
-			echo "...set to use $GCJ_BIN_DIR as the GCJ compiler path..."
-		elif [ $READ_GCJ_BIN -eq 1 ]
-		then
-			GCJ_BIN=`expr substr "$arg" $n ${#arg}`
-			READ_GCJ_BIN=0
-			echo "...set to use $GCJ_BIN as the GCJ binary..."
-		elif [ $READ_GUI -eq 1 ]
-		then
-			GUI=`expr substr "$arg" $n ${#arg}`
-			echo "...set to use the $GUI gui..."
-			READ_GUI=0
-		elif [ $READ_PREFIX -eq 1 ]
-		then
-			PREFIX=`expr substr "$arg" $n ${#arg}`
-			echo "...set to use the $PREFIX prefix..."
-			READ_PREFIX=0
-		fi
-		READ_PARAMETER=0
+		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
+		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+	
+	# plugins branch dir
+	elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
+	then
+		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
+		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 	fi
 done
 echo "...done"
-exit 0
 
 # Appends a file separator to end of Java compiler path if none there
-if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+if [ x$JAVA != "x" ]
 then
-	JAVA="$JAVA"/
+	# appends the file separator after removing any separator already
+	# present to prevent double separators
+	JAVA=${JAVA%\/}/
 fi
 
 # Source directories
@@ -220,10 +198,8 @@ then
 	fi
 fi
 TTX_DIR="$BASE_DIR" # texttrix folder within main dir
-BRANCH_DIR="trunk"
-PLGS_DIR="${BASE_DIR%/texttrix/$BRANCH_DIR}/plugins" # plugins folder within main dir
+PLGS_DIR="${BASE_DIR%/texttrix/$BRANCH_DIR}/plugins" # plugins src folder
 DIR="com/textflex/texttrix" # src package structure
-PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet" # the chosen plugins
 
 #####################
 # Build operations
@@ -243,17 +219,17 @@ do
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
 	if [ "$CYGWIN" = "true" ]
 	then
-		"$JAVA"javac -source 1.4 -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir/$BRANCH_DIR`" "`cygpath -p -w $plugin_dir/$BRANCH_DIR/$DIR`"/*.java
+		"$JAVA"javac -source 1.4 -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir/$PLUGINS_BRANCH_DIR`" "`cygpath -p -w $plugin_dir/$PLUGINS_BRANCH_DIR/$DIR`"/*.java
 	else
-		"$JAVA"javac -source 1.4 -classpath "$TTX_DIR":"$plugin_dir/$BRANCH_DIR" "$plugin_dir/$BRANCH_DIR/$DIR/"*.java
+		"$JAVA"javac -source 1.4 -classpath "$TTX_DIR":"$plugin_dir/$PLUGINS_BRANCH_DIR" "$plugin_dir/$PLUGINS_BRANCH_DIR/$DIR/"*.java
 	fi
-	cd "$plugin_dir/$BRANCH_DIR"
+	cd "$plugin_dir/$PLUGINS_BRANCH_DIR"
 	"$JAVA"jar -0cf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
 	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
 	cd "$PLGS_DIR"
 	echo "Built and packaged $plugin"
 done
 
-echo "Plug-ins created and stored in $PLGS_DIR"
+echo "Plug-ins created and stored in $TTX_DIR/plugins"
 
 exit 0

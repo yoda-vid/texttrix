@@ -76,36 +76,34 @@ Last updated:
 JAVA=""
 
 # the chosen plugins
-PLUGINS="Search NonPrintingChars ExtraReturnsRemover HTMLReplacer LetterPulse"
+PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 
-# the root directory of the source files
-BASE_DIR=""
+# SVN texttrix src branch directory
+BRANCH_DIR="trunk"
+
+# SVN plugins src branch directory
+PLUGINS_BRANCH_DIR="$BRANCH_DIR"
 
 ####################
-# System setup
+# Setup variables
 ####################
 
 PAR_JAVA="--java"
-JAVA=""
-READ_JAVA=0
+PAR_PLUGINS="--plugins"
+PAR_BRANCH_DIR="--branch"
+PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
 LINUX="false"
 MAC="false"
-GUI_WIN="win"
-GUI_MOTIF="motif"
-GUI_GTK="gtk"
-GUI_MAC="mac"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
-	GUI=$GUI_WIN
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
-	GUI=$GUI_GTK # GTK is the new default GUI for Linux tXtFL builds
 
 	# Java binary detection mechanism
 	if [ "`command -v java`" != '' ]
@@ -132,7 +130,6 @@ then
 elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
 then
 	MAC="true"
-	GUI=$GUI_MAC
 fi
 echo "found $SYSTEM"
 
@@ -143,8 +140,6 @@ echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=`expr index "$arg" "="`
-	n=`expr $n - 1`
 	# reads arguments
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
@@ -158,86 +153,53 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
-			= "$PAR_JAVA" \
-		-a ${#PAR_JAVA} -eq $n ] # Java path
+		
+	# Java path
+	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 	then
-		READ_JAVA=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_GCJ_BIN_DIR}` \
-			= $PAR_GCJ_BIN_DIR \
-		-a ${#PAR_GCJ_BIN_DIR} -eq $n ] # GCJ path
+		JAVA="${arg#${PAR_JAVA}=}"
+		echo "...set to use \"$JAVA\" as the Java compiler path"
+		
+	# plugins list
+	elif [ ${arg:0:${#PAR_PLUGINS}} = "$PAR_PLUGINS" ]
 	then
-		READ_GCJ_BIN_DIR=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_GCJ_BIN}` \
-			= $PAR_GCJ_BIN \
-		-a ${#PAR_GCJ_BIN} -eq $n ] # GCJ binary
-	then
-		READ_GCJ_BIN=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_GUI}` \
-			= $PAR_GUI \
-		-a ${#PAR_GUI} -eq $n ] # specify the graphical environment
-	then
-		READ_GUI=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_PREFIX}` \
-			= $PAR_PREFIX \
-		-a ${#PAR_PREFIX} -eq $n ] # specify the graphical environment
-	then
-		READ_PREFIX=1
-		READ_PARAMETER=1
-	fi
+		PLUGINS="${arg#${PAR_PLUGINS}=}"
+		echo "...set to use \"$PLUGINS\" as the list of plugins"
 	
-	
-	n=`expr $n + 2`
-	# checks whether to read the option following an argument
-	if [ $READ_PARAMETER -eq 1 ]
+	# texttrix branch dir
+	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 	then
-		if [ $READ_JAVA -eq 1 ]
-		then
-			JAVA=`expr substr "$arg" $n ${#arg}`
-			READ_JAVA=0
-			echo "...set to use $JAVA as the Java compiler path..."
-		elif [ $READ_GCJ_BIN_DIR -eq 1 ]
-		then
-			GCJ_BIN_DIR=`expr substr "$arg" $n ${#arg}`
-			READ_GCJ_BIN_DIR=0
-			echo "...set to use $GCJ_BIN_DIR as the GCJ compiler path..."
-		elif [ $READ_GCJ_BIN -eq 1 ]
-		then
-			GCJ_BIN=`expr substr "$arg" $n ${#arg}`
-			READ_GCJ_BIN=0
-			echo "...set to use $GCJ_BIN as the GCJ binary..."
-		elif [ $READ_GUI -eq 1 ]
-		then
-			GUI=`expr substr "$arg" $n ${#arg}`
-			echo "...set to use the $GUI gui..."
-			READ_GUI=0
-		elif [ $READ_PREFIX -eq 1 ]
-		then
-			PREFIX=`expr substr "$arg" $n ${#arg}`
-			echo "...set to use the $PREFIX prefix..."
-			READ_PREFIX=0
-		fi
-		READ_PARAMETER=0
+		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
+		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+	
+	# plugins branch dir
+	elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
+	then
+		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
+		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 	fi
 done
 echo "...done"
 
 # Appends a file separator to end of Java compiler path if none there
-if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+if [ x$JAVA != "x" ]
 then
-	JAVA="$JAVA"/
+	# appends the file separator after removing any separator already
+	# present to prevent double separators
+	JAVA=${JAVA%\/}/
 fi
 
 # Source directories
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
 	BASE_DIR=`dirname $0`
+	if [ "x$BASE_DIR" = "x." ]
+	then
+		BASE_DIR="$PWD"
+	fi
 fi
-
+TTX_DIR="$BASE_DIR" # texttrix folder within main dir
+PLGS_DIR="${BASE_DIR%/texttrix/$BRANCH_DIR}/plugins" # plugins src folder
 DIR="com/textflex/texttrix" # src package structure
 
 #####################
