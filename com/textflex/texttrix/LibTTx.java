@@ -531,6 +531,17 @@ public class LibTTx {
 		}
 		return i;
 	}
+	
+	
+	public static String getFileExtension(String path) {
+		int exti = path.lastIndexOf(".") + 1;
+		String ext = "";
+		if (exti > 0) {
+			ext = path.substring(exti);
+		}
+		return ext;
+	}
+
 
 	/**Read in text from a file and return the text as a string.
 	 * Differs from <code>displayFile(String path)</code> because

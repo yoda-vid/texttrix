@@ -2072,6 +2072,7 @@ public class TextTrix extends JFrame {
 				updateTabTitle(textPad);
 //				textPad.setIgnoreChanged(false);
 				textPad.getDocument().addDocumentListener(textPadDocListener);
+//				System.out.println("done reading");
 			}
 		});
 //		textPad.read(in, desc);
@@ -2160,6 +2161,9 @@ public class TextTrix extends JFrame {
 				// write to it
 				out.print(t.getText());
 				t.setChanged(false);
+				// keeps track of orig file path to compare file extensions
+				// for syntax highlighting
+				String origPath = t.getFile().getPath();
 				t.setFile(path);
 
 				// stops any auto-save timer attached to the pad
@@ -2170,7 +2174,11 @@ public class TextTrix extends JFrame {
 				updateTabTitle(t);//textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
-				t.setHighlightStyle(); // sets the style according to extension
+				// sets the style according to extension, but only if the next extension is different
+				// from the previous one
+				if (!LibTTx.getFileExtension(origPath).equalsIgnoreCase(t.getFileExtension())) {
+					t.setHighlightStyle();
+				}
 				return true;
 			}
 		} catch (IOException e) {
@@ -2327,13 +2335,17 @@ public class TextTrix extends JFrame {
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				}
+//				System.out.println("done opening");
+				/* shifted to read function
 				t.setEditable(editable);
 				t.setCaretPosition(0);
 				t.setChanged(false);
+				*/
 				t.setFile(path);
+				// TODO: check whether thread safe
 				getSelectedTabbedPane().setToolTipTextAt(getSelectedTabbedPane().getSelectedIndex(), t
 						.getPath());
-				updateTabTitle(t);//getSelectedTabbedPane());
+//				updateTabTitle(t);//getSelectedTabbedPane());
 //				updateTitle(t.getFilename());
 				// set the path to the last opened directory
 				setOpenDir(file.getParent());
@@ -4468,9 +4480,15 @@ public class TextTrix extends JFrame {
 							if (!openFile(new File(path), false, true)) {
 								displayMissingResourceDialog(path);
 							} else {
-								TextPad textPad = getSelectedTextPad();
-								textPad.viewHTML();
-								textPad.setCaretPosition(0);
+								// place at end of EDT because file reading occurs in 
+								// an invokeLater as well
+								SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										TextPad textPad = getSelectedTextPad();
+										textPad.viewHTML();
+										textPad.setCaretPosition(0);
+									}
+								});
 							}
 						}
 					};

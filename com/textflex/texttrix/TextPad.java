@@ -239,12 +239,13 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	public void setHighlightStyle() {
 		String ext = getFileExtension();
-		if (ext.equals("") || ext.equals("txt")) return;
+		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) return;
 		ext = ext.toLowerCase();
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
 		String text = getAllText();
+//		System.out.println("contentType: " + getContentType());
 		setStyledDocument(highlightedDoc);
 		
 		// sets the appropriate style
@@ -271,12 +272,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	public String getFileExtension() {
 		String path = getFile().getPath();
-		int exti = path.lastIndexOf(".") + 1;
-		String ext = "";
-		if (exti > 0) {
-			ext = path.substring(exti);
-		}
-		return ext;
+		return LibTTx.getFileExtension(path);
 	}
 
 /*

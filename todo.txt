@@ -11,7 +11,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -allow building plugins individually; ADDED: plugins list parameter, as well as separate texttrix and plugins branch parameters
 -test build scripts; ADDED: new parameter parsing
 -prevent exceptions when no tabs; WFM
--fix shortcuts.html display as HTML view
+-fix shortcuts.html display as HTML view; FIXED: checks for content type before switching to highlighter doc and also places in invokeLater to avoid thread conflicts
+-fix crash on saving; FIXED: only sets highlighting when saving if changed file extensions
 -port paramater parsing improvements from build scripts to pkg.sh
 -prep for 0.7.1beta2 release
 
