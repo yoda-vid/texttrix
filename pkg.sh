@@ -42,8 +42,8 @@
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-VER="0.7.1beta2-"$DATE
-#VER="0.7.1rc1"
+#VER="0.7.1beta2-"$DATE
+VER="0.7.1beta2"
 
 # the final destination of the resulting packages
 PREFIX="/home/share" # change to absolute path of target dir
@@ -277,7 +277,7 @@ cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
 # create the master package, which will eventually become the binary package
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
-rm -rf com/.svn com/textflex/.svn $DIR/.svn $DIR/images/.svn
+rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn
 # make files readable in all sorts of systems
 unix2dos *.txt $DIR/*.txt
 chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files
@@ -291,11 +291,16 @@ mv texttrix $SRCPKGDIR # copy to source package
 # add the build files
 cd "$TTX_DIR"
 sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix/configure
-cp pkg.sh run.sh manifest-additions.mf \
+sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
+	sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
+	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
+cp -rf pkg.sh run.sh manifest-additions.mf build.sh gnu \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
 chmod 755 "$BLD_DIR/$SRCPKGDIR"/texttrix/configure \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh
+	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
+	"$BLD_DIR/$SRCPKGDIR"/texttrix/build.sh \
+	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 
 # add the plugins, copying the entire folder
 # WARNING: Remove any unwanted contents from this folder, as the whole folder
@@ -329,7 +334,7 @@ rm -rf com
 # finish the source package
 # remove all but source and related files
 cd $BLD_DIR/$SRCPKGDIR 
-rm -rf texttrix/$DIR/*.class
+rm -rf texttrix/com/*/*/*.class
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins
 rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \

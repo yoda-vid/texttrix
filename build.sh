@@ -189,17 +189,14 @@ then
 	JAVA=${JAVA%\/}/
 fi
 
-# Source directories
+# Sets the base directory to the script location
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
 	BASE_DIR=`dirname $0`
-	if [ "x$BASE_DIR" = "x." ]
-	then
-		BASE_DIR="$PWD"
-	fi
 fi
-TTX_DIR="$BASE_DIR" # texttrix folder within main dir
-PLGS_DIR="${BASE_DIR%/texttrix/$BRANCH_DIR}/plugins" # plugins src folder
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
+
 DIR="com/textflex/texttrix" # src package structure
 
 #####################
