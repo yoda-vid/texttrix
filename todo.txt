@@ -10,9 +10,9 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 -allow building plugins individually
 -test build scripts
--prevent change flag on initially loaded files
--check on default styles to improve performance
--add styling for shell scripts and other extensions
+-prevent change flag on initially loaded files when have multiple grouped tabs; FIXED
+-check on default styles to improve performance; ADDED by defaulting to non-styled except for appropriate file extensions
+-add styling for shell scripts and other extensions; WORKAROUND: Java properties styling for shell scripts
 -prevent exceptions when no tabs
 
 ----Ideas----

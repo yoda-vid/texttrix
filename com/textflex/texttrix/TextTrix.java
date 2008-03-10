@@ -2058,6 +2058,8 @@ public class TextTrix extends JFrame {
 		// runs in EDT to prevent GUI lock-up during loading
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+//				textPad.setIgnoreChanged(true);
+				textPad.getDocument().removeDocumentListener(textPadDocListener);
 				textPad.setHighlightStyle();
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
@@ -2068,6 +2070,8 @@ public class TextTrix extends JFrame {
 				textPad.setCaretPosition(0);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
+//				textPad.setIgnoreChanged(false);
+				textPad.getDocument().addDocumentListener(textPadDocListener);
 			}
 		});
 //		textPad.read(in, desc);
@@ -2166,6 +2170,7 @@ public class TextTrix extends JFrame {
 				updateTabTitle(t);//textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
 				autoAutoIndent(t); // prevents undos from before the save
+				t.setHighlightStyle(); // sets the style according to extension
 				return true;
 			}
 		} catch (IOException e) {
@@ -3346,11 +3351,12 @@ public class TextTrix extends JFrame {
 		 */
 		public void setChanged() {
 			final TextPad pad = getSelectedTextPad();
+//			if (!(pad.getIgnoreChanged() && pad.getChanged())) {
 			if (!pad.getChanged()) {
+//				System.out.println("i'm here");
 				pad.setChanged(true);
 				updateTabTitle(pad);//getSelectedTabbedPane());
 				if (getPrefs().getAutoSave()) {
-					//					System.out.println("i'm here");
 					startTextPadAutoSaveTimer(pad);
 				}
 			}

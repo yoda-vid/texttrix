@@ -85,6 +85,10 @@ BASE_DIR=""
 # System setup
 ####################
 
+PAR_JAVA="--java"
+JAVA=""
+READ_JAVA=0
+
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"

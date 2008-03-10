@@ -71,6 +71,7 @@ import com.Ostermiller.Syntax.*;
 public class TextPad extends JTextPane implements StateEditable {
 	private File file; // the file that the pad displays
 	private boolean changed = false; // flag that text changed
+	private boolean ignoreChanged = false;
 	private String path; // file's path
 	// allows for multiple and ignored undo operations
 	private UndoManagerTTx undoManager = new UndoManagerTTx();
@@ -230,14 +231,23 @@ public class TextPad extends JTextPane implements StateEditable {
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 		
-		setStyledDocument(highlightedDoc);
+		// creates a styled document only for certain file extensions
+		setHighlightStyle();
+//		setStyledDocument(highlightedDoc);
 		applyDocumentSettings();
 	}
 	
 	public void setHighlightStyle() {
 		String ext = getFileExtension();
-		if (ext.equals("")) return;
+		if (ext.equals("") || ext.equals("txt")) return;
 		ext = ext.toLowerCase();
+		
+		// prepares to transfer text into new styled document, which
+		// will automatically style the text
+		String text = getAllText();
+		setStyledDocument(highlightedDoc);
+		
+		// sets the appropriate style
 		if (ext.equals("java")) {
 			highlightedDoc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		} else if (ext.equals("c") || ext.equals("cpp")) {
@@ -254,6 +264,9 @@ public class TextPad extends JTextPane implements StateEditable {
 			// defaults to Java style
 			highlightedDoc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		}
+		
+		// transfers the text into the appropriately styled document
+		setText(text);
 	}
 	
 	public String getFileExtension() {
@@ -1007,6 +1020,17 @@ public class TextPad extends JTextPane implements StateEditable {
 	public boolean getAutoIndent() {
 		return autoIndent;
 	}
+	
+	public boolean getIgnoreChanged() {
+		return ignoreChanged;
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	/**Sets the file to a file object.
 	 * @param aFile file to hold the text area's contents.
@@ -1033,6 +1057,16 @@ public class TextPad extends JTextPane implements StateEditable {
 			setDefaultTabs(getTabSize());
 		}
 	}
+	
+	public void setIgnoreChanged(boolean aIgnoreChanged) {
+		ignoreChanged = aIgnoreChanged;
+	}
+	
+	
+	
+	
+	
+	
 
 	/**Check whether the file has been created.
 	 * @return <code>true</code> if the file has been created;

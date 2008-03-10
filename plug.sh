@@ -69,23 +69,21 @@ Last updated:
 
 JAVA="" # compiler location
 
+PAR_JAVA="--java"
+JAVA=""
+READ_JAVA=0
+
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
 LINUX="false"
 MAC="false"
-GUI_WIN="win"
-GUI_MOTIF="motif"
-GUI_GTK="gtk"
-GUI_MAC="mac"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
-	GUI=$GUI_WIN
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
-	GUI=$GUI_GTK # GTK is the new default GUI for Linux tXtFL builds
 
 	# Java binary detection mechanism
 	if [ "`command -v java`" != '' ]
@@ -112,7 +110,6 @@ then
 elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
 then
 	MAC="true"
-	GUI=$GUI_MAC
 fi
 echo "found $SYSTEM"
 
@@ -123,7 +120,7 @@ echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=`expr index "$arg" "="`
+	n=${#${arg`expr index "$arg" "="`
 	n=`expr $n - 1`
 	# reads arguments
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
@@ -138,7 +135,7 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
+	elif [ ${arg:0:${#PAR_JAVA}} \
 			= "$PAR_JAVA" \
 		-a ${#PAR_JAVA} -eq $n ] # Java path
 	then
@@ -205,6 +202,7 @@ do
 	fi
 done
 echo "...done"
+exit 0
 
 # Appends a file separator to end of Java compiler path if none there
 if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
