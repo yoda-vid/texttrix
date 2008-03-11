@@ -1600,8 +1600,10 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	
 	
-	/** Sets the caret position and scrolls the scroll pane that contains this Text Pad
-	 * so that the caret is at the top of the pad's viewable area.
+	/** Sets the caret position and scrolls the scroll pane that 
+	 * contains this Text Pad
+	 * so that the top of the caret is at the middle of the 
+	 * pad's viewable area.
 	 * @param position the new caret position
 	 */
 	public void setCaretPositionTop(int position) {
@@ -1616,10 +1618,27 @@ public class TextPad extends JTextPane implements StateEditable {
 			// if no selection, in case selection spans > 1 line
 			// TODO: still seems to scroll to end of selection
 //			System.out.println("selection start: " + getAllText().substring(getSelectionStart(), getSelectionStart() + 3) + ", position: " + position);
+			// the position of the selection start
 			Rectangle rect = modelToView(getSelectionStart());//position);
+			// the viewport and current position
+			JViewport viewport = getScrollPane().getViewport();
+			Rectangle viewportRect = viewport.getViewRect();
+			
+			// scrollRectToVisibible will normally scroll the view
+			// so that the caret is at the top of the viewport.
+			// The rect height is adjusted here to position the caret
+			// to the middle of the viewport.
 			if (rect != null) {
+				// calculates the position of where the caret would
+				// be in the middle of the viewport
+				int recty = rect.y - viewportRect.height / 2;
+				if (recty >= 0) {
+//					System.out.println("x: " + rect.x + ", y: " + rect.y + ", width: " + rect.width + ", height: " + rect.height + ", recty: " + recty);
+					rect.setLocation(rect.x, recty);
+				}
 //				System.out.println("rect: " + rect.x + ", " + rect.y);
-				getScrollPane().getViewport().scrollRectToVisible(rect);
+				viewport.scrollRectToVisible(rect);
+				viewport.setViewPosition(new Point(rect.x, rect.y));
 			}
 //			getScrollPane().getViewport().setViewPosition(new Point(rect.x, rect.y));
 		} catch (BadLocationException e) {

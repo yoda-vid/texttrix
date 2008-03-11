@@ -494,12 +494,14 @@ public class LibTTx {
 		String str,
 		String searchStr,
 		int offset) {
-		int i = offset - 1;
 		int searchLen = searchStr.length();
 		int strLen = str.length();
+		if (offset > strLen || offset < 0) return -1;
+		// start position
+		int i = offset - 1;
 		while (i >= 0
-			&& i + searchLen <= strLen
-			&& !str.substring(i, i + searchLen).equals(searchStr)) {
+//			&& i + searchLen <= strLen
+			&& !str.substring(i).startsWith(searchStr)) {
 			i--;
 		}
 		return i;
@@ -517,18 +519,29 @@ public class LibTTx {
 		Document doc,
 		String searchStr,
 		int offset) {
+		// TODO: needs to be tested
 		int docLen = doc.getLength();
 		int len = searchStr.length();
+		if (offset > docLen || offset < 0) return -1;
+		// start position
 		int i = offset - 1;
+		// reposition start if quarry would extend beyond len of doc
+		if (i + len > docLen) i = docLen - len;
 		try {
+			// compares section of document of the same len
+			// as the search string with the search string
+			// because document must be given a length for getText
 			while (i >= 0
-				&& i + len <= docLen
+//				&& i + len <= docLen
 				&& !doc.getText(i, len).equals(searchStr)) {
 				i--;
 			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
+			i = -1;
 		}
+		// ensures that any negative values are returned as -1
+		if (i < 0) i = -1;
 		return i;
 	}
 	

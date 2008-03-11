@@ -250,8 +250,16 @@ public class TextTrix extends JFrame {
 		// makes the tabbed pane for grouping tabs horizontally
 		// scrollable to help distinguish the tabs from the tabs in
 		// each individual group
-		groupTabbedPane = new MotherTabbedPane(
-			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					groupTabbedPane = new MotherTabbedPane(
+						JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// adds a listener to update the title and status bars when
 		// switching among group tabs
 		groupTabbedPane.addChangeListener(new ChangeListener() {
@@ -456,8 +464,8 @@ public class TextTrix extends JFrame {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 			} else { // default interface            
-				UIManager.setLookAndFeel(
-                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+//				UIManager.setLookAndFeel(
+//                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 			}
 		} catch (UnsupportedLookAndFeelException e) {
 			// Many systems may not have the new Nimbus L&F
@@ -1102,7 +1110,7 @@ public class TextTrix extends JFrame {
 	 *            end point of selection, relative to baseline
 	 */
 	public void textSelection(TextPad t, int baseline, int start, int end) {
-		if (end != -1&& start != end) {
+		if (end != -1 && start != end) {
 			t.setCaretPositionTop(baseline + start);
 			t.moveCaretPosition(baseline + end);
 			t.getCaret().setSelectionVisible(true);
@@ -4688,10 +4696,16 @@ public class TextTrix extends JFrame {
 						// Advance to next ocurrance with F3
 						public void keyPressed(KeyEvent evt) {
 							String lineStr = wordFindFld.getText();
+//							System.out.println(evt.getKeyCode() + "");
 							if (evt.getKeyCode() == KeyEvent.VK_F3) {
 								evt.consume();
+								if (evt.isShiftDown()) {
+								findSeqReverse(lineStr, getSelectedTextPad().getSelectionStart());
+//									System.out.println("here");
+								} else {
 //								System.out.println("end: " + getSelectedTextPad().getSelectionEnd());
 								findSeq(lineStr, getSelectedTextPad().getSelectionEnd());
+								}
 							}
 						}
 					});
@@ -4711,7 +4725,9 @@ public class TextTrix extends JFrame {
 					}
 					
 					// tool tip for the input field
-					wordFindFld.setToolTipText("Press F3 to find the next occurrence");
+					wordFindFld.setToolTipText(
+						"<html>Press F3 to find the next occurrence"
+						+ "<br />or Shift+F3 for the previous occurrence.</hmlm>");
 					
 					
 					
@@ -4859,9 +4875,8 @@ public class TextTrix extends JFrame {
 			// Prepare the search
 			TextPad t = getSelectedTextPad();
 			if (t == null) return;
-			// shifts text to lower case
+			// shifts text and quarry to lower case
 			String text = t.getAllText().toLowerCase();
-			// shifts quarry to lower case
 			seq = seq.toLowerCase();
 			// saves the caret position
 			int origCaretPosition = t.getCaretPosition();
@@ -4878,6 +4893,48 @@ public class TextTrix extends JFrame {
 			// warning; otherwise, highlights the word
 			if (i != -1) {
 				wordFindFld.setBackground(Color.white);
+				textSelection(t, 0, i, i + seq.length());
+			} else {
+				Toolkit.getDefaultToolkit().beep();
+				wordFindFld.setBackground(Color.pink);
+				t.setCaretPositionTop(origCaretPosition);
+			}
+			
+			// Save the quarry
+			lastWord = seq;
+		}
+		
+		/** Finds the first occurrence of a sequence from the
+		 * given starting point, ignoring case.
+		 * @param seq the sequence to find
+		 * @param start the position number from which to start 
+		 * searching; if -1, the search will begin from the current 
+		 * caret posiion.
+		 */
+		public void findSeqReverse(String seq, int start) {
+			// Prepare the search
+			TextPad t = getSelectedTextPad();
+			if (t == null) return;
+			// shifts text and quarry to lower case
+			String text = t.getAllText().toLowerCase();
+			seq = seq.toLowerCase();
+			// saves the caret position
+			int origCaretPosition = t.getCaretPosition();
+			// starts from 0 flagged not to start at caret position
+			if (start == -1) start = text.length() - 1;
+			
+			// Find the quarry
+			int i = LibTTx.reverseIndexOf(text, seq, start);
+			// if can't find, wraps to the beginning
+			if (i == -1) {
+				i =  LibTTx.reverseIndexOf(text, seq, text.length() - 1);
+			}
+			// if still can't find, turns field pink and sounds an audible
+			// warning; otherwise, highlights the word
+			if (i != -1) {
+				wordFindFld.setBackground(Color.white);
+				t.setCaretPosition(i);
+//				System.out.println("i: " + i + ", seq length: " + seq.length() + ", text length: " + text.length());
 				textSelection(t, 0, i, i + seq.length());
 			} else {
 				Toolkit.getDefaultToolkit().beep();
@@ -4956,7 +5013,7 @@ public class TextTrix extends JFrame {
 			// action to open the file
 			Action act = new AbstractAction(fileDisp) {
 				public void actionPerformed(ActionEvent evt) {
-					openFile(new File(file));
+					openFile(new File(file), true, false, true);
 				}
 			};
 			LibTTx.setAction(act, file); // tool tip displays full file path
