@@ -2,19 +2,26 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-7, Text Flex
+Copyright (c) 2002-8, Text Flex
 http://textflex.com/texttrix
 
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-----v.0.7.1 (rc1: 2007-11-24; beta1: 2007-10-07)----
+----v.0.7.1 (in progress)----
 
-A bug fix and minor enhancements release to Text Trix.  This release features 
-fixes to startup on Vista and build errors.  Enhancements include Line Dance 
-improvements and text drag-n-drop.
+beta2: 2008-03-11
+beta1: 2007-10-07
+
+Text Trix now features syntax highlighting, search navigation improvements, and many fixes for building and startup.  The text editor has incorporated the GPL-licensed Ostermiller syntax highlighter to automatically color and format text according to the given file type.  Search improvements include the ability to search backward in Word Find (Shift+F3), as well as contextual scrolling for viewing found text in its context.
+
+Build improvements include updated editor and plugin build scripts as simpler compilation mechanisms than the configure/Makefile compilation.  Startup errors on Vista platforms have been fixed.  Line Dance also includes several fixes and now automatically names lines based on selected text.  Text is now more mobile through drag-n-drop.
+
+This release has been tested on Java 5 and 6 (including 6uN-b13) and on Windows, Linux, and Mac platforms.
 
 Enhancements:
+-Syntax highlighting, using the GPL-licensed Ostermiller Syntax Highlighter package
+-Reverse Word Find (Shift+F3), the Find Previous counterpart to Find Next (F3)
 -Line Dance automatically names line if text is highlighted
 -Automatically highlights Word Find and Line Find text when place cursor inside
 -Drag-n-drop text
@@ -28,12 +35,16 @@ file chooser when Vista one fails
 -Line Dance table doesn't update when shift between groups; FIXED (#1631008)
 -setCaretPositionTop should set to beginning of selected regions; FIXED
 -Fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
+-Fix group unindent on Linux; FIXED (#1797197)
 -Build scripts should be set explicitly to /bin/bash; FIXED
 
 Since beta1:
+-Syntax highlighting
+-Reverse word find
+-Contextual scrolling
+-Compilation improvements
 -Documentation updates
 -Package file streamlining
--L&F defaults to Nimbus on Linux platforms running Java 6 Update N
 
 ----v.0.7.0 (2007-01-01)----
 

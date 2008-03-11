@@ -334,11 +334,11 @@ rm -rf com
 # finish the source package
 # remove all but source and related files
 cd $BLD_DIR/$SRCPKGDIR 
-rm -rf texttrix/com/*/*/*.class
+rm -rf texttrix/*/*/*.class texttrix/*/*/*/*.class texttrix/*/*/*/*/*.class
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins
 rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \
-	plugins/*/$DIR/.svn plugins/*/$.svn/*.class plugins/*/$DIR/*~ \
+	plugins/*/$DIR/.svn plugins/*/$DIR/*.class plugins/*/$DIR/*~ \
 	plugins/*.jar
 mv texttrix/*.txt .
 
