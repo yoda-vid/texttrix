@@ -237,10 +237,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyDocumentSettings();
 	}
 	
+	/** Sets the syntax highlighting style for the current file
+	 * according to the file's extension, if possible.
+	 * If the file has no extension, a ".txt" extension, or 
+	 * a content type other than plain text, no highlight
+	 * styling is applied.
+	 */
 	public void setHighlightStyle() {
+		// detects the file extension and returns if the document
+		// either requires no styling or has a content type that
+		// requires its own formatting
 		String ext = getFileExtension();
-		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) return;
 		ext = ext.toLowerCase();
+		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) return;
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
@@ -270,22 +279,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		setText(text);
 	}
 	
+	/** Gets the file extension of the current file.
+	 * @return the file extension, which is the part of
+	 * the file after the final period (".")
+	 * @see LibTTx#getFileExtension
+	 */
 	public String getFileExtension() {
 		String path = getFile().getPath();
 		return LibTTx.getFileExtension(path);
 	}
-
-/*
-	public void createHighlightedDocument(String s) {
-		HighlightedDocument doc = new HighlightedDocument();
-		try {
-		doc.insertString(0, s, null);
-		} catch (BadLocationException e) {
-		}
-		highlightedDoc = doc;
-		setStyledDocument(highlightedDoc);
-	}
-*/
 
 	/** Sets the keybindings to the preferred value.
 	 * 

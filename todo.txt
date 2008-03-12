@@ -10,12 +10,9 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 -prevent exceptions when no tabs; WFM
 -prevent sporadic concurrent modification exception (thread issue?) when creating MotherTabbedPane during startup; FIXED?
--word find and other caret positioners should place the caret to the middle of the page, not the top; ADDED
--add reverse word find; ADDED
--fix string reverse index lookup; FIXED
--fix caret position top when adjusted view gives < 0; FIXED
+-fix exception from HTMLLexer1 for multi-line comments starting without an intervening blank line
+-check display error during word finding in a small window
 -port paramater parsing improvements from build scripts to pkg.sh
--prep for 0.7.1beta2 release
 
 ----Ideas----
 
