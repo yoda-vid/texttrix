@@ -1629,7 +1629,8 @@ public class TextPad extends JTextPane implements StateEditable {
 			// scrollRectToVisibible will normally scroll the view
 			// so that the caret is at the top of the viewport.
 			// The rect height is adjusted here to position the caret
-			// to the middle of the viewport.
+			// to the middle of the viewport, and setViewPosition is
+			// used instead to manually set the viewport position.
 			if (rect != null) {
 				// calculates the position of where the caret would
 				// be in the middle of the viewport
@@ -1639,8 +1640,10 @@ public class TextPad extends JTextPane implements StateEditable {
 					rect.setLocation(rect.x, recty);
 				}
 //				System.out.println("rect: " + rect.x + ", " + rect.y);
-				viewport.scrollRectToVisible(rect);
-				viewport.setViewPosition(new Point(rect.x, rect.y));
+//				viewport.scrollRectToVisible(rect);
+				// ignores the x-val and sets to 0 to ensure that the view
+				// is not horizontally shifted
+				viewport.setViewPosition(new Point(0, rect.y));
 			}
 //			getScrollPane().getViewport().setViewPosition(new Point(rect.x, rect.y));
 		} catch (BadLocationException e) {

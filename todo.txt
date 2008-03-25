@@ -10,8 +10,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 -prevent exceptions when no tabs; WFM
 -prevent sporadic concurrent modification exception (thread issue?) when creating MotherTabbedPane during startup; FIXED?
--fix exception from HTMLLexer1 for multi-line comments starting without an intervening blank line
--check display error during word finding in a small window
+-fix Contextual Scrolling to prevent horizontally scrolling and screen splitting; FIXED
+-fix syntax highlighting exception on multi-line comments in Linux and MacOS X
 -port paramater parsing improvements from build scripts to pkg.sh
 
 ----Ideas----
