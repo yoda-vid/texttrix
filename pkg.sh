@@ -42,8 +42,8 @@
 
 # version number
 DATE=`date +'%Y-%m-%d'`
-#VER="0.7.1beta2-"$DATE
-VER="0.7.1beta2"
+VER="0.7.1beta3-"$DATE
+#VER="0.7.1beta2"
 
 # the final destination of the resulting packages
 PREFIX="/home/share" # change to absolute path of target dir
