@@ -10,7 +10,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 -prevent exceptions when no tabs; WFM
 -prevent sporadic concurrent modification exception (thread issue?) when creating MotherTabbedPane during startup; FIXED?
--fix Contextual Scrolling to prevent horizontally scrolling and screen splitting; FIXED
+-port java binary detection from build to run script; DONE
+-explicitly set /bin/bash for scripts to run correctly on Ubuntu systems, where default shell is dash; DONE
 -fix syntax highlighting exception on multi-line comments in Linux and MacOS X
 -port paramater parsing improvements from build scripts to pkg.sh
 

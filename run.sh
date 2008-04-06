@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Text Trix start-up script
 
 # ***** BEGIN LICENSE BLOCK *****
@@ -87,13 +87,39 @@ echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
 LINUX="false"
+MAC="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
-	JAVA=/usr/java/default/bin
+
+	# Java binary detection mechanism
+	if [ "`command -v java`" != '' ]
+	then
+		JAVA=""
+	elif [ "`command -v /usr/bin/java`" != "" ]
+	then
+		JAVA="/usr/bin"
+	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
+	then
+		JAVA="/usr/java/default/bin"
+	elif [ "`command -v /usr/lib/jvm/java-1.7.0/bin/java`" != "" ]
+	then
+		# Java Iced Tea directory on Fedora distributions
+		JAVA="/usr/lib/jvm/java-1.7.0/bin"
+	else
+		echo "Java software doesn't appear to be installed..."
+		echo "Please download it (for free!) from http://java.com."
+		echo "Or if it's already installed, please add it to your"
+		echo "PATH or to the JAVA variable in this script."
+		read -p "Press Enter to exit this script..."
+		exit 1
+	fi
+elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
+then
+	MAC="true"
 fi
 echo "found $SYSTEM"
 
