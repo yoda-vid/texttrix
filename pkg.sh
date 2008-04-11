@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-7
+# Portions created by the Initial Developer are Copyright (C) 2003-8
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -34,34 +34,6 @@
 # the terms of any one of the MPL, the GPL or the LGPL.
 #
 # ***** END LICENSE BLOCK *****
-
-##############################
-# User-defined variables
-# Check them!
-##############################
-
-# version number
-DATE=`date +'%Y-%m-%d'`
-VER="0.7.1beta3-"$DATE
-#VER="0.7.1beta2"
-
-# the final destination of the resulting packages
-PREFIX="/home/share" # change to absolute path of target dir
-PAR_PREFIX="--prefix"
-READ_PREFIX=0
-
-# the path to the compiler binaries
-JAVA="" # change to name of dir with java binaries
-PAR_JAVA="--java"
-READ_JAVA=0
-
-# the root directory of the source files
-BASE_DIR=""
-
-# the current working branch for packaging
-BRANCH="trunk" # change to branch relative path
-PAR_BRANCH="--branch"
-READ_BRANCH=0
 
 ################################
 # Help
@@ -97,19 +69,52 @@ Parameters:
 	Defaults to "/usr/share".
 		
 Copyright:
-	Copyright (c) 2003-7 Text Flex
+	Copyright (c) 2003- Text Flex
 
 Last updated:
-	2007-10-07
+	2008-04-11
 "
+
+#####################
+# User-defined variables
+# Check them!
+####################
+
+# version number
+DATE=`date +'%Y-%m-%d'`
+VER="0.9.0beta3-"$DATE
+#VER="0.7.1beta2"
+
+# the final destination of the resulting packages
+PREFIX="/home/share" # change to absolute path of target dir
+
+# the root directory of the source files
+BASE_DIR=""
+
+# the current working branch for packaging
+BRANCH="trunk" # change to branch relative path
+
+# compiler location
+JAVA=""
+
+# the chosen plugins
+PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
+
+# SVN texttrix src branch directory
+BRANCH_DIR="trunk"
+
+# SVN plugins src branch directory
+PLUGINS_BRANCH_DIR="$BRANCH_DIR"
 
 ##############################
 # System setup
 ##############################
 
+echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
 LINUX="false"
+MAC="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
@@ -127,18 +132,31 @@ then
 	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
 	then
 		JAVA="/usr/java/default/bin"
+	elif [ "`command -v /usr/lib/jvm/java-1.7.0/bin/java`" != "" ]
+	then
+		# Java Iced Tea directory on Fedora distributions
+		JAVA="/usr/lib/jvm/java-1.7.0/bin"
+	else
+		echo "Java software doesn't appear to be installed..."
+		echo "Please download it (for free!) from http://java.com."
+		echo "Or if it's already installed, please add it to your"
+		echo "PATH or to the JAVA variable in this script."
+		read -p "Press Enter to exit this script..."
+		exit 1
 	fi
+elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
+then
+	MAC="true"
 fi
 echo "found $SYSTEM"
 
+##############
+# Respond to user arguments
 
 echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=`expr index "$arg" "="`
-	n=`expr $n - 1`
-	
 	# reads arguments
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
@@ -152,86 +170,60 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
-			= $PAR_JAVA \
-		-a ${#PAR_JAVA} -eq $n ] # Java path
+		
+	# Java path
+	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 	then
-		READ_JAVA=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_PREFIX}` \
-			= $PAR_PREFIX \
-		-a ${#PAR_PREFIX} -eq $n ] # specify the install location
+		JAVA="${arg#${PAR_JAVA}=}"
+		echo "...set to use \"$JAVA\" as the Java compiler path"
+		
+	# install location
+	elif [ ${arg:0:${#PAR_PREFIX}} = "$PAR_PREFIX" ] 
 	then
-		READ_PREFIX=1
-		READ_PARAMETER=1
-	elif [ `expr substr "$arg" 1 ${#PAR_BRANCH}` \
-			= $PAR_BRANCH \
-		-a ${#PAR_BRANCH} -eq $n ] # specify the install location
+		PREFIX="${arg#${PAR_PREFIX}=}"
+		echo "...set to use \"$PREFIX\" as the install path"
+		
+	# texttrix branch dir
+	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 	then
-		READ_BRANCH=1
-		READ_PARAMETER=1
-	fi
+		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
+		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 	
-	
-	n=`expr $n + 2`
-	# checks whether to read the option following an argument
-	if [ $READ_PARAMETER -eq 1 ]
+	# plugins branch dir
+	elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
 	then
-		if [ $READ_JAVA -eq 1 ]
-		then
-			JAVA=`expr substr "$arg" $n ${#arg}`
-			READ_JAVA=0
-			echo "...set to use $JAVA as the Java compiler path..."
-		elif [ $READ_PREFIX -eq 1 ]
-		then
-			PREFIX=`expr substr "$arg" $n ${#arg}`
-			echo "...set to use the $PREFIX prefix..."
-			READ_PREFIX=0
-		elif [ $READ_BRANCH -eq 1 ]
-		then
-			PREFIX=`expr substr "$arg" $n ${#arg}`
-			echo "...set to compile from $BRANCH..."
-			READ_BRANCH=0
-		fi
-		READ_PARAMETER=0
+		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
+		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 	fi
 done
 echo "...done"
 
-if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+# Appends a file separator to end of Java compiler path if none there
+if [ x$JAVA != "x" ]
 then
-	JAVA="$JAVA"/
+	# appends the file separator after removing any separator already
+	# present to prevent double separators
+	JAVA=${JAVA%\/}/
 fi
 
 # The working directory is the directory from which this script is run
 WK_DIR="$PWD"
 
-# Source directories
-# The base directory is the directory containing this script
-if [ "x$BASE_DIR" = "x" ] # continue if BASE_DIR is empty string
-then
-	BASE_DIR=`dirname $0`
-fi
-
-# sets the base direction to the script location
-cd "$BASE_DIR"
-BASE_DIR="$PWD"
-
-# sets the plugins directory based on the location found from the script
-PLGS_DIR=""
-if [ $BRANCH = "." ]
-then
-	PLGS_DIR="${BASE_DIR%texttrix}"plugins
-else
-	PLGS_DIR="${BASE_DIR%texttrix/$BRANCH}"plugins
-fi
-
 # initial output directory
 BLD_DIR="$WK_DIR/build" 
 
-# root directory of main Text Trix source files
-# Same directory as base directory for now.
-TTX_DIR="$BASE_DIR" 
+# Sets the base directory to the script location
+if [ "x$BASE_DIR" = "x" ] # empty string
+then
+	BASE_DIR=`dirname $0`
+fi
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
+
+# Sets the texttrix and plugin source directories
+TTX_DIR="$BASE_DIR" # texttrix folder within main dir
+PLGS_DIR="${BASE_DIR%$BRANCH_DIR}/../plugins" # plugins src folder
+DIR="com/textflex/texttrix" # src package structure
 
 ##############################
 # Build operations
@@ -253,6 +245,7 @@ fi
 if [ -d "$BLD_DIR" ]
 then
 	cd "$BLD_DIR" # base of operations
+	rm -rf $ALL
 else
 	echo "Sorry, but $BLD_DIR isn't a directory,"
 	echo "so I won't be very useful."

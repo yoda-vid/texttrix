@@ -170,28 +170,23 @@ do
 done
 echo "...done"
 
-# Appends a file separator to end of Java compiler path if not empty
-# and no separator there
-if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+# Appends a file separator to end of Java compiler path if none there
+if [ x$JAVA != "x" ]
 then
-	JAVA="$JAVA"/
+	# appends the file separator after removing any separator already
+	# present to prevent double separators
+	JAVA=${JAVA%\/}/
 fi
 
-# Source directories
-# Note that currently requires the user to remain case-sensitive with the name
-# of the base dir, even if Cygwin navigates w/o regard to case
+# Sets the base directory to the script location
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
-	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
-	then
-		BASE_DIR="$0"
-	else # assume that script path is relative to current dir
-		script="${0#./}"
-		BASE_DIR="$PWD/$script"
-	fi
-	BASE_DIR="${BASE_DIR%/run.sh}" # assumes the script's name is run.sh
-	BASE_DIR="${BASE_DIR%/.}"
+	BASE_DIR=`dirname $0`
 fi
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
+
+DIR="com/textflex/texttrix" # src package structure
 
 ##############
 # Run Text Trix
