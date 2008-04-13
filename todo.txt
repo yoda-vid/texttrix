@@ -10,11 +10,10 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 -prevent exceptions when no tabs; WFM
 -prevent sporadic concurrent modification exception (thread issue?) when creating MotherTabbedPane during startup; FIXED?
--fix syntax highlighting exception on multi-line comments in Linux and MacOS X; WFM: exception stems from unrecognized characters, such as the copyright symbol, which apparently may work with one font family but not with another
--re-add "plug" parameter to build.sh for building plugins as well; DONE
--check refresh tab function for formatted text
+-fix plugin packaging branch detection; FIXED
+-check refresh tab function for formatted text; FIXED
 -check syntax highlighting after undo
--update ver number to 0.9.0beta3pre; DONE
+-update readme's, esp readme-src; DONE
 
 ----Ideas----
 

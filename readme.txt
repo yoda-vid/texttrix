@@ -1,20 +1,17 @@
 readme.txt
 
-Text Trix
+Text Trix[tm]
 the text tinker
 http://textflex.com/texttrix
 This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-7, Text Flex
+Copyright (c) 2002-8, Text Flex
 All rights reserved.
 
 -----------------
-Text Flex[tm] Text Trix[tm] is general purpose editor that makes coding 
-easier and more precise.  Navigational tools help make large files easier 
-to read and organize.  Special plugins manipulate text according to user-
-defined settings.
+The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coders.
 
 System Reqs:
 -Java[tm] 1.4+ (http://java.com/en/download/index.jsp), freely available 

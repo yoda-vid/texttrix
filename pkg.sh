@@ -283,14 +283,15 @@ mv texttrix $SRCPKGDIR # copy to source package
 
 # add the build files
 cd "$TTX_DIR"
-sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix/configure
+# remove the branch assignments because no branches in src pkg
+#sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix/configure
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 	sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
-cp -rf pkg.sh run.sh manifest-additions.mf build.sh gnu \
+cp -rf pkg.sh run.sh manifest-additions.mf build.sh run.ps1 build.ps1 gnu \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
-chmod 755 "$BLD_DIR/$SRCPKGDIR"/texttrix/configure \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
+#chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/configure
+chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/build.sh \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
@@ -303,7 +304,7 @@ cp -rf $PLGS_DIR $SRCPKGDIR
 # move the working branch to the each plugin's root folder, removing all other branches
 for file in `ls $SRCPKGDIR/plugins`
 do
-	mv $SRCPKGDIR/plugins/$file/$BRANCH/* $SRCPKGDIR/plugins/$file
+	mv $SRCPKGDIR/plugins/$file/$PLUGINS_BRANCH_DIR/* $SRCPKGDIR/plugins/$file
 	rm -rf $SRCPKGDIR/plugins/$file/tags $SRCPKGDIR/plugins/$file/branches $SRCPKGDIR/plugins/$file/trunk
 done
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package

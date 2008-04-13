@@ -1,42 +1,33 @@
 readme-src.txt
 
-Text Trix
+Text Trix[tm]
 the text tinker
 http://textflex.com/texttrix
 This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-7, Text Flex
+Copyright (c) 2002-8, Text Flex
 All rights reserved.
 
 -----------------
-Text Flex[tm] Text Trix[tm] is general purpose editor that makes coding 
-easier and more precise.  Navigational tools help make large files easier 
-to read and organize.  Special plugins manipulate text according to user-
-defined settings.
+The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coders.
 
 System Req:
 -Java[tm] Development Kit (JDK), v.1.4+, freely available from Sun 
 Microsystems[tm] (http://java.sun.com/javase/downloads/index.jsp).  
 Java 6 is recommended.
--To use the build scripts on Windows(R) systems, use the Cygwin 
-environment (http://www.cygwin.com/).
+-Bash scripts (.sh) are included for compiling and packaging on Linux(R), MacOS X(R), or Windows(R) (via Cygwin) platforms.
+-PowerShell scripts (.ps1) are included for some tasks on Windows platforms.
 
 Instructions for compilation:
 -Unzip the Text Trix source package
 -Compile the Java classes:
 	-cd to the source directory.
-	-Auto-configure the build environment: "sh texttrix/configure".  To 
-	specify the location of the Java compiler, pass the argument, 
-	"--java=[path-to-java-compiler-binaries]".  See "--help" for other options.
-	-Build Text Trix and its plug-ins: "make all".
-	-Text Trix is ready to go!  To run it, type: "sh texttrix/run.sh".
+	-Run "texttrix/build.sh --plug" to build the editor and all plugins.
+-Run "texttrix/run.sh" to start the editor.
 
 (Optional:) Installation
--Type: "make install".  By default, Text Trix will be installed into 
-/usr/local/texttrix-x.y.z.  To customize the location, specify
-"--prefix=[install-path]".
 -You can also run the "texttrix/pkg.sh" script to create distributable 
 packages.
 -To make a self-extracting Jar Ajar[tm] package for your newly compiled 
@@ -49,11 +40,11 @@ Write Your Own Plug-In:
 for details on how to write your own plug-in for Text Trix!
 
 Troubleshooting:
--Text Trix has been tested on Windows XP SP2, Fedora Core 6, and
-MacOS X 10.4.  If you've tested it on another platform, please let us 
+-Text Trix has been tested on Windows XP/Visat, Fedora 8, and
+MacOS X 10.5.  If you've tested it on another platform, please let us 
 know about your experience.
 -See "readme.txt" for information on running Text Trix
--See http://textflex.com/texttrix/faq.html for more details
+-See http://textflex.com/texttrix for more details
 
 
 -----------------

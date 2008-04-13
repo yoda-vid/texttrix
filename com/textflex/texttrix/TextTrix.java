@@ -2493,7 +2493,29 @@ public class TextTrix extends JFrame {
 			// Refreshes the tab and tries to restore the caret position
 			// to its original position
 			int pos = t.getCaretPosition();
-			openFile(t.getFile(), t.isEditable(), false, true);
+			String path = t.getPath();
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(path));
+				read(t, reader, path);
+			} catch(FileNotFoundException e) {
+				// This message will most likely not be reached since
+				// the non-existant file would be detected earlier.
+				String msg = "The original file appears to have been moved, "
+					+ "\ndeleted, or set to be unreadable.";
+				JOptionPane.showMessageDialog(
+					getThis(), 
+					msg, 
+					"File missing",
+					JOptionPane.ERROR_MESSAGE);
+			} catch(IOException e) {
+				String msg = "The original file could not be accessed.";
+				JOptionPane.showMessageDialog(
+					getThis(), 
+					msg, 
+					"File inaccessible",
+					JOptionPane.ERROR_MESSAGE);
+			}
+//			openFile(t.getFile(), t.isEditable(), false, true);
 			// prevent caret from exceeding length of newly refreshed file
 			if (pos <= t.getDocument().getLength()) {
 				t.setCaretPosition(pos);
