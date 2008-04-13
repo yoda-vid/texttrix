@@ -47,7 +47,7 @@ Syntax:
 the file build.sh does not have executable permissions.)
 
 Parameters:
-	--java java-compiler-binaries-path: Specifies the path to javac, 
+	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
@@ -56,15 +56,13 @@ Parameters:
 	--plug: Compiles and packages the plug-ins after compiling the
 	Text Trix program.
 	
-	--pkg: Creates the Text Trix binary and source packages.
-	
 	--help: Lends a hand by displaying yours truly.
 	
 Copyright:
 	Copyright (c) 2004, 2008 Text Flex
 
 Last updated:
-	2008-03-08
+	2008-04-12
 "
 
 #####################
@@ -75,14 +73,12 @@ Last updated:
 # compiler location
 JAVA=""
 
-# the chosen plugins
-PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
+# build plugins; 1 = build
+PLUG=0
 
 # SVN texttrix src branch directory
 BRANCH_DIR="trunk"
 
-# SVN plugins src branch directory
-PLUGINS_BRANCH_DIR="$BRANCH_DIR"
 
 ####################
 # Setup variables
@@ -92,6 +88,7 @@ PAR_JAVA="--java"
 PAR_PLUGINS="--plugins"
 PAR_BRANCH_DIR="--branch"
 PAR_PLUGINS_BRANCH_DIR="--plgbranch"
+PAR_PLUG="--plug"
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
@@ -160,23 +157,17 @@ do
 		JAVA="${arg#${PAR_JAVA}=}"
 		echo "...set to use \"$JAVA\" as the Java compiler path"
 		
-	# plugins list
-	elif [ ${arg:0:${#PAR_PLUGINS}} = "$PAR_PLUGINS" ]
-	then
-		PLUGINS="${arg#${PAR_PLUGINS}=}"
-		echo "...set to use \"$PLUGINS\" as the list of plugins"
-	
 	# texttrix branch dir
 	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 	then
 		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
 		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 	
-	# plugins branch dir
-	elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
+	# build plugins
+	elif [ ${arg:0:${#PAR_PLUG}} = "$PAR_PLUG" ]
 	then
-		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
+		PLUG=1
+		echo "...set to build plugins"
 	fi
 done
 echo "...done"
@@ -216,6 +207,16 @@ then
 else
 	"$JAVA"javac -cp gnu/getopt:. -target 1.5 -source 1.5 com/Ostermiller/Syntax/*.java
 	"$JAVA"javac -target 1.5 -source 1.4 com/textflex/texttrix/*.java
+fi
+
+#############
+# Build plugins
+
+if [ $PLUG -eq 1 ]
+then
+	echo ""
+	echo "Building plugins..."
+	"$BASE_DIR/plug.sh" "$@"
 fi
 
 exit 0

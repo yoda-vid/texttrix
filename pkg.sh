@@ -69,7 +69,7 @@ Parameters:
 	Defaults to "/usr/share".
 		
 Copyright:
-	Copyright (c) 2003- Text Flex
+	Copyright (c) 2003-8 Text Flex
 
 Last updated:
 	2008-04-11
@@ -91,13 +91,10 @@ PREFIX="/home/share" # change to absolute path of target dir
 # the root directory of the source files
 BASE_DIR=""
 
-# the current working branch for packaging
-BRANCH="trunk" # change to branch relative path
-
 # compiler location
 JAVA=""
 
-# the chosen plugins
+# the chosen plugins; not currently implemented
 PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
 
 # SVN texttrix src branch directory
@@ -152,6 +149,7 @@ echo "found $SYSTEM"
 
 ##############
 # Respond to user arguments
+##############
 
 echo "Parsing user arguments..."
 READ_PARAMETER=0
@@ -237,11 +235,13 @@ SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR="TextTrix.jar" # executable jar
 ALL="$PKGDIR $PKG $SRCPKGDIR $SRCPKG"
 
+# create build directory if doesn't already exist
 if [ ! -d "$BLD_DIR" ]
 then
 	mkdir "$BLD_DIR"
 fi
 
+# attempt to clean up build directory
 if [ -d "$BLD_DIR" ]
 then
 	cd "$BLD_DIR" # base of operations
