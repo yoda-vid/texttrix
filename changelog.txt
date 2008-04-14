@@ -8,16 +8,18 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-----v.0.7.1 (in progress)----
+----v.0.9.0 (in progress)----
 
+beta3: 2008-04-??
+(previously known as 0.7.1beta)
 beta2: 2008-03-11
 beta1: 2007-10-07
 
-Text Trix now features syntax highlighting, search navigation improvements, and many fixes for building and startup.  The text editor has incorporated the GPL-licensed Ostermiller syntax highlighter to automatically color and format text according to the given file type.  Search improvements include the ability to search backward in Word Find (Shift+F3), as well as contextual scrolling for viewing found text in its context.
+The Text Trix editor now features syntax highlighting, search navigation improvements, and many fixes for building and startup.  The text editor has incorporated the GPL-licensed Ostermiller syntax highlighter to automatically color and format text according to the given file type.  Search improvements include the ability to search backward in Word Find (Shift+F3), as well as contextual scrolling for viewing found text in its context.
 
 Build improvements include updated editor and plugin build scripts as simpler compilation mechanisms than the configure/Makefile compilation.  Startup errors on Vista platforms have been fixed.  Line Dance also includes several fixes and now automatically names lines based on selected text.  Text is now more mobile through drag-n-drop.
 
-This release has been tested on Java 5 and 6 (including 6uN-b13) and on Windows, Linux, and Mac platforms.
+This release has been tested on Java 5 and 6 (including 6uN-b21) and on Windows, Linux, and MacOS platforms.
 
 Enhancements:
 -Syntax highlighting, using the GPL-licensed Ostermiller Syntax Highlighter package
@@ -37,6 +39,13 @@ file chooser when Vista one fails
 -Fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Fix group unindent on Linux; FIXED (#1797197)
 -Build scripts should be set explicitly to /bin/bash; FIXED
+
+Since beta2:
+-Fixed split-screen during some instances of contextual scrolling
+-Fixed tab refresh regression
+-Fixed auto-detection of capitalized file extensions for syntax highlighting
+-Tested and fixed build and packaging process for MacOS X platform
+-Bumped version number to 0.9.0pre
 
 Since beta1:
 -Syntax highlighting

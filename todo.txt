@@ -8,12 +8,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
--prevent exceptions when no tabs; WFM
--prevent sporadic concurrent modification exception (thread issue?) when creating MotherTabbedPane during startup; FIXED?
--fix plugin packaging branch detection; FIXED
--check refresh tab function for formatted text; FIXED
 -check syntax highlighting after undo
--update readme's, esp readme-src; DONE
+-prep for 0.9.0beta3 release
 
 ----Ideas----
 

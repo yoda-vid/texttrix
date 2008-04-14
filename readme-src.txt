@@ -11,7 +11,7 @@ Copyright (c) 2002-8, Text Flex
 All rights reserved.
 
 -----------------
-The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coders.
+The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general text editing.
 
 System Req:
 -Java[tm] Development Kit (JDK), v.1.4+, freely available from Sun 
