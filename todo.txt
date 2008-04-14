@@ -9,6 +9,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 ----Immediate Tasks----
 
 -check syntax highlighting after undo
+-launch via Java Web Start; INPROGRESS: workaround to launch file successfully, but still need to identify plugin folder and other potentially other toolbar resources
 -prep for 0.9.0beta3 release
 
 ----Ideas----

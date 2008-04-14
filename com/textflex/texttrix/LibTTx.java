@@ -217,6 +217,11 @@ public class LibTTx {
 		// this class's location
 		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
 		URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
+		// WORKAROUND: jnlp-launched files return null for the urlClassDir, 
+		// so returns a stub jar root file for now
+		// TODO: identify the jar base and plugin directories
+		// for jnlp-launched files and more generally
+		if (urlClassDir == null) return new File("/");
 		String strClassDir = urlClassDir.getPath();
 		// to check whether JAR
 		File fileClassDir = new File(urlClassDir.getPath());
