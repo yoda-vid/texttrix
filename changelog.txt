@@ -10,7 +10,7 @@ plans for future ones.)
 
 ----v.0.9.0 (in progress)----
 
-beta3: 2008-04-??
+beta3: 2008-04-28
 (previously known as 0.7.1beta)
 beta2: 2008-03-11
 beta1: 2007-10-07
@@ -24,12 +24,13 @@ This release has been tested on Java 5 and 6 (including 6uN-b21) and on Windows,
 Enhancements:
 -Syntax highlighting, using the GPL-licensed Ostermiller Syntax Highlighter package
 -Reverse Word Find (Shift+F3), the Find Previous counterpart to Find Next (F3)
+-Contextual Scrolling during searches
 -Line Dance automatically names line if text is highlighted
 -Automatically highlights Word Find and Line Find text when place cursor inside
 -Drag-n-drop text
 -New open-file/close-tab icons
 -Code migrated from CVS to Subversion repository
--Compilation can target user chosen directory
+-Build improvements, including testing on MacOS X platform
 
 Bugs fixed:
 -Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default L&F 
