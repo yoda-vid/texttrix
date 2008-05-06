@@ -4138,9 +4138,15 @@ public class TextTrix extends JFrame {
 					// group tab title
 					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title...") {
 						public void actionPerformed(ActionEvent evt) {
+							// opens a dialog pane initialized with current
+							// group tab title
+							int i = getGroupTabbedPane().getSelectedIndex();
 							String title = JOptionPane.showInputDialog(
 								getThis(), 
-								"What would you like to name the tab group?");
+								"What would you like to name the tab group?", 
+								getGroupTabbedPane().getTitleAt(i));
+							
+							// sets the tab title
 							if (title != null) {
 								getGroupTabbedPane().setTitleAt(getGroupTabbedPane().getSelectedIndex(), title);
 							}
