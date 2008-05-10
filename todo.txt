@@ -9,8 +9,11 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 ----Immediate Tasks----
 
 -check syntax highlighting after undo
+-check occasional inability to undo when highlighting turned on
+-check on exaggerated indentation size until save file
+-add command-line option not to reopen files, while still remembering previous files for future launch
 -launch via Java Web Start; INPROGRESS: workaround to launch file successfully, but still need to identify plugin folder and other potentially other toolbar resources
--prepopulate group tab naming with current title; DONE
+-read parameters in build script (eg "-h") before exiting if no Java path found; DONE
 -update to 0.9.0beta4pre (or possibly 0.9.0rc1)
 
 ----Ideas----

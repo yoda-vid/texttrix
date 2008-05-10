@@ -62,7 +62,7 @@ Copyright:
 	Copyright (c) 2004, 2008 Text Flex
 
 Last updated:
-	2008-04-12
+	2008-05-10
 "
 
 #####################
@@ -117,12 +117,7 @@ then
 		# Java Iced Tea directory on Fedora distributions
 		JAVA="/usr/lib/jvm/java-1.7.0/bin"
 	else
-		echo "Java software doesn't appear to be installed..."
-		echo "Please download it (for free!) from http://java.com."
-		echo "Or if it's already installed, please add it to your"
-		echo "PATH or to the JAVA variable in this script."
-		read -p "Press Enter to exit this script..."
-		exit 1
+		JAVA="false"
 	fi
 elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
 then
@@ -171,6 +166,16 @@ do
 	fi
 done
 echo "...done"
+
+if [ x$JAVA = x"false" ]
+then
+	echo "Java software doesn't appear to be installed..."
+	echo "Please download it (for free!) from http://java.com."
+	echo "Or if it's already installed, please add it to your"
+	echo "PATH or to the JAVA variable in this script."
+	read -p "Press Enter to exit this script..."
+	exit 1
+fi
 
 # Appends a file separator to end of Java compiler path if none there
 if [ x$JAVA != "x" ]
