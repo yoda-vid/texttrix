@@ -393,7 +393,7 @@ public class TextTrix extends JFrame {
 					}
 					*/
 					// distinguishes the tab group as files given as arguments
-					getGroupTabbedPane().setTitleAt(0, "Args");
+					getGroupTabbedPane().setTitleAt(0, "Start");
 //					addTabbedPane(getGroupTabbedPane(), "");
 				}
 
@@ -3142,9 +3142,18 @@ public class TextTrix extends JFrame {
 		// opens the files, starting from the offset
 		boolean reuseTab = true;
 		for (int i = offset; i < files.length; i++) {
-			// opens the file
-			boolean success = initialFiles ?
-				openInitialFile(files[i], reuseTab) : openFile(files[i], true, false, reuseTab);
+			// opens the file if it exists
+			boolean success = false;
+//			System.out.println("file: " + files[i].getPath());
+			if (files[i].exists()) {
+				// opens files according to whether the file is given 
+				// on the command line/reopening or through 
+				// user-interaction, eg the file dialog
+				success = 
+					initialFiles 
+					? openInitialFile(files[i], reuseTab) 
+					: openFile(files[i], true, false, reuseTab);
+			}
 			reuseTab = false;
 			if (success) {
 				// if successful, updates the tab history

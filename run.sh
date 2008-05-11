@@ -130,9 +130,6 @@ echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
 do
-	n=`expr index "$arg" "="`
-	n=`expr $n - 1`
-	
 	# reads arguments
 	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 	then
@@ -146,29 +143,26 @@ do
 			echo "$HELP"
 		fi
 		exit 0
-	elif [ `expr substr "$arg" 1 ${#PAR_JAVA}` \
-			= "$PAR_JAVA" \
-		-a ${#PAR_JAVA} -eq $n ] # Java path
+		
+	# Java path
+	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 	then
-		READ_JAVA=1
-		READ_PARAMETER=1
-	fi
-	
-	
-	n=`expr $n + 2`
-	# checks whether to read the option following an argument
-	if [ $READ_PARAMETER -eq 1 ]
-	then
-		if [ $READ_JAVA -eq 1 ]
-		then
-			JAVA=`expr substr "$arg" $n ${#arg}`
-			READ_JAVA=0
-			echo "...set to use $JAVA as the Java compiler path..."
-		fi
-		READ_PARAMETER=0
+		JAVA="${arg#${PAR_JAVA}=}"
+		echo "...set to use \"$JAVA\" as the Java compiler path"
+		
 	fi
 done
 echo "...done"
+
+if [ x$JAVA = x"false" ]
+then
+	echo "Java software doesn't appear to be installed..."
+	echo "Please download it (for free!) from http://java.com."
+	echo "Or if it's already installed, please add it to your"
+	echo "PATH or to the JAVA variable in this script."
+	read -p "Press Enter to exit this script..."
+	exit 1
+fi
 
 # Appends a file separator to end of Java compiler path if none there
 if [ x$JAVA != "x" ]
