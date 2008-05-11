@@ -12,7 +12,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check occasional inability to undo when highlighting turned on
 -check on exaggerated indentation size until save file
 -add command-line option not to reopen files, while still remembering previous files for future launch
--launch via Java Web Start; INPROGRESS: workaround to launch file successfully, but still need to identify plugin folder and other potentially other toolbar resources
+-check on poor performance when editing highlighted page in virtual machine
+-launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -read parameters in build script (eg "-h") before exiting if no Java path found; DONE
 -update to 0.9.0beta4pre (or possibly 0.9.0rc1)
 

@@ -1269,6 +1269,10 @@ public class TextTrix extends JFrame {
 	 */
 	public void setupPlugIns() {
 		File plugInsFile = getPlugInsFile();
+		// WORKAROUND: JNLP cannot find the plugins folder,
+		// so the current workaround is to return empty-handed if no
+		// plugins folder is found
+		if (!plugInsFile.exists()) return;
 
 		// load the plugins and create actions for them
 		plugIns = LibTTx.loadPlugIns(plugInsFile);
