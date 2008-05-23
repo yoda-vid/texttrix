@@ -102,13 +102,17 @@ then
 	elif [ "`command -v /usr/bin/java`" != "" ]
 	then
 		JAVA="/usr/bin"
+	elif [ "`command -v /usr/lib/jvm/java-1.6.0/bin/java`" != "" ]
+	then
+		# OpenJDK directory on Fedora distributions
+		JAVA="/usr/lib/jvm/java-1.6.0/bin"
+	elif [ "`command -v /usr/lib/jvm/java-6-openjdk/bin/java`" != "" ]
+	then
+		# OpenJDK directory on Ubuntu distributions
+		JAVA="/usr/lib/jvm/java-6-openjdk/bin"
 	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
 	then
 		JAVA="/usr/java/default/bin"
-	elif [ "`command -v /usr/lib/jvm/java-1.7.0/bin/java`" != "" ]
-	then
-		# Java Iced Tea directory on Fedora distributions
-		JAVA="/usr/lib/jvm/java-1.7.0/bin"
 	else
 		echo "Java software doesn't appear to be installed..."
 		echo "Please download it (for free!) from http://java.com."

@@ -86,7 +86,7 @@ VER="0.9.0beta4-"$DATE
 #VER="0.9.0beta4"
 
 # the final destination of the resulting packages
-PREFIX="/home/share" # change to absolute path of target dir
+PREFIX="" # /home/share"
 
 # the root directory of the source files
 BASE_DIR=""
@@ -119,20 +119,24 @@ elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
 
-	# Java binary detection mechanism
-	if [ "`command -v java`" != '' ]
+	# Java/Jar binary detection mechanism
+	if [ "`command -v jar`" != '' ]
 	then
 		JAVA=""
-	elif [ "`command -v /usr/bin/java`" != "" ]
+	elif [ "`command -v /usr/bin/jar`" != "" ]
 	then
 		JAVA="/usr/bin"
-	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
+	elif [ "`command -v /usr/lib/jvm/java-1.6.0/bin/jar`" != "" ]
+	then
+		# OpenJDK directory on Fedora/Ubuntu distributions
+		JAVA="/usr/lib/jvm/java-1.6.0/bin"
+	elif [ "`command -v /usr/lib/jvm/java-6-openjdk/bin/jar`" != "" ]
+	then
+		# OpenJDK directory on Ubuntu distributions
+		JAVA="/usr/lib/jvm/java-6-openjdk/bin"
+	elif [ "`command -v /usr/java/default/bin/jar`" != "" ]
 	then
 		JAVA="/usr/java/default/bin"
-	elif [ "`command -v /usr/lib/jvm/java-1.7.0/bin/java`" != "" ]
-	then
-		# Java Iced Tea directory on Fedora distributions
-		JAVA="/usr/lib/jvm/java-1.7.0/bin"
 	else
 		echo "Java software doesn't appear to be installed..."
 		echo "Please download it (for free!) from http://java.com."
