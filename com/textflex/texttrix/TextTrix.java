@@ -66,6 +66,10 @@ public class TextTrix extends JFrame {
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
 	private static final String LINE_DANCE = "LineDance";
+	private static final String ARG_FRESH = "-fresh";
+	private static final String ARG_FILES = "-files";
+	private static final String ARG_NO_HIGHLIGHTING = "-nohigh";
+	private static final String GROUP_START = "Start";
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -82,6 +86,8 @@ public class TextTrix extends JFrame {
 	private FileHist fileHist = null; // file history
 	// starting position of file history in file menu
 	private static int fileHistStart = -1;
+	private static boolean fresh = false;
+	private static boolean highlighting = true;
 	
 	/* General GUI components */
 	private static MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
@@ -143,6 +149,8 @@ public class TextTrix extends JFrame {
 	 * @param paths file paths to be opened at launch
 	 */
 	public TextTrix(final String[] paths) {
+		final String[] filteredPaths = filterArgs(paths);
+	
 //File baseDir = getPlugInsFile();
 //System.out.println("plugIns: " + baseDir.getPath());
 		// create file menu in constructor rather than when defining class
@@ -383,9 +391,9 @@ public class TextTrix extends JFrame {
 				// tab group and preparing to create a new tab group for other startup files
 				// TODO: keep track of cmd-line files so don't reopen them automatically
 				// on next startup
-				boolean cmdLineFiles = paths != null && paths.length > 0;
+				boolean cmdLineFiles = filteredPaths != null && filteredPaths.length > 0;
 				if (cmdLineFiles) {
-					openFiles(paths, 0, true);
+					openFiles(filteredPaths, 0, true);
 					/*
 					for (int i = 0; i < paths.length; i++) {
 						openInitialFile(paths[i]);
@@ -393,13 +401,13 @@ public class TextTrix extends JFrame {
 					}
 					*/
 					// distinguishes the tab group as files given as arguments
-					getGroupTabbedPane().setTitleAt(0, "Start");
+					getGroupTabbedPane().setTitleAt(0, GROUP_START);
 //					addTabbedPane(getGroupTabbedPane(), "");
 				}
 
 				// load files left open at the close of the last session
 				String reopenPaths = getPrefs().getReopenTabsList();
-				if (getPrefs().getReopenTabs()) {
+				if (!getFresh() && getPrefs().getReopenTabs()) {
 					// the list consists of a comma-delimited string of
 					// filenames
 					String[] grpTokens = reopenPaths.split(FILE_GROUP_SPLITTER_REGEX);
@@ -522,6 +530,44 @@ public class TextTrix extends JFrame {
 		 * window seems to restore this focus at least most of the time.
 		 */
 		focuser();
+	}
+	
+	private String[] filterArgs(String[] args) {
+		String[] filteredArgs = new String[args.length];
+		int filteredArgsi = 0;
+		boolean files = false;
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].indexOf("-") == 0) {
+				files = false;
+				if (args[i].equals(ARG_FRESH)) {
+					setFresh(true);
+				} else if (args[i].equals(ARG_FILES)) {
+					files = true;
+				} else if (args[i].equals(ARG_NO_HIGHLIGHTING)) {
+					setHighlighting(false);
+				}
+			} else if (files) {
+				filteredArgs[filteredArgsi++] = args[i];
+				System.out.println(args[i]);
+			}
+		}
+		return (String[])LibTTx.truncateArray(filteredArgs, filteredArgsi);
+	}
+	
+	public void setFresh(boolean b) {
+		fresh = b;
+	}
+	
+	public boolean getFresh() {
+		return fresh;
+	}
+	
+	public void setHighlighting(boolean b) {
+		highlighting = b;
+	}
+	
+	public boolean getHighlighting() {
+		return highlighting;
 	}
 	
 	private void resetMenus() {
@@ -1664,7 +1710,7 @@ public class TextTrix extends JFrame {
 		String openedPaths = "";
 		boolean reopenTabs = getPrefs().getReopenTabs();
 		// resets open tabs history
-		getPrefs().storeReopenTabsList("");
+//		getPrefs().storeReopenTabsList("");
 		boolean b = true; // flags whether ok to close tab
 		boolean newGrp = false; // flag for new tab group
 		
@@ -1673,32 +1719,38 @@ public class TextTrix extends JFrame {
 		// cycles through the tab groups
 		for (int i = 0; i < pane.getTabCount() && b; i++) {
 			// appends the tab group name
-			openedPaths = openedPaths 
-				+ FILE_GROUP_SPLITTER 
-				+ getGroupTabbedPane().getTitleAt(i);
-			pane.setSelectedIndex(i);
-			// identifies the number of tabs in the tab group
-			int totTabs = getSelectedTabbedPane().getTabCount();
-	
-			// closes the files and prepares to store their paths in the list
-			// of files left open at the end of the session
-			while (totTabs > 0 && b) {
-				// only stores if told to in prefs
-				if (reopenTabs) {
-					TextPad t = getTextPadAt(0);
-					if (t.fileExists()) {
-						openedPaths = openedPaths + FILE_SPLITTER + t.getPath();
+			String groupTabTitle = getGroupTabbedPane().getTitleAt(i);
+			// don't save "Start" group, which contains files
+			// specified on the command line
+			if (!groupTabTitle.equals(GROUP_START)) {
+				openedPaths = openedPaths 
+					+ FILE_GROUP_SPLITTER 
+					+ groupTabTitle;
+				pane.setSelectedIndex(i);
+				// identifies the number of tabs in the tab group
+				int totTabs = getSelectedTabbedPane().getTabCount();
+		
+				// closes the files and prepares to store their paths in the list
+				// of files left open at the end of the session
+				while (totTabs > 0 && b) {
+					// only stores if told to in prefs
+					if (reopenTabs) {
+						TextPad t = getTextPadAt(0);
+						if (t.fileExists()) {
+							openedPaths = openedPaths + FILE_SPLITTER + t.getPath();
+						}
 					}
+					b = closeTextArea(0, getSelectedTabbedPane());
+					totTabs = getSelectedTabbedPane().getTabCount();
 				}
-				b = closeTextArea(0, getSelectedTabbedPane());
-				totTabs = getSelectedTabbedPane().getTabCount();
 			}
 		}
 
-		// store the file list and exit Text Trix all the files closed
-		// successfully
+		// store the file list and exit Text Trix if all the files closed
+		// successfully, set to reopen tabs, and not set for a fresh session
 		if (b == true) {
-			if (reopenTabs) {
+			// preserves most recently saved tabs if set to fresh session
+			if (!getFresh() && reopenTabs) {
 				getPrefs().storeReopenTabsList(openedPaths);
 			}
 			System.exit(0);
@@ -2072,7 +2124,9 @@ public class TextTrix extends JFrame {
 			public void run() {
 //				textPad.setIgnoreChanged(true);
 				textPad.getDocument().removeDocumentListener(textPadDocListener);
-				textPad.setHighlightStyle();
+				if (getHighlighting()) {
+					textPad.setHighlightStyle();
+				}
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
 				addExtraTextPadDocumentSettings(textPad);
@@ -2185,12 +2239,16 @@ public class TextTrix extends JFrame {
 				
 				updateTabTitle(t);//textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
-				autoAutoIndent(t); // prevents undos from before the save
 				// sets the style according to extension, but only if the next extension is different
 				// from the previous one
-				if (!LibTTx.getFileExtension(origPath).equalsIgnoreCase(t.getFileExtension())) {
+				if (getHighlighting()
+							&&!LibTTx.getFileExtension(origPath)
+									.equalsIgnoreCase(t.getFileExtension())) {
 					t.setHighlightStyle();
 				}
+				// automatically starts indenting, if applicable, after
+				// applying the syntax highlighting
+				autoAutoIndent(t); // prevents undos from before the save
 				return true;
 			}
 		} catch (IOException e) {
@@ -2368,6 +2426,9 @@ public class TextTrix extends JFrame {
 				}
 				getPrefs().storeFileHist(path);
 				//updateFileHist(fileMenu);
+				if (getHighlighting()) {
+					t.setHighlightStyle();
+				}
 				autoAutoIndent(t);
 				return true;
 			} catch (IOException exception) {

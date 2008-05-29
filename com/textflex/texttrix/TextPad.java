@@ -232,7 +232,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyKeybindings(prefs);
 		
 		// creates a styled document only for certain file extensions
-		setHighlightStyle();
+//		setHighlightStyle();
 //		setStyledDocument(highlightedDoc);
 		applyDocumentSettings();
 	}
@@ -403,7 +403,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			 */
 			public void actionPerformed(ActionEvent evt) {
 				if (autoIndent) {
-					System.out.println("shift tab");
+//					System.out.println("shift tab");
 					try {
 						if (getSelectionStart() != getSelectionEnd()) {
 							tabRegionReverse();
