@@ -24,8 +24,14 @@ Instructions for use:
 instructions to unpack the file.
 -Double-click on "TextTrix.jar" in the directory that you unpacked
 
+Options and preferences:
+Most options can be set in the Preferences window.  The following command-line options are also available, in addition to others specified in the "run.sh" script:
+--nohigh: turn off syntax highlighting to improve performance
+--fresh: temporarily turn off tab reopening
+--files [file1] [file2] ... : specify additional files to open at start-up
+
 Troubleshooting:
--See http://textflex.com/texttrix/faq.html for troubleshooting tips.
+-See http://textflex.com/texttrix/index.html#faq for troubleshooting tips.
 
 
 -----------------

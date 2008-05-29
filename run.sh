@@ -58,12 +58,18 @@ Parameters:
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
+	
+	--nohigh: Turns on syntax highlighting.
+	
+	--files [file1] [file2] ... : Specifies files to open at start-up.  Files will be placed in their own group tab, labeled "Start".  All arguments listed without a switch as the first argument will be opened until the first switch is reached.
+	
+	--fresh: Open a session withou reopening previously saved tabs, while still preserving the names of the most recently stored tabs.
 
 Copyright:
-	Copyright (c) 2003-7 Text Flex
+	Copyright (c) 2003-8 Text Flex
 
 Last updated:
-	2007-01-01
+	2008-05-29
 "
 
 

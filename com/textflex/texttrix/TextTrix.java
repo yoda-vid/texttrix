@@ -66,9 +66,9 @@ public class TextTrix extends JFrame {
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
 	private static final String LINE_DANCE = "LineDance";
-	private static final String ARG_FRESH = "-fresh";
-	private static final String ARG_FILES = "-files";
-	private static final String ARG_NO_HIGHLIGHTING = "-nohigh";
+	private static final String ARG_FRESH = "--fresh";
+	private static final String ARG_FILES = "--files";
+	private static final String ARG_NO_HIGHLIGHTING = "--nohigh";
 	private static final String GROUP_START = "Start";
 	
 	/* Storage variables */
@@ -532,44 +532,78 @@ public class TextTrix extends JFrame {
 		focuser();
 	}
 	
-	private String[] filterArgs(String[] args) {
+	/** Filters command-line arguments to apply settings and
+	 * return a list of file paths for opening.
+	 * @param args array of command-line arguments, assumed to 
+	 * be completely filled
+	 * @return array of paths to open, assumed to be completely filled
+	 */
+	public String[] filterArgs(String[] args) {
+		// file paths to open
 		String[] filteredArgs = new String[args.length];
 		int filteredArgsi = 0;
+		// true if next element is a file path
 		boolean files = false;
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].indexOf("-") == 0) {
+			// identify switches
+			if (args[i].indexOf("--") == 0) {
 				files = false;
+				// "--fresh" flag to start session without reopening tabs
 				if (args[i].equals(ARG_FRESH)) {
 					setFresh(true);
 				} else if (args[i].equals(ARG_FILES)) {
+					// "--files" to store command-line specified files
 					files = true;
 				} else if (args[i].equals(ARG_NO_HIGHLIGHTING)) {
+					// "--nohigh" to turn off highlighting
 					setHighlighting(false);
 				}
-			} else if (files) {
+			} else if (files || i == 0) {
+				// if files flag set to true, or first arg is not a switch,
+				// then treat the args as file paths until a switch is identified
+				files = true;
 				filteredArgs[filteredArgsi++] = args[i];
-				System.out.println(args[i]);
+//				System.out.println(args[i]);
 			}
 		}
+		// returns the array of paths equal in length to the number of paths
 		return (String[])LibTTx.truncateArray(filteredArgs, filteredArgsi);
 	}
 	
+	/** Sets the flag for opening a fresh session, where previous
+	 * tabs are not reopening, but the most recent history of
+	 * tabs is preserved for when this flag is not used.
+	 * @param b true if files should not be reopened
+	 */
 	public void setFresh(boolean b) {
 		fresh = b;
 	}
 	
+	/** Gets the flag for opening a fresh session, where previous
+	 * tabs are not reopening, but the most recent history of
+	 * tabs is preserved for when this flag is not used.
+	 * @returns true if files should not be reopened
+	 */
 	public boolean getFresh() {
 		return fresh;
 	}
 	
+	/** Sets syntax highlighting on or off.
+	 * @param b true if highlighting should be turned on
+	 */
 	public void setHighlighting(boolean b) {
 		highlighting = b;
 	}
 	
+	/** Gets syntax highlighting on or off.
+	 * @returns true if highlighting should be turned on
+	 */
 	public boolean getHighlighting() {
 		return highlighting;
 	}
 	
+	/** Resets the file and view menus.
+	 */
 	private void resetMenus() {
 		fileMenu = new JMenu("File");
 		viewMenu = new JMenu("View");

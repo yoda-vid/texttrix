@@ -12,13 +12,14 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check occasional inability to undo when highlighting turned on
 -check on occasional glyph font errors during pasting (seen on Java 6u10-b21)
 -check on occasional tab memory and reopening loss or additions
--check on exaggerated indentation size until save file; FIXED: applies highlighting before rather than after auto-indenting
--add command-line option not to reopen files, while still remembering previous files for future launch; DONE: "-fresh" to open fresh session while still preserving most recent tabs for next session
--prevent reading of all command-line arguments as files to open; FIXED/INPROGRESS: ignores "Start" group when saving tabs; command-line files now must be specified by "-files"
+-fix prefs panel general tab column widths
+-prevent reading of all command-line arguments as files to open; FIXED: ignores "Start" group when saving tabs; files specified as first arguments on the command-line or after the "--files" switch are loaded into the "Start" group tab
 -check on poor performance when editing highlighted page in virtual machine
--option to turn on/off syntax highlighting; INPROGRESS: added "-nohigh" option to turn off highlighting
+-option to turn on/off syntax highlighting; INPROGRESS: added "--nohigh" option to turn off highlighting
+-switch to the more widely used double-dash ("--switch") syntax for specifying switches
+-update readme and run.sh with new command-line parameters; DONE
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
--update to 0.9.0beta4pre (or possibly 0.9.0rc1)
+-update to 0.9.0rc1pre; DONE
 
 ----Ideas----
 
