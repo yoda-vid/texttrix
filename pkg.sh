@@ -81,8 +81,8 @@ Last updated:
 ####################
 
 # version number
-DATE=`date +'%Y-%m-%d'`
-VER="0.9.0beta4-"$DATE
+DATE=`date +'%Y-%m-%d-%H:%M'`
+VER="0.9.0rc1-"$DATE
 #VER="0.9.0beta4"
 
 # the final destination of the resulting packages
@@ -360,6 +360,10 @@ then
 else
 	echo "Packages output to $BLD_DIR"
 fi
+# "latest" link to the current packages
+rm -f latest latest-src
+ln -s $PKGDIR latest
+ln -s $SRCPKGDIR latest-src
 ls -l $ALL
 #sh $WIN_MOUNT
 
