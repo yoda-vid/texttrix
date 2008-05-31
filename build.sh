@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-4
+# Portions created by the Initial Developer are Copyright (C) 2003-4, 2008
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
@@ -47,22 +47,27 @@ Syntax:
 the file build.sh does not have executable permissions.)
 
 Parameters:
+	--api: Builds the API documentation files.
+	
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
 	
+	--help: Lends a hand by displaying yours truly.
+	
+	--log: Builds the SVN log from the date specified in the
+	CHANGELOG_END variable through now.
+	
 	--plug: Compiles and packages the plug-ins after compiling the
 	Text Trix program.
 	
-	--help: Lends a hand by displaying yours truly.
-	
 Copyright:
-	Copyright (c) 2004, 2008 Text Flex
+	Copyright (c) 2003-4, 2008 Text Flex
 
 Last updated:
-	2008-05-10
+	2008-05-31
 "
 
 #####################
@@ -79,6 +84,13 @@ PLUG=0
 # SVN texttrix src branch directory
 BRANCH_DIR="trunk"
 
+# API documentation directory relative to base directory; 1 = build
+API_DIR="docs/api"
+API=0
+
+# build changelog; 1 = build
+CHANGELOG_END="2007-01-02"
+CHANGELOG=0
 
 ####################
 # Setup variables
@@ -89,6 +101,8 @@ PAR_PLUGINS="--plugins"
 PAR_BRANCH_DIR="--branch"
 PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 PAR_PLUG="--plug"
+PAR_API="--api"
+PAR_CHANGELOG="--log"
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
@@ -167,6 +181,19 @@ do
 	then
 		PLUG=1
 		echo "...set to build plugins"
+		
+	# build API
+	elif [ ${arg:0:${#PAR_API}} = "$PAR_API" ]
+	then
+		API=1
+		echo "...set to build API documentation"
+		
+	# build SVN changelog
+	elif [ ${arg:0:${#PAR_CHANGELOG}} = "$PAR_CHANGELOG" ]
+	then
+		CHANGELOG=1
+		echo "...set to build changelog"
+		
 	fi
 done
 echo "...done"
@@ -226,6 +253,39 @@ then
 	echo ""
 	echo "Building plugins..."
 	"$BASE_DIR/plug.sh" "$@"
+fi
+
+#############
+# Build API
+
+if [ $API -eq 1 ]
+then
+	if [ ! -d "$API_DIR" ]
+	then
+		mkdir -p "$API_DIR"
+		# exit if fail to create directory
+		if [ ! -d "$API_DIR" ]
+		then
+			echo "$API_DIR does not exist.  Please create it or set \"API_DIR\""
+			echo "in $0 to a different location."
+			exit 1
+		fi
+	fi
+	if [ "$CYGWIN" = "true" ]
+	then	
+		"$JAVA"javadoc -d "`cygpath -p -w $API_DIR`" -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
+	else
+		"$JAVA"javadoc -d "$API_DIR" -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
+	fi
+fi
+
+############
+# Build SVN changelog
+
+if [ $CHANGELOG -eq 1 ]
+then
+	NOW=`date +'%Y-%m-%d'`
+	svn2cl -r {$NOW}:{$CHANGELOG_END}
 fi
 
 exit 0

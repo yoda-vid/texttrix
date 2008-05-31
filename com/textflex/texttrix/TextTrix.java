@@ -582,7 +582,7 @@ public class TextTrix extends JFrame {
 	/** Gets the flag for opening a fresh session, where previous
 	 * tabs are not reopening, but the most recent history of
 	 * tabs is preserved for when this flag is not used.
-	 * @returns true if files should not be reopened
+	 * @return true if files should not be reopened
 	 */
 	public boolean getFresh() {
 		return fresh;
@@ -596,7 +596,7 @@ public class TextTrix extends JFrame {
 	}
 	
 	/** Gets syntax highlighting on or off.
-	 * @returns true if highlighting should be turned on
+	 * @return true if highlighting should be turned on
 	 */
 	public boolean getHighlighting() {
 		return highlighting;

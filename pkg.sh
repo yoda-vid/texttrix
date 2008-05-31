@@ -81,7 +81,7 @@ Last updated:
 ####################
 
 # version number
-DATE=`date +'%Y-%m-%d-%H:%M'`
+DATE=`date +'%Y-%m-%d-%Hh%M'`
 VER="0.9.0rc1-"$DATE
 #VER="0.9.0beta4"
 

@@ -17,7 +17,10 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -option to turn on/off syntax highlighting; INPROGRESS: added "--nohigh" option to turn off highlighting
 -switch to the more widely used double-dash ("--switch") syntax for specifying switches
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
+-make packaging script capable for multiple builds per day, and add links to latest files; DONE
+-add API documentation and SVN changelog construction into build script; DONE
 -update to 0.9.0rc1
+-update documentation and code cleanup
 
 ----Ideas----
 
@@ -66,3 +69,4 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -integrate with Jar Ajar plug-in installation mode
 -reopen tabs if exit canceled
 -group copy: copy multiple, separated lines
+-Lift Off for tearing off Text Pads into separate windows
