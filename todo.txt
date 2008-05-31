@@ -14,13 +14,14 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on occasional tab memory and reopening loss or additions
 -fix prefs panel general tab column widths
 -check on poor performance when editing highlighted page in virtual machine
--option to turn on/off syntax highlighting; INPROGRESS: added "--nohigh" option to turn off highlighting
--switch to the more widely used double-dash ("--switch") syntax for specifying switches
+-option to turn on/off syntax highlighting in prefs panel
+-add "--nohigh" option to turn off highlighting; DONE
+-switch to the more widely used double-dash ("--switch") syntax for specifying switches; DONE
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -make packaging script capable for multiple builds per day, and add links to latest files; DONE
--add API documentation and SVN changelog construction into build script; DONE
+-add "--verbose" flag for verbose command-line ouptput, and turn off initial file opening feedback by default; DONE
 -update to 0.9.0rc1
--update documentation and code cleanup
+-update documentation and code cleanup; INPROGRESS
 
 ----Ideas----
 

@@ -66,10 +66,13 @@ public class TextTrix extends JFrame {
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
 	private static final String LINE_DANCE = "LineDance";
+	private static final String GROUP_START = "Start";
+	
+	// command-line arguments
 	private static final String ARG_FRESH = "--fresh";
 	private static final String ARG_FILES = "--files";
 	private static final String ARG_NO_HIGHLIGHTING = "--nohigh";
-	private static final String GROUP_START = "Start";
+	private static final String ARG_VERBOSE = "--verbose";
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -86,8 +89,9 @@ public class TextTrix extends JFrame {
 	private FileHist fileHist = null; // file history
 	// starting position of file history in file menu
 	private static int fileHistStart = -1;
-	private static boolean fresh = false;
-	private static boolean highlighting = true;
+	private static boolean fresh = false; // temporarily don't reopen tabs
+	private static boolean highlighting = true; // syntax highlighting flag
+	private static boolean verbose = false; // verbose command-line output
 	
 	/* General GUI components */
 	private static MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
@@ -151,13 +155,9 @@ public class TextTrix extends JFrame {
 	public TextTrix(final String[] paths) {
 		final String[] filteredPaths = filterArgs(paths);
 	
-//File baseDir = getPlugInsFile();
-//System.out.println("plugIns: " + baseDir.getPath());
 		// create file menu in constructor rather than when defining class
 		// variables b/c would otherwise use bold font for this menu alone
 		resetMenus(); // resets file and view menus
-//		fileMenu = new JMenu("File");
-//		viewMenu = 
 
 		// adds a window listener that responds to closure of the main
 		// window by calling the exit function
@@ -394,13 +394,10 @@ public class TextTrix extends JFrame {
 				boolean cmdLineFiles = filteredPaths != null && filteredPaths.length > 0;
 				if (cmdLineFiles) {
 					openFiles(filteredPaths, 0, true);
-					/*
-					for (int i = 0; i < paths.length; i++) {
-						openInitialFile(paths[i]);
-						updateTabHistory(getSelectedTabbedPane(), i);
-					}
-					*/
-					// distinguishes the tab group as files given as arguments
+					// distinguishes the tab group with files given as arguments,
+					// labled specially with the GROUP_START title, which allows
+					// this tab group to be identified later and not included in
+					// tab memory and reopening
 					getGroupTabbedPane().setTitleAt(0, GROUP_START);
 //					addTabbedPane(getGroupTabbedPane(), "");
 				}
@@ -425,12 +422,6 @@ public class TextTrix extends JFrame {
 							addTabbedPane(getGroupTabbedPane(), tokens[0]);
 						}
 						openFiles(tokens, 1, true);
-						/*
-						for (int h = 1; h < tokens.length; h++) {
-							openInitialFile(tokens[h]);
-							updateTabHistory(getSelectedTabbedPane(), h - 1);
-						}
-						*/
 					}
 				}
 				
@@ -459,7 +450,7 @@ public class TextTrix extends JFrame {
 	 * default Java Ocean look on all other platforms.
 	 * 
 	 * @param args
-	 *            command-line arguments; not yet used
+	 *            command-line arguments
 	 */
 	public static void main(String[] args) {
 	
@@ -557,13 +548,15 @@ public class TextTrix extends JFrame {
 				} else if (args[i].equals(ARG_NO_HIGHLIGHTING)) {
 					// "--nohigh" to turn off highlighting
 					setHighlighting(false);
+				} else if (args[i].equals(ARG_VERBOSE)) {
+					// "--verbose" to turn on verbose command-line output
+					setVerbose(true);
 				}
 			} else if (files || i == 0) {
 				// if files flag set to true, or first arg is not a switch,
 				// then treat the args as file paths until a switch is identified
 				files = true;
 				filteredArgs[filteredArgsi++] = args[i];
-//				System.out.println(args[i]);
 			}
 		}
 		// returns the array of paths equal in length to the number of paths
@@ -602,6 +595,20 @@ public class TextTrix extends JFrame {
 		return highlighting;
 	}
 	
+	/** Turns verbose command-line output on or off.
+	 * @param b true to turn on verbose output
+	 */
+	public void setVerbose(boolean b) {
+		verbose = b;
+	}
+	
+	/** Gets the verbose output flag.
+	 * @return true for verbose output
+	 */
+	public boolean getVerbose() {
+		return verbose;
+	}
+	
 	/** Resets the file and view menus.
 	 */
 	private void resetMenus() {
@@ -633,7 +640,10 @@ public class TextTrix extends JFrame {
 	private boolean openInitialFile(File file, boolean reuseTab) {
 		// command-line feedback
 		String path = file.getPath();
-		System.out.print("Opening file from path " + path + "...");
+		boolean verb = getVerbose();
+		if (verb) {
+			System.out.print("Opening file from path " + path + "...");
+		}
 		
 		// Open the file if possible, or supply explanation if not
 		if (!openFile(file, true, false, reuseTab)) {
@@ -643,11 +653,17 @@ public class TextTrix extends JFrame {
 			System.out.println(msg);
 			return false;
 		} else {
-			System.out.println("got it!");
+			if (verb) {
+				System.out.println("got it!");
+			}
 			return true;
 		}
 	}
 	
+	/** Opens a single intitial file.
+	 * @param file file to open
+	 * @return true if file opens successfully
+	 */
 	private boolean openInitialFile(File file) {
 		return openInitialFile(file, false);
 	}
@@ -4584,10 +4600,6 @@ public class TextTrix extends JFrame {
 					
 					
 					
-					
-					
-					
-					
 					/* Help menu items */
 
 					// about Text Trix, incl copyright notice and version number
@@ -4598,7 +4610,7 @@ public class TextTrix extends JFrame {
 							String text = LibTTx.readText(path);
 							if (text == "") {
 								text = "Text Trix" + "\nthe text tinker"
-										+ "\nCopyright (c) 2002-7, Text Flex"
+										+ "\nCopyright (c) 2002-8, Text Flex"
 										+ "\nhttp://textflex.com/texttrix";
 								displayMissingResourceDialog(path);
 							}
