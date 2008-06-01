@@ -29,7 +29,7 @@ Instructions for compilation:
 
 (Optional:) Installation
 -You can also run the "texttrix/pkg.sh" script to create distributable 
-packages.
+packages, along with a double-clickable TextTrix.jar file.
 -To make a self-extracting Jar Ajar[tm] package for your newly compiled 
 Text Trix package, download the Jar Ajar packaging suite 
 (http://textflex.com/jarajar).  Install it, launch its graphical packager, and 

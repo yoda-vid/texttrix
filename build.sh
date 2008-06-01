@@ -271,12 +271,15 @@ then
 			exit 1
 		fi
 	fi
+	echo ""
+	echo "Building API documentation..."
 	if [ "$CYGWIN" = "true" ]
 	then	
 		"$JAVA"javadoc -d "`cygpath -p -w $API_DIR`" -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
 	else
 		"$JAVA"javadoc -d "$API_DIR" -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
 	fi
+	echo "...done"
 fi
 
 ############
@@ -285,7 +288,10 @@ fi
 if [ $CHANGELOG -eq 1 ]
 then
 	NOW=`date +'%Y-%m-%d'`
+	echo ""
+	echo "Building changelog from $NOW until $CHANGELOG_END..."
 	svn2cl -r {$NOW}:{$CHANGELOG_END}
+	echo "...written to ChangeLog"
 fi
 
 exit 0
