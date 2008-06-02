@@ -9,15 +9,14 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 ----Immediate Tasks----
 
 -check syntax highlighting after undo
--check occasional inability to undo when highlighting turned on; WFM? on OpenJDK-6u09, Java 6u10-b24
+-REGRESSION: inability to undo when first apply syntax highlighting during save; FIXED: adds the undo manager to the new document
+-REGRESSION: document listener not applied to document after first applying syntax highlighting during save; FIXED: reattaches document listener
 -check on occasional glyph font errors during pasting (seen on Java 6u10-b21); WFM? on OpenJDK-6u09, Java 6u10-b24
 -check on occasional tab memory and reopening loss or additions
--fix prefs panel general tab column widths; FIXED
--check on poor performance when editing highlighted page in virtual machine; WORKAROUND: use "--nohigh" switch to turn off syntax highlighting
+-fix prefs panel general tab column widths; FIXED: reduced required 3rd column size
 -option to turn on/off syntax highlighting in prefs panel
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -update to 0.9.0rc1
--add feedback from API and changelog during build operations; DONE
 -update documentation and code cleanup; INPROGRESS
 
 ----Ideas----

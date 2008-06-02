@@ -241,42 +241,52 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * according to the file's extension, if possible.
 	 * If the file has no extension, a ".txt" extension, or 
 	 * a content type other than plain text, no highlight
-	 * styling is applied.
+	 * styling is applied.  Assumes that {@link #applyDocumentSettings}
+	 * and any other document settings, such as TextPad
+	 * document listeners, will be re-applied to the new
+	 * styled document.
+	 * @return the styled, highlighted document
 	 */
-	public void setHighlightStyle() {
+	public HighlightedDocument setHighlightStyle() {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
 		String ext = getFileExtension();
 		ext = ext.toLowerCase();
-		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) return;
+		HighlightedDocument doc = getHighlightedDoc();
+		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) return doc;
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
 		String text = getAllText();
 //		System.out.println("contentType: " + getContentType());
-		setStyledDocument(highlightedDoc);
+		setStyledDocument(doc);
 		
 		// sets the appropriate style
 		if (ext.equals("java")) {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		} else if (ext.equals("c") || ext.equals("cpp")) {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.C_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.C_STYLE);
 		} else if (ext.equals("html") || ext.equals("htm")) {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
 		} else if (ext.equals("ltx")) {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.LATEX_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.LATEX_STYLE);
 		} else if (ext.equals("sql")) {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.SQL_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.SQL_STYLE);
 		} else if (ext.equals("properties") || ext.equals("sh")) {
-			highlightedDoc.setHighlightStyle(HighlightedDocument.PROPERTIES_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.PROPERTIES_STYLE);
 		} else {
 			// defaults to Java style
-			highlightedDoc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
+			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		}
 		
 		// transfers the text into the appropriately styled document
 		setText(text);
+		// need to add undo manager to the new document;
+		// note that all previous edits will be unavailable
+//		highlightedDoc.addUndoableEditListener(undoManager);
+//		applyDocumentSettings();
+		return doc;
 	}
 	
 	/** Gets the file extension of the current file.
@@ -1048,12 +1058,16 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param b <code>true</code> to auto-indent
 	 */
 	public void setAutoIndent(boolean b) {
+		autoIndent = b;
+		applyAutoIndent();
+/*		
 		if (autoIndent = b) {
 			setNoTabs();
 			setIndentTabs(getTabSize());
 		} else {
 			setDefaultTabs(getTabSize());
 		}
+*/		
 	}
 	
 	public void setIgnoreChanged(boolean aIgnoreChanged) {
@@ -1080,6 +1094,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void undo() {
 		if (undoManager.canUndo()) {
 			undoManager.undo();
+//			System.out.println("here");
 			if (autoIndent) {
 				indentCurrentParagraph();
 			}
@@ -1110,7 +1125,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		doc.removeUndoableEditListener(undoManager);	
 		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
+		applyAutoIndent();
 //		System.out.println("undoble added for " + getFile().getPath());
+/*
+		if (autoIndent) {
+			setIndentTabs(getTabSize());
+			setNoTabs();
+		} else {
+			setDefaultTabs(getTabSize());
+		}
+*/		
+	}
+	
+	public void applyAutoIndent() {
 		if (autoIndent) {
 			setIndentTabs(getTabSize());
 			setNoTabs();
@@ -1676,6 +1703,13 @@ public class TextPad extends JTextPane implements StateEditable {
 		scrollPane = aScrollPane;
 	}
 	
+	/** Sets the highlighted document used for syntax highlighting.
+	 * @param doc the highlighted document
+	 */
+	public void setHighlightedDoc(HighlightedDocument doc) {
+		highlightedDoc = doc;
+	}
+	
 	
 	
 	
@@ -1710,6 +1744,13 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public LineDancePanel getLineDancePanel() {
 		return lineDancePanel;
+	}
+	
+	/** Gets the highlighted document used for syntax highlighting.
+	 * @return the highlighted document
+	 */
+	public HighlightedDocument getHighlightedDoc() {
+		return highlightedDoc;
 	}
 	
 	

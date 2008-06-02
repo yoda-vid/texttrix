@@ -975,7 +975,7 @@ public class Prefs extends JDialog {//JFrame {
 					// default list of extension
 					String autoIndentExt =
 						".java, .c, .cpp, .html, .htm, .css, .shtml, .xhtml, .xml, .sh";
-					autoIndentExtFld = new JTextField(autoIndentExt, 30);
+					autoIndentExtFld = new JTextField(autoIndentExt, 100);
 					
 
 					/*
@@ -1027,7 +1027,7 @@ public class Prefs extends JDialog {//JFrame {
 					// the prompt for confirmation from the user before automatically
 					// saving a file
 					String autoSavePromptTxt =
-						"Prompt before auto-saving files";
+						"Prompt";
 					String autoSavePromptTipTxt =
 						"<html>Asks the user whether to save any changes before"
 						+ "<br>automatically saving them.  Otherwise, the"
@@ -1170,7 +1170,7 @@ public class Prefs extends JDialog {//JFrame {
 						0,
 						3,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
@@ -1190,7 +1190,7 @@ public class Prefs extends JDialog {//JFrame {
 						1,
 						1,
 						1,
-						100,
+						0,
 						0,
 						panel);
 					LibTTx.addGridBagComponent(

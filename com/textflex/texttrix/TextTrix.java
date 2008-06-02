@@ -2179,7 +2179,7 @@ public class TextTrix extends JFrame {
 				}
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
-				addExtraTextPadDocumentSettings(textPad);
+//				addExtraTextPadDocumentSettings(textPad);
 				// resets caret and modification flags, assuming that
 				// the read in text is the same as that from the
 				// original file
@@ -2298,7 +2298,11 @@ public class TextTrix extends JFrame {
 				}
 				// automatically starts indenting, if applicable, after
 				// applying the syntax highlighting
-				autoAutoIndent(t); // prevents undos from before the save
+				autoAutoIndent(t); 
+				// reattach undo manager and listeners;
+				// note that prevents undos from before the save
+				t.applyDocumentSettings();
+				t.getDocument().addDocumentListener(textPadDocListener);
 				return true;
 			}
 		} catch (IOException e) {
