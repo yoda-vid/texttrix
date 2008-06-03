@@ -16,6 +16,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -update to 0.9.0rc1
 -update documentation and code cleanup; INPROGRESS
+-give priority to finding absolute Java paths on Linux systems to aid identification of smaller Java utilities, such as javadoc and jar; DONE (in build.sh)
 
 ----Ideas----
 

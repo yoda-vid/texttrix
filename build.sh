@@ -117,13 +117,7 @@ then
 	LINUX="true"
 
 	# Java binary detection mechanism
-	if [ "`command -v javac`" != '' ]
-	then
-		JAVA=""
-	elif [ "`command -v /usr/bin/javac`" != "" ]
-	then
-		JAVA="/usr/bin"
-	elif [ "`command -v /usr/lib/jvm/java-1.6.0/bin/javac`" != "" ]
+	if [ "`command -v /usr/lib/jvm/java-1.6.0/bin/javac`" != "" ]
 	then
 		# OpenJDK directory on Fedora distributions
 		JAVA="/usr/lib/jvm/java-1.6.0/bin"
@@ -134,8 +128,20 @@ then
 	elif [ "`command -v /usr/java/default/bin/javac`" != "" ]
 	then
 		JAVA="/usr/java/default/bin"
+	elif [ "`command -v javac`" != '' ]
+	then
+		JAVA=""
+	elif [ "`command -v /usr/bin/javac`" != "" ]
+	then
+		JAVA="/usr/bin"
 	else
 		JAVA="false"
+		echo "Java software doesn't appear to be installed..."
+		echo "Please download it (for free!) from http://java.com."
+		echo "Or if it's already installed, please add it to your"
+		echo "PATH or to the JAVA variable in this script."
+		read -p "Press Enter to exit this script..."
+		exit 1
 	fi
 elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
 then
