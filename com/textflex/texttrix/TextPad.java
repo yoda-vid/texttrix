@@ -195,7 +195,7 @@ public class TextPad extends JTextPane implements StateEditable {
 					// still need to grab the keystroke so that it won't be passed on
 					// to the TAB action.
 					
-					System.out.println("shift tab");
+//					System.out.println("shift tab");
 /*					
 					evt.consume();
 					try {
