@@ -10,45 +10,71 @@ plans for future ones.)
 
 ----v.0.9.0 (in progress)----
 
+rc1: 2008-06-05
 beta3: 2008-04-28
 (previously known as 0.7.1beta)
 beta2: 2008-03-11
 beta1: 2007-10-07
 
-The Text Trix editor now features syntax highlighting, search navigation improvements, and many fixes for building and startup.  The text editor has incorporated the GPL-licensed Ostermiller syntax highlighter to automatically color and format text according to the given file type.  Search improvements include the ability to search backward in Word Find (Shift+F3), as well as contextual scrolling for viewing found text in its context.
+The Text Trix editor now features syntax highlighting, search navigation 
+improvements, and many fixes for building and startup.  The GPL-licensed 
+Ostermiller syntax highlighter has been incorporated to automatically color 
+and format text according to the given file type.  Search improvements 
+include the ability to search backward in Word Find (Shift+F3), as well as 
+contextual scrolling for viewing found text in its context.
 
-Build improvements include updated editor and plugin build scripts as simpler compilation mechanisms than the configure/Makefile compilation.  Startup errors on Vista platforms have been fixed.  Line Dance also includes several fixes and now automatically names lines based on selected text.  Text is now more mobile through drag-n-drop.
+Line Dance also includes several fixes and now automatically names lines 
+based on selected text.  Text is now more mobile through drag-n-drop.  
+Build improvements include updated editor and plugin build scripts as 
+simpler compilation mechanisms than the configure/Makefile compilation, 
+and startup errors on Vista platforms have been fixed.  Several new 
+command-line options have been added, including Fresh mode (to 
+temporarily launch without reopening tabs) and no highlighting (to improve 
+performance).
 
-This release has been tested on Java 5 and 6 (including 6uN-b21) and on Windows, Linux, and MacOS platforms.
+This release has been tested on Java 5 and 6 (including 6uN-b24 and 
+OpenJDK) and on Windows, Linux, and MacOS platforms.
 
 Enhancements:
--Syntax highlighting, using the GPL-licensed Ostermiller Syntax Highlighter package
--Reverse Word Find (Shift+F3), the Find Previous counterpart to Find Next (F3)
+-Syntax highlighting, using the Ostermiller Syntax Highlighter package
+-Reverse Word Find (Shift+F3), the counterpart to Find Next (F3)
 -Contextual Scrolling during searches
 -Line Dance automatically names line if text is highlighted
--Automatically highlights Word Find and Line Find text when place cursor inside
+-Automatically highlights Word Find and Line Find text for quicker searching
 -Drag-n-drop text
 -New open-file/close-tab icons
 -Code migrated from CVS to Subversion repository
 -Build improvements, including testing on MacOS X platform
+-New command-line options, including "--refresh" and "--nohigh" (see run.sh)
+-Better MacOS X Java and Linux OpenJDK compatibility
 
 Bugs fixed:
--Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default L&F 
-file chooser when Vista one fails
--Line Dance table doesn't update when shift between groups; FIXED (#1631008)
+-Crashes on startup in Vista; WORKAROUND (#1690369): reverts to default 
+L&F file chooser when Vista one fails
+-Line Dance table doesn't update when shift between groups; FIXED 
+(#1631008)
 -setCaretPositionTop should set to beginning of selected regions; FIXED
 -Fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Fix group unindent on Linux; FIXED (#1797197)
 -Build scripts should be set explicitly to /bin/bash; FIXED
 
-Since beta2:
+New for rc1:
+-Prepopulates Group Tab name change with current name
+-Java Web Start compatibility (no plugins)
+-run.sh launch script platform compatibility improvements
+-New command-line launch arguments: "--fresh", "--nohigh", "--verbose", 
+and "--files" (see run.sh)
+-Fixed undo and document listener regressions
+-OpenJDK compatibility improvements
+
+New for beta3:
 -Fixed split-screen during some instances of contextual scrolling
 -Fixed tab refresh regression
 -Fixed auto-detection of capitalized file extensions for syntax highlighting
 -Tested and fixed build and packaging process for MacOS X platform
 -Bumped version number to 0.9.0pre
 
-Since beta1:
+New for beta2:
 -Syntax highlighting
 -Reverse word find
 -Contextual scrolling

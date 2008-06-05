@@ -82,11 +82,11 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
-VER="0.9.0rc1-"$DATE
-#VER="0.9.0beta4"
+#VER="0.9.0rc1-"$DATE
+VER="0.9.0rc1"
 
 # the final destination of the resulting packages
-PREFIX="" # /home/share"
+PREFIX=""
 
 # the root directory of the source files
 BASE_DIR=""

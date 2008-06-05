@@ -11,14 +11,18 @@ Copyright (c) 2002-8, Text Flex
 All rights reserved.
 
 -----------------
-The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general text editing.
+The Text Trix editor is an open-source, cross-platform text editor whose 
+goal is to make file and text navigation easier for coding and general text 
+editing.
 
 System Req:
 -Java[tm] Development Kit (JDK), v.1.4+, freely available from Sun 
 Microsystems[tm] (http://java.sun.com/javase/downloads/index.jsp).  
 Java 6 is recommended.
--Bash scripts (.sh) are included for compiling and packaging on Linux(R), MacOS X(R), or Windows(R) (via Cygwin) platforms.
--PowerShell scripts (.ps1) are included for some tasks on Windows platforms.
+-Bash scripts (.sh) are included for compiling and packaging on Linux(R), 
+MacOS X(R), or Windows(R) (via Cygwin) platforms.
+-PowerShell scripts (.ps1) are included for some tasks on Windows 
+platforms.
 
 Instructions for compilation:
 -Unzip the Text Trix source package

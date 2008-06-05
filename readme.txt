@@ -11,7 +11,9 @@ Copyright (c) 2002-8, Text Flex
 All rights reserved.
 
 -----------------
-The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general text editing.
+The Text Trix editor is an open-source, cross-platform text editor whose 
+goal is to make file and text navigation easier for coding and general text 
+editing.
 
 System Reqs:
 -Java[tm] 1.4+ (http://java.com/en/download/index.jsp), freely available 
@@ -25,7 +27,9 @@ instructions to unpack the file.
 -Double-click on "TextTrix.jar" in the directory that you unpacked
 
 Options and preferences:
-Most options can be set in the Preferences window.  The following command-line options are also available, in addition to others specified in the "run.sh" script:
+Most options can be set in the Preferences window.  The following 
+command-line options are also available, in addition to others specified in 
+the "run.sh" script:
 --nohigh: turn off syntax highlighting to improve performance
 --fresh: temporarily turn off tab reopening
 --files [file1] [file2] ... : specify additional files to open at start-up
