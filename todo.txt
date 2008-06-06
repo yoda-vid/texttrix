@@ -10,11 +10,10 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 -check syntax highlight re-formatting after undo
 -check on Ostermiller no-such-element exceptions
--check on occasional glyph font errors during pasting (seen on Java 6u10-b21); WFM? on OpenJDK-6u09, Java 6u10-b24
 -check on occasional tab memory and reopening loss or additions
 -option to turn on/off syntax highlighting in prefs panel
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
--update to 0.9.0rc1; DONE
+-update to 0.9.0rc2
 -update documentation and code cleanup; INPROGRESS
 
 ----Ideas----

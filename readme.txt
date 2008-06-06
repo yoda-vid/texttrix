@@ -23,8 +23,8 @@ Java 5 Update 10+ or Java 6 recommended.
 Instructions for use:
 -Double-click on the Jar Ajar[tm] self-extracting file, 
 "TextTrix-x.y.z-installer.jar".  Follow the 
-instructions to unpack the file.
--Double-click on "TextTrix.jar" in the directory that you unpacked
+instructions to unpack and launch the program.
+-The installed program can be re-launched by running the JAR file again.  The JAR file will detect the previous installation and launch the program.
 
 Options and preferences:
 Most options can be set in the Preferences window.  The following 

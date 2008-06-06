@@ -44,9 +44,7 @@ Write Your Own Plug-In:
 for details on how to write your own plug-in for Text Trix!
 
 Troubleshooting:
--Text Trix has been tested on Windows XP/Visat, Fedora 8, and
-MacOS X 10.5.  If you've tested it on another platform, please let us 
-know about your experience.
+-Text Trix has been tested on Windows XP/Vista (Sun Java 6u10-b24), Fedora 9 and Ubuntu 8.04 (OpenJDK 6), and MacOS X 10.5 (Java 5).  If you've tested it on another platform, please let us know about your experience.
 -See "readme.txt" for information on running Text Trix
 -See http://textflex.com/texttrix for more details
 

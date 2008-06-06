@@ -82,8 +82,8 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
-#VER="0.9.0rc1-"$DATE
-VER="0.9.0rc1"
+VER="0.9.0rc2-"$DATE
+#VER="0.9.0rc1"
 
 # the final destination of the resulting packages
 PREFIX=""
