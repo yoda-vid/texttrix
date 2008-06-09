@@ -10,6 +10,7 @@ plans for future ones.)
 
 ----v.0.9.0 (in progress)----
 
+final: 2008-06-??
 rc1: 2008-06-05
 beta3: 2008-04-28
 (previously known as 0.7.1beta)
@@ -57,6 +58,10 @@ L&F file chooser when Vista one fails
 -Fix compiler errors when building in Cygwin platforms; FIXED (#1636301)
 -Fix group unindent on Linux; FIXED (#1797197)
 -Build scripts should be set explicitly to /bin/bash; FIXED
+
+New for rc2:
+-Newer Jar Ajar 0.5.0pre build
+-Documentation updates
 
 New for rc1:
 -Prepopulates Group Tab name change with current name
