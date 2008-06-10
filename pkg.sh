@@ -83,6 +83,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 #VER="0.9.0rc2-"$DATE
+TIMESTAMP=0
 VER="0.9.0rc2"
 
 # the final destination of the resulting packages
@@ -155,6 +156,16 @@ echo "found $SYSTEM"
 # Respond to user arguments
 ##############
 
+PAR_JAVA="--java"
+PAR_PLUGINS="--plugins"
+PAR_BRANCH_DIR="--branch"
+PAR_PLUGINS_BRANCH_DIR="--plgbranch"
+PAR_PLUG="--plug"
+PAR_API="--api"
+PAR_CHANGELOG="--log"
+PAR_PREFIX="--prefix"
+PAR_TIMESTAMP="--timestamp"
+
 echo "Parsing user arguments..."
 READ_PARAMETER=0
 for arg in "$@"
@@ -196,6 +207,13 @@ do
 	then
 		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
 		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
+		
+	# timestamp labeling
+	elif [ ${arg:0:${#PAR_TIMESTAMP}} = "$PAR_TIMESTAMP" ]
+	then
+		TIMESTAMP=1
+		VER="$VER-$DATE"
+		echo "...set to label packages with \"$VER\""
 	fi
 done
 echo "...done"

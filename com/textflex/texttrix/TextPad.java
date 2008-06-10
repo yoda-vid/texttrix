@@ -282,10 +282,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// transfers the text into the appropriately styled document
 		setText(text);
-		// need to add undo manager to the new document;
-		// note that all previous edits will be unavailable
-//		highlightedDoc.addUndoableEditListener(undoManager);
-//		applyDocumentSettings();
+		
+		// still need to add undo manager to the new document
+		// via applyDocumentSettings;
+		// note that it will cause all previous edits to be unavailable
 		return doc;
 	}
 	

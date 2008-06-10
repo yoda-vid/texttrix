@@ -2276,33 +2276,35 @@ public class TextTrix extends JFrame {
 				out = new PrintWriter(new FileWriter(path), true);
 				// write to it
 				out.print(t.getText());
-				t.setChanged(false);
 				// keeps track of orig file path to compare file extensions
 				// for syntax highlighting
 				String origPath = t.getFile().getPath();
-				t.setFile(path);
 
 				// stops any auto-save timer attached to the pad
 				// since the file has just been saved;
 				// relies on TextPadDocListener to restart the timer
 				stopTextPadAutoSaveTimer(t);
 				
-				updateTabTitle(t);//textAreas.indexOf(t));
 				getPrefs().storeFileHist(path);
-				// sets the style according to extension, but only if the next extension is different
-				// from the previous one
-				if (getHighlighting()
-							&&!LibTTx.getFileExtension(origPath)
-									.equalsIgnoreCase(t.getFileExtension())) {
-					t.setHighlightStyle();
+				// sets the style according to extension, but only if 
+				// the next extension is different from the previous one
+				if (!origPath.equals(path)) {
+					t.setFile(path);
+					if (getHighlighting()
+								&&!LibTTx.getFileExtension(origPath)
+										.equalsIgnoreCase(t.getFileExtension())) {
+						t.setHighlightStyle();
+					}
+					// automatically starts indenting, if applicable, after
+					// applying the syntax highlighting
+					autoAutoIndent(t); 
+					// reattach undo manager and listeners;
+					// note that prevents undos from before the save
+					t.applyDocumentSettings();
+					t.getDocument().addDocumentListener(textPadDocListener);
 				}
-				// automatically starts indenting, if applicable, after
-				// applying the syntax highlighting
-				autoAutoIndent(t); 
-				// reattach undo manager and listeners;
-				// note that prevents undos from before the save
-				t.applyDocumentSettings();
-				t.getDocument().addDocumentListener(textPadDocListener);
+				t.setChanged(false);
+				updateTabTitle(t);//textAreas.indexOf(t));
 				return true;
 			}
 		} catch (IOException e) {
