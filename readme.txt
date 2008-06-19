@@ -24,7 +24,8 @@ Instructions for use:
 -Double-click on the Jar Ajar[tm] self-extracting file, 
 "TextTrix-x.y.z-installer.jar".  Follow the 
 instructions to unpack and launch the program.
--The installed program can be re-launched by running the JAR file again.  The JAR file will detect the previous installation and launch the program.
+-The installed program can be re-launched by running the JAR file again.  
+The JAR file will detect the previous installation and launch the program.
 
 Options and preferences:
 Most options can be set in the Preferences window.  The following 

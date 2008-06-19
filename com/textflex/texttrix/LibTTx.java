@@ -550,7 +550,13 @@ public class LibTTx {
 		return i;
 	}
 	
-	
+	/** Gets the file extension from a given path.
+	 * Assumes that the file extension is the substring
+	 * after the final period in the filename.
+	 * @param path path to file, or even just a filename
+	 * @return the substring following the final period, or
+	 * an empty string if no period is found
+	 */
 	public static String getFileExtension(String path) {
 		int exti = path.lastIndexOf(".") + 1;
 		String ext = "";

@@ -1029,10 +1029,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		return autoIndent;
 	}
 	
+	/** Gets the ignore change flag.
+	 * @return true if changes to the file should be ignored
+	 * by the undo manager.
+	 *
 	public boolean getIgnoreChanged() {
 		return ignoreChanged;
 	}
-	
+	*/
 	
 	
 	
@@ -1070,10 +1074,14 @@ public class TextPad extends JTextPane implements StateEditable {
 */		
 	}
 	
+	/** Sets the ignore change flag.
+	 * @param aIgnoreChanged true if changes to the file 
+	 * should be ignored by the undo manager.
+	 *
 	public void setIgnoreChanged(boolean aIgnoreChanged) {
 		ignoreChanged = aIgnoreChanged;
 	}
-	
+	*/
 	
 	
 	
@@ -1137,6 +1145,14 @@ public class TextPad extends JTextPane implements StateEditable {
 */		
 	}
 	
+	/** Visually indents the tabs and word-wrapped lines
+	 * according to the auto-indent flag.
+	 * If the auto-indent flag is set to true, each word-wrapped 
+	 * line will be visually indented to match the indentation
+	 * of the entire line paragraph.  If the flag is set to false,
+	 * all tabs will be reset to their default size, and visual
+	 * indentation of word-wrapped lines will be turned off.
+	 */
 	public void applyAutoIndent() {
 		if (autoIndent) {
 			setIndentTabs(getTabSize());

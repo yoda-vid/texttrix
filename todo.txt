@@ -15,8 +15,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -fix regression: unable to undo after each save operation; FIXED: now applies new syntax and doc settings only if different filename extension rather than anytime diff path
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -option to turn on/off syntax highlighting in prefs panel
--update to 0.9.0pre (final)
--update documentation and code cleanup; INPROGRESS
+-update to 0.9.0-final; DONE
+-update documentation and code cleanup; DONE
 
 ----Ideas----
 

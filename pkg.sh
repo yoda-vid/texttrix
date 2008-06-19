@@ -67,6 +67,8 @@ Parameters:
 	
 	--prefix=install-location: the directory in which to install Text Trix.
 	Defaults to "/usr/share".
+	
+	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
 		
 Copyright:
 	Copyright (c) 2003-8 Text Flex
@@ -84,7 +86,7 @@ Last updated:
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 #VER="0.9.0rc2-"$DATE
 TIMESTAMP=0
-VER="0.9.0rc2"
+VER="0.9.0"
 
 # the final destination of the resulting packages
 PREFIX=""
