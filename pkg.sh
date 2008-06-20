@@ -86,7 +86,7 @@ Last updated:
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 #VER="0.9.0rc2-"$DATE
 TIMESTAMP=0
-VER="0.9.0"
+VER="0.9.1alpha1"
 
 # the final destination of the resulting packages
 PREFIX=""

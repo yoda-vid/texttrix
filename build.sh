@@ -89,7 +89,7 @@ API_DIR="docs/api"
 API=0
 
 # build changelog; 1 = build
-CHANGELOG_END="2007-01-02"
+CHANGELOG_END="2008-06-16"
 CHANGELOG=0
 
 ####################
