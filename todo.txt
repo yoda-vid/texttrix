@@ -8,15 +8,15 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
+-add revision number to ChangeLog output; DONE
+-show parsing arguments echo only when user passes in args; INPROGRESS: applied to build.sh
 -check syntax highlight re-formatting after undo
 -check on Ostermiller no-such-element exceptions
 -check on occasional tab memory and reopening loss or additions
 -check on RepaintManager exceptions during various copy/paste/undo combinations (seen on Fedora 9 java-1.6.0-openjdk-1.6.0.0-0.13.b09.fc9.i386)
--fix regression: unable to undo after each save operation; FIXED: now applies new syntax and doc settings only if different filename extension rather than anytime diff path
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -option to turn on/off syntax highlighting in prefs panel
--update to 0.9.0-final; DONE
--update documentation and code cleanup; DONE
+-update to 0.9.1pre; DONE
 
 ----Ideas----
 

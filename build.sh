@@ -152,57 +152,64 @@ echo "found $SYSTEM"
 ##############
 # Respond to user arguments
 
-echo "Parsing user arguments..."
-READ_PARAMETER=0
-for arg in "$@"
-do
-	# reads arguments
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
-	then
-		if [ "`command -v more`" != '' ]
+if [ $# -gt 0 ]
+then
+	echo "Parsing user arguments..."
+	for arg in "$@"
+	do
+		if [ x"$ARGS_ECHO" = "x" ]
 		then
-			echo "$HELP" | more
-		elif [ "`command -v less`" != "" ]
-		then
-			echo "$HELP" | less
-		else
-			echo "$HELP"
+			ARGS_ECHO="Parsing user arguments..."
 		fi
-		exit 0
 		
-	# Java path
-	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
-	then
-		JAVA="${arg#${PAR_JAVA}=}"
-		echo "...set to use \"$JAVA\" as the Java compiler path"
+		# reads arguments
+		if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
+		then
+			if [ "`command -v more`" != '' ]
+			then
+				echo "$HELP" | more
+			elif [ "`command -v less`" != "" ]
+			then
+				echo "$HELP" | less
+			else
+				echo "$HELP"
+			fi
+			exit 0
+			
+		# Java path
+		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
+		then
+			JAVA="${arg#${PAR_JAVA}=}"
+			echo "...set to use \"$JAVA\" as the Java compiler path"
+			
+		# texttrix branch dir
+		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
+		then
+			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
+			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 		
-	# texttrix branch dir
-	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
-	then
-		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
-	
-	# build plugins
-	elif [ ${arg:0:${#PAR_PLUG}} = "$PAR_PLUG" ]
-	then
-		PLUG=1
-		echo "...set to build plugins"
-		
-	# build API
-	elif [ ${arg:0:${#PAR_API}} = "$PAR_API" ]
-	then
-		API=1
-		echo "...set to build API documentation"
-		
-	# build SVN changelog
-	elif [ ${arg:0:${#PAR_CHANGELOG}} = "$PAR_CHANGELOG" ]
-	then
-		CHANGELOG=1
-		echo "...set to build changelog"
-		
-	fi
-done
-echo "...done"
+		# build plugins
+		elif [ ${arg:0:${#PAR_PLUG}} = "$PAR_PLUG" ]
+		then
+			PLUG=1
+			echo "...set to build plugins"
+			
+		# build API
+		elif [ ${arg:0:${#PAR_API}} = "$PAR_API" ]
+		then
+			API=1
+			echo "...set to build API documentation"
+			
+		# build SVN changelog
+		elif [ ${arg:0:${#PAR_CHANGELOG}} = "$PAR_CHANGELOG" ]
+		then
+			CHANGELOG=1
+			echo "...set to build changelog"
+			
+		fi
+	done
+	echo "...done"
+fi
 
 if [ x$JAVA = x"false" ]
 then
@@ -239,6 +246,7 @@ DIR="com/textflex/texttrix" # src package structure
 #############
 # Compile Text Trix classes
 cd "$BASE_DIR" # change to work directory
+echo ""
 echo "Compiling the Text Trix program..."
 echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
@@ -296,7 +304,7 @@ then
 	NOW=`date +'%Y-%m-%d'`
 	echo ""
 	echo "Building changelog from $NOW until $CHANGELOG_END..."
-	svn2cl -r {$NOW}:{$CHANGELOG_END}
+	svn2cl -i -r {$NOW}:{$CHANGELOG_END}
 	echo "...written to ChangeLog"
 fi
 

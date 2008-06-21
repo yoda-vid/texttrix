@@ -59,7 +59,7 @@ L&F file chooser when Vista one fails
 -Fix group unindent on Linux; FIXED (#1797197)
 -Build scripts should be set explicitly to /bin/bash; FIXED
 
-New for final (since rc2):
+New for final (since rc1):
 -Packaged in Jar Ajar 0.5.0 for single-file, double-click launch capability
 -Fixed undo and document listeners
 -File saving performance improvement
