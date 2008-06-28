@@ -8,7 +8,9 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
--merge text formatting by Gainnis Kozi
+-merge text formatting by Gainnis Kozi; DONE
+-fixed shortcuts for formmated text; FIXED
+-save formmatted changes automatically, without having to switch views
 -show parsing arguments echo only when user passes in args; INPROGRESS: applied to build.sh
 -check syntax highlight re-formatting after undo
 -check on Ostermiller no-such-element exceptions

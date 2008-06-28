@@ -3978,6 +3978,18 @@ public class TextTrix extends JFrame {
 					char printPreviewActionMnemonic = 'R'; // print preview
 					char printSettingsActionMnemonic = 'I'; // print settings
 
+					char boldActionMnemonic = 'B'; // print
+					KeyStroke boldActionShortcut = KeyStroke
+							.getKeyStroke("ctrl B");
+							
+					char italicActionMnemonic = 'I'; // italic
+					KeyStroke italicActionShortcut = KeyStroke
+							.getKeyStroke("ctrl I");
+							
+					char underlineActionMnemonic = 'U'; // underline
+					KeyStroke underlineActionShortcut = KeyStroke
+							.getKeyStroke("ctrl I");
+							
 
 
 
@@ -4000,6 +4012,13 @@ public class TextTrix extends JFrame {
 								.getKeyStroke("ctrl L");
 						printActionShortcut = KeyStroke
 								.getKeyStroke("ctrl shift P");
+						boldActionShortcut = KeyStroke
+							.getKeyStroke("ctrl shift B");
+						italicActionShortcut = KeyStroke
+							.getKeyStroke("ctrl shift I");
+						underlineActionShortcut = KeyStroke
+							.getKeyStroke("ctrl shift U");
+							
 					} else if (prefs.isEmacsKeybindings()) {
 					
 					
@@ -4389,9 +4408,9 @@ public class TextTrix extends JFrame {
 					insertItem.setAccelerator(KeyStroke.getKeyStroke(
 							KeyEvent.VK_P, InputEvent.CTRL_MASK));
 					editMenu.add(insertItem);
-*/
 					// edit menu separator
 					editMenu.addSeparator();
+*/
 									
 					// group tab title
 					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title...") {
@@ -4448,58 +4467,63 @@ public class TextTrix extends JFrame {
 					// Bold operation
 					// (ctrl-B) Abreviation of keyboard
 					// Create a toolbar button for the bold action
-					boldItem = new JMenuItem("Bold", LibTTx
-							.makeIcon("images/bold.png"));
-					boldItem
-							.addActionListener(new StyledEditorKit.BoldAction());
-					boldItem.setAccelerator(KeyStroke.getKeyStroke(
-							KeyEvent.VK_B, InputEvent.CTRL_MASK));
-					formatMenu.add(boldItem);
-					JButton boldButton = toolBar
-							.add(new StyledEditorKit.BoldAction());
-					boldButton
-							.setIcon(LibTTx.makeIcon("images/boldbutton.png"));
+//					boldItem = new JMenuItem("Bold", 
+//							LibTTx.makeIcon("images/bold.png"));
+					Action boldAction = new StyledEditorKit.BoldAction();
+					LibTTx.setAcceleratedAction(boldAction, "Bold",
+							boldActionMnemonic, boldActionShortcut);
+					LibTTx.setActionIcon(boldAction, "images/bold.png");
+//					boldItem.addActionListener(boldAction);
+					formatMenu.add(boldAction);
+					JButton boldButton = toolBar.add(boldAction);
+					boldButton.setIcon(LibTTx.makeIcon("images/boldicon-16x16.png"));
 					boldButton.setBorderPainted(false);
-					boldButton.setText(null);
-					LibTTx.setRollover(boldButton, LibTTx
-							.makeIcon("images/boldrollover.png"));
+//					boldButton.setText(null);
+//					boldButton.setToolTipText("Bold");
+					LibTTx.setRollover(boldButton, "images/boldicon-roll-16x16.png");
 
 					// Italic operation
 					// (ctrl-I) Abreviation of keyboard
 					// Create a toolbar button for the italic action
-					italicItem = new JMenuItem("Italic", LibTTx
-							.makeIcon("images/italic.png"));
-					italicItem
-							.addActionListener(new StyledEditorKit.ItalicAction());
-					italicItem.setAccelerator(KeyStroke.getKeyStroke(
-							KeyEvent.VK_I, InputEvent.CTRL_MASK));
-					formatMenu.add(italicItem);
-					JButton italicButton = toolBar
-							.add(new StyledEditorKit.ItalicAction());
+//					italicItem = new JMenuItem("Italic", 
+//							LibTTx.makeIcon("images/italic.png"));
+					Action italicAction = new StyledEditorKit.ItalicAction();
+					LibTTx.setAcceleratedAction(italicAction, "Italic",
+							italicActionMnemonic, italicActionShortcut);
+//					italicItem.addActionListener(italicAction);
+//					italicItem.setAccelerator(KeyStroke.getKeyStroke(
+//							KeyEvent.VK_I, InputEvent.CTRL_MASK));
+					LibTTx.setActionIcon(italicAction, "images/italic.png");
+					formatMenu.add(italicAction);
+					JButton italicButton = toolBar.add(italicAction);
 					italicButton.setIcon(LibTTx
-							.makeIcon("images/italicbutton.png"));
+							.makeIcon("images/italicicon-16x16.png"));
 					italicButton.setBorderPainted(false);
-					italicButton.setText(null);
-					LibTTx.setRollover(italicButton, "images/italicrollover.png");
+//					italicButton.setText(null);
+					italicButton.setToolTipText("Italic");
+					LibTTx.setRollover(italicButton, "images/italicicon-roll-16x16.png");
 
 					// Underline operation
 					// (ctrl-U) Abreviation of keyboard
 					// Create a toolbar button for the underline action
-					underlineItem = new JMenuItem("Underline", LibTTx
-							.makeIcon("images/underline.png"));
-					underlineItem
-							.addActionListener(new StyledEditorKit.UnderlineAction());
-					underlineItem.setAccelerator(KeyStroke.getKeyStroke(
-							KeyEvent.VK_U, InputEvent.CTRL_MASK));
-					formatMenu.add(underlineItem);
-					JButton underlineButton = toolBar
-							.add(new StyledEditorKit.UnderlineAction());
+//					underlineItem = new JMenuItem("Underline", 
+//							LibTTx.makeIcon("images/underline.png"));
+					Action underlineAction = new StyledEditorKit.UnderlineAction();
+					LibTTx.setAcceleratedAction(underlineAction, "Underline",
+							underlineActionMnemonic, underlineActionShortcut);
+//					underlineItem.addActionListener(underlineAction);
+//					underlineItem.setAccelerator(KeyStroke.getKeyStroke(
+//							KeyEvent.VK_U, InputEvent.CTRL_MASK));
+					LibTTx.setActionIcon(underlineAction, "images/underline.png");
+					formatMenu.add(underlineAction);
+					JButton underlineButton = toolBar.add(underlineAction);
 					underlineButton.setIcon(LibTTx
-							.makeIcon("images/underlinebutton.png"));
+							.makeIcon("images/underlineicon-16x16.png"));
 					underlineButton.setBorderPainted(false);
 					underlineButton.setText(null);
+					underlineButton.setToolTipText("Underline");
 					LibTTx.setRollover(underlineButton,
-							"images/underlinerollover.png");
+							"images/underlineicon-roll-16x16.png");
 
 					// toolbar separator
 					toolBar.addSeparator();
@@ -4860,7 +4884,9 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(aboutAction, "About", 'A');
 					helpMenu.add(aboutAction);	
-										
+
+/*	TODO: create automatic mechanism for saving formatted changes
+
 					// about saving format options with Text Trix
 					Action formatOptionsAction = new AbstractAction(
 							"Format Options", LibTTx
@@ -4889,6 +4915,7 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(formatOptionsAction,
 							"SavingFormatOptions", 'F');
 					helpMenu.add(formatOptionsAction);	
+*/
 									
 					// shortcuts description; opens new tab;
 					// reads from "shortcuts.txt" in same dir as this class

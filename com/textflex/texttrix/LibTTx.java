@@ -720,6 +720,15 @@ public class LibTTx {
 		return charsUnavailable;
 	}
 
+	/**Sets an action's properties.
+	 * @param action action to set
+	 * @param path path to icon file
+	 * @see #makeIcon
+	 */
+	public static void setActionIcon(Action action, String path) {
+		action.putValue(Action.SMALL_ICON, makeIcon(path));
+	}
+
 	/** Creates an image icon.
 	@param path image file location relative to TextTrix.class
 	@return icon from archive; null if the file cannot be retrieved

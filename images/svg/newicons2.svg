@@ -2,7 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -13,7 +13,7 @@
    sodipodi:docname="newicons2.svg"
    height="297mm"
    width="210mm"
-   inkscape:version="0.45.1"
+   inkscape:version="0.46"
    sodipodi:version="0.32"
    id="svg1364"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -30,6 +30,13 @@
   </metadata>
   <defs
      id="defs1366">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective544" />
     <linearGradient
        inkscape:collect="always"
        id="linearGradient3224">
@@ -423,15 +430,36 @@
        y1="153.90741"
        x2="355.72561"
        y2="272.67832" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1376"
+       id="radialGradient2943"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.9758173,0,0,0.9338631,420.02346,147.45763)"
+       cx="141.17883"
+       cy="69.07737"
+       fx="140.23252"
+       fy="69.07737"
+       r="89.519684" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1368"
+       id="linearGradient2945"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.03875,0,1.2803898e-7,0.582631,236.98145,134.53111)"
+       x1="353.45669"
+       y1="153.90741"
+       x2="355.72561"
+       y2="272.67832" />
   </defs>
   <sodipodi:namedview
      inkscape:current-layer="svg1364"
-     inkscape:window-y="22"
-     inkscape:window-x="77"
+     inkscape:window-y="37"
+     inkscape:window-x="57"
      inkscape:window-height="906"
      inkscape:window-width="1202"
-     inkscape:cy="895.68078"
-     inkscape:cx="581.73285"
+     inkscape:cy="607.7022"
+     inkscape:cx="726.83599"
      inkscape:zoom="1.2279852"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -440,7 +468,8 @@
      pagecolor="#ffffff"
      id="base"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     showgrid="false">
     <sodipodi:guide
        orientation="horizontal"
        position="-12.668189"
@@ -3366,14 +3395,14 @@ P</tspan>
      inkscape:export-ydpi="18.370001" />
   <g
      id="g3639"
-     transform="matrix(0.9777598,0,0,0.9996364,-115.78357,-459.78765)"
+     transform="matrix(0.9777598,0,0,0.7600044,-115.78357,-327.86295)"
      inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
      inkscape:export-xdpi="18.370001"
      inkscape:export-ydpi="18.370001">
     <path
        sodipodi:nodetypes="ccccc"
        id="path3641"
-       d="M 665.85793,512.57841 C 665.85793,512.57841 698.50679,506.6057 718.69013,513.27442 C 720.13331,527.89042 717.14958,537.27391 713.978,549.46644 C 699.67422,547.79635 681.58352,546.00475 660.3221,550.16245 C 663.87862,534.15443 666.10066,525.10642 665.85793,512.57841 z "
+       d="M 665.85793,512.57841 C 665.85793,512.57841 698.50679,506.6057 718.69013,513.27442 C 720.13331,527.89042 717.14958,537.27391 713.978,549.46644 C 699.67422,547.79635 681.58352,546.00475 660.3221,550.16245 C 663.87862,534.15443 666.10066,525.10642 665.85793,512.57841 z"
        style="fill:#e1e8ff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.74404097px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        id="path3643"
@@ -3535,4 +3564,307 @@ P</tspan>
        d="M 703.44587,543.01873 C 703.44587,543.01873 707.1876,529.92267 707.1876,517.76203"
        style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
+  <rect
+     style="opacity:1;fill:#c9d4ca;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.9000001;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+     id="rect2917"
+     width="61.479366"
+     height="61.479366"
+     x="531.15637"
+     y="182.03583"
+     rx="1.9000717"
+     ry="1.900071"
+     inkscape:export-filename="C:\myweb\textflex\trunk\texttrix\images\svg\openicon-16x16.png"
+     inkscape:export-xdpi="23.42"
+     inkscape:export-ydpi="23.42" />
+  <rect
+     ry="1.1434617"
+     y="191.10538"
+     x="534.31641"
+     height="10.202692"
+     width="18.658222"
+     id="rect2919"
+     style="fill:#b8390b;fill-rule:evenodd;stroke:#000000;stroke-width:1.09579678pt"
+     rx="1.1434617"
+     inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
+     inkscape:export-xdpi="18.370001"
+     inkscape:export-ydpi="18.370001" />
+  <rect
+     ry="2.7586577"
+     y="190.72926"
+     x="534.00128"
+     height="48.734222"
+     width="51.267429"
+     id="rect2921"
+     style="fill:url(#radialGradient2943);fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.95461006pt"
+     rx="2.1765401"
+     inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
+     inkscape:export-xdpi="18.370001"
+     inkscape:export-ydpi="18.370001" />
+  <rect
+     y="188.56743"
+     x="534.79523"
+     height="11.486782"
+     width="17.400431"
+     id="rect2923"
+     style="fill:#b83a0b;fill-rule:evenodd;stroke:#000000;stroke-width:0"
+     inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
+     inkscape:export-xdpi="18.370001"
+     inkscape:export-ydpi="18.370001" />
+  <path
+     id="path2925"
+     d="M 537.19848,239.43648 L 538.71225,238.175"
+     style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:0.99140387pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
+     inkscape:export-xdpi="18.370001"
+     inkscape:export-ydpi="18.370001" />
+  <g
+     id="g2927"
+     transform="matrix(0.9777598,0,0,1.0994831,-112.05265,-370.20319)"
+     inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
+     inkscape:export-xdpi="18.370001"
+     inkscape:export-ydpi="18.370001">
+    <path
+       sodipodi:nodetypes="ccccc"
+       id="path2929"
+       d="M 665.85793,512.57841 C 665.85793,512.57841 698.50679,506.6057 718.69013,513.27442 C 720.13331,527.89042 717.14958,537.27391 713.978,549.46644 C 699.67422,547.79635 681.58352,546.00475 660.3221,550.16245 C 663.87862,534.15443 666.10066,525.10642 665.85793,512.57841 z"
+       style="fill:#e1e8ff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.74404097px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       id="path2931"
+       d="M 670.70571,543.48644 C 670.70571,543.48644 674.44744,530.39038 674.44744,518.22974"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       id="path2933"
+       d="M 678.18918,543.01873 C 678.18918,543.01873 681.93091,529.92267 681.93091,517.76203"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       id="path2935"
+       d="M 685.67265,542.08329 C 685.67265,542.08329 689.41438,528.98723 689.41438,516.82659"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       id="path2937"
+       d="M 694.09154,543.01873 C 694.09154,543.01873 697.83327,529.92267 697.83327,517.76203"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <path
+       id="path2939"
+       d="M 703.44587,543.01873 C 703.44587,543.01873 707.1876,529.92267 707.1876,517.76203"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+  </g>
+  <rect
+     ry="1.4915514"
+     transform="matrix(1,0,-0.2048827,0.9787865,0,0)"
+     y="217.52301"
+     x="585.7204"
+     height="27.463228"
+     width="49.034882"
+     id="rect2941"
+     style="fill:url(#linearGradient2945);fill-rule:evenodd;stroke:#000000;stroke-width:0.70083613pt"
+     rx="2.4776645"
+     inkscape:export-filename="C:\src\texttrix\images\closeicon02-16x16.png"
+     inkscape:export-xdpi="18.370001"
+     inkscape:export-ydpi="18.370001" />
+  <text
+     sodipodi:linespacing="100%"
+     id="text2947"
+     y="381.74625"
+     x="659.21991"
+     style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+     xml:space="preserve"><tspan
+       id="tspan2949"
+       sodipodi:role="line"
+       y="381.74625"
+       x="659.21991">Bold</tspan></text>
+  <rect
+     style="opacity:1;fill:#c4c5b2;fill-opacity:1;fill-rule:nonzero;stroke:#000900;stroke-width:2.50167346000000010;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+     id="rect2951"
+     width="87.498329"
+     height="87.498329"
+     x="652.51331"
+     y="394.59912"
+     rx="0.62182188"
+     ry="0.62182188"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\boldicon-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16" />
+  <text
+     xml:space="preserve"
+     style="font-size:100.072052px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba;-inkscape-font-specification:Alba"
+     x="671.47064"
+     y="473.44003"
+     id="text3723"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\boldicon-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3725"
+       x="671.47064"
+       y="473.44003">B</tspan></text>
+  <rect
+     style="opacity:1;fill:#d4bd04;fill-opacity:1;fill-rule:nonzero;stroke:#000900;stroke-width:2.50167346000000010;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible"
+     id="rect3727"
+     width="87.498329"
+     height="87.498329"
+     x="654.14197"
+     y="490.69147"
+     rx="0.62182188"
+     ry="0.62182188"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\boldicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16" />
+  <text
+     xml:space="preserve"
+     style="font-size:100.07205200000000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba Matter;-inkscape-font-specification:Alba Matter"
+     x="673.0993"
+     y="569.53235"
+     id="text3729"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\boldicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3731"
+       x="673.0993"
+       y="569.53235">B</tspan></text>
+  <text
+     sodipodi:linespacing="100%"
+     id="text3733"
+     y="381.74625"
+     x="772.54224"
+     style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+     xml:space="preserve"><tspan
+       id="tspan3735"
+       sodipodi:role="line"
+       y="381.74625"
+       x="772.54224">Italic</tspan></text>
+  <rect
+     style="opacity:1;fill:#c4c5b2;fill-opacity:1;fill-rule:nonzero;stroke:#000900;stroke-width:2.50167346000000010;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;-inkscape-font-specification:Alba;font-family:Alba;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-size:100.07205200000000000px;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
+     id="rect3737"
+     width="87.498329"
+     height="87.498329"
+     x="756.74908"
+     y="395.41345"
+     rx="0.62182188"
+     ry="0.62182188"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\italicicon-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16" />
+  <text
+     xml:space="preserve"
+     style="font-size:100.072052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba;-inkscape-font-specification:Alba"
+     x="787.92157"
+     y="473.44003"
+     id="text3739"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\italicicon-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3741"
+       x="787.92157"
+       y="473.44003">I</tspan></text>
+  <rect
+     style="font-size:100.07205200000000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#d4bd04;fill-opacity:1;fill-rule:nonzero;stroke:#000900;stroke-width:2.50167346000000010;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Alba;-inkscape-font-specification:Alba"
+     id="rect3759"
+     width="87.498329"
+     height="87.498329"
+     x="758.37775"
+     y="491.5058"
+     rx="0.62182188"
+     ry="0.62182188"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\italicicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16" />
+  <text
+     xml:space="preserve"
+     style="font-size:100.072052px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba;-inkscape-font-specification:Alba Italic"
+     x="789.55023"
+     y="569.53241"
+     id="text3761"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\italicicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3763"
+       x="789.55023"
+       y="569.53241">I</tspan></text>
+  <rect
+     style="font-size:100.07205200000000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#c4c5b2;fill-opacity:1;fill-rule:nonzero;stroke:#000900;stroke-width:2.50167346000000010;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Alba;-inkscape-font-specification:Alba"
+     id="rect3765"
+     width="87.498329"
+     height="87.498329"
+     x="876.45734"
+     y="398.67081"
+     rx="0.62182188"
+     ry="0.62182188"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\underlineicon-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16" />
+  <text
+     xml:space="preserve"
+     style="font-size:100.072052px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba;-inkscape-font-specification:Alba"
+     x="894.60034"
+     y="477.51172"
+     id="text3767"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\underlineicon-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3769"
+       x="894.60034"
+       y="477.51172">U</tspan></text>
+  <text
+     sodipodi:linespacing="100%"
+     id="text3771"
+     y="380.93188"
+     x="892.52863"
+     style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1pt;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+     xml:space="preserve"><tspan
+       id="tspan3773"
+       sodipodi:role="line"
+       y="380.93188"
+       x="892.52863">Underline</tspan></text>
+  <rect
+     style="font-size:100.07205200000000000px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#d4bd04;fill-opacity:1;fill-rule:nonzero;stroke:#000900;stroke-width:2.50167346000000010;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;font-family:Alba;-inkscape-font-specification:Alba"
+     id="rect3775"
+     width="87.498329"
+     height="87.498329"
+     x="876.45734"
+     y="493.13449"
+     rx="0.62182188"
+     ry="0.62182188"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\underlineicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16" />
+  <text
+     xml:space="preserve"
+     style="font-size:94.21386719px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba;-inkscape-font-specification:Alba"
+     x="842.23071"
+     y="598.99963"
+     id="text3777"
+     sodipodi:linespacing="125%"
+     transform="scale(1.0621797,0.9414603)"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\underlineicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3779"
+       x="842.23071"
+       y="598.99963">U</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:75.94514465px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Alba;-inkscape-font-specification:Alba"
+     x="561.85938"
+     y="-894.93713"
+     id="text3781"
+     sodipodi:linespacing="125%"
+     transform="matrix(0,1,-1,0,0,0)"
+     inkscape:export-filename="\\YOOUB\src\texttrix\texttrix\trunk\images\svg\underlineicon-roll-16x16.png"
+     inkscape:export-xdpi="16"
+     inkscape:export-ydpi="16"><tspan
+       sodipodi:role="line"
+       id="tspan3783"
+       x="561.85938"
+       y="-894.93713">I</tspan></text>
 </svg>
