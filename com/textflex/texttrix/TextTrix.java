@@ -40,15 +40,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
+import java.awt.font.TextLayout;
 import java.io.*;
 import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+//import java.awt.peer.TextAreaPeer;
 import java.awt.print.*;
 import javax.print.attribute.*;
 import javax.swing.plaf.*;
 import javax.swing.plaf.metal.*;
+import javax.xml.soap.Text;
+
+//import sun.font.TextLabelFactory;
 
 /**
  * The main Text Trix class. Takes care of all basic graphical user interface
@@ -115,7 +120,17 @@ public class TextTrix extends JFrame {
 	private JMenu toolsMenu = null; // tools plugins
 	private JToolBar toolBar = null; // icons
 	private static JMenu fileMenu = null; // file menu, which incl file history
-	
+	private JMenuItem boldItem = null; // bold [format]
+	private JMenuItem italicItem = null; // italic [format]
+	private JMenuItem underlineItem = null; // underline [format]
+	private JMenuItem insertItem = null; // note
+	private JMenu fontSize = null; // FontSize [format]
+	private JMenu alignment = null; // Alignment [format]
+	private JMenu textColor = null; // Color [format]
+	private JMenu backgroundColor = null; // background Color [format]
+	private ButtonGroup group = new ButtonGroup(); // creation of object for
+													// regrouping of buttons
+
 	/* Preferences panel controls */
 	private static Prefs prefs = null; // preferences
 	// prefs action signaling to accept
@@ -143,6 +158,84 @@ public class TextTrix extends JFrame {
 	private JTextField wordFindFld = null; // Word Find
 	private JPopupMenu statusBarPopup = null; // status bar popup menu
 	
+	
+	// This method takes as inputs the font size
+	// in which user can convert his text and
+	// the name of the size
+	// Then adds a button for each size and organize
+	// all the buttons in a group
+	// End, adds this group at Font Size operation
+	public void fontSizeGroupOfButtons(final String nameOfSize, final int size) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfSize);
+		group.add(button);
+		fontSize.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				new StyledEditorKit.FontSizeAction(nameOfSize, size)
+						.actionPerformed(event);
+			}
+		});
+	}	
+	
+	
+	// This method takes as inputs the number of alignment
+	// which user can use in his text and
+	// the name of the alignment
+	// Then adds a button for each number and organize
+	// all the buttons in a group
+	// End, adds this group at Alignment operation
+	public void alignmentGroupOfButton(final String nameOfAlignment,
+			final int location) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfAlignment);
+		group.add(button);
+		alignment.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				new StyledEditorKit.AlignmentAction(nameOfAlignment, location)
+						.actionPerformed(event);
+			}
+		});
+	}
+	
+	
+	// This method takes as inputs the color in
+	// which user can "paint" his text and
+	// the name of the color
+	// Then adds a button for each color and organize
+	// all the buttons in a group
+	// End, adds this group at Color operation
+	public void colorGroupOfButton(final String nameOfColor, final Color color) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
+		group.add(button);
+		textColor.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				new StyledEditorKit.ForegroundAction(nameOfColor, color)
+						.actionPerformed(event);
+			}
+		});
+	}
+	
+	
+	// This method takes as inputs the color in
+	// which user can "paint" the backgroundtext and
+	// the name of the color
+	// Then adds a button for each color and organize
+	// all the buttons in a group
+	// End, adds this group at Background Color operation
+	public void backColorGroupOfButton(final String nameOfColor,
+			final Color color) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
+		group.add(button);
+		backgroundColor.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				getSelectedTextPad().setBackground(color);
+			}
+		});
+	}
+		
+	
 	/* Actions */
 	Action lineSaverAction = null; // Line Find saver action
 
@@ -166,7 +259,13 @@ public class TextTrix extends JFrame {
 				exitTextTrix();
 			}
 		});
-
+		
+		
+		
+		
+		
+		
+		
 		/* Load preferences to create prefs panel */
 		// The prefs must be loaded as early as possible since
 		// many of the preference settings are used to setup
@@ -184,6 +283,11 @@ public class TextTrix extends JFrame {
 				}
 			}
 		};
+		
+		
+		
+		
+		
 		// Set the action shortcuts
 		LibTTx.setAcceleratedAction(prefsOkayAction, "Okay", 'O', KeyStroke
 				.getKeyStroke("alt O"));
@@ -239,6 +343,7 @@ public class TextTrix extends JFrame {
 			public void componentResized(ComponentEvent evt) {
 				getPrefs().storeSize(getWidth(), getHeight());
 			}
+			
 
 			public void componentShown(ComponentEvent evt) {
 			}
@@ -312,6 +417,9 @@ public class TextTrix extends JFrame {
 		webFilter.setDescription("Web files (*.html, *.htm, "
 				+ "*.xhtml, *.shtml, *.css, *.js)");
 		chooser.setFileFilter(webFilter);
+		
+		
+		
 
 		// RTF file filters
 		final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
@@ -3854,7 +3962,7 @@ public class TextTrix extends JFrame {
 					char copyActionMnemonic = 'C'; // copy
 					KeyStroke copyActionShortcut = KeyStroke
 							.getKeyStroke("ctrl C");
-							
+					
 					char pasteActionMnemonic = 'P'; // paste
 					KeyStroke pasteActionShortcut = KeyStroke
 							.getKeyStroke("ctrl V");
@@ -3939,6 +4047,8 @@ public class TextTrix extends JFrame {
 					fileMenu.setMnemonic(fileMenuMnemonic);
 					JMenu editMenu = new JMenu("Edit");
 					editMenu.setMnemonic('E');
+					JMenu formatMenu = new JMenu("Format");
+					formatMenu.setMnemonic('F');
 					viewMenu.setMnemonic('V');
 					trixMenu = new JMenu("Trix");
 					trixMenu.setMnemonic('T');
@@ -4000,6 +4110,13 @@ public class TextTrix extends JFrame {
 
 
 
+					
+						
+					
+					
+					
+					
+					
 
 
 					// Close file; check if saved
@@ -4110,8 +4227,8 @@ public class TextTrix extends JFrame {
 									.makeIcon("images/saveasicon-16x16.png"));
 					LibTTx.setAction(saveAsAction, "Save as...", '.');
 					fileMenu.add(saveAsAction);
-
-
+					
+					
 
 
 
@@ -4172,17 +4289,10 @@ public class TextTrix extends JFrame {
 					fileMenu.addSeparator();
 					//System.out.println("About to create the menu entries");
 
-
-
-
-
-
-
-
-
-
-
-
+					
+					
+					
+					
 					/* Edit menu items */
 
 					// (ctrl-z) undo; multiple undos available
@@ -4268,7 +4378,21 @@ public class TextTrix extends JFrame {
 
 					// edit menu preferences separator
 					editMenu.addSeparator();
-
+/*
+					// insertItem
+					// The insertItem can be inserted anywhere
+					// we think that it is going something wrong
+					String XXX = "? ! / SOMETHING IS PROPABLY WRONG HERE / ! ?";
+					insertItem = new JMenuItem(XXX);
+					insertItem
+							.addActionListener(new DefaultEditorKit.InsertContentAction());
+					insertItem.setAccelerator(KeyStroke.getKeyStroke(
+							KeyEvent.VK_P, InputEvent.CTRL_MASK));
+					editMenu.add(insertItem);
+*/
+					// edit menu separator
+					editMenu.addSeparator();
+									
 					// group tab title
 					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title...") {
 						public void actionPerformed(ActionEvent evt) {
@@ -4317,24 +4441,127 @@ public class TextTrix extends JFrame {
 					};
 					LibTTx.setAction(prefsAction, "It's your preference...",
 							'Y');
-					editMenu.add(prefsAction);
+					editMenu.add(prefsAction);						
+				
+					/* Format menu items */
 
+					// Bold operation
+					// (ctrl-B) Abreviation of keyboard
+					// Create a toolbar button for the bold action
+					boldItem = new JMenuItem("Bold", LibTTx
+							.makeIcon("images/bold.png"));
+					boldItem
+							.addActionListener(new StyledEditorKit.BoldAction());
+					boldItem.setAccelerator(KeyStroke.getKeyStroke(
+							KeyEvent.VK_B, InputEvent.CTRL_MASK));
+					formatMenu.add(boldItem);
+					JButton boldButton = toolBar
+							.add(new StyledEditorKit.BoldAction());
+					boldButton
+							.setIcon(LibTTx.makeIcon("images/boldbutton.png"));
+					boldButton.setBorderPainted(false);
+					boldButton.setText(null);
+					LibTTx.setRollover(boldButton, LibTTx
+							.makeIcon("images/boldrollover.png"));
 
+					// Italic operation
+					// (ctrl-I) Abreviation of keyboard
+					// Create a toolbar button for the italic action
+					italicItem = new JMenuItem("Italic", LibTTx
+							.makeIcon("images/italic.png"));
+					italicItem
+							.addActionListener(new StyledEditorKit.ItalicAction());
+					italicItem.setAccelerator(KeyStroke.getKeyStroke(
+							KeyEvent.VK_I, InputEvent.CTRL_MASK));
+					formatMenu.add(italicItem);
+					JButton italicButton = toolBar
+							.add(new StyledEditorKit.ItalicAction());
+					italicButton.setIcon(LibTTx
+							.makeIcon("images/italicbutton.png"));
+					italicButton.setBorderPainted(false);
+					italicButton.setText(null);
+					LibTTx.setRollover(italicButton, "images/italicrollover.png");
 
+					// Underline operation
+					// (ctrl-U) Abreviation of keyboard
+					// Create a toolbar button for the underline action
+					underlineItem = new JMenuItem("Underline", LibTTx
+							.makeIcon("images/underline.png"));
+					underlineItem
+							.addActionListener(new StyledEditorKit.UnderlineAction());
+					underlineItem.setAccelerator(KeyStroke.getKeyStroke(
+							KeyEvent.VK_U, InputEvent.CTRL_MASK));
+					formatMenu.add(underlineItem);
+					JButton underlineButton = toolBar
+							.add(new StyledEditorKit.UnderlineAction());
+					underlineButton.setIcon(LibTTx
+							.makeIcon("images/underlinebutton.png"));
+					underlineButton.setBorderPainted(false);
+					underlineButton.setText(null);
+					LibTTx.setRollover(underlineButton,
+							"images/underlinerollover.png");
 
+					// toolbar separator
+					toolBar.addSeparator();
 
+					// format menu separator
+					formatMenu.addSeparator();
 
+					// Font size operation
+					fontSize = new JMenu("Fontsize");
+					fontSizeGroupOfButtons("Size: 10", 10);
+					fontSizeGroupOfButtons("Size: 12", 12);
+					fontSizeGroupOfButtons("Size: 14", 14);
+					fontSizeGroupOfButtons("Size: 16", 16);
+					fontSizeGroupOfButtons("Size: 18", 18);
+					fontSizeGroupOfButtons("Size: 20", 20);
+					fontSizeGroupOfButtons("Size: 22", 22);
+					fontSizeGroupOfButtons("Size: 24", 24);
+					formatMenu.add(fontSize);
+					
+					// format menu separator
+					formatMenu.addSeparator();
 
+					// Alignment operation
+					alignment = new JMenu("Alignment");
+					alignmentGroupOfButton("Alignment: Beginning", 3);
+					alignmentGroupOfButton("Alignment: Middle", 1);
+					alignmentGroupOfButton("Alignment: End", 2);
+					formatMenu.add(alignment);
 
+					// format menu separator
+					formatMenu.addSeparator();
 
+					// Coloring operation
+					textColor = new JMenu("Color");
+					colorGroupOfButton("Black", Color.BLACK);
+					colorGroupOfButton("Blue", Color.BLUE);
+					colorGroupOfButton("Orange", Color.ORANGE);
+					colorGroupOfButton("Red", Color.RED);
+					colorGroupOfButton("Yellow", Color.YELLOW);
+					colorGroupOfButton("Cyan", Color.CYAN);
+					colorGroupOfButton("Dark Gray", Color.DARK_GRAY);
+					colorGroupOfButton("Green", Color.GREEN);
+					colorGroupOfButton("Magenta", Color.MAGENTA);
+					colorGroupOfButton("Pink", Color.PINK);
+					colorGroupOfButton("White", Color.WHITE);
+					formatMenu.add(textColor);
 
-
-
-
-
-
-
-
+					// Background Coloring operation
+					backgroundColor = new JMenu("Background Coloring");
+					backColorGroupOfButton("Red", Color.RED);
+					backColorGroupOfButton("Black", Color.BLACK);
+					backColorGroupOfButton("Blue", Color.BLUE);
+					backColorGroupOfButton("Yellow", Color.YELLOW);
+					backColorGroupOfButton("Cyan", Color.CYAN);
+					backColorGroupOfButton("Dark Gray", Color.DARK_GRAY);
+					backColorGroupOfButton("Magenta", Color.MAGENTA);
+					backColorGroupOfButton("Green", Color.GREEN);
+					backColorGroupOfButton("Pink", Color.PINK);
+					backColorGroupOfButton("White", Color.WHITE);
+					formatMenu.add(backgroundColor);
+					
+					
 					/* View menu items */
 
 					/*
@@ -4632,8 +4859,37 @@ public class TextTrix extends JFrame {
 						}
 					};
 					LibTTx.setAction(aboutAction, "About", 'A');
-					helpMenu.add(aboutAction);
-
+					helpMenu.add(aboutAction);	
+										
+					// about saving format options with Text Trix
+					Action formatOptionsAction = new AbstractAction(
+							"Format Options", LibTTx
+									.makeIcon("images/format.png")) {
+						public void actionPerformed(ActionEvent evt) {
+							String path = "savingformatoptions.txt";
+							String text = LibTTx.readText(path);
+							if (text == "") {
+								text = "If the user wants to save the formatted "
+										+ "/nchanges in text or source code,he must follow "
+										+ "/nthis steps(BEFORE doing anything else) :"
+										+ "/n1) Tools-->Toggle HTML view "
+										+ "/n2) Format text or source code"
+										+ "/n3) Tools-->Toggle plain text view"
+										+ "/n4) Save the document"
+										+ "\nthe text tinker";
+								displayMissingResourceDialog(path);
+							}
+							String iconPath1 = "images/opensource.png";
+							JOptionPane.showMessageDialog(getThis(), text,
+									"Saving Format Optios",
+									JOptionPane.PLAIN_MESSAGE, LibTTx
+											.makeIcon(iconPath1));
+						}
+					};
+					LibTTx.setAction(formatOptionsAction,
+							"SavingFormatOptions", 'F');
+					helpMenu.add(formatOptionsAction);	
+									
 					// shortcuts description; opens new tab;
 					// reads from "shortcuts.txt" in same dir as this class
 					Action shortcutsAction = new AbstractAction("Shortcuts", 
@@ -4661,6 +4917,10 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 					helpMenu.add(shortcutsAction);
 
+						
+					
+					
+					
 					// license; opens new tab;
 					// reads from "license.txt" in same directory as this class
 					Action licenseAction = new AbstractAction("License", 
@@ -4694,6 +4954,7 @@ public class TextTrix extends JFrame {
 					setJMenuBar(menuBar);
 					menuBar.add(fileMenu);
 					menuBar.add(editMenu);
+					menuBar.add(formatMenu);
 					menuBar.add(viewMenu);
 					menuBar.add(trixMenu);
 					menuBar.add(toolsMenu);

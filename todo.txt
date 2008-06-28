@@ -8,7 +8,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
--add revision number to ChangeLog output; DONE
+-merge text formatting by Gainnis Kozi
 -show parsing arguments echo only when user passes in args; INPROGRESS: applied to build.sh
 -check syntax highlight re-formatting after undo
 -check on Ostermiller no-such-element exceptions
@@ -16,7 +16,6 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on RepaintManager exceptions during various copy/paste/undo combinations (seen on Fedora 9 java-1.6.0-openjdk-1.6.0.0-0.13.b09.fc9.i386)
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -option to turn on/off syntax highlighting in prefs panel
--update to 0.9.1pre; DONE
 
 ----Ideas----
 

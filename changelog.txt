@@ -8,14 +8,7 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-----v.0.9.0 (in progress)----
-
-final: 2008-06-18
-rc1: 2008-06-05
-beta3: 2008-04-28
-(previously known as 0.7.1beta)
-beta2: 2008-03-11
-beta1: 2007-10-07
+----v.0.9.0 (2008-06-18)----
 
 The Text Trix editor now features syntax highlighting, search navigation 
 improvements, and many fixes for building and startup.  The GPL-licensed 
@@ -65,7 +58,7 @@ New for final (since rc1):
 -File saving performance improvement
 -Documentation updates
 
-New for rc1:
+New for rc1 (2008-06-05):
 -Prepopulates Group Tab name change with current name
 -Java Web Start compatibility (no plugins)
 -run.sh launch script platform compatibility improvements
@@ -74,20 +67,23 @@ and "--files" (see run.sh)
 -Fixed undo and document listener regressions
 -OpenJDK compatibility improvements
 
-New for beta3:
+New for beta3 (2008-04-28):
 -Fixed split-screen during some instances of contextual scrolling
 -Fixed tab refresh regression
 -Fixed auto-detection of capitalized file extensions for syntax highlighting
 -Tested and fixed build and packaging process for MacOS X platform
 -Bumped version number to 0.9.0pre
 
-New for beta2:
+(Previously known as 0.7.1beta):
+New for beta2 (2008-03-11):
 -Syntax highlighting
 -Reverse word find
 -Contextual scrolling
 -Compilation improvements
 -Documentation updates
 -Package file streamlining
+
+beta1: 2007-10-07
 
 ----v.0.7.0 (2007-01-01)----
 
