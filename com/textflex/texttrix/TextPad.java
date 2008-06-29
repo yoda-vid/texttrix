@@ -1206,32 +1206,61 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Undoable.
 	 */
 	public void viewPlain() {
+	
+		// store current selection indices
+		int selectionStart = getSelectionStart();
+		int selectionEnd = getSelectionEnd();
+		
+		// records the edit event for undoing and gets the text
 		StateEdit stateEdit = new StateEdit(this);
 		String text = getText();
 		setEditorKit(createDefaultEditorKit()); // revert to default editor kit
+		
+		// sets the style
 		// use the default editor kit's <code>DefaultStyledDocument</code>
 		setDocument(getEditorKit().createDefaultDocument());
+		
+		// reapplies the text and registers the edit event
 		setText(text);
 		applyDocumentSettings();
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit) stateEdit);
+		
+		// reaapplies text selection;
+		// for some reason, text gets shifted forward by one,
+		// so selection needs to add 1 as well
+		if (selectionStart != selectionEnd) {
+			setSelectionStart(selectionStart + 1);
+			setSelectionEnd(selectionEnd + 1);
+		}
 	}
 
 	/**Converts the pad to an HTML text view.
 	 * The underlying text may have HTML tags added.
 	 */
 	public void viewHTML() {
+		
+		// store current selection indices
 		int selectionStart = getSelectionStart();
 		int selectionEnd = getSelectionEnd();
+		
+		// records the edit event for undoing and gets the text
 		StateEdit stateEdit = new StateEdit(this);
 		String text = getText();
+		
+		// sets the style
 		setDocument(getEditorKit().createDefaultDocument());
 		setContentType("text/html");
+		
+		// reapplies the text and registers the edit event
 		setText(text);
 		applyDocumentSettings();
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit) stateEdit);
-		// reaapplies text selection
+		
+		// reaapplies text selection;
+		// for some reason, text gets shifted forward by one,
+		// so selection needs to add 1 as well
 		if (selectionStart != selectionEnd) {
 			setSelectionStart(selectionStart + 1);
 			setSelectionEnd(selectionEnd + 1);

@@ -139,50 +139,52 @@ echo "found $SYSTEM"
 ##############
 # Respond to user arguments
 
-echo "Parsing user arguments..."
-READ_PARAMETER=0
-for arg in "$@"
-do
-	# reads arguments
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
-	then
-		if [ "`command -v more`" != '' ]
+if [ $# -gt 0 ]
+then
+	echo "Parsing user arguments..."
+	for arg in "$@"
+	do
+		# reads arguments
+		if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 		then
-			echo "$HELP" | more
-		elif [ "`command -v less`" != "" ]
+			if [ "`command -v more`" != '' ]
+			then
+				echo "$HELP" | more
+			elif [ "`command -v less`" != "" ]
+			then
+				echo "$HELP" | less
+			else
+				echo "$HELP"
+			fi
+			exit 0
+			
+		# Java path
+		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
-			echo "$HELP" | less
-		else
-			echo "$HELP"
+			JAVA="${arg#${PAR_JAVA}=}"
+			echo "...set to use \"$JAVA\" as the Java compiler path"
+			
+		# plugins list
+		elif [ ${arg:0:${#PAR_PLUGINS}} = "$PAR_PLUGINS" ]
+		then
+			PLUGINS="${arg#${PAR_PLUGINS}=}"
+			echo "...set to use \"$PLUGINS\" as the list of plugins"
+		
+		# texttrix branch dir
+		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
+		then
+			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
+			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+		
+		# plugins branch dir
+		elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
+		then
+			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
+			echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 		fi
-		exit 0
-		
-	# Java path
-	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
-	then
-		JAVA="${arg#${PAR_JAVA}=}"
-		echo "...set to use \"$JAVA\" as the Java compiler path"
-		
-	# plugins list
-	elif [ ${arg:0:${#PAR_PLUGINS}} = "$PAR_PLUGINS" ]
-	then
-		PLUGINS="${arg#${PAR_PLUGINS}=}"
-		echo "...set to use \"$PLUGINS\" as the list of plugins"
-	
-	# texttrix branch dir
-	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
-	then
-		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
-	
-	# plugins branch dir
-	elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
-	then
-		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
-	fi
-done
-echo "...done"
+	done
+	echo "...done"
+fi
 
 # Appends a file separator to end of Java compiler path if none there
 if [ x$JAVA != "x" ]

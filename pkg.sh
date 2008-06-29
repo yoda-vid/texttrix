@@ -168,57 +168,59 @@ PAR_CHANGELOG="--log"
 PAR_PREFIX="--prefix"
 PAR_TIMESTAMP="--timestamp"
 
-echo "Parsing user arguments..."
-READ_PARAMETER=0
-for arg in "$@"
-do
-	# reads arguments
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
-	then
-		if [ "`command -v more`" != '' ]
+if [ $# -gt 0 ]
+then
+	echo "Parsing user arguments..."
+	for arg in "$@"
+	do
+		# reads arguments
+		if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 		then
-			echo "$HELP" | more
-		elif [ "`command -v less`" != "" ]
+			if [ "`command -v more`" != '' ]
+			then
+				echo "$HELP" | more
+			elif [ "`command -v less`" != "" ]
+			then
+				echo "$HELP" | less
+			else
+				echo "$HELP"
+			fi
+			exit 0
+			
+		# Java path
+		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
-			echo "$HELP" | less
-		else
-			echo "$HELP"
+			JAVA="${arg#${PAR_JAVA}=}"
+			echo "...set to use \"$JAVA\" as the Java compiler path"
+			
+		# install location
+		elif [ ${arg:0:${#PAR_PREFIX}} = "$PAR_PREFIX" ] 
+		then
+			PREFIX="${arg#${PAR_PREFIX}=}"
+			echo "...set to use \"$PREFIX\" as the install path"
+			
+		# texttrix branch dir
+		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
+		then
+			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
+			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+		
+		# plugins branch dir
+		elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
+		then
+			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
+			echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
+			
+		# timestamp labeling
+		elif [ ${arg:0:${#PAR_TIMESTAMP}} = "$PAR_TIMESTAMP" ]
+		then
+			TIMESTAMP=1
+			VER="$VER-$DATE"
+			echo "...set to label packages with \"$VER\""
 		fi
-		exit 0
-		
-	# Java path
-	elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
-	then
-		JAVA="${arg#${PAR_JAVA}=}"
-		echo "...set to use \"$JAVA\" as the Java compiler path"
-		
-	# install location
-	elif [ ${arg:0:${#PAR_PREFIX}} = "$PAR_PREFIX" ] 
-	then
-		PREFIX="${arg#${PAR_PREFIX}=}"
-		echo "...set to use \"$PREFIX\" as the install path"
-		
-	# texttrix branch dir
-	elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
-	then
-		BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-		echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
-	
-	# plugins branch dir
-	elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
-	then
-		PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-		echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
-		
-	# timestamp labeling
-	elif [ ${arg:0:${#PAR_TIMESTAMP}} = "$PAR_TIMESTAMP" ]
-	then
-		TIMESTAMP=1
-		VER="$VER-$DATE"
-		echo "...set to label packages with \"$VER\""
-	fi
-done
-echo "...done"
+	done
+	echo "...done"
+fi
 
 # Appends a file separator to end of Java compiler path if none there
 if [ x$JAVA != "x" ]

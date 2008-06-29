@@ -8,10 +8,9 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 
 ----Immediate Tasks----
 
--merge text formatting by Gainnis Kozi; DONE
--fixed shortcuts for formmated text; FIXED
--save formmatted changes automatically, without having to switch views
--show parsing arguments echo only when user passes in args; INPROGRESS: applied to build.sh
+-save formmatted changes automatically, without having to switch views; DONE: automatically switches view, with prompting
+-show parsing arguments echo only when user passes in args; DONE
+-check selection alignment when switching to HTML view
 -check syntax highlight re-formatting after undo
 -check on Ostermiller no-such-element exceptions
 -check on occasional tab memory and reopening loss or additions

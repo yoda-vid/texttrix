@@ -159,23 +159,25 @@ public class TextTrix extends JFrame {
 	private JPopupMenu statusBarPopup = null; // status bar popup menu
 	
 	
-	// This method takes as inputs the font size
-	// in which user can convert his text and
-	// the name of the size
-	// Then adds a button for each size and organize
-	// all the buttons in a group
-	// End, adds this group at Font Size operation
+	/** This method takes as inputs the font size
+	 * in which user can convert his text and
+	 * the name of the size
+	 * Then adds a button for each size and organize
+	 * all the buttons in a group
+	 * End, adds this group at Font Size operation
+	 */
 	public void fontSizeGroupOfButtons(final String nameOfSize, final int size) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfSize);
 		group.add(button);
 		fontSize.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
 				new StyledEditorKit.FontSizeAction(nameOfSize, size)
 						.actionPerformed(event);
 			}
 		});
-	}	
+	}
 	
 	
 	// This method takes as inputs the number of alignment
@@ -191,6 +193,7 @@ public class TextTrix extends JFrame {
 		alignment.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
 				new StyledEditorKit.AlignmentAction(nameOfAlignment, location)
 						.actionPerformed(event);
 			}
@@ -210,6 +213,7 @@ public class TextTrix extends JFrame {
 		textColor.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
 				new StyledEditorKit.ForegroundAction(nameOfColor, color)
 						.actionPerformed(event);
 			}
@@ -230,6 +234,7 @@ public class TextTrix extends JFrame {
 		backgroundColor.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
 				getSelectedTextPad().setBackground(color);
 			}
 		});
@@ -2228,7 +2233,7 @@ public class TextTrix extends JFrame {
 	 * <code>TextPad</code>'s<code>viewHTML</code> function before adding
 	 * <code>TextTrix</code> -specific settings, such as a
 	 * <code>TextPadDocListener</code>.
-	 */
+	 *
 	public void viewHTML() {
 		TextPad t = getSelectedTextPad();
 		if (t != null) {
@@ -2238,7 +2243,36 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
+	*/
 
+	
+	/** Switches the given or current TextPad to HTML
+	 * view, prompting the user if necessary.
+	 * @param pad the TextPad to change views; if null,
+	 * the currently selected pad will be changed
+	 * @param warning if true, the user will be prompted
+	 * before proceeding with the view change
+	 */
+	public void switchToHTMLView(TextPad pad, boolean warning) {
+		if (pad == null) pad = getSelectedTextPad();
+		if (pad == null) return;
+		if (!pad.isHTMLView()) {
+			boolean changeView = true;
+			if (warning) {
+				changeView = LibTTx.yesNoDialog(
+					this,
+					"To apply text formatting, the text pad "
+					+ NEWLINE + "will be switched to HTML view, and some "
+					+ NEWLINE + "current formmating may be lost.  Proceed?",
+					"Switch to HTML view?");
+			}
+			if (changeView) {
+				pad.viewHTML();
+				addExtraTextPadDocumentSettings(pad);
+			}
+		}
+	}
+	
 	/**
 	 * Displays the given <code>TextPad</code> in RTF text format. Calls the
 	 * <code>TextPad</code>'s<code>viewRTF</code> function before adding
@@ -4779,7 +4813,7 @@ public class TextTrix extends JFrame {
 					Action toggleHTMLViewAction = new AbstractAction(
 							"Toggle HTML view") {
 						public void actionPerformed(ActionEvent evt) {
-							viewHTML();
+							switchToHTMLView(null, false);
 						}
 					};
 					LibTTx.setAction(toggleHTMLViewAction, "View as HTML", 'H');
@@ -5035,10 +5069,21 @@ public class TextTrix extends JFrame {
 	
 	private class BoldAction extends StyledEditorKit.BoldAction {
 		public void actionPerformed(ActionEvent e) {
-			TextPad t = getSelectedTextPad();
-			if (!t.isHTMLView()) {
-				t.viewHTML();
-			}
+			switchToHTMLView(null, true);
+			super.actionPerformed(e);
+		}
+	}
+
+	private class ItalicAction extends StyledEditorKit.ItalicAction {
+		public void actionPerformed(ActionEvent e) {
+			switchToHTMLView(null, true);
+			super.actionPerformed(e);
+		}
+	}
+
+	private class UnderlineAction extends StyledEditorKit.UnderlineAction {
+		public void actionPerformed(ActionEvent e) {
+			switchToHTMLView(null, true);
 			super.actionPerformed(e);
 		}
 	}
