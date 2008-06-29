@@ -4469,7 +4469,7 @@ public class TextTrix extends JFrame {
 					// Create a toolbar button for the bold action
 //					boldItem = new JMenuItem("Bold", 
 //							LibTTx.makeIcon("images/bold.png"));
-					Action boldAction = new StyledEditorKit.BoldAction();
+					Action boldAction = new BoldAction();
 					LibTTx.setAcceleratedAction(boldAction, "Bold",
 							boldActionMnemonic, boldActionShortcut);
 					LibTTx.setActionIcon(boldAction, "images/bold.png");
@@ -5033,6 +5033,16 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	private class BoldAction extends StyledEditorKit.BoldAction {
+		public void actionPerformed(ActionEvent e) {
+			TextPad t = getSelectedTextPad();
+			if (!t.isHTMLView()) {
+				t.viewHTML();
+			}
+			super.actionPerformed(e);
+		}
+	}
+
 	
 	
 	

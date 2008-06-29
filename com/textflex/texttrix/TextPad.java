@@ -1221,6 +1221,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * The underlying text may have HTML tags added.
 	 */
 	public void viewHTML() {
+		int selectionStart = getSelectionStart();
+		int selectionEnd = getSelectionEnd();
 		StateEdit stateEdit = new StateEdit(this);
 		String text = getText();
 		setDocument(getEditorKit().createDefaultDocument());
@@ -1229,6 +1231,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyDocumentSettings();
 		stateEdit.end();
 		undoManager.addEdit((UndoableEdit) stateEdit);
+		// reaapplies text selection
+		if (selectionStart != selectionEnd) {
+			setSelectionStart(selectionStart + 1);
+			setSelectionEnd(selectionEnd + 1);
+		}
+	}
+	
+	public boolean isHTMLView() {
+		return getContentType().equals("text/html");
 	}
 
 	/**Converts the pad to an RTF tex view, if possible.
