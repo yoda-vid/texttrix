@@ -1714,7 +1714,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			// The rect height is adjusted here to position the caret
 			// to the middle of the viewport, and setViewPosition is
 			// used instead to manually set the viewport position.
-			if (rect != null) {
+			if (rect != null && rect.y > viewportRect.height) {
 				// calculates the position of where the caret would
 				// be in the middle of the viewport
 				int recty = rect.y - viewportRect.height / 2;

@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003-7
+ * Portions created by the Initial Developer are Copyright (C) 2003-8
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -127,6 +127,11 @@ public class Prefs extends JDialog {//JFrame {
 	// dialog prompt to ask if the user wishes to allow the automatic save
 	private static final String AUTO_SAVE_PROMPT = "autoSavePrompt";
 	private JCheckBox autoSavePromptChk = null; // check box
+	
+	
+	// highlighting
+	private static final String HIGHLIGHTING = "highlighting";
+	private JCheckBox highlightingChk = null;
 	
 	
 	
@@ -481,6 +486,7 @@ public class Prefs extends JDialog {//JFrame {
 		generalPrefs.putInt(AUTO_SAVE_INTERVAL, 
 			autoSaveIntervalMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_SAVE_PROMPT, autoSavePromptChk.isSelected());
+		generalPrefs.putBoolean(HIGHLIGHTING, highlightingChk.isSelected());
 	}
 	
 	/** Stores the Shorts preferences.
@@ -878,6 +884,16 @@ public class Prefs extends JDialog {//JFrame {
 	public boolean getAutoSavePrompt() {
 		return generalPrefs.getBoolean(AUTO_SAVE_PROMPT, true);
 	}
+	
+	public boolean getHighlighting() {
+//		System.out.println("highlighting pref: " + generalPrefs.getBoolean(HIGHLIGHTING, true));
+		return generalPrefs.getBoolean(HIGHLIGHTING, true);
+	}
+	
+	
+	
+	
+	
 	/** Gets the stored keybindings preference.
 	 * 
 	 * @return the keybindings preference
@@ -1042,12 +1058,30 @@ public class Prefs extends JDialog {//JFrame {
 					setAutoSaveSelectors(autoSaveChk.isSelected());
 					
 					
+					// syntax highlighting
+					String highlightingTxt =
+						"Highlight syntax source code";
+					String highlightingTipTxt =
+						"<html>Highlights syntax in source code files."
+							+ "<br>Syntax will be colored on the fly."
+							+ "<br>Uncheck this box to improve performance.</html>";
+					highlightingChk = 
+						new JCheckBox(highlightingTxt, getHighlighting());
+					highlightingChk.setToolTipText(highlightingTipTxt);
+					
+					
 					
 					
 					/* Import/Export */
 					
 					// Label for import/export operations
 					JLabel importExportPrefsLbl = new JLabel("Import/Export Preferences:");
+					String importExportPrefsTipTxt = 
+							"<html>Imports or exports a set of preferences from"
+							+ "<br>an XMLfile.  All preferences can also be"
+							+ "<br>erased and set to default parameters using"
+							+ "<br>the reset button.</html>";
+					importExportPrefsLbl.setToolTipText(importExportPrefsTipTxt);
 					
 					// file browser for locating an import/export file name and location
 					final JFileChooser chooser = new JFileChooser();
@@ -1265,6 +1299,16 @@ public class Prefs extends JDialog {//JFrame {
 						0,
 						0,
 						panel);
+					LibTTx.addGridBagComponent(
+						highlightingChk,
+						constraints,
+						0,
+						6,
+						3,
+						1,
+						0,
+						0,
+						panel);
 						
 					
 					// Export/Import Preferences
@@ -1273,7 +1317,7 @@ public class Prefs extends JDialog {//JFrame {
 						importExportPrefsLbl,
 						constraints,
 						0,
-						6,
+						7,
 						3,
 						1,
 						0,
@@ -1283,7 +1327,7 @@ public class Prefs extends JDialog {//JFrame {
 						exportPrefsButton,
 						constraints,
 						0,
-						7,
+						8,
 						1,
 						1,
 						100,
@@ -1294,7 +1338,7 @@ public class Prefs extends JDialog {//JFrame {
 						importPrefsButton,
 						constraints,
 						1,
-						7,
+						8,
 						1,
 						1,
 						100,
@@ -1304,7 +1348,7 @@ public class Prefs extends JDialog {//JFrame {
 						resetPrefsButton,
 						constraints,
 						2,
-						7,
+						8,
 						1,
 						1,
 						100,

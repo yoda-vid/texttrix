@@ -159,90 +159,8 @@ public class TextTrix extends JFrame {
 	private JPopupMenu statusBarPopup = null; // status bar popup menu
 	
 	
-	/** This method takes as inputs the font size
-	 * in which user can convert his text and
-	 * the name of the size
-	 * Then adds a button for each size and organize
-	 * all the buttons in a group
-	 * End, adds this group at Font Size operation
-	 */
-	public void fontSizeGroupOfButtons(final String nameOfSize, final int size) {
-		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfSize);
-		group.add(button);
-		fontSize.add(button);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				new StyledEditorKit.FontSizeAction(nameOfSize, size)
-						.actionPerformed(event);
-			}
-		});
-	}
-	
-	
-	// This method takes as inputs the number of alignment
-	// which user can use in his text and
-	// the name of the alignment
-	// Then adds a button for each number and organize
-	// all the buttons in a group
-	// End, adds this group at Alignment operation
-	public void alignmentGroupOfButton(final String nameOfAlignment,
-			final int location) {
-		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfAlignment);
-		group.add(button);
-		alignment.add(button);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				new StyledEditorKit.AlignmentAction(nameOfAlignment, location)
-						.actionPerformed(event);
-			}
-		});
-	}
-	
-	
-	// This method takes as inputs the color in
-	// which user can "paint" his text and
-	// the name of the color
-	// Then adds a button for each color and organize
-	// all the buttons in a group
-	// End, adds this group at Color operation
-	public void colorGroupOfButton(final String nameOfColor, final Color color) {
-		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
-		group.add(button);
-		textColor.add(button);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				new StyledEditorKit.ForegroundAction(nameOfColor, color)
-						.actionPerformed(event);
-			}
-		});
-	}
-	
-	
-	// This method takes as inputs the color in
-	// which user can "paint" the backgroundtext and
-	// the name of the color
-	// Then adds a button for each color and organize
-	// all the buttons in a group
-	// End, adds this group at Background Color operation
-	public void backColorGroupOfButton(final String nameOfColor,
-			final Color color) {
-		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
-		group.add(button);
-		backgroundColor.add(button);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				getSelectedTextPad().setBackground(color);
-			}
-		});
-	}
-		
-	
 	/* Actions */
-	Action lineSaverAction = null; // Line Find saver action
+	private Action lineSaverAction = null; // Line Find saver action
 
 	/**
 	 * Constructs a new <code>TextTrix</code> frame and a 
@@ -289,10 +207,6 @@ public class TextTrix extends JFrame {
 			}
 		};
 		
-		
-		
-		
-		
 		// Set the action shortcuts
 		LibTTx.setAcceleratedAction(prefsOkayAction, "Okay", 'O', KeyStroke
 				.getKeyStroke("alt O"));
@@ -329,8 +243,11 @@ public class TextTrix extends JFrame {
 		// Set the action shortcuts
 		LibTTx.setAcceleratedAction(prefsCancelAction, "Cancel", 'N', KeyStroke
 				.getKeyStroke("alt C"));
+				
+		// Create the preferences and apply specific prefs
 		getPrefs();
-
+//		applyHighlightingPref();
+		
 		/* Setup the main Text Trix window */
 
 		setTitle("Text Trix"); // frame title
@@ -898,10 +815,13 @@ public class TextTrix extends JFrame {
 			}
 		}
 		
+		// apply syntax highlighting preference
+//		applyHighlightingPref();
+		
 		// Re-select the originally selected tab
 		pane.setSelectedIndex(origPaneIndex);
 	}
-
+	
 	/**
 	 * Applies preferences from the Shorts tab in the preferences panel. Relies
 	 * on a separate call to <code>#menuBarCreator.start()</code> to complete
@@ -976,6 +896,92 @@ public class TextTrix extends JFrame {
 		// assumes true if no open plug-in window
 		return true;
 	}
+	
+	
+	
+	
+	
+	/** This method takes as inputs the font size
+	 * in which user can convert his text and
+	 * the name of the size
+	 * Then adds a button for each size and organize
+	 * all the buttons in a group
+	 * End, adds this group at Font Size operation
+	 */
+	public void fontSizeGroupOfButtons(final String nameOfSize, final int size) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfSize);
+		group.add(button);
+		fontSize.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
+				new StyledEditorKit.FontSizeAction(nameOfSize, size)
+						.actionPerformed(event);
+			}
+		});
+	}
+	
+	
+	// This method takes as inputs the number of alignment
+	// which user can use in his text and
+	// the name of the alignment
+	// Then adds a button for each number and organize
+	// all the buttons in a group
+	// End, adds this group at Alignment operation
+	public void alignmentGroupOfButton(final String nameOfAlignment,
+			final int location) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfAlignment);
+		group.add(button);
+		alignment.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
+				new StyledEditorKit.AlignmentAction(nameOfAlignment, location)
+						.actionPerformed(event);
+			}
+		});
+	}
+	
+	
+	// This method takes as inputs the color in
+	// which user can "paint" his text and
+	// the name of the color
+	// Then adds a button for each color and organize
+	// all the buttons in a group
+	// End, adds this group at Color operation
+	public void colorGroupOfButton(final String nameOfColor, final Color color) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
+		group.add(button);
+		textColor.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
+				new StyledEditorKit.ForegroundAction(nameOfColor, color)
+						.actionPerformed(event);
+			}
+		});
+	}
+	
+	
+	// This method takes as inputs the color in
+	// which user can "paint" the backgroundtext and
+	// the name of the color
+	// Then adds a button for each color and organize
+	// all the buttons in a group
+	// End, adds this group at Background Color operation
+	public void backColorGroupOfButton(final String nameOfColor,
+			final Color color) {
+		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
+		group.add(button);
+		backgroundColor.add(button);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				switchToHTMLView(null, true);
+				getSelectedTextPad().setBackground(color);
+			}
+		});
+	}
+		
 
 	/**
 	 * Creates a plugin action. Allows the plugin to be invoked from a button or
@@ -2316,7 +2322,7 @@ public class TextTrix extends JFrame {
 			public void run() {
 //				textPad.setIgnoreChanged(true);
 				textPad.getDocument().removeDocumentListener(textPadDocListener);
-				if (getHighlighting()) {
+				if (getPrefs().getHighlighting() && getHighlighting()) {
 					textPad.setHighlightStyle();
 				}
 				textPad.setText(text);
@@ -2435,7 +2441,7 @@ public class TextTrix extends JFrame {
 				// sets the style according to extension, but only if 
 				// the next extension is different from the previous one
 				if (!origName.equals(t.getFile().getName())) {
-					if (getHighlighting()
+					if (getPrefs().getHighlighting() && getHighlighting()
 								&& !LibTTx.getFileExtension(origName)
 										.equalsIgnoreCase(t.getFileExtension())) {
 						t.setHighlightStyle();
@@ -2628,7 +2634,7 @@ public class TextTrix extends JFrame {
 				}
 				getPrefs().storeFileHist(path);
 				//updateFileHist(fileMenu);
-				if (getHighlighting()) {
+				if (getPrefs().getHighlighting() && getHighlighting()) {
 					t.setHighlightStyle();
 				}
 				autoAutoIndent(t);
