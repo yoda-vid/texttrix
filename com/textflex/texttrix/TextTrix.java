@@ -99,7 +99,8 @@ public class TextTrix extends JFrame {
 	private static boolean verbose = false; // verbose command-line output
 	
 	/* General GUI components */
-	private static MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
+	private static ArrayList ttxWindows = new ArrayList();
+	private MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
 	private static ArrayList textAreas = new ArrayList(); // all the TextPads
 	private Container contentPane = getContentPane(); // main frame content pane
 //	private static JTabbedPane tabbedPane = null; // multiple TextPads
@@ -172,14 +173,17 @@ public class TextTrix extends JFrame {
 		final String[] filteredPaths = filterArgs(paths);
 	
 		// create file menu in constructor rather than when defining class
-		// variables b/c would otherwise use bold font for this menu alone
+		// variables b/c would otherwise uWindowListenerse bold font for this menu alone
 		resetMenus(); // resets file and view menus
 
 		// adds a window listener that responds to closure of the main
 		// window by calling the exit function
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				exitTextTrix();
+				ttxWindows.remove(getThis());
+				if (ttxWindows.size() <= 0) {
+					exitTextTrix();
+				}
 			}
 		});
 		
@@ -282,6 +286,9 @@ public class TextTrix extends JFrame {
 
 		/* Create the main Text Trix frame components */
 		
+					groupTabbedPane = new MotherTabbedPane(
+						JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+/*						
 		// makes the tabbed pane for grouping tabs horizontally
 		// scrollable to help distinguish the tabs from the tabs in
 		// each individual group
@@ -295,6 +302,7 @@ public class TextTrix extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 		// adds a listener to update the title and status bars when
 		// switching among group tabs
 		groupTabbedPane.addChangeListener(new ChangeListener() {
@@ -470,6 +478,16 @@ public class TextTrix extends JFrame {
 			}
 		});
 
+		/*
+		 * Something apparently grabs focus after he tabbed pane ChangeListener
+		 * focuses on the selected TextPad. Calling focus after displaying the
+		 * window seems to restore this focus at least most of the time.
+		 */
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				focuser();
+			}
+		});
 	}
 
 	/**
@@ -505,52 +523,19 @@ public class TextTrix extends JFrame {
 //			errorMsg = "Class not found exception in main..." + NEWLINE + errorMsg;
 			System.out.println(errorMsg);
 		} catch (InstantiationException e2) {
-			errorMsg = "Instantiation exception in main..." + NEWLINE + errorMsg;
+			errorMsg = "Instantiation exception in main..." 
+					+ NEWLINE + errorMsg;
 			System.out.println(errorMsg);
 		} catch (IllegalAccessException e3) {
-			errorMsg = "Illegal access exception exception in main..." + NEWLINE + errorMsg;
+			errorMsg = "Illegal access exception exception in main..." 
+					+ NEWLINE + errorMsg;
 			System.out.println(errorMsg);
 		}
 		
 		// Create Text Trix!
-		final TextTrix textTrix = new TextTrix(args);
+		final TextTrix textTrix = openTTXWindow(args); //new TextTrix(args);
 		
-		// Close the program with customized exit operation when
-		// user hits close so can apply exit operations, such as remembering
-		// open file paths
-		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		
-		/* Workaround for bug #4841881, where Alt-Tabs are captured as
-		 * menu shortcuts
-		 * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4841881
-		 * This bug existed in Java v.1.4.x, disappeared in v.1.5, but
-		 * reappeared in snapshots of v.1.6 (tested in b94).  The workaround
-		 * has potentially undesirable side effects, as mentioned by the 
-		 * submitter, but is a temporary solution until the Java regression
-		 * is fixed.
-		 */
-		textTrix.addWindowFocusListener(new WindowFocusListener() {
-			public void windowGainedFocus(WindowEvent e) {
-			}
-			
-			public void windowLostFocus(WindowEvent e) {
-				MenuSelectionManager.defaultManager().clearSelectedPath();
-			}
-		});
-		
-		// Make the frame visible from the event dispatch thread
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				textTrix.setVisible(true);
-			}
-		});
 
-		/*
-		 * Something apparently grabs focus after he tabbed pane ChangeListener
-		 * focuses on the selected TextPad. Calling focus after displaying the
-		 * window seems to restore this focus at least most of the time.
-		 */
-		focuser();
 	}
 	
 	/** Filters command-line arguments to apply settings and
@@ -561,6 +546,7 @@ public class TextTrix extends JFrame {
 	 */
 	public String[] filterArgs(String[] args) {
 		// file paths to open
+		if (args == null) return null;
 		String[] filteredArgs = new String[args.length];
 		int filteredArgsi = 0;
 		// true if next element is a file path
@@ -639,6 +625,49 @@ public class TextTrix extends JFrame {
 		return verbose;
 	}
 	
+	
+	
+	private static TextTrix openTTXWindow(String[] args) {
+		final TextTrix textTrix = new TextTrix(args);
+		ttxWindows.add(textTrix);
+		// Close the program with customized exit operation when
+		// user hits close so can apply exit operations, such as remembering
+		// open file paths
+//		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
+		/* Workaround for bug #4841881, where Alt-Tabs are captured as
+		 * menu shortcuts
+		 * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4841881
+		 * This bug existed in Java v.1.4.x, disappeared in v.1.5, but
+		 * reappeared in snapshots of v.1.6 (tested in b94).  The workaround
+		 * has potentially undesirable side effects, as mentioned by the 
+		 * submitter, but is a temporary solution until the Java regression
+		 * is fixed.
+		 */
+		textTrix.addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+			}
+			
+			public void windowLostFocus(WindowEvent e) {
+				MenuSelectionManager.defaultManager().clearSelectedPath();
+			}
+		});
+		
+		// Make the frame visible from the event dispatch thread
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				textTrix.setVisible(true);
+			}
+		});
+		return textTrix;
+	}
+	
+	
+	
+	
+	
+	
+	
 	/** Resets the file and view menus.
 	 */
 	private void resetMenus() {
@@ -715,7 +744,7 @@ public class TextTrix extends JFrame {
 	 * Switches focus synchronously to the selected <code>TextPad</code>, if
 	 * one exists.
 	 */
-	public static void focuser() {
+	public  void focuser() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				TextPad t = getSelectedTextPad();
@@ -914,9 +943,10 @@ public class TextTrix extends JFrame {
 		fontSize.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				new StyledEditorKit.FontSizeAction(nameOfSize, size)
-						.actionPerformed(event);
+				if (switchToHTMLView(null, true)) {
+					new StyledEditorKit.FontSizeAction(nameOfSize, size)
+							.actionPerformed(event);
+				}
 			}
 		});
 	}
@@ -935,9 +965,10 @@ public class TextTrix extends JFrame {
 		alignment.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				new StyledEditorKit.AlignmentAction(nameOfAlignment, location)
-						.actionPerformed(event);
+				if (switchToHTMLView(null, true)) {
+					new StyledEditorKit.AlignmentAction(nameOfAlignment, location)
+							.actionPerformed(event);
+				}
 			}
 		});
 	}
@@ -955,9 +986,10 @@ public class TextTrix extends JFrame {
 		textColor.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				new StyledEditorKit.ForegroundAction(nameOfColor, color)
-						.actionPerformed(event);
+				if (switchToHTMLView(null, true)) {
+					new StyledEditorKit.ForegroundAction(nameOfColor, color)
+							.actionPerformed(event);
+				}
 			}
 		});
 	}
@@ -976,8 +1008,9 @@ public class TextTrix extends JFrame {
 		backgroundColor.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				switchToHTMLView(null, true);
-				getSelectedTextPad().setBackground(color);
+				if (switchToHTMLView(null, true)) {
+					getSelectedTextPad().setBackground(color);
+				}
 			}
 		});
 	}
@@ -1712,14 +1745,14 @@ public class TextTrix extends JFrame {
 	/** Gets the tabbed pane for tab groups.
 	 * @return the "mother" pane of all other tabs
 	 */
-	public static MotherTabbedPane getGroupTabbedPane() {
+	public MotherTabbedPane getGroupTabbedPane() {
 		return groupTabbedPane;
 	}
 	
 	/** Gets the selected tab group.
 	 * @return the tab group tabbed pane
 	 */
-	public static MotherTabbedPane getSelectedTabbedPane() {
+	public  MotherTabbedPane getSelectedTabbedPane() {
 		MotherTabbedPane pane = getGroupTabbedPane();
 		int i = pane.getSelectedIndex();
 		if (i != -1) {
@@ -1734,7 +1767,7 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @return <code>TextPad</code> whose tab is currently selected
 	 */
-	public static TextPad getSelectedTextPad() {
+	public  TextPad getSelectedTextPad() {
 		MotherTabbedPane pane = getSelectedTabbedPane();
 		if (pane != null) {
 			int i = pane.getSelectedIndex();
@@ -1753,7 +1786,7 @@ public class TextTrix extends JFrame {
 	 * @return the given Text Pad; <code>null</code> if the tabbed pane lacks
 	 *         the index value
 	 */
-	public static TextPad getTextPadAt(int i) {
+	public  TextPad getTextPadAt(int i) {
 		return getTextPadAt(getSelectedTabbedPane(), i);
 	}
 	
@@ -1762,7 +1795,7 @@ public class TextTrix extends JFrame {
 	 * @param i the tab index
 	 * @return the Text Pad
 	 */
-	public static TextPad getTextPadAt(JTabbedPane pane, int i) {
+	public  TextPad getTextPadAt(JTabbedPane pane, int i) {
 		if (i < -1 || i >= pane.getTabCount())
 			return null;
 		return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();
@@ -1773,7 +1806,7 @@ public class TextTrix extends JFrame {
 	 * @param i the index of the group tab to retrieve
 	 * @return the tab group tabbed pane
 	 */
-	public static MotherTabbedPane getTabbedPaneAt(int i) {
+	public  MotherTabbedPane getTabbedPaneAt(int i) {
 		return (MotherTabbedPane) getGroupTabbedPane().getComponentAt(i);
 	}
 	
@@ -1781,7 +1814,7 @@ public class TextTrix extends JFrame {
 	 * @param textPad the text pad
 	 * @return the tabbed pane of the text pad's tabbed pane
 	 */
-	public static MotherTabbedPane getTabbedPane(TextPad textPad) {
+	public  MotherTabbedPane getTabbedPane(TextPad textPad) {
 		int lenGroup = getGroupTabbedPane().getTabCount();
 		int tabIndex = -1;
 		MotherTabbedPane pane = null;
@@ -1800,7 +1833,7 @@ public class TextTrix extends JFrame {
 	 * @param pane the tabbed pane that holds the Text Pad
 	 * @return the index of the Text Pad
 	 */
-	public static int getTextPadIndex(JTabbedPane pane, TextPad textPad) {
+	public  int getTextPadIndex(JTabbedPane pane, TextPad textPad) {
 		return pane.indexOfComponent(textPad.getScrollPane());
 	}
 
@@ -1839,7 +1872,7 @@ public class TextTrix extends JFrame {
 	 * auto-indent mode.
 	 *  
 	 */
-	public static void setAutoIndent() {
+	public  void setAutoIndent() {
 		TextPad t = getSelectedTextPad();
 		if (autoIndent != null && t != null) {
 			autoIndent.setSelected(t.getAutoIndent());
@@ -2172,7 +2205,7 @@ public class TextTrix extends JFrame {
 	 * @param textPad
 	 *            Text Pad to update
 	 */
-	public static void updateTabTitle(TextPad textPad) {
+	public  void updateTabTitle(TextPad textPad) {
 		MotherTabbedPane pane = getTabbedPane(textPad);
 		int tabIndex = getTextPadIndex(pane, textPad);
 
@@ -2259,11 +2292,11 @@ public class TextTrix extends JFrame {
 	 * @param warning if true, the user will be prompted
 	 * before proceeding with the view change
 	 */
-	public void switchToHTMLView(TextPad pad, boolean warning) {
+	public boolean switchToHTMLView(TextPad pad, boolean warning) {
+		boolean changeView = false;
 		if (pad == null) pad = getSelectedTextPad();
-		if (pad == null) return;
+		if (pad == null) return changeView;
 		if (!pad.isHTMLView()) {
-			boolean changeView = true;
 			if (warning) {
 				changeView = LibTTx.yesNoDialog(
 					this,
@@ -2277,6 +2310,7 @@ public class TextTrix extends JFrame {
 				addExtraTextPadDocumentSettings(pad);
 			}
 		}
+		return changeView;
 	}
 	
 	/**
@@ -2388,7 +2422,7 @@ public class TextTrix extends JFrame {
 	 * @param tp
 	 *            tabbed pane from which to remove a tab
 	 */
-	public static void removeTextArea(int i, MotherTabbedPane tp) {
+	public  void removeTextArea(int i, MotherTabbedPane tp) {
 		TextPad t = getSelectedTextPad();
 		// stops the pad's save timer and removes the pad
 		if (t != null) {
@@ -2506,7 +2540,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the file saves successfully
 	 * @see #saveFile(String)
 	 */
-	public static boolean saveFileOnExit(String path) {
+	public  boolean saveFileOnExit(String path) {
 		//	System.out.println("printing");
 		TextPad t = getSelectedTextPad();
 		PrintWriter out = null;
@@ -2853,7 +2887,7 @@ public class TextTrix extends JFrame {
 	 *            parent frame; can be null
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
-	public static boolean fileSaveDialogOnExit(JFrame owner) {
+	public  boolean fileSaveDialogOnExit(JFrame owner) {
 		if (!prepFileSaveDialog())
 			return false;
 		return getSavePathOnExit(owner);
@@ -2901,7 +2935,7 @@ public class TextTrix extends JFrame {
 	 *         a file
 	 * @see #prepFileSaveDialog()
 	 */
-	public static boolean prepFileSaveDialog(TextPad t) {
+	public  boolean prepFileSaveDialog(TextPad t) {
 		//	int tabIndex = getSelectedTabbedPane().getSelectedIndex();
 		if (t == null)
 			t = getSelectedTextPad();
@@ -2935,7 +2969,7 @@ public class TextTrix extends JFrame {
 	 *         a file
 	 * @see #prepFileSaveDialog(TextPad)
 	 */
-	public static boolean prepFileSaveDialog() {
+	public  boolean prepFileSaveDialog() {
 		return prepFileSaveDialog(null);
 	}
 
@@ -2953,7 +2987,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the file is saved successfully
 	 * @see #getSavePath(TextPad, JFrame)
 	 */
-	public static boolean getSavePathOnExit(JFrame owner) {
+	public  boolean getSavePathOnExit(JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name,
@@ -3974,6 +4008,10 @@ public class TextTrix extends JFrame {
 					KeyStroke newActionShortcut = KeyStroke
 							.getKeyStroke("ctrl N");
 							
+					char newWindowActionMnemonic = 'N'; // new file
+					KeyStroke newWindowActionShortcut = KeyStroke
+							.getKeyStroke("ctrl shift N");
+							
 					char newGroupActionMnemonic = 'G'; // tab group
 					KeyStroke newGroupActionShortcut = KeyStroke
 							.getKeyStroke("ctrl G");
@@ -4144,6 +4182,20 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(newAction, "New tab",
 							newActionMnemonic, newActionShortcut);
 					fileMenu.add(newAction);
+
+
+
+
+					// make new tab and text area
+					Action newWindowAction = new AbstractAction("New window") {
+						public void actionPerformed(ActionEvent evt) {
+							setFresh(true);
+							openTTXWindow(null);
+						}
+					};
+					LibTTx.setAcceleratedAction(newWindowAction, "New window",
+							newWindowActionMnemonic, newWindowActionShortcut);
+					fileMenu.add(newWindowAction);
 
 
 
@@ -4527,7 +4579,7 @@ public class TextTrix extends JFrame {
 					// Create a toolbar button for the italic action
 //					italicItem = new JMenuItem("Italic", 
 //							LibTTx.makeIcon("images/italic.png"));
-					Action italicAction = new StyledEditorKit.ItalicAction();
+					Action italicAction = new ItalicAction();
 					LibTTx.setAcceleratedAction(italicAction, "Italic",
 							italicActionMnemonic, italicActionShortcut);
 //					italicItem.addActionListener(italicAction);
@@ -4548,7 +4600,7 @@ public class TextTrix extends JFrame {
 					// Create a toolbar button for the underline action
 //					underlineItem = new JMenuItem("Underline", 
 //							LibTTx.makeIcon("images/underline.png"));
-					Action underlineAction = new StyledEditorKit.UnderlineAction();
+					Action underlineAction = new UnderlineAction();
 					LibTTx.setAcceleratedAction(underlineAction, "Underline",
 							underlineActionMnemonic, underlineActionShortcut);
 //					underlineItem.addActionListener(underlineAction);
@@ -5075,22 +5127,25 @@ public class TextTrix extends JFrame {
 	
 	private class BoldAction extends StyledEditorKit.BoldAction {
 		public void actionPerformed(ActionEvent e) {
-			switchToHTMLView(null, true);
-			super.actionPerformed(e);
+			if (switchToHTMLView(null, true)) {
+				super.actionPerformed(e);
+			}
 		}
 	}
 
 	private class ItalicAction extends StyledEditorKit.ItalicAction {
 		public void actionPerformed(ActionEvent e) {
-			switchToHTMLView(null, true);
-			super.actionPerformed(e);
+			if (switchToHTMLView(null, true)) {
+				super.actionPerformed(e);
+			}
 		}
 	}
 
 	private class UnderlineAction extends StyledEditorKit.UnderlineAction {
 		public void actionPerformed(ActionEvent e) {
-			switchToHTMLView(null, true);
-			super.actionPerformed(e);
+			if (switchToHTMLView(null, true)) {
+				super.actionPerformed(e);
+			}
 		}
 	}
 
