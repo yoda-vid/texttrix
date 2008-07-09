@@ -14,12 +14,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on occasional tab memory and reopening loss or additions
 -check on RepaintManager exceptions during various copy/paste/undo combinations (seen on Fedora 9 java-1.6.0-openjdk-1.6.0.0-0.13.b09.fc9.i386); WFM (on 1.6.0.0-0.15.b09.fc9.i386)
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
--open multiple windows; DONE
 -save tabs from multiple windows
--streamline static references in TextTrix; DONE
--fix italic, underlines styling to check for html view; FIXED
--About screen should displays build time; DONE
--Swapped Format and View menu and toolbar placement; DONE
+-prep for 0.9.1beta1; INPROGRESS
 
 ----Ideas----
 
@@ -46,7 +42,6 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 	-Search plug-in
 		-option to search backward
 -preferences panel to choose default paths and file type filters
--Java Web Start compatibility
 -option to remember which specific files used auto-indent
 -Tabbed pane updates
 	-when have multiple files with same filename, add more of path to tab titles
@@ -57,15 +52,12 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -Wrap-indent
 	-update indents when paste over selected area
 -command-line arg not to reopen files or for quiet operation
--check on completeness of $(TARGET_FILES) in cleans
 -pref for hanging indent size
--launch remotely, w/o installation: bundle entire application, including plugins, within single jar; mechanism to add plugins directly into the jar
 -Search plugin looks through multiple files
 -file management:
 	-working copy mode: allows user to work on a copy of the file rather than the file itself, then see and apply changes as desired
 	-file locking
 	-read-only mode
--integrate with Jar Ajar plug-in installation mode
 -reopen tabs if exit canceled
 -group copy: copy multiple, separated lines
 -Lift Off for tearing off Text Pads into separate windows

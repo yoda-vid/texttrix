@@ -286,8 +286,8 @@ public class TextTrix extends JFrame {
 
 		/* Create the main Text Trix frame components */
 		
-					groupTabbedPane = new MotherTabbedPane(
-						JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		groupTabbedPane = new MotherTabbedPane(
+			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 /*						
 		// makes the tabbed pane for grouping tabs horizontally
 		// scrollable to help distinguish the tabs from the tabs in
@@ -419,12 +419,6 @@ public class TextTrix extends JFrame {
 
 				// Load files specified at start from command-line
 				
-				// first uncouples the change listener from responding to
-				// the Text Pad additions; need to uncouple when opening
-				// multiple files at once because change listener is on an
-				// EvokeLater and can't respond to text pads as they're added
-//				setUpdateForTextPad(false);
-				
 				// opens paths given as cmd-line args, placing them in their own 
 				// tab group and preparing to create a new tab group for other startup files
 				// TODO: keep track of cmd-line files so don't reopen them automatically
@@ -466,11 +460,7 @@ public class TextTrix extends JFrame {
 				// selects the first tab group and updates the UI for the 
 				// currently selected tab
 				getGroupTabbedPane().setSelectedIndex(0);
-//				updateUIForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
 				
-				// recouples the change listener to respond to tab events
-//				setUpdateForTextPad(true);
-
 				// make the file history menu entries and set the auto-indent
 				// check box
 				syncMenus();
@@ -626,7 +616,11 @@ public class TextTrix extends JFrame {
 	}
 	
 	
-	
+	/** Opens a new Text Trix window.
+	 * Creates a new instance of the TextTrix frame and
+	 * registers the frame with the ttxWindows ArrayList.
+	 * @param args command-line arguments
+	 */
 	private static TextTrix openTTXWindow(String[] args) {
 		final TextTrix textTrix = new TextTrix(args);
 		ttxWindows.add(textTrix);
@@ -4597,23 +4591,7 @@ public class TextTrix extends JFrame {
 								&& backIdx != pane.getSelectedIndex()) {
 								updateTabIndexHistory = false;
 								pane.setSelectedIndex(backIdx);
-//								updateTabIndexHistory = true;
 							}
-							/*
-							pane.decrementTabIndexHistoryIndex();
-							int tabIndexHistoryIndex = pane.getTabIndexHistoryIndex();
-							System.out.println("tabindexhxidx: " + tabIndexHistoryIndex);
-							if (tabIndexHistoryIndex >= 1) {
-								// uncouple the tab index history while
-								// switching
-								// to the past tabs -- leave the tabs as a
-								// trail until a new tab is chosesn
-								updateTabIndexHistory = false;
-								pane.setSelectedIndex(pane.getTabIndexHistoryAt(tabIndexHistoryIndex - 1));
-							} else { // reset the index to its orig val, -1
-								pane.incrementTabIndexHistoryIndex();
-							}
-							*/
 						}
 					};
 					LibTTx.setAcceleratedAction(backTabAction, "Go to previously visited tab", 'B',
@@ -4646,28 +4624,6 @@ public class TextTrix extends JFrame {
 								updateTabIndexHistory = false;
 								pane.setSelectedIndex(forwardIdx);
 							}
-							/*
-							int i = 0;
-							// switch only through the the last recorded
-							// selected tab;
-							// i == -1 signifies that no tab has been recorded
-							// for that index;
-							// keep from updating the history with past
-							// selections
-							pane.incrementTabIndexHistoryIndex();
-							int tabIndexHistoryIndex = pane.getTabIndexHistoryIndex();
-							if (tabIndexHistoryIndex < pane.getTabIndexHistoryCount()
-									&& (i = pane.getTabIndexHistoryAt(tabIndexHistoryIndex - 1)) != -1) {
-								// uncouple the history, preserving it as a
-								// trail of selections past and future from
-								// the current position
-								updateTabIndexHistory = false;
-								pane.setSelectedIndex(i);
-//								updateTabIndexHistory = true;
-							} else {
-								pane.decrementTabIndexHistoryIndex();
-							}
-							*/
 						}
 					};
 					LibTTx.setAcceleratedAction(forwardTabAction, "Go to the next visited tab",
@@ -4953,37 +4909,6 @@ public class TextTrix extends JFrame {
 					LibTTx.setAction(aboutAction, "About", 'A');
 					helpMenu.add(aboutAction);	
 
-/*	TODO: create automatic mechanism for saving formatted changes
-
-					// about saving format options with Text Trix
-					Action formatOptionsAction = new AbstractAction(
-							"Format Options", LibTTx
-									.makeIcon("images/format.png")) {
-						public void actionPerformed(ActionEvent evt) {
-							String path = "savingformatoptions.txt";
-							String text = LibTTx.readText(path);
-							if (text == "") {
-								text = "If the user wants to save the formatted "
-										+ "/nchanges in text or source code,he must follow "
-										+ "/nthis steps(BEFORE doing anything else) :"
-										+ "/n1) Tools-->Toggle HTML view "
-										+ "/n2) Format text or source code"
-										+ "/n3) Tools-->Toggle plain text view"
-										+ "/n4) Save the document"
-										+ "\nthe text tinker";
-								displayMissingResourceDialog(path);
-							}
-							String iconPath1 = "images/opensource.png";
-							JOptionPane.showMessageDialog(getThis(), text,
-									"Saving Format Optios",
-									JOptionPane.PLAIN_MESSAGE, LibTTx
-											.makeIcon(iconPath1));
-						}
-					};
-					LibTTx.setAction(formatOptionsAction,
-							"SavingFormatOptions", 'F');
-					helpMenu.add(formatOptionsAction);	
-*/
 									
 					// shortcuts description; opens new tab;
 					// reads from "shortcuts.txt" in same dir as this class
@@ -5101,6 +5026,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 	
+	/** Applies bold formatting.
+	 * Switches to HTML view to allow saving the styled format.
+	 */
 	private class BoldAction extends StyledEditorKit.BoldAction {
 		public void actionPerformed(ActionEvent e) {
 			if (switchToHTMLView(null, true)) {
@@ -5109,6 +5037,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/** Applies italic formatting.
+	 * Switches to HTML view to allow saving the styled format.
+	 */
 	private class ItalicAction extends StyledEditorKit.ItalicAction {
 		public void actionPerformed(ActionEvent e) {
 			if (switchToHTMLView(null, true)) {
@@ -5117,6 +5048,9 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/** Applies underline formatting.
+	 * Switches to HTML view to allow saving the styled format.
+	 */
 	private class UnderlineAction extends StyledEditorKit.UnderlineAction {
 		public void actionPerformed(ActionEvent e) {
 			if (switchToHTMLView(null, true)) {
@@ -5275,19 +5209,6 @@ public class TextTrix extends JFrame {
 					
 					// line saver
 					statusBarPopup.add(lineSaverAction);
-					/*
-					Action lineSaverAction = new AbstractAction("Save current line number") {
-						public void actionPerformed(ActionEvent evt) {
-							lineNumFld.setText("" + getSelectedTextPad().getLineNumber());
-						}
-					};
-					LibTTx.setAcceleratedAction(lineSaverAction, "Save this line number", 'L',
-							KeyStroke.getKeyStroke("ctrl shift L"));
-					// adds action to status bar popup
-					statusBarPopup.add(lineSaverAction);
-					// adds action to view menu
-					viewMenu.add(lineSaverAction);
-					*/
 					
 					
 					
@@ -5571,35 +5492,6 @@ public class TextTrix extends JFrame {
 			createFileHist();
 			menu.revalidate();
 
-			/*
-			 * Attempt to delete specific menu entries rather than updating the
-			 * whole history. Not yet working.
-			 */
-			/*
-			 * String[] files = getPrefs().retrieveFileHist(); if (files.length ==
-			 * 0) { fileHistCount = 0; return; } String file = files[0];
-			 * System.out.println("Adding " + file + " to the menu"); JMenuItem
-			 * item = null; int countDiff = fileHistCount - files.length; if
-			 * (countDiff > 0) { for (int i = 0; i < countDiff; i++) {
-			 * menu.remove(menu.getItemCount() - 1); } } else { int i = 0; int
-			 * totItems = menu.getItemCount(); int newPos = totItems -
-			 * fileHistCount; if (fileHistCount != 0) { while (++i <=
-			 * fileHistCount && !((item = menu.getItem(totItems -
-			 * i)).getText().equals(file))); if (i <= fileHistCount) {
-			 * menu.remove(totItems - i); menu.insert(item, newPos); } else if
-			 * (countDiff == 0) { menu.remove(totItems - 1);
-			 * menu.insert(createFileHistAction(file), newPos); } } else {
-			 * menu.insert(createFileHistAction(file), newPos); } }
-			 * fileHistCount = files.length;
-			 */
-
-			// assumes that the file history entries are at the entries in the
-			// menu
-			//int i = 0;
-			/*
-			 * for (int i = menu.getItemCount() - 1; i < fileHistCount; i++) {
-			 * menu.remove(menu.getItemCount() - 1); } createFileHist(menu);
-			 */
 		}
 
 	}
