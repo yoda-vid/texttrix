@@ -86,7 +86,7 @@ Last updated:
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 #VER="0.9.0rc2-"$DATE
 TIMESTAMP=0
-VER="0.9.1alpha1"
+VER="0.9.1beta1"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -316,6 +316,7 @@ sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 cp -rf pkg.sh run.sh manifest-additions.mf build.sh run.ps1 build.ps1 gnu \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix
+sed 's/build:/build: '$DATE'/' $DIR/about.txt > "$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
 #chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/configure
 chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
@@ -340,21 +341,23 @@ rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 # create/package binaries
 cd $BLD_DIR/$PKGDIR
 cp "$TTX_DIR"/plugins/*.jar plugins # only want jars in binary package
+rm -rf com
+
+# create JAR from source package and remove binary files from source
+cd $BLD_DIR/$SRCPKGDIR/texttrix
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm $JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html com/Ostermiller
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html com/Ostermiller
 else
-	"$JAVA"jar -cfm $JAR "$TTX_DIR/manifest-additions.mf" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html com/Ostermiller
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png "$DIR"/*.html com/Ostermiller
 fi
 # make executable so can be run as binary on systems where jexec is installed
-chmod 755 $JAR
-rm -rf com
+chmod 755 $BLD_DIR/$PKGDIR/$JAR
+rm -rf */*/*.class */*/*/*.class */*/*/*/*.class
 
 # finish the source package
-# remove all but source and related files
-cd $BLD_DIR/$SRCPKGDIR 
-rm -rf texttrix/*/*/*.class texttrix/*/*/*/*.class texttrix/*/*/*/*/*.class
+cd $BLD_DIR/$SRCPKGDIR
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins
 rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \

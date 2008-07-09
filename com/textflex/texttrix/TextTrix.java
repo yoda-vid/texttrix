@@ -4144,9 +4144,9 @@ public class TextTrix extends JFrame {
 					fileMenu.setMnemonic(fileMenuMnemonic);
 					JMenu editMenu = new JMenu("Edit");
 					editMenu.setMnemonic('E');
+					viewMenu.setMnemonic('V');
 					JMenu formatMenu = new JMenu("Format");
 					formatMenu.setMnemonic('F');
-					viewMenu.setMnemonic('V');
 					trixMenu = new JMenu("Trix");
 					trixMenu.setMnemonic('T');
 					toolsMenu = new JMenu("Tools");
@@ -4554,129 +4554,6 @@ public class TextTrix extends JFrame {
 							'Y');
 					editMenu.add(prefsAction);						
 				
-					/* Format menu items */
-
-					// Bold operation
-					// (ctrl-B) Abreviation of keyboard
-					// Create a toolbar button for the bold action
-//					boldItem = new JMenuItem("Bold", 
-//							LibTTx.makeIcon("images/bold.png"));
-					Action boldAction = new BoldAction();
-					LibTTx.setAcceleratedAction(boldAction, "Bold",
-							boldActionMnemonic, boldActionShortcut);
-					LibTTx.setActionIcon(boldAction, "images/bold.png");
-//					boldItem.addActionListener(boldAction);
-					formatMenu.add(boldAction);
-					JButton boldButton = toolBar.add(boldAction);
-					boldButton.setIcon(LibTTx.makeIcon("images/boldicon-16x16.png"));
-					boldButton.setBorderPainted(false);
-//					boldButton.setText(null);
-//					boldButton.setToolTipText("Bold");
-					LibTTx.setRollover(boldButton, "images/boldicon-roll-16x16.png");
-
-					// Italic operation
-					// (ctrl-I) Abreviation of keyboard
-					// Create a toolbar button for the italic action
-//					italicItem = new JMenuItem("Italic", 
-//							LibTTx.makeIcon("images/italic.png"));
-					Action italicAction = new ItalicAction();
-					LibTTx.setAcceleratedAction(italicAction, "Italic",
-							italicActionMnemonic, italicActionShortcut);
-//					italicItem.addActionListener(italicAction);
-//					italicItem.setAccelerator(KeyStroke.getKeyStroke(
-//							KeyEvent.VK_I, InputEvent.CTRL_MASK));
-					LibTTx.setActionIcon(italicAction, "images/italic.png");
-					formatMenu.add(italicAction);
-					JButton italicButton = toolBar.add(italicAction);
-					italicButton.setIcon(LibTTx
-							.makeIcon("images/italicicon-16x16.png"));
-					italicButton.setBorderPainted(false);
-//					italicButton.setText(null);
-					italicButton.setToolTipText("Italic");
-					LibTTx.setRollover(italicButton, "images/italicicon-roll-16x16.png");
-
-					// Underline operation
-					// (ctrl-U) Abreviation of keyboard
-					// Create a toolbar button for the underline action
-//					underlineItem = new JMenuItem("Underline", 
-//							LibTTx.makeIcon("images/underline.png"));
-					Action underlineAction = new UnderlineAction();
-					LibTTx.setAcceleratedAction(underlineAction, "Underline",
-							underlineActionMnemonic, underlineActionShortcut);
-//					underlineItem.addActionListener(underlineAction);
-//					underlineItem.setAccelerator(KeyStroke.getKeyStroke(
-//							KeyEvent.VK_U, InputEvent.CTRL_MASK));
-					LibTTx.setActionIcon(underlineAction, "images/underline.png");
-					formatMenu.add(underlineAction);
-					JButton underlineButton = toolBar.add(underlineAction);
-					underlineButton.setIcon(LibTTx
-							.makeIcon("images/underlineicon-16x16.png"));
-					underlineButton.setBorderPainted(false);
-					underlineButton.setText(null);
-					underlineButton.setToolTipText("Underline");
-					LibTTx.setRollover(underlineButton,
-							"images/underlineicon-roll-16x16.png");
-
-					// toolbar separator
-					toolBar.addSeparator();
-
-					// format menu separator
-					formatMenu.addSeparator();
-
-					// Font size operation
-					fontSize = new JMenu("Fontsize");
-					fontSizeGroupOfButtons("Size: 10", 10);
-					fontSizeGroupOfButtons("Size: 12", 12);
-					fontSizeGroupOfButtons("Size: 14", 14);
-					fontSizeGroupOfButtons("Size: 16", 16);
-					fontSizeGroupOfButtons("Size: 18", 18);
-					fontSizeGroupOfButtons("Size: 20", 20);
-					fontSizeGroupOfButtons("Size: 22", 22);
-					fontSizeGroupOfButtons("Size: 24", 24);
-					formatMenu.add(fontSize);
-					
-					// format menu separator
-					formatMenu.addSeparator();
-
-					// Alignment operation
-					alignment = new JMenu("Alignment");
-					alignmentGroupOfButton("Alignment: Beginning", 3);
-					alignmentGroupOfButton("Alignment: Middle", 1);
-					alignmentGroupOfButton("Alignment: End", 2);
-					formatMenu.add(alignment);
-
-					// format menu separator
-					formatMenu.addSeparator();
-
-					// Coloring operation
-					textColor = new JMenu("Color");
-					colorGroupOfButton("Black", Color.BLACK);
-					colorGroupOfButton("Blue", Color.BLUE);
-					colorGroupOfButton("Orange", Color.ORANGE);
-					colorGroupOfButton("Red", Color.RED);
-					colorGroupOfButton("Yellow", Color.YELLOW);
-					colorGroupOfButton("Cyan", Color.CYAN);
-					colorGroupOfButton("Dark Gray", Color.DARK_GRAY);
-					colorGroupOfButton("Green", Color.GREEN);
-					colorGroupOfButton("Magenta", Color.MAGENTA);
-					colorGroupOfButton("Pink", Color.PINK);
-					colorGroupOfButton("White", Color.WHITE);
-					formatMenu.add(textColor);
-
-					// Background Coloring operation
-					backgroundColor = new JMenu("Background Coloring");
-					backColorGroupOfButton("Red", Color.RED);
-					backColorGroupOfButton("Black", Color.BLACK);
-					backColorGroupOfButton("Blue", Color.BLUE);
-					backColorGroupOfButton("Yellow", Color.YELLOW);
-					backColorGroupOfButton("Cyan", Color.CYAN);
-					backColorGroupOfButton("Dark Gray", Color.DARK_GRAY);
-					backColorGroupOfButton("Magenta", Color.MAGENTA);
-					backColorGroupOfButton("Green", Color.GREEN);
-					backColorGroupOfButton("Pink", Color.PINK);
-					backColorGroupOfButton("White", Color.WHITE);
-					formatMenu.add(backgroundColor);
-					
 					
 					/* View menu items */
 
@@ -4935,19 +4812,118 @@ public class TextTrix extends JFrame {
 					// adds action to view menu
 					viewMenu.add(lineSaverAction);
 					
-					
-					
-					
-					
-					
-					
-					
-					
-					// Start toolbar plugins
+					// tool bar separator before format options
 					toolBar.addSeparator();
 					
 					
 					
+					
+					/* Format menu items */
+
+					// Bold operation
+					// (ctrl-B) Abreviation of keyboard
+					// Create a toolbar button for the bold action
+					Action boldAction = new BoldAction();
+					LibTTx.setAcceleratedAction(boldAction, "Bold",
+							boldActionMnemonic, boldActionShortcut);
+					LibTTx.setActionIcon(boldAction, "images/bold.png");
+					formatMenu.add(boldAction);
+					JButton boldButton = toolBar.add(boldAction);
+					boldButton.setIcon(LibTTx.makeIcon("images/boldicon-16x16.png"));
+					boldButton.setBorderPainted(false);
+					LibTTx.setRollover(boldButton, "images/boldicon-roll-16x16.png");
+
+					// Italic operation
+					// (ctrl-I) Abreviation of keyboard
+					// Create a toolbar button for the italic action
+					Action italicAction = new ItalicAction();
+					LibTTx.setAcceleratedAction(italicAction, "Italic",
+							italicActionMnemonic, italicActionShortcut);
+					LibTTx.setActionIcon(italicAction, "images/italic.png");
+					formatMenu.add(italicAction);
+					JButton italicButton = toolBar.add(italicAction);
+					italicButton.setIcon(LibTTx
+							.makeIcon("images/italicicon-16x16.png"));
+					italicButton.setBorderPainted(false);
+					italicButton.setToolTipText("Italic");
+					LibTTx.setRollover(italicButton, "images/italicicon-roll-16x16.png");
+
+					// Underline operation
+					// (ctrl-U) Abreviation of keyboard
+					// Create a toolbar button for the underline action
+					Action underlineAction = new UnderlineAction();
+					LibTTx.setAcceleratedAction(underlineAction, "Underline",
+							underlineActionMnemonic, underlineActionShortcut);
+					LibTTx.setActionIcon(underlineAction, "images/underline.png");
+					formatMenu.add(underlineAction);
+					JButton underlineButton = toolBar.add(underlineAction);
+					underlineButton.setIcon(LibTTx
+							.makeIcon("images/underlineicon-16x16.png"));
+					underlineButton.setBorderPainted(false);
+					underlineButton.setText(null);
+					underlineButton.setToolTipText("Underline");
+					LibTTx.setRollover(underlineButton,
+							"images/underlineicon-roll-16x16.png");
+
+					// toolbar separator before plugin icons
+					toolBar.addSeparator();
+
+					// format menu separator
+					formatMenu.addSeparator();
+
+					// Font size operation
+					fontSize = new JMenu("Fontsize");
+					fontSizeGroupOfButtons("Size: 10", 10);
+					fontSizeGroupOfButtons("Size: 12", 12);
+					fontSizeGroupOfButtons("Size: 14", 14);
+					fontSizeGroupOfButtons("Size: 16", 16);
+					fontSizeGroupOfButtons("Size: 18", 18);
+					fontSizeGroupOfButtons("Size: 20", 20);
+					fontSizeGroupOfButtons("Size: 22", 22);
+					fontSizeGroupOfButtons("Size: 24", 24);
+					formatMenu.add(fontSize);
+					
+					// format menu separator
+					formatMenu.addSeparator();
+
+					// Alignment operation
+					alignment = new JMenu("Alignment");
+					alignmentGroupOfButton("Alignment: Beginning", 3);
+					alignmentGroupOfButton("Alignment: Middle", 1);
+					alignmentGroupOfButton("Alignment: End", 2);
+					formatMenu.add(alignment);
+
+					// format menu separator
+					formatMenu.addSeparator();
+
+					// Coloring operation
+					textColor = new JMenu("Color");
+					colorGroupOfButton("Black", Color.BLACK);
+					colorGroupOfButton("Blue", Color.BLUE);
+					colorGroupOfButton("Orange", Color.ORANGE);
+					colorGroupOfButton("Red", Color.RED);
+					colorGroupOfButton("Yellow", Color.YELLOW);
+					colorGroupOfButton("Cyan", Color.CYAN);
+					colorGroupOfButton("Dark Gray", Color.DARK_GRAY);
+					colorGroupOfButton("Green", Color.GREEN);
+					colorGroupOfButton("Magenta", Color.MAGENTA);
+					colorGroupOfButton("Pink", Color.PINK);
+					colorGroupOfButton("White", Color.WHITE);
+					formatMenu.add(textColor);
+
+					// Background Coloring operation
+					backgroundColor = new JMenu("Background Coloring");
+					backColorGroupOfButton("Red", Color.RED);
+					backColorGroupOfButton("Black", Color.BLACK);
+					backColorGroupOfButton("Blue", Color.BLUE);
+					backColorGroupOfButton("Yellow", Color.YELLOW);
+					backColorGroupOfButton("Cyan", Color.CYAN);
+					backColorGroupOfButton("Dark Gray", Color.DARK_GRAY);
+					backColorGroupOfButton("Magenta", Color.MAGENTA);
+					backColorGroupOfButton("Green", Color.GREEN);
+					backColorGroupOfButton("Pink", Color.PINK);
+					backColorGroupOfButton("White", Color.WHITE);
+					formatMenu.add(backgroundColor);
 					
 					
 					
@@ -5073,8 +5049,8 @@ public class TextTrix extends JFrame {
 					setJMenuBar(menuBar);
 					menuBar.add(fileMenu);
 					menuBar.add(editMenu);
-					menuBar.add(formatMenu);
 					menuBar.add(viewMenu);
+					menuBar.add(formatMenu);
 					menuBar.add(trixMenu);
 					menuBar.add(toolsMenu);
 					menuBar.add(helpMenu);
