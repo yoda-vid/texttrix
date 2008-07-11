@@ -15,7 +15,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on RepaintManager exceptions during various copy/paste/undo combinations (seen on Fedora 9 java-1.6.0-openjdk-1.6.0.0-0.13.b09.fc9.i386); WFM (on 1.6.0.0-0.15.b09.fc9.i386)
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
--prep for 0.9.1beta1; INPROGRESS
+-prep for 0.9.1rc1; INPROGRESS
 
 ----Ideas----
 

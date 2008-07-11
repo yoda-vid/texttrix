@@ -51,10 +51,9 @@ Parameters:
 	--branch=path/to/branch: The branch (or trunk) from which to
 	compile source code.  For example, to compile from the 0.7.1
 	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
-	simply specify \"--branch=trunk\".  When compiling from the source code 
-	release package, which unlike the Subversion repository does 
-	not contain branches and tags, \"--branch=.\" (single period) suffices.  
-	Defaults to \"trunk\".
+	simply specify \"--branch=trunk\".  The source code release package
+	sets the branch to \".\", since the source package does 
+	not contain branches and tags.  Otherwise, defaults to \"trunk\".
 	
 	--help: Lends a hand by displaying yours truly.
 	
@@ -65,7 +64,14 @@ Parameters:
 	specification.  On Linux, this path defaults to
 	"/usr/java/default", the new link found in Java 6.  
 	
-	--prefix=install-location: the directory in which to install Text Trix.
+	--plgbranch=path/to/branch: The plugin branch (or trunk) from which to
+	compile plugin source code.  For example, to compile from the 0.7.1
+	branch, specify \"--plgbranch=branches/0.7.1\".  To compile from the trunk, 
+	simply specify \"--plgbranch=trunk\".  The source code release package
+	sets the branch to \".\", since the source package does 
+	not contain branches and tags.  Otherwise, defaults to \"trunk\".
+	
+	--prefix=install/location: the directory in which to install Text Trix.
 	Defaults to "/usr/share".
 	
 	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
@@ -74,7 +80,7 @@ Copyright:
 	Copyright (c) 2003-8 Text Flex
 
 Last updated:
-	2008-04-11
+	2008-07-10
 "
 
 #####################
@@ -84,9 +90,8 @@ Last updated:
 
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
-#VER="0.9.0rc2-"$DATE
 TIMESTAMP=0
-VER="0.9.1beta1"
+VER="0.9.1rc1"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -312,11 +317,12 @@ cd "$TTX_DIR"
 # remove the branch assignments because no branches in src pkg
 #sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix/configure
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
-	sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
+		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
+		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 cp -rf pkg.sh run.sh manifest-additions.mf build.sh run.ps1 build.ps1 gnu \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix
-sed 's/build:/build: '$DATE'/' $DIR/about.txt > "$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
+		"$BLD_DIR/$SRCPKGDIR"/texttrix
+sed 's/build:/build: '$DATE'/' $DIR/about.txt > \ 
+		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
 #chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/configure
 chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
 	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
@@ -348,9 +354,9 @@ cd $BLD_DIR/$SRCPKGDIR/texttrix
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR "`cygpath -p -w $TTX_DIR/manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png "$DIR"/*.html com/Ostermiller
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller
 else
-	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png "$DIR"/*.html com/Ostermiller
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller
 fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $BLD_DIR/$PKGDIR/$JAR

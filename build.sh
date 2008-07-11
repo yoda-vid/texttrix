@@ -19,7 +19,7 @@
 # Portions created by the Initial Developer are Copyright (C) 2003-4, 2008
 # the Initial Developer. All Rights Reserved.
 #
-# Contributor(s): David Young <dvd@textflex.com>
+# Contributor(s): David Young <david@textflex.com>
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -48,6 +48,13 @@ the file build.sh does not have executable permissions.)
 
 Parameters:
 	--api: Builds the API documentation files.
+	
+	--branch=path/to/branch: The branch (or trunk) from which to
+	compile source code.  For example, to compile from the 0.7.1
+	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
+	simply specify \"--branch=trunk\".  The source code release package
+	sets the branch to \".\", since the source package does 
+	not contain branches and tags.  Otherwise, defaults to \"trunk\".
 	
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
