@@ -321,7 +321,7 @@ sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 cp -rf pkg.sh run.sh manifest-additions.mf build.sh run.ps1 build.ps1 gnu \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
-sed 's/build:/build: '$DATE'/' $DIR/about.txt > \ 
+sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
 #chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/configure
 chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \

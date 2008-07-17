@@ -180,9 +180,17 @@ public class TextTrix extends JFrame {
 		// window by calling the exit function
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				ttxWindows.remove(getThis());
-				if (ttxWindows.size() <= 0) {
-					exitTextTrix();
+//				TextTrix ttx = getThis();
+				boolean closedTabs = false;
+				if (ttxWindows.size() <= 1) {
+//					System.out.println("size: " + ttxWindows.size());
+					closedTabs = exitTextTrix();
+				} else {
+					closedTabs = closeAllTabs();
+				}
+				if (closedTabs) {
+					setVisible(false);
+					ttxWindows.remove(getThis());
 				}
 			}
 		});
@@ -627,7 +635,7 @@ public class TextTrix extends JFrame {
 		// Close the program with customized exit operation when
 		// user hits close so can apply exit operations, such as remembering
 		// open file paths
-//		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		textTrix.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		/* Workaround for bug #4841881, where Alt-Tabs are captured as
 		 * menu shortcuts
@@ -1902,6 +1910,16 @@ public class TextTrix extends JFrame {
 	 * @return true if Text Trix exits successfully
 	 */
 	public boolean exitTextTrix() {
+		boolean b = closeAllTabs();
+		// store the file list and exit Text Trix if all the files closed
+		// successfully, set to reopen tabs, and not set for a fresh session
+		if (b == true) {
+			System.exit(0);
+		}
+		return b;
+	}
+	
+	public boolean closeAllTabs() {
 		// Get the open file history and prep for new entries
 		String openedPaths = "";
 		boolean reopenTabs = getPrefs().getReopenTabs();
@@ -1941,15 +1959,11 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
-
-		// store the file list and exit Text Trix if all the files closed
-		// successfully, set to reopen tabs, and not set for a fresh session
 		if (b == true) {
 			// preserves most recently saved tabs if set to fresh session
 			if (!getFresh() && reopenTabs) {
 				getPrefs().storeReopenTabsList(openedPaths);
 			}
-			System.exit(0);
 		}
 		return b;
 	}
@@ -2287,9 +2301,10 @@ public class TextTrix extends JFrame {
 	 * before proceeding with the view change
 	 */
 	public boolean switchToHTMLView(TextPad pad, boolean warning) {
-		boolean changeView = false;
+		boolean changeView = true;
 		if (pad == null) pad = getSelectedTextPad();
-		if (pad == null) return changeView;
+		if (pad == null) return false;
+		System.out.println("html");
 		if (!pad.isHTMLView()) {
 			if (warning) {
 				changeView = LibTTx.yesNoDialog(

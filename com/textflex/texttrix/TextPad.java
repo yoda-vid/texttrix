@@ -1247,6 +1247,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		// records the edit event for undoing and gets the text
 		StateEdit stateEdit = new StateEdit(this);
 		String text = getText();
+		text = text.replaceAll("\n", "<p>");
+//		System.out.println(text);
 		
 		// sets the style
 		setDocument(getEditorKit().createDefaultDocument());
