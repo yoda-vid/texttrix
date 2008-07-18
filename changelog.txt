@@ -8,12 +8,18 @@ http://textflex.com/texttrix
 (See todo.txt for a more detailed log of improvements and
 plans for future ones.)
 
-----v.0.9.1 (in progress)----
+----v.0.9.1 (2008-07-20)----
 
-The editor now features formatted text options, including an automatic view switcher for html viewing and saving.  Font style, size, color, and alignment can be changed through a new format menu.  Files can also be viewed side-by-side through multiple instances of the Text Trix main window.  Other changes include a syntax highlighter preference option and fix for contextual scrolling.
+The editor now features formatted text options, including an automatic view 
+switcher for html viewing and saving.  Font style, size, color, and alignment 
+can be changed through a new format menu.  Files can also be viewed 
+side-by-side through multiple instances of the Text Trix main window.  
+Other changes include a syntax highlighter preference option and fix for 
+contextual scrolling.
 
 New features/fixes:
--Text formatting, including font style, size, color, and alignment (by John Kozalan)
+-Text formatting, including font style, size, color, and alignment (by John 
+Kozalan)
 -Automatic view switcher for formatted text
 -Sytax highlighting preference option
 -Multiple instances for side-by-side viewing

@@ -478,6 +478,7 @@ public class Prefs extends JDialog {//JFrame {
 		storeFileHistCount(fileHistCountMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
+//		System.out.println(getAutoIndentExt());
 		/*
 		generalPrefs.putBoolean(ACTIVATE_WINDOWS_TOGETHER, 
 			activateWindowsTogetherChk.isSelected());
@@ -847,7 +848,8 @@ public class Prefs extends JDialog {//JFrame {
 	 * period is assumed and optional
 	 */
 	public String getAutoIndentExt() {
-		return generalPrefs.get(AUTO_INDENT_EXT, "");
+		return generalPrefs.get(AUTO_INDENT_EXT, 	
+				".java, .c, .cpp, .html, .htm, .css, .shtml, .xhtml, .xml, .sh");
 	}
 	/**Gets the stored flag for whether the windows should become active 
 	 * together.
@@ -989,8 +991,13 @@ public class Prefs extends JDialog {//JFrame {
 						new JCheckBox(autoIndentTxt, getAutoIndent());
 					autoIndentChk.setToolTipText(autoIndentTipTxt);
 					// default list of extension
-					String autoIndentExt =
-						".java, .c, .cpp, .html, .htm, .css, .shtml, .xhtml, .xml, .sh";
+					String autoIndentExt = getAutoIndentExt();
+					/*
+					if (autoIndentExt == null || autoIndentExt.equals("")) {
+						autoIndentExt = 
+							".java, .c, .cpp, .html, .htm, .css, .shtml, .xhtml, .xml, .sh";
+					}
+					*/
 					autoIndentExtFld = new JTextField(autoIndentExt, 100);
 					
 
