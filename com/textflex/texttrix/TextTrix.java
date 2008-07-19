@@ -180,14 +180,15 @@ public class TextTrix extends JFrame {
 		// window by calling the exit function
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-//				TextTrix ttx = getThis();
 				boolean closedTabs = false;
+				// check whether only one window is open
 				if (ttxWindows.size() <= 1) {
-//					System.out.println("size: " + ttxWindows.size());
 					closedTabs = exitTextTrix();
 				} else {
 					closedTabs = closeAllTabs();
 				}
+				// remove the window from the window list only if all
+				// tabs were successfully closed in it
 				if (closedTabs) {
 					setVisible(false);
 					ttxWindows.remove(getThis());
@@ -294,6 +295,8 @@ public class TextTrix extends JFrame {
 
 		/* Create the main Text Trix frame components */
 		
+		// taken out of invokeAndWait because TextTrix windows also need
+		// to be launchable from another TextTrix window
 		groupTabbedPane = new MotherTabbedPane(
 			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 /*						
@@ -531,6 +534,7 @@ public class TextTrix extends JFrame {
 		}
 		
 		// Create Text Trix!
+		// and add it to the window list
 		final TextTrix textTrix = openTTXWindow(args); //new TextTrix(args);
 		
 
@@ -954,12 +958,13 @@ public class TextTrix extends JFrame {
 	}
 	
 	
-	// This method takes as inputs the number of alignment
-	// which user can use in his text and
-	// the name of the alignment
-	// Then adds a button for each number and organize
-	// all the buttons in a group
-	// End, adds this group at Alignment operation
+	/** This method takes as inputs the number of alignment
+	* which user can use in his text and
+	* the name of the alignment
+	* Then adds a button for each number and organize
+	* all the buttons in a group
+	* End, adds this group at Alignment operation
+	*/
 	public void alignmentGroupOfButton(final String nameOfAlignment,
 			final int location) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfAlignment);
@@ -976,12 +981,13 @@ public class TextTrix extends JFrame {
 	}
 	
 	
-	// This method takes as inputs the color in
-	// which user can "paint" his text and
-	// the name of the color
-	// Then adds a button for each color and organize
-	// all the buttons in a group
-	// End, adds this group at Color operation
+	/** This method takes as inputs the color in
+	* which user can "paint" his text and
+	* the name of the color
+	* Then adds a button for each color and organize
+	* all the buttons in a group
+	* End, adds this group at Color operation
+	*/
 	public void colorGroupOfButton(final String nameOfColor, final Color color) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
 		group.add(button);
@@ -997,12 +1003,13 @@ public class TextTrix extends JFrame {
 	}
 	
 	
-	// This method takes as inputs the color in
-	// which user can "paint" the backgroundtext and
-	// the name of the color
-	// Then adds a button for each color and organize
-	// all the buttons in a group
-	// End, adds this group at Background Color operation
+	/** This method takes as inputs the color in
+	* which user can "paint" the backgroundtext and
+	* the name of the color
+	* Then adds a button for each color and organize
+	* all the buttons in a group
+	* End, adds this group at Background Color operation
+	*/
 	public void backColorGroupOfButton(final String nameOfColor,
 			final Color color) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
@@ -1536,130 +1543,6 @@ public class TextTrix extends JFrame {
 		}
 	}
 
-	/**
-	 * Gets the <code>plugins</code> folder file. TODO: Add preferences option
-	 * to specify alternative or additional <code>plugins</code> folder
-	 * location, such as a permanent storage place to reuse plug-ins after
-	 * installing a new version of Text Trix.
-	 * 
-	 * @return <code>plugins</code> folder
-	 *
-	public File getPlugInsFile() {
-		/*
-		 * The code has a relatively elaborate mechanism to locate the plugins
-		 * folder and its JAR files. Why not use the URL that the Text Trix
-		 * class supplies? Text Trix needs to locate each JAR plugin's absolute
-		 * path and name. Text Trix's URL must be truncated to its root
-		 * directory's location and built back up through the plugins directory.
-		 * Using getParentFile() to the program's root and appending the rest of
-		 * the path to the plugins allows one to use URLClassLoader directly
-		 * with the resulting URL.
-		 * 
-		 * Unfortunately, some systems do not locate local files with this
-		 * method. The following elaborate system works around this apparent JRE
-		 * bug by further breaking the URL into a normal path and loading a file
-		 * from it.
-		 * 
-		 * Unfortunately again, a new feature from JRE v.1.4 causes spaces in
-		 * URL strings to be converted to "%20" turning URL's into strings. The
-		 * JRE cannot load files with "%20" in them, however; for example,
-		 * "c:\Program Files\texttrix-x.y.z\plugins" never gets loaded. The
-		 * workaround is to replace all "%20"'s in the string with " ". Along
-		 * with v.1.4 comes new String regex tools to make the operation simple,
-		 * but prior versions crash after a NoSuchMethodError. The replacement
-		 * must be done manually.
-		 *
-		// this class's location
-		String relClassLoc = "com/textflex/texttrix/TextTrix.class";
-		URL urlClassDir = ClassLoader.getSystemResource(relClassLoc);
-		String strClassDir = urlClassDir.getPath();
-		// to check whether JAR
-		File fileClassDir = new File(urlClassDir.getPath());
-		File baseDir = null;
-		// move into JAR's parent directory only if launched from a JAR
-		if (strClassDir.indexOf(".jar!/" + relClassLoc) != -1) {
-			baseDir = fileClassDir.getParentFile().getParentFile()
-					.getParentFile().getParentFile().getParentFile();
-		} else { // not from JAR; one less parent directory
-			baseDir = fileClassDir.getParentFile().getParentFile()
-					.getParentFile().getParentFile();
-		}
-		/*
-		 * convert "%20", the escape character for a space, into " "; conversion
-		 * necessary starting with JRE v.1.4.0 (see
-		 * http://developer.java.sun.com/developer/ //
-		 * bugParade/bugs/4466485.html)
-		 *
-		String strBaseDir = baseDir.toString();
-		int space = 0;
-		// continue while still have "%20", the spaces symbol
-		while ((space = strBaseDir.indexOf("%20")) != -1) {
-			if (strBaseDir.length() > space + 3) {
-				strBaseDir = strBaseDir.substring(0, space) + " "
-						+ strBaseDir.substring(space + 3);
-			} else {
-				strBaseDir = strBaseDir.substring(0, space) + " ";
-			}
-		}
-		/*
-		 * Though simpler, this alternative solution crashes after a
-		 * NoSuchMethodError under JRE <= 1.3.
-		 *
-		/*
-		 * baseDir = new File(baseDir.toString().replaceAll("%20", " ")); File
-		 * plugInsFile = new File(baseDir, "plugins");
-		 *
-
-		// plugins directory;
-		// considered nonexistent since baseDir's path in URL syntax
-		File plugInsFile = new File(strBaseDir, "plugins");
-		String plugInsPath = plugInsFile.getPath();
-
-		// directory path given as URL; need to parse into normal syntax
-		String protocol = "file:";
-		int pathStart = plugInsPath.indexOf(protocol);
-		// check if indeed given as URL;
-		// if so, delete protocol and any preceding info
-		if (pathStart != -1)
-			plugInsPath = plugInsPath.substring(pathStart + protocol.length());
-		// plugInsPath now in normal syntax
-		plugInsFile = new File(plugInsPath); // the actual file
-		
-		// If necessary, adjust path to properly navigate across the network
-		if (!plugInsFile.exists()) {
-			// According to testing on Windows XP, an extra backslash needs
-			// to be added to the start of the path to create the format: 
-			// "\\COMPUTER_NAME\ShareName"
-			plugInsFile = new File("\\" + plugInsPath);
-		}
-		
-		if (!plugInsFile.exists()) {
-			System.out.println("We truly apologize, but we haven't been able to locate"
-				+ newline + plugInsFile.toString()
-				+ newline + "for your plug-ins.");
-		}
-
-		/*
-		 * A possible workaround for an apparent JRE v.1.4 bug that fails to
-		 * open files with spaces in their paths. This workaround converts any
-		 * file or directory names with their "8.3" formatted equivalents. For
-		 * example, "Program Files" is converted to "PROGRA~1", which some
-		 * systems might map to the intended file.
-		 *
-		/*
-		 * if (!plugInsFile.exists()) { String seg = ""; StringTokenizer tok =
-		 * new StringTokenizer(plugInsPath, "/\\"); StringBuffer buf = new
-		 * StringBuffer(plugInsPath.length()); for (int i = 0;
-		 * tok.hasMoreTokens(); i++) { seg = tok.nextToken(); if (seg.length() >
-		 * 8) seg = seg.substring(0, 6).toUpperCase() + "~1";
-		 * buf.append(File.separator + seg); } plugInsPath = buf.toString();
-		 * plugInsFile = new File(plugInsPath); // the actual file //
-		 * System.out.println(plugInsPath); }
-		 *
-//System.out.println("plugInsPath: " + plugInsFile.getPath());		
-		return plugInsFile;
-	}
-	*/
 	
 	/** Gets the <code>plugins</code> file for accessing Text Trix plugins.
 	 * Notifies the user if the folder could not be located.
@@ -1902,12 +1785,10 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Exits <code>TextTrix</code> by closing each tab individually, checking
-	 * for unsaved text areas in the meantime.
-	 * The tab filenames are stored as one continuous string, separated by the
-	 * names of their tab groups.
-	 * TODO: restore open tabs if close canceled
+	 * Exits <code>TextTrix</code> by closing each tabs and saving their
+	 * names for subsequent reopening, as well as calling System.exit.
 	 * @return true if Text Trix exits successfully
+	 * @see #closeAllTabs
 	 */
 	public boolean exitTextTrix() {
 		boolean b = closeAllTabs();
@@ -1919,6 +1800,13 @@ public class TextTrix extends JFrame {
 		return b;
 	}
 	
+	/**	Closes each tab individually, checking
+	 * for unsaved text areas in the meantime.
+	 * The tab filenames are stored as one continuous string, separated by the
+	 * names of their tab groups.
+	 * TODO: restore open tabs if close canceled
+	 * @return true if all tabs are successfully closed
+	 */
 	public boolean closeAllTabs() {
 		// Get the open file history and prep for new entries
 		String openedPaths = "";
@@ -1959,8 +1847,8 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
+		// preserves most recently saved tabs if set to fresh session
 		if (b == true) {
-			// preserves most recently saved tabs if set to fresh session
 			if (!getFresh() && reopenTabs) {
 				getPrefs().storeReopenTabsList(openedPaths);
 			}
@@ -2228,24 +2116,6 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Changes current tab's title in the tabbed pane title to indicate whether
-	 * the file has unsaved changes. Appends "<code> *</code>" if the file
-	 * has unsaved changes; appends "<code>  </code>" otherwise.
-	 * 
-	 * @param arrayList
-	 *            array of <code>TextPad</code> s that the tabbed pane
-	 *            displays
-	 * @param tabbedPane
-	 *            tabbed pane to update
-	 *
-	public static void updateTabTitle(JTabbedPane tabbedPane) {
-		// -1 indicates that the currently selected tab is the one
-		// to update
-		updateTabTitle(tabbedPane, -1);
-	}
-	*/
-
-	/**
 	 * Adds additional listeners and other settings to a <code>TextPad</code>.
 	 * Useful to apply on top of the <code>TextPad</code>'s
 	 * <code>applyDocumentSettings</code> function.
@@ -2274,23 +2144,6 @@ public class TextTrix extends JFrame {
 			}
 		}
 	}
-
-	/**
-	 * Displays the given <code>TextPad</code> in html text format. Calls the
-	 * <code>TextPad</code>'s<code>viewHTML</code> function before adding
-	 * <code>TextTrix</code> -specific settings, such as a
-	 * <code>TextPadDocListener</code>.
-	 *
-	public void viewHTML() {
-		TextPad t = getSelectedTextPad();
-		if (t != null) {
-			if (!t.getContentType().equals("text/html")) {
-				t.viewHTML();
-				addExtraTextPadDocumentSettings(t);
-			}
-		}
-	}
-	*/
 
 	
 	/** Switches the given or current TextPad to HTML
@@ -2354,10 +2207,6 @@ public class TextTrix extends JFrame {
 	public void read(final TextPad textPad, Reader in, Object desc)
 			throws IOException {
 		final String text = LibTTx.readText(new BufferedReader(in));
-//		textPad.setHighlightedDocument();
-//		textPad.createHighlightedDocument(text);
-//		HighlighterWorker hiWorker = new HighlighterWorker(textPad, text);
-//		hiWorker.execute();
 		// reads in text and sets it manually, assuming newly created
 		// HighlightedDocument in TextPad;
 		// runs in EDT to prevent GUI lock-up during loading
@@ -2384,33 +2233,6 @@ public class TextTrix extends JFrame {
 		});
 //		textPad.read(in, desc);
 	}
-	
-/*	
-	private class HighlighterWorker extends SwingWorker<String, Void> {
-		TextPad pad = null;
-		String text = "";
-		
-		public HighlighterWorker(TextPad aPad, String aText) {
-			setTextPad(aPad);
-			setText(aText);
-		}
-		
-		protected String doInBackground() throws Exception {
-			System.out.println("starting...");
-			pad.setText(text);
-			System.out.println("done");
-			return "true";
-		}
-		
-		public void setTextPad(TextPad aPad) {
-			pad = aPad;
-		}
-		
-		public void setText(String aText) {
-			text = aText;
-		}
-	}
-*/	
 	
 	/** Removes the currently selected tabbed pane from the
 	 * given group tabbed pane.
@@ -2656,18 +2478,10 @@ public class TextTrix extends JFrame {
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				}
-//				System.out.println("done opening");
-				/* shifted to read function
-				t.setEditable(editable);
-				t.setCaretPosition(0);
-				t.setChanged(false);
-				*/
 				t.setFile(path);
 				// TODO: check whether thread safe
 				getSelectedTabbedPane().setToolTipTextAt(getSelectedTabbedPane().getSelectedIndex(), t
 						.getPath());
-//				updateTabTitle(t);//getSelectedTabbedPane());
-//				updateTitle(t.getFilename());
 				// set the path to the last opened directory
 				setOpenDir(file.getParent());
 				// file.getParent() returns null when opening file
@@ -5029,9 +4843,10 @@ public class TextTrix extends JFrame {
 					}
 				}
 			};
-			String autoIndentToolTipText = "<html>Automatically repeat tabs on the next line and "
-				+ "<br>graphically wraps the indentations,"
-				+ "<br>without modifying the underlying text.</html>";
+			String autoIndentToolTipText = 
+					"<html>Automatically repeat tabs on the next line and "
+					+ "<br>graphically wraps the indentations,"
+					+ "<br>without modifying the underlying text.</html>";
 			LibTTx
 					.setAcceleratedAction(
 							autoIndentAction,

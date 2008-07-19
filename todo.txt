@@ -14,7 +14,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on occasional tab memory and reopening loss or additions
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
--auto indent extensions preference should be remembered; FIXED
+-code cleanup; INPROGRESS
 -prep for 0.9.1rc1; INPROGRESS
 
 ----Ideas----

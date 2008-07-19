@@ -5,25 +5,29 @@ the text tinker
 Copyright (c) 2002-8, Text Flex
 http://textflex.com/texttrix
 
-(See todo.txt for a more detailed log of improvements and
-plans for future ones.)
+(See http://texttrix.wiki.sourceforge.net/ToDo for a more detailed log of 
+improvements and plans for future ones.)
 
 ----v.0.9.1 (2008-07-20)----
 
-The editor now features formatted text options, including an automatic view 
+The editor now offers formatted text options, including an automatic view 
 switcher for html viewing and saving.  Font style, size, color, and alignment 
 can be changed through a new format menu.  Files can also be viewed 
 side-by-side through multiple instances of the Text Trix main window.  
-Other changes include a syntax highlighter preference option and fix for 
-contextual scrolling.
+Other changes include a syntax highlighter preference option and fixes for 
+contextual scrolling and remembering auto-indent file extensions.
 
-New features/fixes:
+New features:
 -Text formatting, including font style, size, color, and alignment (by John 
 Kozalan)
--Automatic view switcher for formatted text
+-Automatic HTML view switcher for formatted text
 -Sytax highlighting preference option
--Multiple instances for side-by-side viewing
--Fixed contextual scrolling with less than one screen of text
+-Multiple instances for viewing files side-by-side (note that only tabs in the
+exiting window will be remembered for reopening)
+
+Bugs fixed:
+-Contextual scrolling with less than one screen of text
+-Remembering auto-indent file extensions
 
 ----v.0.9.0 (2008-06-18)----
 
