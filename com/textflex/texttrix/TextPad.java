@@ -195,19 +195,6 @@ public class TextPad extends JTextPane implements StateEditable {
 					// still need to grab the keystroke so that it won't be passed on
 					// to the TAB action.
 					
-//					System.out.println("shift tab");
-/*					
-					evt.consume();
-					try {
-						if (getSelectionStart() != getSelectionEnd()) {
-							tabRegionReverse();
-						} else {
-							unindentLeadingTab();
-						}
-					} catch (BadLocationException e) {
-						e.printStackTrace();
-					}
-*/					
 				} else if (autoIndent 
 					&& keyCode == KeyEvent.VK_TAB
 					&& getSelectionStart() != getSelectionEnd()) {
@@ -1029,15 +1016,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		return autoIndent;
 	}
 	
-	/** Gets the ignore change flag.
-	 * @return true if changes to the file should be ignored
-	 * by the undo manager.
-	 *
-	public boolean getIgnoreChanged() {
-		return ignoreChanged;
-	}
-	*/
-	
 	
 	
 	
@@ -1064,24 +1042,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void setAutoIndent(boolean b) {
 		autoIndent = b;
 		applyAutoIndent();
-/*		
-		if (autoIndent = b) {
-			setNoTabs();
-			setIndentTabs(getTabSize());
-		} else {
-			setDefaultTabs(getTabSize());
-		}
-*/		
 	}
 	
-	/** Sets the ignore change flag.
-	 * @param aIgnoreChanged true if changes to the file 
-	 * should be ignored by the undo manager.
-	 *
-	public void setIgnoreChanged(boolean aIgnoreChanged) {
-		ignoreChanged = aIgnoreChanged;
-	}
-	*/
 	
 	
 	
