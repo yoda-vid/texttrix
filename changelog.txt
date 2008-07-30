@@ -8,7 +8,7 @@ http://textflex.com/texttrix
 (See http://texttrix.wiki.sourceforge.net/ToDo for a more detailed log of 
 improvements and plans for future ones.)
 
-----v.0.9.1 (rc1: 2008-07-20)----
+----v.0.9.1 (2008-07-25)----
 
 The editor now offers formatted text options, including an automatic view 
 switcher for html viewing and saving.  Font style, size, color, and alignment 
@@ -21,7 +21,7 @@ New features:
 -Text formatting, including font style, size, color, and alignment (by John 
 Kozalan)
 -Automatic HTML view switcher for formatted text
--Sytax highlighting preference option
+-Syntax highlighting preference option
 -Multiple instances for viewing files side-by-side (note that only tabs in the
 exiting window will be remembered for reopening)
 
