@@ -396,7 +396,20 @@ public class TextPad extends JTextPane implements StateEditable {
 		amap.put(
 			"unindentTabs",
 			unidentTabsAction);
-			
+		
+		
+		// (ctrl-n) advance a line
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+			"downChar");
+		amap.put("downChar", getActionByName(DefaultEditorKit.downAction));
+
+		// (ctrl-p) go up a line
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+			"upChar");
+		amap.put("upChar", getActionByName(DefaultEditorKit.upAction));
+
 	}
 	
 	/** Creates the partial-Emacs shortcuts, consisting of single character and

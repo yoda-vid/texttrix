@@ -16,7 +16,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -save tabs from multiple windows
 -code cleanup; DONE
 -keyboard shortcuts on Mac systems should use command (meta) keys; DONE: uses default toolkit menu shortcut mask for default modifier keys
--fix Word Find on Mac systems to use command-G rather than just F3; DONE
+-Word Find on Mac systems should use command-G rather than just F3; DONE
+-up/down arrows should shift caret by line rather than scrolling the pane on Mac; DONE
 
 ----Ideas----
 
