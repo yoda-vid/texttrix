@@ -71,7 +71,7 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-4, 2008 Text Flex
+	Copyright (c) 2003-9, 2008 Text Flex
 
 Last updated:
 	2008-05-31

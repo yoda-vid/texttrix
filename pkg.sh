@@ -77,7 +77,7 @@ Parameters:
 	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
 		
 Copyright:
-	Copyright (c) 2003-8 Text Flex
+	Copyright (c) 2003-9 Text Flex
 
 Last updated:
 	2008-07-10
@@ -91,7 +91,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.1"
+VER="0.9.2beta1"
 
 # the final destination of the resulting packages
 PREFIX=""
