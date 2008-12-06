@@ -344,34 +344,11 @@ public class TextPad extends JTextPane implements StateEditable {
 	private void universalShortcuts() {
 		// Next apply own action
 		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
+			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,Event.CTRL_MASK),
 			"deleteWord");
 		amap.put("deleteWord", new AbstractAction() {
 			public void actionPerformed(ActionEvent evt) {
-				int wordPos = getWordPosition();
-				// delete via the document methods rather than building
-				// string manually, a slow task.  Uses document rather than
-				// AccessibleJTextComponent in case used for serialization:
-				// Serialized objects of this class won't be compatible w/
-				// future releases
-				try {
-					// call getDocument() each time since doc may change
-					// with call to viewPlain, viewHTML, or viewRTF
-					getDocument().remove(wordPos, getCaretPosition() - wordPos);
-					setCaretPosition(wordPos);
-				} catch (BadLocationException b) {
-					System.out.println("Deletion out of range.");
-				}
-				/* Alternate method, essentially same as document except
-				 * using the AccessibleJTextComponent class, whose serializable
-				 * objects may not be compatible w/ future releases access the 
-				 * text component itself to tell it to perform the deletions rather 
-				 * than building string manually, a slow task
-				 */
-				/*
-				(new JTextComponent.AccessibleJTextComponent())
-				.delete(wordPos, getCaretPosition());
-				*/
+				deletePrevWord();
 			}
 		});
 		
@@ -421,7 +398,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			unidentTabsAction);
 			
 	}
-
+	
 	/** Creates the partial-Emacs shortcuts, consisting of single character and
 	 * line navigation.
 	 *
@@ -545,6 +522,36 @@ public class TextPad extends JTextPane implements StateEditable {
 			"end");
 		amap.put("end", getActionByName(DefaultEditorKit.endAction));
 
+	}
+	
+	/** Deletes the word or rest of the word to the left
+	 * of the cursor
+	 */
+	public void deletePrevWord() {
+		int wordPos = getWordPosition();
+		// delete via the document methods rather than building
+		// string manually, a slow task.  Uses document rather than
+		// AccessibleJTextComponent in case used for serialization:
+		// Serialized objects of this class won't be compatible w/
+		// future releases
+		try {
+			// call getDocument() each time since doc may change
+			// with call to viewPlain, viewHTML, or viewRTF
+			getDocument().remove(wordPos, getCaretPosition() - wordPos);
+			setCaretPosition(wordPos);
+		} catch (BadLocationException b) {
+			System.out.println("Deletion out of range.");
+		}
+		/* Alternate method, essentially same as document except
+		 * using the AccessibleJTextComponent class, whose serializable
+		 * objects may not be compatible w/ future releases access the 
+		 * text component itself to tell it to perform the deletions rather 
+		 * than building string manually, a slow task
+		 */
+		/*
+		(new JTextComponent.AccessibleJTextComponent())
+		.delete(wordPos, getCaretPosition());
+		*/
 	}
 
 	/** Sets the default displayed tab sizes.

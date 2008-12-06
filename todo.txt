@@ -15,7 +15,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
 -code cleanup; DONE
--prep for 0.9.1 final release; DONE
+-keyboard shortcuts on Mac systems should use command (meta) keys; DONE: uses default toolkit menu shortcut mask for default modifier keys
+-fix Word Find on Mac systems to use command-G rather than just F3; DONE
 
 ----Ideas----
 

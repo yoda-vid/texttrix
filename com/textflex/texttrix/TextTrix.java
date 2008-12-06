@@ -51,7 +51,7 @@ import java.awt.print.*;
 import javax.print.attribute.*;
 import javax.swing.plaf.*;
 import javax.swing.plaf.metal.*;
-import javax.xml.soap.Text;
+//import javax.xml.soap.Text;
 
 //import sun.font.TextLabelFactory;
 
@@ -2010,10 +2010,13 @@ public class TextTrix extends JFrame {
 		updateTabIndexHistory = true;
 		final TextPad textPad = new TextPad(file, getPrefs());
 		
-		// Add the pad to a scroll pane
+		// Add the pad to a scroll pane;
+		// uses SCROLLBAR_AS_NEEDED to conform to native behavior
+		// as much as possible, including showing scrollbars
+		// on Mac platforms
 		final JScrollPane scrollPane = new JScrollPane(textPad,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
 		DocumentListener listener = textPadDocListener;
 
@@ -3829,7 +3832,7 @@ public class TextTrix extends JFrame {
 					
 					char newActionMnemonic = 'N'; // new file
 					KeyStroke newActionShortcut = KeyStroke
-							.getKeyStroke("ctrl N");
+							.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char newWindowActionMnemonic = 'N'; // new file
 					KeyStroke newWindowActionShortcut = KeyStroke
@@ -3837,11 +3840,11 @@ public class TextTrix extends JFrame {
 							
 					char newGroupActionMnemonic = 'G'; // tab group
 					KeyStroke newGroupActionShortcut = KeyStroke
-							.getKeyStroke("ctrl G");
+							.getKeyStroke(KeyEvent.VK_G, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char closeActionMnemonic = 'C'; // close file
 					KeyStroke closeActionShortcut = KeyStroke
-							.getKeyStroke("ctrl W");
+							.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char closeGroupActionMnemonic = 'R'; // close tab group
 					KeyStroke closeGroupActionShortcut = KeyStroke
@@ -3851,30 +3854,30 @@ public class TextTrix extends JFrame {
 					char exitActionMnemonic = 'X';
 					
 					KeyStroke exitActionShortcut = KeyStroke // exit
-							.getKeyStroke("ctrl Q");
+							.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					KeyStroke redoActionShortcut = KeyStroke // redo
-							.getKeyStroke("ctrl Y");
+							.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char cutActionMnemonic = 'T'; // cut
 					KeyStroke cutActionShortcut = KeyStroke
-							.getKeyStroke("ctrl X");
+							.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char copyActionMnemonic = 'C'; // copy
 					KeyStroke copyActionShortcut = KeyStroke
-							.getKeyStroke("ctrl C");
+							.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 					
 					char pasteActionMnemonic = 'P'; // paste
 					KeyStroke pasteActionShortcut = KeyStroke
-							.getKeyStroke("ctrl V");
+							.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char selectAllActionMnemonic = 'A'; // select all
 					KeyStroke selectAllActionShortcut = KeyStroke
-							.getKeyStroke("ctrl A");
+							.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char printActionMnemonic = 'P'; // print
 					KeyStroke printActionShortcut = KeyStroke
-							.getKeyStroke("ctrl P");
+							.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					char printPreviewActionMnemonic = 'R'; // print preview
 					char printSettingsActionMnemonic = 'I'; // print settings
@@ -3904,13 +3907,13 @@ public class TextTrix extends JFrame {
 						// navigation
 						fileMenuMnemonic = 'I';
 						newActionMnemonic = 'T';
-						newActionShortcut = KeyStroke.getKeyStroke("ctrl T");
+						newActionShortcut = KeyStroke.getKeyStroke(KeyEvent.VK_T, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 						exitActionTxt = "Exit";
 						exitActionMnemonic = 'X';
-						exitActionShortcut = KeyStroke.getKeyStroke("ctrl Q");
+						exitActionShortcut = KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 						selectAllActionMnemonic = 'L';
 						selectAllActionShortcut = KeyStroke
-								.getKeyStroke("ctrl L");
+								.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 						printActionShortcut = KeyStroke
 								.getKeyStroke("ctrl shift P");
 						boldActionShortcut = KeyStroke
@@ -4137,7 +4140,7 @@ public class TextTrix extends JFrame {
 						}
 					};
 					LibTTx.setAcceleratedAction(saveAction, "Save file", 'S',
-							KeyStroke.getKeyStroke("ctrl S"));
+							KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 					fileMenu.add(saveAction);
 					JButton saveButton = toolBar.add(saveAction);
 					saveButton.setBorderPainted(false);
@@ -4971,7 +4974,7 @@ public class TextTrix extends JFrame {
 					JLabel wordFindLbl = new JLabel("Word Find:");
 					wordFindLbl.setToolTipText("GoTo the word as it's typed");
 					wordFindFld = new JTextField(10);
-					// caret listener to find-as-you-type the line number into the text box
+					// caret listener to find-as-you-type into the text box
 					wordFindFld.addCaretListener(new CaretListener() {
 						public void caretUpdate(CaretEvent e) {
 							String lineStr = wordFindFld.getText();
@@ -4983,30 +4986,33 @@ public class TextTrix extends JFrame {
 							}
 						}
 					});
-					// filter input to only accept digits
+					// find word when Enter is pressed
 					wordFindFld.addKeyListener(new KeyAdapter() {
 						public void keyTyped(KeyEvent evt) {
 							char keyChar = evt.getKeyChar();
-							String lineStr = wordFindFld.getText();
 							if (keyChar == KeyEvent.VK_ENTER) {
 								evt.consume();
+								String lineStr = wordFindFld.getText();
 //							System.out.println("here");
 								findSeq(lineStr, -1);
 							}
 						}
 						
-						// Advance to next ocurrance with F3
+						// Advance to next ocurrance with F3 or Meta-G;
+						// move to previous occurrance with Shift-F3 or Shift-Meta-G
 						public void keyPressed(KeyEvent evt) {
-							String lineStr = wordFindFld.getText();
 //							System.out.println(evt.getKeyCode() + "");
-							if (evt.getKeyCode() == KeyEvent.VK_F3) {
+							int code = evt.getKeyCode();
+							if (code == KeyEvent.VK_F3
+									|| (code == KeyEvent.VK_G && evt.isMetaDown())) {
 								evt.consume();
+								String lineStr = wordFindFld.getText();
 								if (evt.isShiftDown()) {
-								findSeqReverse(lineStr, getSelectedTextPad().getSelectionStart());
-//									System.out.println("here");
+									findSeqReverse(lineStr, getSelectedTextPad().getSelectionStart());
+	//									System.out.println("here");
 								} else {
-//								System.out.println("end: " + getSelectedTextPad().getSelectionEnd());
-								findSeq(lineStr, getSelectedTextPad().getSelectionEnd());
+	//								System.out.println("end: " + getSelectedTextPad().getSelectionEnd());
+									findSeq(lineStr, getSelectedTextPad().getSelectionEnd());
 								}
 							}
 						}
