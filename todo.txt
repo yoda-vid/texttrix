@@ -14,6 +14,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on occasional tab memory and reopening loss or additions
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
+-Shortcuts page should show up as full HTML; FIXED
 -code cleanup; DONE
 -keyboard shortcuts on Mac systems should use command (meta) keys; DONE: uses default toolkit menu shortcut mask for default modifier keys
 -Word Find on Mac systems should use command-G rather than just F3; DONE

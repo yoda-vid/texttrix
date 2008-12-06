@@ -4759,7 +4759,7 @@ public class TextTrix extends JFrame {
 								SwingUtilities.invokeLater(new Runnable() {
 									public void run() {
 										TextPad textPad = getSelectedTextPad();
-										textPad.viewHTML();
+										textPad.turnOnHTML();//viewHTML();
 										textPad.setCaretPosition(0);
 									}
 								});

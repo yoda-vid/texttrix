@@ -1251,6 +1251,20 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	/**Turns on HTML mode, without converting any text
+	 * to HTML tags.
+	 * The document will be read in directly as an HTML file.
+	 */
+	public void turnOnHTML() {
+		String text = getText();
+		// sets the style
+		setDocument(getEditorKit().createDefaultDocument());
+		setContentType("text/html");
+		
+		// reapplies the text and registers the edit event
+		setText(text);
+	}
+	
 	public boolean isHTMLView() {
 		return getContentType().equals("text/html");
 	}
