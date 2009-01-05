@@ -3842,6 +3842,10 @@ public class TextTrix extends JFrame {
 					KeyStroke newGroupActionShortcut = KeyStroke
 							.getKeyStroke(KeyEvent.VK_G, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
+					char openActionMnemonic = 'C'; // open file
+					KeyStroke openActionShortcut = KeyStroke
+							.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+							
 					char closeActionMnemonic = 'C'; // close file
 					KeyStroke closeActionShortcut = KeyStroke
 							.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
@@ -3855,6 +3859,9 @@ public class TextTrix extends JFrame {
 					
 					KeyStroke exitActionShortcut = KeyStroke // exit
 							.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+							
+					KeyStroke undoActionShortcut = KeyStroke // undo
+							.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 							
 					KeyStroke redoActionShortcut = KeyStroke // redo
 							.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
@@ -4031,8 +4038,8 @@ public class TextTrix extends JFrame {
 					Action openAction = new FileOpenAction(TextTrix.this,
 							"Open", LibTTx
 									.makeIcon("images/openicon-roll-16x16.png"));
-					LibTTx.setAcceleratedAction(openAction, "Open", 'O',
-							KeyStroke.getKeyStroke("ctrl O"));
+					LibTTx.setAcceleratedAction(openAction, "Open", openActionMnemonic,
+							openActionShortcut);
 					fileMenu.add(openAction);
 
 					// toolbar version
@@ -4239,7 +4246,7 @@ public class TextTrix extends JFrame {
 						}
 					};
 					LibTTx.setAcceleratedAction(undoAction, "Undo", 'U',
-							KeyStroke.getKeyStroke("ctrl Z"));
+						undoActionShortcut);
 					editMenu.add(undoAction);
 
 					// redo; multiple redos available
