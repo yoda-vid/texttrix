@@ -3591,7 +3591,7 @@ public class TextTrix extends JFrame {
 		 * whether opened manually or by the auto-save, disables the auto-save
 		 * function until the next save.
 		 */
-		public void run() {
+		public void run() { 
 			interrupted(); // clears any interrupt during a previous run
 			try {
 				sleep(getPrefs().getAutoSaveInterval() * 60000);

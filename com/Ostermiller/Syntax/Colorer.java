@@ -170,7 +170,7 @@ class Colorer extends Thread {
 					re = (RecolorEvent) events.removeFirst();
 				}
 				processEvent(re.position, re.adjustment);
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch(InterruptedException e) { }
 		}
 	}

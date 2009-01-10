@@ -1,6 +1,5 @@
-#!/bin/sh
-# Script for starting Text Trix in the Profiler4j CPU profiler for Java
-# (http://sourceforge.net/projects/profiler4j/)
+#!/bin/bash
+# Text Trix start-up script
 
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -19,7 +18,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-7
+# Portions created by the Initial Developer are Copyright (C) 2003-8
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -38,14 +37,9 @@
 #
 # ***** END LICENSE BLOCK *****
 
-####################
-# Constants
-####################
-
 # Path to the profiler
-PROF=/cygdrive/c/tools/profiler4j-1.0-beta2
+PROF=~/Programs/profiler4j-1.0-beta2
 
-# Help documentation
 HELP="
 Runs Text Trix, the super text tool chest. 
 
@@ -67,12 +61,20 @@ Parameters:
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
+	
+	--nohigh: Turns on syntax highlighting.
+	
+	--files [file1] [file2] ... : Specifies files to open at start-up.  Files will be placed in their own group tab, labeled "Start".  All arguments listed without a switch as the first argument will be opened until the first switch is reached.
+	
+	--fresh: Open a session withou reopening previously saved tabs, while still preserving the names of the most recently stored tabs.
+	
+	--verbose: Verbose command-line output.
 
 Copyright:
-	Copyright (c) 2003-7 Text Flex
+	Copyright (c) 2003-8 Text Flex
 
 Last updated:
-	2007-01-01
+	2008-05-29
 "
 
 
@@ -96,85 +98,107 @@ echo -n "Detecting environment..."
 SYSTEM=`uname -s`
 CYGWIN="false"
 LINUX="false"
+MAC="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
 	CYGWIN="true"
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
-	JAVA=/usr/java/default/bin
+
+	# Java binary detection mechanism
+	if [ "`command -v java`" != '' ]
+	then
+		JAVA=""
+	elif [ "`command -v /usr/bin/java`" != "" ]
+	then
+		JAVA="/usr/bin"
+	elif [ "`command -v /usr/lib/jvm/java-1.6.0/bin/java`" != "" ]
+	then
+		# OpenJDK directory on Fedora distributions
+		JAVA="/usr/lib/jvm/java-1.6.0/bin"
+	elif [ "`command -v /usr/lib/jvm/java-6-openjdk/bin/java`" != "" ]
+	then
+		# OpenJDK directory on Ubuntu distributions
+		JAVA="/usr/lib/jvm/java-6-openjdk/bin"
+	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
+	then
+		JAVA="/usr/java/default/bin"
+	else
+		echo "Java software doesn't appear to be installed..."
+		echo "Please download it (for free!) from http://java.com."
+		echo "Or if it's already installed, please add it to your"
+		echo "PATH or to the JAVA variable in this script."
+		read -p "Press Enter to exit this script..."
+		exit 1
+	fi
+elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
+then
+	MAC="true"
 fi
 echo "found $SYSTEM"
 
 ##############
 # Respond to user arguments
 
-echo "Parsing user arguments..."
-READ_PARAMETER=0
-for arg in "$@"
-do
-	n=`expr index $arg "="`
-	n=`expr $n - 1`
-	
-	# reads arguments
-	if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
-	then
-		if [ "`command -v more`" != '' ]
-		then
-			echo "$HELP" | more
-		elif [ "`command -v less`" != "" ]
-		then
-			echo "$HELP" | less
-		else
-			echo "$HELP"
-		fi
-		exit 0
-	elif [ `expr substr $arg 1 ${#PAR_JAVA}` \
-			= $PAR_JAVA \
-		-a ${#PAR_JAVA} -eq $n ] # Java path
-	then
-		READ_JAVA=1
-		READ_PARAMETER=1
-	fi
-	
-	
-	n=`expr $n + 2`
-	# checks whether to read the option following an argument
-	if [ $READ_PARAMETER -eq 1 ]
-	then
-		if [ $READ_JAVA -eq 1 ]
-		then
-			JAVA=`expr substr $arg $n ${#arg}`
-			READ_JAVA=0
-			echo "...set to use $JAVA as the Java compiler path..."
-		fi
-		READ_PARAMETER=0
-	fi
-done
-echo "...done"
-
-# Appends a file separator to end of Java compiler path if not empty
-# and no separator there
-if [ `expr index "$JAVA" "/"` -ne ${#JAVA} ]
+if [ $# -gt 0 ]
 then
-	JAVA="$JAVA"/
+	echo "Parsing user arguments..."
+	for arg in "$@"
+	do
+		# reads arguments
+		if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
+		then
+			if [ "`command -v more`" != '' ]
+			then
+				echo "$HELP" | more
+			elif [ "`command -v less`" != "" ]
+			then
+				echo "$HELP" | less
+			else
+				echo "$HELP"
+			fi
+			exit 0
+			
+		# Java path
+		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
+		then
+			JAVA="${arg#${PAR_JAVA}=}"
+			echo "...set to use \"$JAVA\" as the Java compiler path"
+		else
+			echo "...passing \"$arg\" to Text Trix session"
+		fi
+	done
+	echo "...done"
 fi
 
-# Source directories
-# Note that currently requires the user to remain case-sensitive with the name
-# of the base dir, even if Cygwin navigates w/o regard to case
+if [ x$JAVA = x"false" ]
+then
+	echo "Java software doesn't appear to be installed..."
+	echo "Please download it (for free!) from http://java.com."
+	echo "Or if it's already installed, please add it to your"
+	echo "PATH or to the JAVA variable in this script."
+	read -p "Press Enter to exit this script..."
+	exit 1
+fi
+
+# Appends a file separator to end of Java compiler path if none there
+if [ x$JAVA != "x" ]
+then
+	# appends the file separator after removing any separator already
+	# present to prevent double separators
+	JAVA=${JAVA%\/}/
+fi
+
+# Sets the base directory to the script location
 if [ "x$BASE_DIR" = "x" ] # empty string
 then
-	if [ `expr index "$0" "/"` -eq 1 ] # use script path if absolute
-	then
-		BASE_DIR="$0"
-	else # assume that script path is relative to current dir
-		script="${0#./}"
-		BASE_DIR="$PWD/$script"
-	fi
-	BASE_DIR="${BASE_DIR%/run-prof.sh}" # assumes the script's name is run.sh
-	BASE_DIR="${BASE_DIR%/.}"
+	BASE_DIR=`dirname $0`
 fi
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
+
+DIR="com/textflex/texttrix" # src package structure
 
 ##############
 # Run Text Trix
@@ -183,11 +207,10 @@ fi
 cd "$BASE_DIR"
 
 # Starts Text Trix in the profiler
-"$JAVA"java -javaagent:`cygpath -mp $PROF/agent.jar` com.textflex.texttrix.TextTrix &
+"$JAVA"java -javaagent:$PROF/agent.jar com.textflex.texttrix.TextTrix &
 
 # Connects the profiler console to the profiler agent, which starts Text Trix
 # and allows snapshots for profiling
-"$JAVA"java -jar `cygpath -mp $PROF/console.jar`
+"$JAVA"java -jar $PROF/console.jar
 
-# Exits once the console is closed
 exit 0

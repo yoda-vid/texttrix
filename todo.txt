@@ -19,6 +19,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -keyboard shortcuts on Mac systems should use command (meta) keys; DONE: uses default toolkit menu shortcut mask for default modifier keys
 -Word Find on Mac systems should use command-G rather than just F3; DONE
 -up/down arrows should shift caret by line rather than scrolling the pane on Mac; DONE
+-improve performance by increasing time between syntax highlight updates; TESTING
 
 ----Ideas----
 
