@@ -5041,8 +5041,8 @@ public class TextTrix extends JFrame {
 					
 					// tool tip for the input field
 					wordFindFld.setToolTipText(
-						"<html>Press F3 to find the next occurrence"
-						+ "<br />or Shift+F3 for the previous occurrence.</hmlm>");
+						"<html>Press F3 (or Cmd-G) to find the next occurrence"
+						+ "<br />or Shift+F3 (or Sh-Cmd-G) for the previous occurrence.</hmlm>");
 					
 					
 					

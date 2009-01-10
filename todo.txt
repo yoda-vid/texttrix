@@ -20,6 +20,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -Word Find on Mac systems should use command-G rather than just F3; DONE
 -up/down arrows should shift caret by line rather than scrolling the pane on Mac; DONE
 -improve performance by increasing time between syntax highlight updates; TESTING
+-port run.sh updates to run-prof.sh; DONE
+-fix crash when copying text
 
 ----Ideas----
 

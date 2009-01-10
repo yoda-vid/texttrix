@@ -213,4 +213,7 @@ cd "$BASE_DIR"
 # and allows snapshots for profiling
 "$JAVA"java -jar $PROF/console.jar
 
+echo "Press the connect button to start the Text Trix program."
+echo "Press the snapshot button to see the call traces."
+
 exit 0
