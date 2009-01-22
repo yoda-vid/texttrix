@@ -342,9 +342,21 @@ public class TextPad extends JTextPane implements StateEditable {
 	 *
 	 */
 	private void universalShortcuts() {
-		// Next apply own action
+		// (Ctrl-BKSPC): deletes previous word, conforming with 
+		// normal Windows and Linux shortcut behavior
 		imap.put(
-			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,Event.CTRL_MASK),
+			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.CTRL_MASK),
+			"deleteWord");
+		amap.put("deleteWord", new AbstractAction() {
+			public void actionPerformed(ActionEvent evt) {
+				deletePrevWord();
+			}
+		});
+		
+		// (Alt+BKSPC): also deletes previous word, for compatibility 
+		// with Mac systems
+		imap.put(
+			KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, Event.ALT_MASK),
 			"deleteWord");
 		amap.put("deleteWord", new AbstractAction() {
 			public void actionPerformed(ActionEvent evt) {
