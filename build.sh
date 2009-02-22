@@ -262,8 +262,8 @@ then
 	"$JAVA"javac -cp `cygpath -p -w gnu/getopt:.` -target 1.5 -source 1.5 "`cygpath -p -w com/Ostermiller/Syntax/`"*.java
 	"$JAVA"javac -target 1.5 -source 1.4 "`cygpath -p -w $DIR/`"*.java
 else
-	"$JAVA"javac -cp gnu/getopt:. -target 1.5 -source 1.5 com/Ostermiller/Syntax/*.java
-	"$JAVA"javac -target 1.5 -source 1.4 $DIR/*.java
+	"$JAVA"javac -cp gnu/getopt:. -target 1.4 -source 1.4 com/Ostermiller/Syntax/*.java
+	"$JAVA"javac -target 1.4 -source 1.4 $DIR/*.java
 fi
 
 #############

@@ -5168,6 +5168,8 @@ public class TextTrix extends JFrame {
 		
 		/** Finds the first occurrence of a sequence from the
 		 * given starting point, ignoring case.
+		 * If the given sequence has already been selected, the next
+		 * occurrance of the sequence will be found.
 		 * @param seq the sequence to find
 		 * @param start the position number from which to start 
 		 * searching; if -1, the search will begin from the current 
@@ -5182,8 +5184,11 @@ public class TextTrix extends JFrame {
 			seq = seq.toLowerCase();
 			// saves the caret position
 			int origCaretPosition = t.getCaretPosition();
-			// starts from 0 flagged not to start at caret position
-			if (start == -1) start = 0;
+			// starts from 0 if flagged not to start at caret position
+			if (start == -1) start = origCaretPosition - seq.length();//0;
+//			System.out.println("origCaretPosition: " + origCaretPosition + ", start: " + start);
+			String currentSelection = t.getSelectedText();
+			if (currentSelection != null && currentSelection.equalsIgnoreCase(seq)) start++;
 			
 			// Find the quarry
 			int i = text.indexOf(seq, start);

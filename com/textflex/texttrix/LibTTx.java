@@ -577,7 +577,7 @@ public class LibTTx {
 		String text = "";
 		InputStream in = null;
 		BufferedReader reader = null;
-		StringBuilder builder = new StringBuilder();
+		StringBuffer builder = new StringBuffer();
 		// read in lines until none remain
 		try {
 			in = TextTrix.class.getResourceAsStream(path);
@@ -614,7 +614,7 @@ public class LibTTx {
 	 */
 	public static String readText(BufferedReader reader) {
 		String text = "";
-		StringBuilder builder = new StringBuilder();
+		StringBuffer builder = new StringBuffer();
 		String line;
 		// read lines until none remain;
 		// the calling function should handle clean-up code for the reader stream.

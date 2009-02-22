@@ -839,8 +839,10 @@ public class StringHelper {
 		end = i+2;
 		return s.substring(start, end);
 	}
-
-	private static HashMap<String,Integer> htmlEntities = new HashMap<String,Integer>();
+	
+	// reverted to 1.4.2 -compliant API
+	private static HashMap htmlEntities = new HashMap();
+//	private static HashMap<String,Integer> htmlEntities = new HashMap<String,Integer>();
 	static {
 		htmlEntities.put("nbsp", new Integer(160));
 		htmlEntities.put("iexcl", new Integer(161));
