@@ -1,6 +1,6 @@
 Text Trix
 the text tinker
-Copyright (c) 2002-8, Text Flex
+Copyright (c) 2002-9, Text Flex
 http://textflex.com/texttrix
 
 This file is no longer used for tracking releases, but rather for recording immediate ToDo's.
@@ -14,6 +14,8 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on occasional tab memory and reopening loss or additions
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
+-check on crash when copying text
+
 -Shortcuts page should show up as full HTML; FIXED
 -code cleanup; DONE
 -keyboard shortcuts on Mac systems should use command (meta) keys; DONE: uses default toolkit menu shortcut mask for default modifier keys
@@ -23,7 +25,6 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -up/down arrows should shift caret by line rather than scrolling the pane on Mac; DONE
 -improve performance by increasing time between syntax highlight updates; TESTING
 -port run.sh updates to run-prof.sh; DONE
--check on crash when copying text
 -check inability to modify text after opening new instance; WORKAROUND: switch to a different tab and back to original tab to start modifying text
 -make backward-compatible with Java 1.4; DONE: removed generics and StringBuilder code
 
