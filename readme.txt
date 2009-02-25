@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-8, Text Flex
+Copyright (c) 2002-9, Text Flex
 All rights reserved.
 
 -----------------
