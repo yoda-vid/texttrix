@@ -48,6 +48,9 @@ import java.beans.*;
 
 import com.Ostermiller.Syntax.*;
 
+import com.inet.jortho.FileUserDictionary;
+import com.inet.jortho.SpellChecker;
+
 /**The writing pad, complete with keyboard shortcuts, auto-wrap indent
  * functions, and text sytle changes.
  * 
@@ -218,8 +221,9 @@ public class TextPad extends JTextPane implements StateEditable {
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 		
+		
 		// creates a styled document only for certain file extensions
-//		setHighlightStyle();
+		setHighlightStyle();
 //		setStyledDocument(highlightedDoc);
 		applyDocumentSettings();
 	}
@@ -241,7 +245,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		String ext = getFileExtension();
 		ext = ext.toLowerCase();
 		HighlightedDocument doc = getHighlightedDoc();
-		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) return doc;
+		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) {
+      // enable the spell checking on the text component with all features;
+			// turn on spell checker only for plain text documents since
+			// most other code will have numerous non-detected words;
+			// TODO: apply spell-checker more broadly if add more
+			// varied dictionaries
+      SpellChecker.register( this );
+			return doc;
+		}
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text

@@ -53,6 +53,11 @@ import javax.swing.plaf.*;
 import javax.swing.plaf.metal.*;
 //import javax.xml.soap.Text;
 
+
+import com.inet.jortho.FileUserDictionary;
+import com.inet.jortho.SpellChecker;
+
+
 //import sun.font.TextLabelFactory;
 
 /**
@@ -341,6 +346,14 @@ public class TextTrix extends JFrame {
 		
 		// Add the group pane to the frame
 		addTabbedPane(groupTabbedPane, "");
+
+		
+        // Create user dictionary in the current working directory of your application
+        SpellChecker.setUserDictionaryProvider( new FileUserDictionary() );
+        
+        // Load the configuration from the file dictionaries.cnf and 
+        // use the current locale or the first language as default 
+        SpellChecker.registerDictionaries( null, null );
 
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
@@ -2026,7 +2039,7 @@ public class TextTrix extends JFrame {
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
 		textPad.getDocument().addDocumentListener(listener);
-		textPad.addMouseListener(new TextPadPopupListener());
+//		textPad.addMouseListener(new TextPadPopupListener());
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				updateStatusBarLineNumbers(textPad);
