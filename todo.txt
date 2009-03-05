@@ -14,26 +14,13 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on occasional tab memory and reopening loss or additions
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
--check on crash when copying text
+-check on crash when copying text; WFM?
 
--Shortcuts page should show up as full HTML; FIXED
--code cleanup; DONE
--keyboard shortcuts on Mac systems should use command (meta) keys; DONE: uses default toolkit menu shortcut mask for default modifier keys
--alt-bkspc on Mac systems should delete previous word; DONE
--Word Find on Mac systems should use command-G rather than just F3; DONE
--find next sequence when Word Find search sequence already selected in text; DONE
--up/down arrows should shift caret by line rather than scrolling the pane on Mac; DONE
--improve performance by increasing time between syntax highlight updates; TESTING
--port run.sh updates to run-prof.sh; DONE
--check inability to modify text after opening new instance; WORKAROUND: switch to a different tab and back to original tab to start modifying text
--make backward-compatible with Java 1.4; DONE: removed generics and StringBuilder code
 
 ----Ideas----
 
 -check on lost I-bar after switching to HTML view
--MacOS X compatibility
-	-check on lack of shortcuts in MacOS X
-	-about dialog box
+-MacOS X about dialog box
 -feature to insert hard returns after a given number of characters or for given visible space
 -elim multiple spaces via Extra Returns Remover
 -check on shortcuts in HTML/RTF views
