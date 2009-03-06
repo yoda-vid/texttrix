@@ -246,12 +246,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		ext = ext.toLowerCase();
 		HighlightedDocument doc = getHighlightedDoc();
 		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) {
+		
+		
       // enable the spell checking on the text component with all features;
 			// turn on spell checker only for plain text documents since
 			// most other code will have numerous non-detected words;
 			// TODO: apply spell-checker more broadly if add more
 			// varied dictionaries
-      SpellChecker.register( this );
+			SpellChecker.register( this );
 			return doc;
 		}
 		

@@ -42,6 +42,7 @@ import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.jar.*;
 import javax.swing.text.*;
 import javax.imageio.*;
 
@@ -97,26 +98,34 @@ public class LibTTx {
 		}
 		return loadPlugIn(path, plugInName, loader);
 		
-		
-		/*
-		// all plugins are in the package, com.textflex.texttrix
-		String name =
-			"com.textflex.texttrix."
-				+ plugInName.substring(0, plugInName.indexOf(".jar"));
-//		PlugIn plugIn = (PlugIn) createObject(name, loader);
-		try {
-			plugIn = (PlugIn) createObject(name, loader);
-		} catch (Exception e) {
-			System.out.println("The plug-in, " + name + ", could not be"
-				+ NEWLINE + "loaded.  If you'd like to use it, please visit"
-				+ NEWLINE + "http://textflex.com/texttrix/plugins.html to"
-				+ NEWLINE + "contact the plugin maker.");
-		}
-		if (plugIn == null) return null;
-		plugIn.setPath(path);
-		return plugIn;
-		*/
 	}
+	
+	public static URLClassLoader loadJar(String path) {
+		URLClassLoader loader = null;
+					System.out.println("loading " + path);
+		try {
+			URL url = new URL("file", null, path);
+			loader = new URLClassLoader(new URL[] { url });
+			JarInputStream jis = new JarInputStream(new FileInputStream(path));
+			JarEntry entry = jis.getNextJarEntry();
+			while (entry != null) {
+				String name = entry.getName();
+					System.out.println("loading " + name);
+				if (name.endsWith(".class")) {
+					name = name.substring(0, name.length() - 6);
+					name = name.replace('/', '.');
+					loader.loadClass(name);
+					System.out.println(name + " loaded");
+				}
+				entry = jis.getNextJarEntry();
+			}
+		} catch (MalformedURLException e) {
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		return loader;
+	}
+	
 
 	/** Loads the specified plug-in from a given directory.
 	 * 
@@ -146,24 +155,6 @@ public class LibTTx {
 		}
 		return loadPlugIn(path, plugInName, loader);
 		
-		
-		/*
-		// all plugins are in the package, com.textflex.texttrix
-		String name =
-			"com.textflex.texttrix."
-				+ plugInName.substring(0, plugInName.indexOf(".jar"));
-		try {
-			plugIn = (PlugIn) createObject(name, loader);
-		} catch (Exception e) {
-			System.out.println("The plug-in, " + name + ", could not be"
-				+ NEWLINE + "loaded.  If you'd like to use it, please visit"
-				+ NEWLINE + "http://textflex.com/texttrix/plugins.html to"
-				+ NEWLINE + "contact the plugin maker.");
-		}
-		if (plugIn == null) return null;
-		plugIn.setPath(path);
-		return plugIn;
-		*/
 	}
 	
 	private static PlugIn loadPlugIn(String path, String plugInName, ClassLoader loader) {
@@ -991,6 +982,13 @@ public class LibTTx {
 		} else {
 			return false;
 		}
+	}
+	
+	public static boolean checkJavaVersion(String version) {
+		String installedVersionStr = System.getProperty("java.version");
+//		float installedVersionNum = Float.parseFloat(installedVersionStr);
+		System.out.println("installedVersionStr: " + installedVersionStr);
+		return installedVersionStr.indexOf(version) != -1;
 	}
 
 

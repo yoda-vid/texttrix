@@ -28,6 +28,7 @@ import javax.swing.*;
  * that uses syntax highlighting.
  */
 public class ProgrammerEditorDemo extends JFrame {
+	private static final long serialVersionUID = 2L;
     /** The document holding the text being edited. */
     private HighlightedDocument document = new HighlightedDocument();
 
@@ -79,6 +80,7 @@ public class ProgrammerEditorDemo extends JFrame {
 
 	private class StyleMenuItem extends JRadioButtonMenuItem
 			implements ActionListener {
+	private static final long serialVersionUID = 3L;
 		Object style;
 		
 		StyleMenuItem(String name, Object style) {

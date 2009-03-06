@@ -91,7 +91,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.2"
+VER="0.9.3"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -295,7 +295,8 @@ mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
 	"$TTX_DIR"/changelog.txt \
-	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico "$BLD_DIR/$PKGDIR"
+	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
+	"$TTX_DIR"/dictionary*.ortho "$TTX_DIR"/dictionaries.cnf "$BLD_DIR/$PKGDIR"
 
 
 # create the master package, which will eventually become the binary package
@@ -356,7 +357,7 @@ if [ "$CYGWIN" = "true" ]
 then
 	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller
 else
-	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $BLD_DIR/$PKGDIR/$JAR

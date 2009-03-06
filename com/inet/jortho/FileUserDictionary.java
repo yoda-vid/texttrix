@@ -25,7 +25,7 @@ package com.inet.jortho;
 import java.io.*;
 import java.util.Locale;
 
-
+import com.textflex.texttrix.*;
 
 /**
  * This is a reference implementation of the interface {@link UserDictionaryProvider}.
@@ -50,6 +50,7 @@ public class FileUserDictionary implements UserDictionaryProvider{
      * @param fileBase the base 
      */
     public FileUserDictionary( String fileBase ){
+/*
         if( fileBase == null ){
             fileBase = "";
         }
@@ -59,6 +60,12 @@ public class FileUserDictionary implements UserDictionaryProvider{
             fileBase += "/";
         }
         this.fileBase = fileBase;
+*/
+				// switched base file assigment to customized Text Trix
+				// root directory loader so that program can be launched
+				// and dictionaries loaded without having TextTrix.jar
+				// in the working directory
+				this.fileBase = LibTTx.getBaseFile().getPath() + "/";
     }
     
     /**

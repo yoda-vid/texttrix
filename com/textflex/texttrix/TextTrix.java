@@ -204,9 +204,6 @@ public class TextTrix extends JFrame {
 		
 		
 		
-		
-		
-		
 		/* Load preferences to create prefs panel */
 		// The prefs must be loaded as early as possible since
 		// many of the preference settings are used to setup
@@ -266,6 +263,12 @@ public class TextTrix extends JFrame {
 		getPrefs();
 //		applyHighlightingPref();
 		
+		
+		
+		
+		
+		
+		
 		/* Setup the main Text Trix window */
 
 		setTitle("Text Trix"); // frame title
@@ -297,6 +300,12 @@ public class TextTrix extends JFrame {
 		if (im != null) {
 	    		setIconImage(im.getImage());
 		}
+		
+		
+		
+		
+		
+		
 
 		/* Create the main Text Trix frame components */
 		
@@ -304,21 +313,7 @@ public class TextTrix extends JFrame {
 		// to be launchable from another TextTrix window
 		groupTabbedPane = new MotherTabbedPane(
 			JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-/*						
-		// makes the tabbed pane for grouping tabs horizontally
-		// scrollable to help distinguish the tabs from the tabs in
-		// each individual group
-		try {
-			SwingUtilities.invokeAndWait(new Runnable() {
-				public void run() {
-					groupTabbedPane = new MotherTabbedPane(
-						JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		*/
+			
 		// adds a listener to update the title and status bars when
 		// switching among group tabs
 		groupTabbedPane.addChangeListener(new ChangeListener() {
@@ -346,14 +341,18 @@ public class TextTrix extends JFrame {
 		
 		// Add the group pane to the frame
 		addTabbedPane(groupTabbedPane, "");
-
 		
-        // Create user dictionary in the current working directory of your application
-        SpellChecker.setUserDictionaryProvider( new FileUserDictionary() );
-        
-        // Load the configuration from the file dictionaries.cnf and 
-        // use the current locale or the first language as default 
-        SpellChecker.registerDictionaries( null, null );
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
@@ -420,6 +419,18 @@ public class TextTrix extends JFrame {
 		// other thread interacts with statusBar label, so need to create early
 		statusBar = new JLabel("Text Trix Welcomes You");
 		(statusBarCreator = new StatusBarCreator()).start();
+		
+		
+		
+		/* Prep jortho spell checker */
+		
+		// Create user dictionary in the current working directory of your application
+		SpellChecker.setUserDictionaryProvider( new FileUserDictionary() );
+		
+		// Load the configuration from the file dictionaries.cnf and 
+		// use the current locale or the first language as default 
+		SpellChecker.registerDictionaries( null, null );
+		
 
 		// open the initial files and create the status bar;
 		// must make sure that all of the operations do not require anything
@@ -516,6 +527,10 @@ public class TextTrix extends JFrame {
 	 */
 	public static void main(String[] args) {
 	
+		
+//		LibTTx.loadJar((new File(LibTTx.getBaseFile(), "jortho.jar")).getPath());
+
+		
 		// Set the look and feel: native for Windows systems, default Java Ocean
 		// for all other platforms to provide a more consistent look, since Windows
 		// and Ocean themes aren't all that different from one another

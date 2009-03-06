@@ -15,6 +15,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
 -check on crash when copying text; WFM?
+-add Jortho spell-checker; INPROGRESS: spell-checker incorporated; updated to load independent of working path; requires Java 5+, however
 
 
 ----Ideas----

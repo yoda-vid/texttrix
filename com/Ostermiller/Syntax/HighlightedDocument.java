@@ -40,6 +40,8 @@ public class HighlightedDocument extends DefaultStyledDocument {
 	public static final Object PROPERTIES_STYLE = PropertiesLexer.class;
 	public static final Object SQL_STYLE = SQLLexer.class;
 	public static final Object GRAYED_OUT_STYLE = new Object();
+	
+		private static final long serialVersionUID = 1L;
 
 	/**
 	 * A reader wrapped around the document so that the document can be fed into
