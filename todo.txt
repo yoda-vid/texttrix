@@ -11,11 +11,13 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check selection alignment when switching to HTML view
 -check syntax highlight re-formatting after undo
 -check on Ostermiller no-such-element exceptions
+-add Ostermiller serializable ID; DONE
 -check on occasional tab memory and reopening loss or additions
 -launch via Java Web Start; INPROGRESS: workaround to launch file (now including the toolbar) successfully, but still need to identify plugin folder
 -save tabs from multiple windows
 -check on crash when copying text; WFM?
 -add Jortho spell-checker; INPROGRESS: spell-checker incorporated; updated to load independent of working path; requires Java 5+, however
+-compile separate build using Retroweaver for Java 1.4 compatibility
 
 
 ----Ideas----
@@ -31,12 +33,10 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 	-make HTML-view pulsing possible
 -use java.util.ResourceBundle for internationalization and further keybinding customization
 -auto-indent: adjust when single word spans multiple lines, including when hit enter in the middle
--automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed charcter is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
+-automatically auto-indent lists: documentListener waits for single hard returns, which flags to check if the head of a continuous sequence of adjacent, preceding, text-containing lines starts at the beginning of the line while the lines in the rest of the sequence each begins with list delimiters; if next typed character is a list-delimiter, turns on auto-indent for the given region; similar algorithm when loading files
 -when saving an already existing file, match the file filter with the file's extension
 -Plug-ins
 	-plug-ins' pref list fields sizes
-	-plug-in: spell checker
-	-plug-in: spell-check any given text in system clipborad, displaying corrected text in Text Trix pad
 	-build API for plug-ins?
 	-Search plug-in
 		-option to search backward
