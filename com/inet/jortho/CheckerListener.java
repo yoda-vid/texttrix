@@ -39,6 +39,7 @@ import javax.swing.text.Caret;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Utilities;
+import com.textflex.texttrix.*;
 
 /**
  * Is used from CheckerMenu and CheckerPopup to handle the user events.
@@ -83,11 +84,14 @@ public class CheckerListener implements PopupMenuListener, LanguageChangeListene
             }
             Caret caret = jText.getCaret();
             int offs = Math.min( caret.getDot(), caret.getMark() );
+if (!LibTTx.checkJavaVersion("1.4")) {
             Point p = jText.getMousePosition();
             if( p != null ) {
                 // use position from mouse click and not from editor cursor position 
                 offs = jText.viewToModel( p );
             }
+}
+
             try {
                 Document doc = jText.getDocument();
                 if( offs > 0 && (offs >= doc.getLength() || Character.isWhitespace( doc.getText( offs, 1 ).charAt( 0 ) )) ) {

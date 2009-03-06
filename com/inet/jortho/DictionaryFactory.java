@@ -32,6 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.zip.InflaterInputStream;
+import java.util.*;
 
 /** 
  * With the DictionaryFactory you can create / load a Dictionary. A Dictionary is list of word with a API for searching. 
@@ -66,14 +67,39 @@ class DictionaryFactory {
      */
     public void loadWordList( URL filename ) throws IOException {
         URLConnection conn = filename.openConnection();
-        conn.setReadTimeout( 5000 );
+boolean isFinished = true;
+//        conn.setReadTimeout( 5000 );
+URLConnectionTimerTask timerTask = new URLConnectionTimerTask(conn);
+(new Timer()).schedule(timerTask, 500);
         InputStream input = conn.getInputStream();
+timerTask.setIsFinished(true);
         input = new InflaterInputStream( input );
         input = new BufferedInputStream( input );
 
         loadPlainWordList( input, "UTF8" );
     }
     
+/** Substitute for URLConnection.setReadTimeout.
+ */
+private class URLConnectionTimerTask extends TimerTask {
+	private boolean isFinished = false;
+	private URLConnection conn = null;
+	public void setIsFinished(boolean b) {
+		isFinished = b;
+	}
+	public URLConnectionTimerTask(URLConnection aConn) {
+		conn = aConn;
+	}
+	public void run() {
+		if (!isFinished) {
+		try {
+			conn.getInputStream().close();
+			conn.getOutputStream().close();
+		} catch (Exception e) {
+		}
+		}
+	}
+}
     /**
      * Load the directory from plain a list of words. The words must be delimmited with newlines. This method can be
      * called multiple times.

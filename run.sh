@@ -85,6 +85,8 @@ Last updated:
 PAR_JAVA="--java"
 JAVA=""
 READ_JAVA=0
+PAR_14="--ver14"
+VER_14="false"
 
 ################
 # Automatically detect the Cygwin environment
@@ -162,6 +164,10 @@ then
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
 			echo "...set to use \"$JAVA\" as the Java compiler path"
+		elif [ ${arg:0:${#PAR_14}} = "$PAR_14" ]
+		then
+			VER14="true"
+			echo "...set to run in Java 1.4 compatibility mode"
 		else
 			echo "...passing \"$arg\" to Text Trix session"
 		fi
@@ -202,4 +208,9 @@ DIR="com/textflex/texttrix" # src package structure
 ##############
 
 cd "$BASE_DIR"
-"$JAVA"java -cp . com.textflex.texttrix.TextTrix $@
+if [ $VER_14 = "true" ]
+then
+	"$Java"java -cp .:retroweaver-rt-2.0.7.jar com.textflex.texttrix.TextTrix $@
+else
+	"$JAVA"java -cp . com.textflex.texttrix.TextTrix $@
+fi

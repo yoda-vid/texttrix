@@ -987,7 +987,7 @@ public class LibTTx {
 	public static boolean checkJavaVersion(String version) {
 		String installedVersionStr = System.getProperty("java.version");
 //		float installedVersionNum = Float.parseFloat(installedVersionStr);
-		System.out.println("installedVersionStr: " + installedVersionStr);
+//		System.out.println("installedVersionStr: " + installedVersionStr);
 		return installedVersionStr.indexOf(version) != -1;
 	}
 
