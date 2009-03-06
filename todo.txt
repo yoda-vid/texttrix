@@ -18,7 +18,7 @@ See http://texttrix.wiki.sourceforge.net/ToDo for the latest release and pre-rel
 -check on crash when copying text; WFM?
 -add Jortho spell-checker; INPROGRESS: spell-checker incorporated; updated to load independent of working path; requires Java 5+, however
 -compile separate build using Retroweaver for Java 1.4 compatibility
-
+-fix jar errors when packaging on cygwin; FIXED
 
 ----Ideas----
 

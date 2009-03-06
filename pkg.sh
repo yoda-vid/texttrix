@@ -355,7 +355,7 @@ cd $BLD_DIR/$SRCPKGDIR/texttrix
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller
+	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 else
 	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 fi
