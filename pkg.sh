@@ -266,7 +266,7 @@ PKG14=$PKG14DIR.zip
 SRCPKGDIR="$PKGDIR-src" # name of source package
 SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR="TextTrix.jar" # executable jar
-ALL="$PKGDIR $PKG $SRCPKGDIR $SRCPKG"
+ALL="$PKGDIR $PKG $PKG14DIR $PKG14 $SRCPKGDIR $SRCPKG"
 
 # create build directory if doesn't already exist
 if [ ! -d "$BLD_DIR" ]
@@ -388,6 +388,7 @@ cp $TTX_DIR/$DIR/images/minicon-32x32.png $BLD_DIR/$PKGDIR/icon.png
 cd $BLD_DIR
 cp $PKGDIR/$JAR $TTX_DIR
 zip -rq $PKG $PKGDIR
+zip -rq $PKG14 $PKG14DIR
 zip -rq $SRCPKG $SRCPKGDIR
 echo ""
 if [ -d "$PREFIX" ]

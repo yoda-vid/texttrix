@@ -51,6 +51,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
+import com.textflex.texttrix.*;
+
 /**
  * This class is the major class of the spell checker JOrtho (Java Orthography Checker). 
  * In the most cases this is the only class that you need to add spell checking to your application.
@@ -133,7 +135,9 @@ public class SpellChecker {
     public static void registerDictionaries( URL baseURL, String activeLocale ) {
         if( baseURL == null ){
             try {
-                baseURL = new URL("file", null, "");
+baseURL = LibTTx.getBaseFile().toURI().toURL();
+System.out.println("baseURL: " + baseURL);
+//                baseURL = new URL("file", null, "");
             } catch( MalformedURLException e ) {
                 // should never occur because the URL is valid
                 e.printStackTrace();
