@@ -150,6 +150,8 @@ class AutoSpellChecker implements DocumentListener, LanguageChangeListener {
      */
     private void checkElement( javax.swing.text.Element element ) {
         try {
+					if (jText.getCaretPosition() > 0) {
+						if (!Character.isLetter(jText.getText(jText.getCaretPosition() - 1,1).charAt(0))) {
             int i = element.getStartOffset();
             int j = element.getEndOffset();
             Highlighter highlighter = jText.getHighlighter();
@@ -182,6 +184,8 @@ class AutoSpellChecker implements DocumentListener, LanguageChangeListener {
                 int wordOffset = tok.getWordOffset();
                 highlighter.addHighlight( wordOffset, wordOffset + word.length(), painter );
             }
+						}
+					}
         } catch( BadLocationException e ) {
             e.printStackTrace();
         }
