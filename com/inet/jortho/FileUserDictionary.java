@@ -66,7 +66,7 @@ public class FileUserDictionary implements UserDictionaryProvider{
 				// and dictionaries loaded without having TextTrix.jar
 				// in the working directory
 				this.fileBase = LibTTx.getBaseFile() + "/";
-				System.out.println("filebase: " + this.fileBase);
+//				System.out.println("filebase: " + this.fileBase);
     }
     
     /**

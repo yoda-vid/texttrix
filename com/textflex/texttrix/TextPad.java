@@ -89,6 +89,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private boolean compoundEditing = false; // flags whether editing as group
 	private JScrollPane scrollPane = null; // the scroll pane that houses this pad
 	private LineDancePanel lineDancePanel = null; // the Line Dance panel
+	private FileModifiedThread fileModifiedThread = null;
 	
 	private HighlightedDocument highlightedDoc = new HighlightedDocument();
 
@@ -103,6 +104,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 //		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
+		setFileModifiedThread(new FileModifiedThread(this));
+		getFileModifiedThread().start();
 		
 		// Create Line Dance panel
 		
@@ -1073,6 +1076,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void setFile(File aFile) {
 		file = aFile;
+		setupFileModifiedThread();
 	}
 
 	/**Sets the file to a path.
@@ -1080,6 +1084,15 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void setFile(String path) {
 		file = new File(path);
+		setupFileModifiedThread();
+	}
+	
+	public void setupFileModifiedThread() {
+		FileModifiedThread thread = getFileModifiedThread();
+		if (thread != null) {
+//			thread.setFile(file);
+			thread.setLastModifiedWithTTx(getFile().lastModified());
+		}
 	}
 
 	/**Sets the auto-indent selection.
@@ -1088,6 +1101,10 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void setAutoIndent(boolean b) {
 		autoIndent = b;
 		applyAutoIndent();
+	}
+	
+	public void setFileModifiedThread(FileModifiedThread thread) {
+		fileModifiedThread = thread;
 	}
 	
 	
@@ -1665,6 +1682,87 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 	
 	
+	/**Refreshes a tab without the user having to close and reopen it.
+	 * Useful when an open file is externally changed.
+	*/
+	public void refresh() {
+			// Ensure that has a saved file to refresh
+			if (!fileExists()) {
+				String title = "Refreshing ain't always easy";
+				String msg = "This is all we've got.  There's no saved file yet"
+					+ "\nfor us to refresh.  Sorry about that.";
+				JOptionPane.showMessageDialog(this, msg, title,
+					JOptionPane.INFORMATION_MESSAGE, null);
+				return;
+			}
+			
+			// Confirms with user that willing to override any unsaved changes
+			if (getChanged()) {
+				
+				String s = "Refresh request";
+				// dialog with 2 choices: discard, cancel
+				String msg = "This file has not yet been saved."
+						+ "\nShould I still refresh it with the currently saved version?";
+				int choice = JOptionPane.showOptionDialog(this, msg,
+						"Save before refreshing", JOptionPane.WARNING_MESSAGE,
+						JOptionPane.DEFAULT_OPTION, null, new String[] { 
+								"Refresh me now", "Cancel" }, "Cancel"
+						);
+				switch (choice) {
+				// preserve the text area's contents by default
+				case 0:
+					break;
+				default:
+					return;
+				}
+			}
+			
+			// Refreshes the tab and tries to restore the caret position
+			// to its original position
+			int pos = getCaretPosition();
+			String path = getPath();
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(path));
+				final String text = LibTTx.readText(new BufferedReader(reader));
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						// flagging the change prior to the change prevents UI updates
+						// for the change from TextPadDocumentListener in TextTrix
+						setChanged(true);
+						setText(text);
+						setChanged(false);
+					}
+				});
+//				read(t, reader, path);
+			} catch(FileNotFoundException e) {
+				// This message will most likely not be reached since
+				// the non-existant file would be detected earlier.
+				String msg = "The original file appears to have been moved, "
+					+ "\ndeleted, or set to be unreadable.";
+				JOptionPane.showMessageDialog(
+					this, 
+					msg, 
+					"File missing",
+					JOptionPane.ERROR_MESSAGE);
+			} catch(IOException e) {
+				String msg = "The original file could not be accessed.";
+				JOptionPane.showMessageDialog(
+					this, 
+					msg, 
+					"File inaccessible",
+					JOptionPane.ERROR_MESSAGE);
+			}
+//			openFile(t.getFile(), t.isEditable(), false, true);
+			// prevent caret from exceeding length of newly refreshed file
+			if (pos <= getDocument().getLength()) {
+				setCaretPosition(pos);
+			} else {
+				setCaretPosition(getDocument().getLength());
+			}
+	}
+	
+	
+	
 	
 	
 	
@@ -1758,16 +1856,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
-	
-
-	/**Gets the current auto-save timer.
-	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
-	 * with changed content if the user has enabled the feature.
-	 * @return the auto-save timer
-	 */
-	public StoppableThread getAutoSaveTimer() {
-		return autoSaveTimer;
-	}
 	/**Sets the current auto-save timer.
 	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
 	 * with changed content if the user has enabled the feature.
@@ -1833,6 +1921,18 @@ public class TextPad extends JTextPane implements StateEditable {
 		return highlightedDoc;
 	}
 	
+	public FileModifiedThread getFileModifiedThread() {
+		return fileModifiedThread;
+	}
+	
+	/**Gets the current auto-save timer.
+	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
+	 * with changed content if the user has enabled the feature.
+	 * @return the auto-save timer
+	 */
+	public StoppableThread getAutoSaveTimer() {
+		return autoSaveTimer;
+	}
 	
 	
 	

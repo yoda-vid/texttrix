@@ -2243,26 +2243,21 @@ public class TextTrix extends JFrame {
 		// runs in EDT to prevent GUI lock-up during loading
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-//				textPad.setIgnoreChanged(true);
 				textPad.getDocument().removeDocumentListener(textPadDocListener);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
 					textPad.setHighlightStyle();
 				}
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
-//				addExtraTextPadDocumentSettings(textPad);
 				// resets caret and modification flags, assuming that
 				// the read in text is the same as that from the
 				// original file
 				textPad.setCaretPosition(0);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
-//				textPad.setIgnoreChanged(false);
 				textPad.getDocument().addDocumentListener(textPadDocListener);
-//				System.out.println("done reading");
 			}
 		});
-//		textPad.read(in, desc);
 	}
 	
 	/** Removes the currently selected tabbed pane from the
@@ -2325,6 +2320,7 @@ public class TextTrix extends JFrame {
 				// assumes that path points to a valid file
 				String origName = t.getFile().getName();
 				t.setFile(path);
+//				t.getFileModifiedThread().setLastModifiedByTTx(t.getFile().lastModified());
 //				if (!t.getFile().getPath().equals(path)) {
 //				}
 
@@ -2620,6 +2616,8 @@ public class TextTrix extends JFrame {
 		// refreshes the currently selected TextPad
 		TextPad t = getSelectedTextPad();
 		if (t != null) {
+			t.refresh();
+/*			
 			// Ensure that has a saved file to refresh
 			if (!t.fileExists()) {
 				String title = "Refreshing ain't always easy";
@@ -2683,6 +2681,7 @@ public class TextTrix extends JFrame {
 			} else {
 				t.setCaretPosition(t.getDocument().getLength());
 			}
+*/			
 		}
 	}
 
