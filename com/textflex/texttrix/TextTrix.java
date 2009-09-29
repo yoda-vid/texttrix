@@ -2391,6 +2391,7 @@ public class TextTrix extends JFrame {
 		} finally { // release system resources from stream
 			if (out != null)
 				out.close();
+				t.setupFileModifiedThread();
 		}
 		return false;
 	}
@@ -2539,7 +2540,8 @@ public class TextTrix extends JFrame {
 					t = getSelectedTextPad();
 					read(t, reader, path);
 				}
-				t.setFile(path);
+				t.setFile(path); // sets file pointer
+				t.setupFileModifiedThread(); // sets last modified time
 				// TODO: check whether thread safe
 				getSelectedTabbedPane().setToolTipTextAt(getSelectedTabbedPane().getSelectedIndex(), t
 						.getPath());

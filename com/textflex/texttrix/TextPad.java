@@ -1076,7 +1076,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void setFile(File aFile) {
 		file = aFile;
-		setupFileModifiedThread();
+//		setupFileModifiedThread();
 	}
 
 	/**Sets the file to a path.
@@ -1084,13 +1084,14 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void setFile(String path) {
 		file = new File(path);
-		setupFileModifiedThread();
+//		setupFileModifiedThread();
 	}
 	
 	public void setupFileModifiedThread() {
 		FileModifiedThread thread = getFileModifiedThread();
 		if (thread != null) {
 //			thread.setFile(file);
+System.out.println("just saved: " + getFile().lastModified());
 			thread.setLastModifiedWithTTx(getFile().lastModified());
 		}
 	}
