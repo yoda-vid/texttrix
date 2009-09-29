@@ -2279,7 +2279,7 @@ public class TextTrix extends JFrame {
 			public void run() {
 				textPad.getDocument().removeDocumentListener(textPadDocListener);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
-					textPad.setHighlightStyle();
+					textPad.setHighlightStyle(getPrefs().getSpellChecker());
 				}
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
@@ -2370,7 +2370,7 @@ public class TextTrix extends JFrame {
 					if (getPrefs().getHighlighting() && getHighlighting()
 								&& !LibTTx.getFileExtension(origName)
 										.equalsIgnoreCase(t.getFileExtension())) {
-						t.setHighlightStyle();
+						t.setHighlightStyle(getPrefs().getSpellChecker());
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
 						t.applyDocumentSettings();
@@ -2553,7 +2553,7 @@ public class TextTrix extends JFrame {
 				getPrefs().storeFileHist(path);
 				//updateFileHist(fileMenu);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
-					t.setHighlightStyle();
+					t.setHighlightStyle(getPrefs().getSpellChecker());
 				}
 				autoAutoIndent(t);
 				return true;

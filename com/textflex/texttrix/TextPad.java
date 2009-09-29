@@ -226,7 +226,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		
 		// creates a styled document only for certain file extensions
-		setHighlightStyle();
+		setHighlightStyle(prefs.getSpellChecker());
 //		setStyledDocument(highlightedDoc);
 		applyDocumentSettings();
 	}
@@ -241,7 +241,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * styled document.
 	 * @return the styled, highlighted document
 	 */
-	public HighlightedDocument setHighlightStyle() {
+	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
@@ -256,7 +256,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			// most other code will have numerous non-detected words;
 			// TODO: apply spell-checker more broadly if add more
 			// varied dictionaries
-			SpellChecker.register( this );
+			if (spellChecker) SpellChecker.register( this );
 			return doc;
 		}
 		

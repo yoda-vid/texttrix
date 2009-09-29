@@ -134,6 +134,10 @@ public class Prefs extends JDialog {//JFrame {
 	private JCheckBox highlightingChk = null;
 	
 	
+	// spell-checker
+	private static final String SPELL_CHECKER = "spellChecker";
+	private JCheckBox spellCheckerChk = null;
+	
 	
 	
 	/* Shorts preferences--shortcuts */
@@ -488,6 +492,7 @@ public class Prefs extends JDialog {//JFrame {
 			autoSaveIntervalMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_SAVE_PROMPT, autoSavePromptChk.isSelected());
 		generalPrefs.putBoolean(HIGHLIGHTING, highlightingChk.isSelected());
+		generalPrefs.putBoolean(SPELL_CHECKER, spellCheckerChk.isSelected());
 	}
 	
 	/** Stores the Shorts preferences.
@@ -892,6 +897,10 @@ public class Prefs extends JDialog {//JFrame {
 		return generalPrefs.getBoolean(HIGHLIGHTING, true);
 	}
 	
+	public boolean getSpellChecker() {
+		return generalPrefs.getBoolean(SPELL_CHECKER, true);
+	}
+	
 	
 	
 	
@@ -1075,6 +1084,17 @@ public class Prefs extends JDialog {//JFrame {
 					highlightingChk = 
 						new JCheckBox(highlightingTxt, getHighlighting());
 					highlightingChk.setToolTipText(highlightingTipTxt);
+					
+					// spell-checker
+					String spellCheckerTxt =
+						"Automatically spell-check text";
+					String spellCheckerTipTxt =
+						"<html>Underlines misspelled words."
+							+ "<br>Words can be corrected by right-clicking"
+							+ "<br>and choosing the correct spelling.</html>";
+					spellCheckerChk = 
+						new JCheckBox(spellCheckerTxt, getSpellChecker());
+					spellCheckerChk.setToolTipText(spellCheckerTipTxt);
 					
 					
 					
@@ -1311,6 +1331,16 @@ public class Prefs extends JDialog {//JFrame {
 						constraints,
 						0,
 						6,
+						3,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						spellCheckerChk,
+						constraints,
+						0,
+						7,
 						3,
 						1,
 						0,
