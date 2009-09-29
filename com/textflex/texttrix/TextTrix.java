@@ -73,6 +73,8 @@ public class TextTrix extends JFrame {
 	private static final String FILE_SPLITTER = "::";
 	private static final String FILE_GROUP_SPLITTER = "{}";
 	private static final String FILE_GROUP_SPLITTER_REGEX = "\\{\\}";
+	private static final String FILE_WINDOW_SPLITTER = "{w}";
+	private static final String FILE_WINDOW_SPLITTER_REGEX = "\\{w\\}";
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
 	private static final String LINE_DANCE = "LineDance";
@@ -83,6 +85,7 @@ public class TextTrix extends JFrame {
 	private static final String ARG_FILES = "--files";
 	private static final String ARG_NO_HIGHLIGHTING = "--nohigh";
 	private static final String ARG_VERBOSE = "--verbose";
+	private static final String ARG_CLEAR_TABS = "--cleartabs";
 	
 	/* Storage variables */
 	private static String openDir = ""; // most recently path opened to
@@ -102,6 +105,7 @@ public class TextTrix extends JFrame {
 	private static boolean fresh = false; // temporarily don't reopen tabs
 	private static boolean highlighting = true; // syntax highlighting flag
 	private static boolean verbose = false; // verbose command-line output
+	private static boolean clearTabs = false;
 	
 	/* General GUI components */
 	private static ArrayList ttxWindows = new ArrayList();
@@ -472,23 +476,31 @@ public class TextTrix extends JFrame {
 				// load files left open at the close of the last session
 				String reopenPaths = getPrefs().getReopenTabsList();
 				if (!getFresh() && getPrefs().getReopenTabs()) {
-					// the list consists of a comma-delimited string of
-					// filenames
-					String[] grpTokens = reopenPaths.split(FILE_GROUP_SPLITTER_REGEX);
-					
-					// Start at 1 b/c first token is the empty group splitter
-					for (int i = 1; i < grpTokens.length; i++) {
-						String[] tokens = grpTokens[i].split(FILE_SPLITTER);
-						// Blank group already open initally, so simply update title
-						// and start adding files, unless cmd-line files were opened
-						if (i == 1 && !cmdLineFiles) {
-							setSelectedTabbedPaneTitle(tokens[0]);
-						} else {
-							// adds a new tab group for other startup files if
-							// cmd-line files already occupy a group
-							addTabbedPane(getGroupTabbedPane(), tokens[0]);
+					String[] windowTokens = reopenPaths.split(FILE_WINDOW_SPLITTER_REGEX);
+					int windowNum = ttxWindows.indexOf(getThis()) + 1;
+					if (windowNum < windowTokens.length) {
+						System.out.println("num: " + windowNum + ", tok: " + windowTokens[windowNum]);
+						// the list consists of a comma-delimited string of
+						// filenames
+						String[] grpTokens = windowTokens[windowNum].split(FILE_GROUP_SPLITTER_REGEX);
+						
+						// Start at 1 b/c first token is the empty group splitter
+						for (int i = 1; i < grpTokens.length; i++) {
+							String[] tokens = grpTokens[i].split(FILE_SPLITTER);
+							// Blank group already open initally, so simply update title
+							// and start adding files, unless cmd-line files were opened
+							if (i == 1 && !cmdLineFiles) {
+								setSelectedTabbedPaneTitle(tokens[0]);
+							} else {
+								// adds a new tab group for other startup files if
+								// cmd-line files already occupy a group
+								addTabbedPane(getGroupTabbedPane(), tokens[0]);
+							}
+							openFiles(tokens, 1, true);
 						}
-						openFiles(tokens, 1, true);
+						if (windowNum < windowTokens.length - 1) {
+							openTTXWindow(null);
+						}
 					}
 				}
 				
@@ -597,6 +609,9 @@ public class TextTrix extends JFrame {
 				} else if (args[i].equals(ARG_VERBOSE)) {
 					// "--verbose" to turn on verbose command-line output
 					setVerbose(true);
+				} else if (args[i].equals(ARG_CLEAR_TABS)) {
+					setClearTabs(true);
+					getPrefs().storeReopenTabsList("");
 				}
 			} else if (files || i == 0) {
 				// if files flag set to true, or first arg is not a switch,
@@ -646,6 +661,10 @@ public class TextTrix extends JFrame {
 	 */
 	public void setVerbose(boolean b) {
 		verbose = b;
+	}
+	
+	public void setClearTabs(boolean b) {
+		clearTabs = b;
 	}
 	
 	/** Gets the verbose output flag.
@@ -717,6 +736,7 @@ public class TextTrix extends JFrame {
 	 */
 	public void syncMenus() {
 		if (fileHistStart != -1) {
+			System.out.println("syncing menus: " + fileHistStart);
 			fileHist.start(fileMenu); // assumes fileHistStart is up-to-date
 		}
 		setAutoIndent(); // applies the auto-wrap-indent feature
@@ -1819,9 +1839,20 @@ public class TextTrix extends JFrame {
 	 * @see #closeAllTabs
 	 */
 	public boolean exitTextTrix() {
-		boolean b = closeAllTabs();
+		String reopenPaths = "";
+		boolean b = true;
+		for (int i = 0; i < ttxWindows.size(); i++) {
+			b = b && ((TextTrix)ttxWindows.get(i)).closeAllTabs();
+			reopenPaths += FILE_WINDOW_SPLITTER + getPrefs().getReopenTabsList();
+		}
+		System.out.println("reopentabs list: " + reopenPaths);
 		// store the file list and exit Text Trix if all the files closed
 		// successfully, set to reopen tabs, and not set for a fresh session
+		if (b == true) {
+			if (!getFresh() && getPrefs().getReopenTabs()) {
+				getPrefs().storeReopenTabsList(reopenPaths);
+			}
+		}
 		if (b == true) {
 			System.exit(0);
 		}
@@ -1875,10 +1906,12 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
+//		System.out.println("openedPaths: " + openedPaths + ", getFresh: " + getFresh());
 		// preserves most recently saved tabs if set to fresh session
 		if (b == true) {
 			if (!getFresh() && reopenTabs) {
 				getPrefs().storeReopenTabsList(openedPaths);
+//				System.out.println("storeReopenTabsList: " + getPrefs().getReopenTabsList());
 			}
 		}
 		return b;
@@ -4051,6 +4084,7 @@ public class TextTrix extends JFrame {
 						public void actionPerformed(ActionEvent evt) {
 							setFresh(true);
 							openTTXWindow(null);
+							setFresh(false);
 						}
 					};
 					LibTTx.setAcceleratedAction(newWindowAction, "New window",
@@ -4848,7 +4882,12 @@ public class TextTrix extends JFrame {
 
 					// prepare the file history menu entries
 					fileHistStart = fileMenu.getItemCount();
-					syncMenus();
+					
+					// commenting out sync menus because seems to be conflicting with
+					// other sync calls, creating multiple sets of file history menu items
+					// TODO: create unified fileHist object to synchronize across windows,
+					// perhaps picking up entries directly from prefs
+//					syncMenus();
 					//System.out.println("Validating the menu bar...");
 					validate();
 				}
