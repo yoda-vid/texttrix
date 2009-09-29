@@ -18,7 +18,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-8
+# Portions created by the Initial Developer are Copyright (C) 2003-9
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -51,6 +51,12 @@ environment, even if the resulting executables will run in the Windows
 envrionemnt.
 
 Parameters:	
+	--cleartabs: Clears the saved tabs history.  Similar to \"fresh\", but the tabs history is completely erased rather than preserved for the next launch.
+	
+	--files [file1] [file2] ... : Specifies files to open at start-up.  Files will be placed in their own group tab, labeled "Start".  All arguments listed without a switch as the first argument will be opened until the first switch is reached.
+	
+	--fresh: Open a session withou reopening previously saved tabs, while still preserving the names of the most recently stored tabs.
+	
 	--help: Lends a hand by displaying yours truly.
 		
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
@@ -61,17 +67,13 @@ Parameters:
 	
 	--nohigh: Turns on syntax highlighting.
 	
-	--files [file1] [file2] ... : Specifies files to open at start-up.  Files will be placed in their own group tab, labeled "Start".  All arguments listed without a switch as the first argument will be opened until the first switch is reached.
-	
-	--fresh: Open a session withou reopening previously saved tabs, while still preserving the names of the most recently stored tabs.
-	
 	--verbose: Verbose command-line output.
 
 Copyright:
 	Copyright (c) 2003-8 Text Flex
 
 Last updated:
-	2008-05-29
+	2009-09-28
 "
 
 

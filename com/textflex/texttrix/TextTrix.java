@@ -476,10 +476,11 @@ public class TextTrix extends JFrame {
 				// load files left open at the close of the last session
 				String reopenPaths = getPrefs().getReopenTabsList();
 				if (!getFresh() && getPrefs().getReopenTabs()) {
+					// gets the group tokens for the current window
 					String[] windowTokens = reopenPaths.split(FILE_WINDOW_SPLITTER_REGEX);
 					int windowNum = ttxWindows.indexOf(getThis()) + 1;
 					if (windowNum < windowTokens.length) {
-						System.out.println("num: " + windowNum + ", tok: " + windowTokens[windowNum]);
+//						System.out.println("num: " + windowNum + ", tok: " + windowTokens[windowNum]);
 						// the list consists of a comma-delimited string of
 						// filenames
 						String[] grpTokens = windowTokens[windowNum].split(FILE_GROUP_SPLITTER_REGEX);
@@ -498,6 +499,8 @@ public class TextTrix extends JFrame {
 							}
 							openFiles(tokens, 1, true);
 						}
+						// "recusively" opens a new window for each remaining
+						// window token
 						if (windowNum < windowTokens.length - 1) {
 							openTTXWindow(null);
 						}
@@ -1852,8 +1855,6 @@ public class TextTrix extends JFrame {
 			if (!getFresh() && getPrefs().getReopenTabs()) {
 				getPrefs().storeReopenTabsList(reopenPaths);
 			}
-		}
-		if (b == true) {
 			System.exit(0);
 		}
 		return b;
@@ -2650,71 +2651,6 @@ public class TextTrix extends JFrame {
 		TextPad t = getSelectedTextPad();
 		if (t != null) {
 			t.refresh();
-/*			
-			// Ensure that has a saved file to refresh
-			if (!t.fileExists()) {
-				String title = "Refreshing ain't always easy";
-				String msg = "This is all we've got.  There's no saved file yet"
-					+ "\nfor us to refresh.  Sorry about that.";
-				JOptionPane.showMessageDialog(getThis(), msg, title,
-					JOptionPane.INFORMATION_MESSAGE, null);
-				return;
-			}
-			
-			// Confirms with user that willing to override any unsaved changes
-			if (t.getChanged()) {
-				
-				String s = "Refresh request";
-				// dialog with 2 choices: discard, cancel
-				String msg = "This file has not yet been saved."
-						+ "\nShould I still refresh it with the currently saved version?";
-				int choice = JOptionPane.showOptionDialog(getThis(), msg,
-						"Save before refreshing", JOptionPane.WARNING_MESSAGE,
-						JOptionPane.DEFAULT_OPTION, null, new String[] { 
-								"Refresh me now", "Cancel" }, "Cancel"
-						);
-				switch (choice) {
-				// preserve the text area's contents by default
-				case 0:
-					break;
-				default:
-					return;
-				}
-			}
-			
-			// Refreshes the tab and tries to restore the caret position
-			// to its original position
-			int pos = t.getCaretPosition();
-			String path = t.getPath();
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(path));
-				read(t, reader, path);
-			} catch(FileNotFoundException e) {
-				// This message will most likely not be reached since
-				// the non-existant file would be detected earlier.
-				String msg = "The original file appears to have been moved, "
-					+ "\ndeleted, or set to be unreadable.";
-				JOptionPane.showMessageDialog(
-					getThis(), 
-					msg, 
-					"File missing",
-					JOptionPane.ERROR_MESSAGE);
-			} catch(IOException e) {
-				String msg = "The original file could not be accessed.";
-				JOptionPane.showMessageDialog(
-					getThis(), 
-					msg, 
-					"File inaccessible",
-					JOptionPane.ERROR_MESSAGE);
-			}
-//			openFile(t.getFile(), t.isEditable(), false, true);
-			// prevent caret from exceeding length of newly refreshed file
-			if (pos <= t.getDocument().getLength()) {
-				t.setCaretPosition(pos);
-			} else {
-				t.setCaretPosition(t.getDocument().getLength());
-			}
-*/			
 		}
 	}
 
