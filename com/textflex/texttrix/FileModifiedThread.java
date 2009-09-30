@@ -46,6 +46,11 @@ import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
 
+/**
+ * File modification poller.  Flags files that have been opened in Text Trix
+ * but modified elsewhere, such as source code that is open in the editor
+ * but which gets updated by a concurrent version update.
+ */
 public class FileModifiedThread extends StoppableThread {
 	private Thread thread = null;
 	private long lastModifiedWithTTx = 0;
@@ -60,7 +65,7 @@ public class FileModifiedThread extends StoppableThread {
 	public void start() {
 
 		setStopped(false);
-		System.out.println("starting file modification thread");
+//		System.out.println("starting file modification thread");
 		thread = new Thread(this, "thread");
 		thread.start();
 
@@ -90,7 +95,7 @@ public class FileModifiedThread extends StoppableThread {
 								long lastMod = pad.getFile().lastModified();
 								if (lastMod > getLastModifiedWithTTx()) {
 									requestStop();
-									System.out.println("displaying dialog");
+//									System.out.println("displaying dialog");
 									// creates a save prompt dialog
 									int choice = JOptionPane
 											.showConfirmDialog(
@@ -116,7 +121,7 @@ public class FileModifiedThread extends StoppableThread {
 				// ensures that an interrupt during the sleep is still flagged
 				setStopped(true);
 				Thread.currentThread().interrupt();
-				System.out.println("file modification thread interrupted");
+//				System.out.println("file modification thread interrupted");
 			}
 		}
 	}

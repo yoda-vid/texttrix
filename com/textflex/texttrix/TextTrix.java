@@ -739,7 +739,7 @@ public class TextTrix extends JFrame {
 	 */
 	public void syncMenus() {
 		if (fileHistStart != -1) {
-			System.out.println("syncing menus: " + fileHistStart);
+//			System.out.println("syncing menus: " + fileHistStart);
 			fileHist.start(fileMenu); // assumes fileHistStart is up-to-date
 		}
 		setAutoIndent(); // applies the auto-wrap-indent feature
@@ -1848,7 +1848,7 @@ public class TextTrix extends JFrame {
 			b = b && ((TextTrix)ttxWindows.get(i)).closeAllTabs();
 			reopenPaths += FILE_WINDOW_SPLITTER + getPrefs().getReopenTabsList();
 		}
-		System.out.println("reopentabs list: " + reopenPaths);
+//		System.out.println("reopentabs list: " + reopenPaths);
 		// store the file list and exit Text Trix if all the files closed
 		// successfully, set to reopen tabs, and not set for a fresh session
 		if (b == true) {
