@@ -80,7 +80,7 @@ Copyright:
 	Copyright (c) 2003-9 Text Flex
 
 Last updated:
-	2008-07-10
+	2009-09-30
 "
 
 #####################

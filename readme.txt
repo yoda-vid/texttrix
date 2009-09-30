@@ -33,10 +33,11 @@ command-line options are also available, in addition to others specified in
 the "run.sh" script:
 --nohigh: turn off syntax highlighting to improve performance
 --fresh: temporarily turn off tab reopening
+--cleartabs: clear memory of previously opened tabs
 --files [file1] [file2] ... : specify additional files to open at start-up
 
 Troubleshooting:
--See http://textflex.com/texttrix/index.html#faq for troubleshooting tips.
+-See http://textflex.com/texttrix/wiki.html for troubleshooting tips.
 
 
 -----------------
