@@ -387,9 +387,18 @@ cp $TTX_DIR/$DIR/images/minicon-32x32.png $BLD_DIR/$PKGDIR/icon.png
 # zip up and move to PREFIXination
 cd $BLD_DIR
 cp $PKGDIR/$JAR $TTX_DIR
+
+echo -n "Creating $PKG package..."
 zip -rq $PKG $PKGDIR
+echo "done"
+
+echo -n "Creating $PKG14 package..."
 zip -rq $PKG14 $PKG14DIR
+echo "done"
+
+echo -n "Creating $SRCPKG package..."
 zip -rq $SRCPKG $SRCPKGDIR
+echo "done"
 echo ""
 if [ -d "$PREFIX" ]
 then
@@ -407,7 +416,7 @@ rm -f latest latest-jre14 latest-src
 ln -s $PKGDIR latest
 ln -s $PKG14DIR latest-jre14
 ln -s $SRCPKGDIR latest-src
-ls -l $ALL
+#ls -l $ALL
 #sh $WIN_MOUNT
 
 exit 0
