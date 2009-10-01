@@ -100,7 +100,8 @@ public class FileModifiedThread extends StoppableThread {
 									int choice = JOptionPane
 											.showConfirmDialog(
 													pad,
-													"This file has been modified elsewhere."
+													textPad.getFile().getPath() 
+															+ "\nhas been modified elsewhere."
 															+ "\nRefresh the file?",
 													"File Modified Elsewhere",
 													JOptionPane.YES_NO_OPTION,

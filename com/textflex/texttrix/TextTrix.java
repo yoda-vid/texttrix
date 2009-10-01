@@ -117,7 +117,7 @@ public class TextTrix extends JFrame {
 	private static JPopupMenu tabsPopup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
 	private static FileFilter allFilter = null; // TODO: may be unnecessary
-	private TextPadDocListener textPadDocListener = new TextPadDocListener();
+//	private TextPadDocListener textPadDocListener = new TextPadDocListener();
 	private LineDanceDialog lineDanceDialog = null;
 	
 	/* Menu bar controls */
@@ -2080,14 +2080,14 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
-		DocumentListener listener = textPadDocListener;
+//		DocumentListener listener = textPadDocListener;
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
-		textPad.getDocument().addDocumentListener(listener);
+		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
 //		textPad.addMouseListener(new TextPadPopupListener());
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
@@ -2189,7 +2189,7 @@ public class TextTrix extends JFrame {
 	 *            <code>TextPad</code> requiring applied settings
 	 */
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
-		textPad.getDocument().addDocumentListener(textPadDocListener);//new TextPadDocListener());
+		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
 		textPad.setChanged(true);
 		updateTabTitle(textPad);//getSelectedTabbedPane());
 	}
@@ -2277,7 +2277,7 @@ public class TextTrix extends JFrame {
 		// runs in EDT to prevent GUI lock-up during loading
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				textPad.getDocument().removeDocumentListener(textPadDocListener);
+//				textPad.getDocument().removeDocumentListener(textPadDocListener);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
 					textPad.setHighlightStyle(getPrefs().getSpellChecker());
 				}
@@ -2289,7 +2289,7 @@ public class TextTrix extends JFrame {
 				textPad.setCaretPosition(0);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
-				textPad.getDocument().addDocumentListener(textPadDocListener);
+//				textPad.getDocument().addDocumentListener(textPadDocListener);
 			}
 		});
 	}
@@ -2374,7 +2374,7 @@ public class TextTrix extends JFrame {
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
 						t.applyDocumentSettings();
-						t.getDocument().addDocumentListener(textPadDocListener);
+						t.getDocument().addDocumentListener(new TextPadDocListener(t));
 					}
 					// automatically starts indenting, if applicable, after
 					// rather than before applying the syntax highlighting 
@@ -3495,7 +3495,11 @@ public class TextTrix extends JFrame {
 	 * titles to reflect text alterations.
 	 */
 	private class TextPadDocListener implements DocumentListener {
-
+		private TextPad pad = null;
+		
+		public TextPadDocListener(TextPad aPad) {
+			pad = aPad;
+		}
 		/**
 		 * Flags a text insertion.
 		 * 
@@ -3532,7 +3536,7 @@ public class TextTrix extends JFrame {
 		 *  
 		 */
 		public void setChanged() {
-			final TextPad pad = getSelectedTextPad();
+//			final TextPad pad = getSelectedTextPad();
 //			if (!(pad.getIgnoreChanged() && pad.getChanged())) {
 			if (!pad.getChanged()) {
 //				System.out.println("i'm here");

@@ -1091,7 +1091,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		FileModifiedThread thread = getFileModifiedThread();
 		if (thread != null) {
 //			thread.setFile(file);
-System.out.println("just saved: " + getFile().lastModified());
+//System.out.println("just saved: " + getFile().lastModified());
 			thread.setLastModifiedWithTTx(getFile().lastModified());
 		}
 	}
