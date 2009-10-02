@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://stuffy.hopto.org/texttrix/" href="texttrix.jnlp">
+    <information>
+        <title>Text Trix</title>
+        <vendor>Text Flex</vendor>
+        <homepage href="http://textflex.com/texttrix/"/>
+        <description>The Text Tinker</description>
+        <offline-allowed/>
+        <shortcut>
+            <desktop/>
+        </shortcut>
+    </information>
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.5+"/>
+        <jar href="TextTrix.jar" main="true"/>
+    </resources>
+    <application-desc main-class="com.textflex.texttrix.TextTrix"/>
+    <update check="always" policy="prompt-update"/>
+</jnlp>

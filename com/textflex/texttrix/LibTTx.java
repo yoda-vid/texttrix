@@ -175,6 +175,26 @@ public class LibTTx {
 		plugIn.setPath(path);
 		return plugIn;
 	}
+	
+	/*
+	 * TODO: Create plugin loader based on URLs and perhaps a file listing page.
+	public static PlugIn loadPlugIn(URL url, String plugInName) {
+		// loader corresponding to the given plugin's location
+		ClassLoader loader = null;
+		String path = null;
+		PlugIn plugIn = null;
+		
+		try {
+			path = plugInDir.toString() + File.separator + plugInName;
+//			URL url = new File(path).toURL();
+			URL url = new File(path).toURI().toURL();
+			loader = new URLClassLoader(new URL[] { url });
+		} catch (MalformedURLException e) {
+		}
+		return loadPlugIn(path, plugInName, loader);
+		
+	}
+	*/
 
 	/** Gets the base directory, the root directory of the program.
 	 *
