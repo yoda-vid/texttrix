@@ -298,13 +298,13 @@ mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
 	"$TTX_DIR"/changelog.txt \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
-	"$TTX_DIR"/dictionary*.ortho "$TTX_DIR"/dictionaries.cnf "$BLD_DIR/$PKGDIR"
+	"$TTX_DIR"/dictionaries "$BLD_DIR/$PKGDIR"
 
 
 # create the master package, which will eventually become the binary package
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
-rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn
+rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn dictionaries/.svn dictionaries/User*
 # make files readable in all sorts of systems
 unix2dos *.txt $DIR/*.txt
 chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files
@@ -367,6 +367,7 @@ then
 else
 	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 	"$JAVA"java -cp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver -source .
+	"$JAVA"jar -cfm $BLD_DIR/$PKG14DIR/$JAR manifest-additions-jre14.mf $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $BLD_DIR/$PKGDIR/$JAR

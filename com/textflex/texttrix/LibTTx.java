@@ -285,6 +285,28 @@ public class LibTTx {
 		
 		return baseDir;
 	}
+	
+	public static URI getBaseURI(String folders) {
+		try {
+		URI baseURI = com.textflex.texttrix.LibTTx.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+		String path = baseURI.toString();
+		if (path.endsWith(".jar")) {
+			path = path.substring(0, path.lastIndexOf("/")) + "/";
+		}
+		path = path.endsWith("/") ? path + folders : path + "/" + folders;
+		path = path.endsWith("/") ? path : path + "/";
+		baseURI = new URI(path);
+		//System.out.println("URI: " + baseURI + ", path: " + baseURI.getPath());
+		return baseURI;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static URI getBaseURI() {
+		return getBaseURI("");
+	}
 
 	/** Gets a list of all the plug-ins in a given directory.
 	 * 

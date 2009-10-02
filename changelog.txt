@@ -5,8 +5,26 @@ the text tinker
 Copyright (c) 2002-9, Text Flex
 http://textflex.com/texttrix
 
-(See http://texttrix.wiki.sourceforge.net/ToDo for a more detailed log of 
-improvements and plans for future ones.)
+(See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
+
+----v.0.9.3 (2009-10-??)----
+
+Text Trix now sports a spell-checker to sit alongside the recently introduced 
+syntax highlighter for stronger visualization of text.  Adapted from the jOrtho 
+open-source library, this spell-checker comes complete with inline highlighting 
+and spelling suggestions.  Improvement have also been made to tab memory, 
+including the "--cleartabs" option to start completely afresh.  While the last 
+release allowed for side-by-side file viewing through multiple windows, this 
+release remembers tabs opened across windows and restores them on next 
+launch.  File modification detection ensures that if an opened file has been 
+modified elsewhere (e.g. via Subversion), the editor will flag the update and 
+prompt for a file refresh.
+
+New features/bug fixes:
+-Integrated spell-checker (via jOrtho open-source library)
+-Tab memory and restoration across multiple windows
+-"--cleartabs" option to completely clear tab memory upon launch
+-File modification polling and notification when open files are updated elsewhere
 
 ----v.0.9.2 (2009-02-25)----
 

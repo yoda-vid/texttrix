@@ -1605,7 +1605,8 @@ public class TextTrix extends JFrame {
 	 * @return the plugins folder
 	 */
 	public File getPlugInsFile() {
-		File plugInsFile = new File(LibTTx.getBaseFile(), "plugins");
+//		File plugInsFile = new File(LibTTx.getBaseFile(), "plugins");
+		File plugInsFile = new File(LibTTx.getBaseURI("plugins"));
 		if (!plugInsFile.exists()) {
 			System.out.println("I haven't been able to locate"
 				+ newline + plugInsFile.toString()
