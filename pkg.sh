@@ -362,11 +362,11 @@ cd $BLD_DIR/$SRCPKGDIR/texttrix
 if [ "$CYGWIN" = "true" ]
 then
 	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	"$JAVA"java -cp `cygpath -wp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver` -source . #-jar `cygpath -wp $BLD_DIR/$PKGDIR/$JAR $BLD_DIR/$PKG14DIR/$JAR`
+	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKG14DIR/$JAR`" "`cygpath -p -w manifest-additions-jre14.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 else
 	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
-	"$JAVA"java -cp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver -source . #-jar $BLD_DIR/$PKGDIR/$JAR $BLD_DIR/$PKG14DIR/$JAR
-	#"$JAVA"java -jar ../retroweaver/retroweaver-all-2.0.7.jar .
-	"$JAVA"jar -cfm $BLD_DIR/$PKG14DIR/$JAR manifest-additions-jre14.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	"$JAVA"java -cp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver -source .
 fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $BLD_DIR/$PKGDIR/$JAR

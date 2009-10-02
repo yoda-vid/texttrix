@@ -2088,7 +2088,7 @@ public class TextTrix extends JFrame {
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
 		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
-//		textPad.addMouseListener(new TextPadPopupListener());
+		textPad.addMouseListener(new TextPadPopupListener());
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				updateStatusBarLineNumbers(textPad);
