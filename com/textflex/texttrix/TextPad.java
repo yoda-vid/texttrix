@@ -231,6 +231,44 @@ public class TextPad extends JTextPane implements StateEditable {
 		applyDocumentSettings();
 	}
 	
+	/**
+	 * Creates actions for popup menus, such as copy, cut, and paste.
+	 */
+	public ArrayList createPopupActions() {
+		ArrayList list = new ArrayList();
+		
+		// cut
+		Action cutAction = new AbstractAction("Cut") {
+			public void actionPerformed(ActionEvent evt) {
+				cut();
+			}
+		};
+		list.add(cutAction);
+		
+		// copy
+		Action copyAction = new AbstractAction("Copy") {
+			public void actionPerformed(ActionEvent evt) {
+				copy();
+			}
+		};
+		list.add(copyAction);
+		// paste
+		Action pasteAction = new AbstractAction("Paste") {
+			public void actionPerformed(ActionEvent evt) {
+				paste();
+			}
+		};
+		list.add(pasteAction);
+		// select all text in current text area
+		Action selectAllAction = new AbstractAction("Select all") {
+			public void actionPerformed(ActionEvent evt) {
+				selectAll();
+			}
+		};
+		list.add(selectAllAction);
+		return list;
+	}
+	
 	/** Sets the syntax highlighting style for the current file
 	 * according to the file's extension, if possible.
 	 * If the file has no extension, a ".txt" extension, or 

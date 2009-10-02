@@ -51,7 +51,11 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
-import com.textflex.texttrix.*;
+import java.util.ArrayList;
+import javax.swing.Action;
+
+import com.textflex.texttrix.LibTTx;
+import com.textflex.texttrix.TextPad;
 
 /**
  * This class is the major class of the spell checker JOrtho (Java Orthography Checker). 
@@ -255,7 +259,7 @@ baseURL = LibTTx.getBaseFile().toURI().toURL();
      * @throws NullPointerException
      *             if text is null
      */
-    public static void register( final JTextComponent text) throws NullPointerException{
+    public static void register( final TextPad text) throws NullPointerException{
         register( text, true, true, true );
     }
 
@@ -274,7 +278,7 @@ baseURL = LibTTx.getBaseFile().toURI().toURL();
      * @throws NullPointerException
      *             if text is null
      */
-    public static void register( final JTextComponent text, boolean hasPopup, boolean hasShortKey, boolean hasAutoSpell ) throws NullPointerException {
+    public static void register( final TextPad text, boolean hasPopup, boolean hasShortKey, boolean hasAutoSpell ) throws NullPointerException {
         if( hasPopup ) {
             enablePopup( text, true );
         }
@@ -291,7 +295,7 @@ baseURL = LibTTx.getBaseFile().toURI().toURL();
      * if the text component is no longer needed.
      * @param text the JTextComponent
      */
-    public static void unregister( JTextComponent text ){
+    public static void unregister( TextPad text ){
         enableShortKey( text, false );
         enablePopup( text, false );
         enableAutoSpell( text, false );
@@ -361,9 +365,17 @@ baseURL = LibTTx.getBaseFile().toURI().toURL();
      * @param text the JTextComponent that should change
      * @param enable true, enable the feature.
      */
-    public static void enablePopup( JTextComponent text, boolean enable ){
+    public static void enablePopup( TextPad text, boolean enable ){
         if( enable ){
             final JPopupMenu menu = new JPopupMenu();
+
+							// adds popup menu items from the TextPad
+							ArrayList list = text.createPopupActions();
+							for (int i = 0; i < list.size(); i++) {
+								menu.add((Action)list.get(i));
+							}
+							
+							// adds the spell checker menu items
             menu.add( createCheckerMenu() );
             menu.add( createLanguagesMenu() );
             text.addMouseListener( new PopupListener(menu) );
