@@ -1133,6 +1133,13 @@ public class TextPad extends JTextPane implements StateEditable {
 			thread.setLastModifiedWithTTx(getFile().lastModified());
 		}
 	}
+	
+	public void stopFileModifiedThread() {
+		FileModifiedThread thread = getFileModifiedThread();
+		if (thread != null) {
+			thread.requestStop();
+		}
+	}
 
 	/**Sets the auto-indent selection.
 	 * @param b <code>true</code> to auto-indent

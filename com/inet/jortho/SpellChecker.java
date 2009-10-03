@@ -174,6 +174,7 @@ System.out.println("baseURL: " + baseURL);
             return;
         }
         String availableLocales = props.getProperty( "languages" );
+//System.out.println("availableLocales: " + availableLocales);
         String extension = props.getProperty( "extension", ".ortho" );
         registerDictionaries( baseURL, availableLocales, activeLocale, extension );
     }
@@ -508,8 +509,10 @@ System.out.println("baseURL: " + baseURL);
         JMenu menu = new JMenu(Utils.getResource("languages"));
         ButtonGroup group = new ButtonGroup();
         menu.setEnabled( languages.size() > 0 );
+//System.out.println("creating language menu");
         
         for(LanguageAction action : languages){
+//System.out.println("creating entry: " + action);
             JRadioButtonMenuItem item = new JRadioButtonMenuItem( action );
             //Hack that all items of the action have the same state.
             //http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4133141

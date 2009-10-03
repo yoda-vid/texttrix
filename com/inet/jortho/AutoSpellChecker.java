@@ -187,7 +187,8 @@ class AutoSpellChecker implements DocumentListener, LanguageChangeListener {
 						}
 					}
         } catch( BadLocationException e ) {
-            e.printStackTrace();
+//            e.printStackTrace();
+						System.out.println("auto-spell-checker location error...will probably reset");
         }
     }
 

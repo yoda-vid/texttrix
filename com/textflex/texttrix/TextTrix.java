@@ -309,6 +309,18 @@ public class TextTrix extends JFrame {
 		
 		
 		
+		/* Prep jortho spell checker */
+		
+		// Create user dictionary in the current working directory of your application
+		SpellChecker.setUserDictionaryProvider( new FileUserDictionary() );
+		
+		// Load the configuration from the file dictionaries.cnf and 
+		// use the current locale or the first language as default 
+		SpellChecker.registerDictionaries( null, "en" );
+		
+		
+		
+		
 		
 
 		/* Create the main Text Trix frame components */
@@ -425,15 +437,6 @@ public class TextTrix extends JFrame {
 		(statusBarCreator = new StatusBarCreator()).start();
 		
 		
-		
-		/* Prep jortho spell checker */
-		
-		// Create user dictionary in the current working directory of your application
-		SpellChecker.setUserDictionaryProvider( new FileUserDictionary() );
-		
-		// Load the configuration from the file dictionaries.cnf and 
-		// use the current locale or the first language as default 
-		SpellChecker.registerDictionaries( null, null );
 		
 
 		// open the initial files and create the status bar;
@@ -2319,6 +2322,7 @@ public class TextTrix extends JFrame {
 		// stops the pad's save timer and removes the pad
 		if (t != null) {
 			stopTextPadAutoSaveTimer(t);
+			t.stopFileModifiedThread();
 			tp.remove(i);
 		}
 	}
