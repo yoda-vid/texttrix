@@ -98,6 +98,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param aFile file to which the <code>TextPad</code> will
 	 * save its text area contents
 	 */
+	// TODO: doesn't really need prefs from calling function;
+	// should instead create simple Prefs object to access all the saved values
 	public TextPad(File aFile, Prefs prefs) {
 		// TODO: decide whether to check JVM within each TextPad or only once,
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
@@ -1776,6 +1778,7 @@ public class TextPad extends JTextPane implements StateEditable {
 						// for the change from TextPadDocumentListener in TextTrix
 						setChanged(true);
 						setText(text);
+						setHighlightStyle(new Prefs().getSpellChecker());
 						setChanged(false);
 					}
 				});

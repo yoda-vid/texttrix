@@ -306,6 +306,9 @@ public class Prefs extends JDialog {//JFrame {
 //		importPrefs();
 	}
 	
+	public Prefs() {
+	}
+	
 	/** Gets this Prefs object.
 	 */
 	private Prefs getThis() {
