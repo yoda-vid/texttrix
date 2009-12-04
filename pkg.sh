@@ -307,7 +307,7 @@ cd "$BLD_DIR/$PKGDIR"
 rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn dictionaries/.svn dictionaries/User*
 # make files readable in all sorts of systems
 unix2dos *.txt $DIR/*.txt
-chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files
+#chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files; commented out because appears to be causing permission errors in cygwin environments
 
 # create the source package from the master package
 cd $BLD_DIR
