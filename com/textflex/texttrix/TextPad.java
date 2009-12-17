@@ -90,6 +90,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private JScrollPane scrollPane = null; // the scroll pane that houses this pad
 	private LineDancePanel lineDancePanel = null; // the Line Dance panel
 	private FileModifiedThread fileModifiedThread = null;
+	private DocumentListener docListener = null;
 	
 	private HighlightedDocument highlightedDoc = new HighlightedDocument();
 
@@ -1810,7 +1811,14 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 	}
 	
+	public void addDocListener(DocumentListener aDocListener) {
+		docListener = aDocListener;
+		getDocument().addDocumentListener(docListener);
+	}
 	
+	public void removeDocListener() {
+		getDocument().removeDocumentListener(docListener);
+	}
 	
 	
 	

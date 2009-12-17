@@ -2091,7 +2091,8 @@ public class TextTrix extends JFrame {
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
-		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
+//		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
+						textPad.addDocListener(new TextPadDocListener(textPad));
 //		textPad.addMouseListener(new TextPadPopupListener());
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
@@ -2193,7 +2194,8 @@ public class TextTrix extends JFrame {
 	 *            <code>TextPad</code> requiring applied settings
 	 */
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
-		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
+//		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
+						textPad.addDocListener(new TextPadDocListener(textPad));
 		textPad.setChanged(true);
 		updateTabTitle(textPad);//getSelectedTabbedPane());
 	}
@@ -2283,7 +2285,9 @@ public class TextTrix extends JFrame {
 			public void run() {
 //				textPad.getDocument().removeDocumentListener(textPadDocListener);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
+					textPad.removeDocListener();
 					textPad.setHighlightStyle(getPrefs().getSpellChecker());
+					textPad.addDocListener(new TextPadDocListener(textPad));
 				}
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
@@ -2379,7 +2383,8 @@ public class TextTrix extends JFrame {
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
 						t.applyDocumentSettings();
-						t.getDocument().addDocumentListener(new TextPadDocListener(t));
+//						t.getDocument().addDocumentListener(new TextPadDocListener(t));
+						t.addDocListener(new TextPadDocListener(t));
 					}
 					// automatically starts indenting, if applicable, after
 					// rather than before applying the syntax highlighting 
@@ -3512,6 +3517,7 @@ public class TextTrix extends JFrame {
 		 *            insertion event
 		 */
 		public void insertUpdate(DocumentEvent e) {
+//			System.out.println("TextPadDocListener detected insert");
 			setChanged();
 		}
 
@@ -5376,6 +5382,7 @@ public class TextTrix extends JFrame {
 		 */
 		public void stateChanged(ChangeEvent evt) {
 			final TextPad t = getSelectedTextPad();
+//			System.out.println("TextPadChangeListener stateChanged");
 			if (getUpdateForTextPad()) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {

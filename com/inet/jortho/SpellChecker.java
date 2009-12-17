@@ -141,7 +141,7 @@ public class SpellChecker {
             try {
 //baseURL = LibTTx.getBaseFile().toURI().toURL();
 baseURL = LibTTx.getBaseURI("dictionaries").toURL();
-System.out.println("baseURL: " + baseURL);
+//System.out.println("baseURL: " + baseURL);
 //                baseURL = new URL("file", null, "");
             } catch( MalformedURLException e ) {
                 // should never occur because the URL is valid
