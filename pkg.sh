@@ -327,10 +327,10 @@ cp -rf pkg.sh run.sh manifest-additions*.mf build.sh run.ps1 build.ps1 gnu \
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
 #chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/configure
-chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix/build.sh \
-	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
+#chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
+#	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
+#	"$BLD_DIR/$SRCPKGDIR"/texttrix/build.sh \
+#	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 
 # add the plugins, copying the entire folder
 # WARNING: Remove any unwanted contents from this folder, as the whole folder
@@ -370,7 +370,7 @@ else
 	"$JAVA"jar -cfm $BLD_DIR/$PKG14DIR/$JAR manifest-additions-jre14.mf $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 fi
 # make executable so can be run as binary on systems where jexec is installed
-chmod 755 $BLD_DIR/$PKGDIR/$JAR
+#chmod 755 $BLD_DIR/$PKGDIR/$JAR
 rm -rf */*/*.class */*/*/*.class */*/*/*/*.class
 
 # finish the source package
