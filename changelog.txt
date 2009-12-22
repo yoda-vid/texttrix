@@ -7,7 +7,7 @@ http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
 
-----v.0.9.3 (2009-10-??)----
+----v.0.9.3 (2010-01-??)----
 
 Text Trix now sports a spell-checker to sit alongside the recently introduced 
 syntax highlighter for stronger visualization of text.  Adapted from the jOrtho 
