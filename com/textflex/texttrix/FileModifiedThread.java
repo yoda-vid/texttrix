@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-9
+ * Portions created by the Initial Developer are Copyright (C) 2002-10
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -92,14 +92,14 @@ public class FileModifiedThread extends StoppableThread {
 							// name later,
 							// when can still cancel the save
 							if (textPad.getFile().exists()) {
-								long lastMod = pad.getFile().lastModified();
+								long lastMod = textPad.getFile().lastModified();
 								if (lastMod > getLastModifiedWithTTx()) {
 									requestStop();
 //									System.out.println("displaying dialog");
 									// creates a save prompt dialog
 									int choice = JOptionPane
 											.showConfirmDialog(
-													pad,
+													textPad,
 													textPad.getFile().getPath() 
 															+ "\nhas been modified elsewhere."
 															+ "\nRefresh the file?",

@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-8
+ * Portions created by the Initial Developer are Copyright (C) 2002-10
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -1780,6 +1780,7 @@ public class TextPad extends JTextPane implements StateEditable {
 						setChanged(true);
 						setText(text);
 						setHighlightStyle(new Prefs().getSpellChecker());
+						applyAutoIndent();
 						setChanged(false);
 					}
 				});

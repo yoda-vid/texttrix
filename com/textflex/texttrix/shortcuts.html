@@ -1,7 +1,7 @@
 <!-- shortcuts.html
 Text Trix
 the text tinker
-Copyright (c) 2006-7, Text Flex
+Copyright (c) 2006-10, Text Flex
 http://textflex.com/texttrix
 -->
 
@@ -261,7 +261,21 @@ http://textflex.com/texttrix
 			</tr>
 		</table>
 		
-		<p><small>Copyright &#169; 2006-9, Text Flex.  http://textflex.com/texttrix</small></p>
+		<h2>Command-Line Options</h2>
+		
+		<p>There are several ways to customize Text Trix at start up.  Add any of these options when launching from a command prompt or in an application shortcut.
+			<ul>
+				<li><code>--cleartabs</code>: Clears the saved tabs history.  Similar to "fresh", but the tabs history is completely erased rather than preserved for the next launch.</li>
+				<li><code>--files [file1] [file2] ...</code>: Specifies files to open at start-up.  Files will be placed in their own group tab, labeled "Start".  All arguments listed without a switch as the first argument will be opened until the first switch is reached.</li>
+				<li><code>--fresh</code>: Open a session withou reopening previously saved tabs, while still preserving the names of the most recently stored tabs.</li>
+				<li><code>--help</code>: Lends a hand by displaying yours truly.</li>
+				<li><code>--java=java-compiler-binaries-path</code>: Specifies the path to javac, jar, and other Java tools necessary for compilation.  Alternatively, the JAVA variable in pkg.sh can be hand-edited to specify the path, which would override any command-line specification.</li>
+				<li><code>--nohigh</code>: Turns on syntax highlighting.</li>
+				<li><code>--verbose</code>: Verbose command-line output (for debugging).</li>
+			</ul>
+		</p>
+		
+		<p><small>Copyright &#169; 2006-10, Text Flex.  http://textflex.com/texttrix</small></p>
 		
 	</body>
 </html>
