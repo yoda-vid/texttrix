@@ -2,7 +2,7 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-9, Text Flex
+Copyright (c) 2002-10, Text Flex
 http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
@@ -25,6 +25,12 @@ New features/bug fixes:
 -Tab memory and restoration across multiple windows
 -"--cleartabs" option to completely clear tab memory upon launch
 -File modification polling and notification when open files are updated elsewhere
+
+Known issues/workarounds:
+-When several large files with highlighting turned on are modified externally, the 
+editor may lock up while refreshing all the tabs in quick succession.  To avoid the 
+lock-up, try pausing after refreshing each file to allow the highlighting to complete.
+-After a crash, tabs revert to the state of the last normal exit.
 
 ----v.0.9.2 (2009-02-25)----
 
