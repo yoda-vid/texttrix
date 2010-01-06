@@ -56,6 +56,7 @@ public class FileModifiedThread extends StoppableThread {
 	private long lastModifiedWithTTx = 0;
 	private File file = null;
 	private TextPad pad = null;
+	private boolean refreshed = false;
 	
 	public FileModifiedThread(TextPad aPad) {
 		pad = aPad;
@@ -109,7 +110,7 @@ public class FileModifiedThread extends StoppableThread {
 									if (choice == JOptionPane.YES_OPTION) {
 										textPad.refresh();
 										setLastModifiedWithTTx(lastMod);
-										getThis().start();
+										refreshed = true;
 //										setStopped(false);
 									}
 								}
@@ -124,6 +125,9 @@ public class FileModifiedThread extends StoppableThread {
 				Thread.currentThread().interrupt();
 //				System.out.println("file modification thread interrupted");
 			}
+		}
+		if (refreshed) {
+			getThis().start();
 		}
 	}
 	

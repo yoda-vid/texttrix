@@ -1779,7 +1779,7 @@ public class TextPad extends JTextPane implements StateEditable {
 						// for the change from TextPadDocumentListener in TextTrix
 						setChanged(true);
 						setText(text);
-						setHighlightStyle(new Prefs().getSpellChecker());
+//						setHighlightStyle(new Prefs().getSpellChecker(), text);
 						applyAutoIndent();
 						setChanged(false);
 					}
