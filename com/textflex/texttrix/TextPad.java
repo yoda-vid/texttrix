@@ -304,6 +304,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
 		String text = getAllText();
+
 //		System.out.println("contentType: " + getContentType());
 		setStyledDocument(doc);
 		
@@ -333,6 +334,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		// note that it will cause all previous edits to be unavailable
 		return doc;
 	}
+/*	
+	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
+		return setHighlightStyle(spellChecker, null);
+	}
+*/
 	
 	/** Gets the file extension of the current file.
 	 * @return the file extension, which is the part of
