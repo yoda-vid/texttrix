@@ -3705,41 +3705,6 @@ public class TextTrix extends JFrame {
 
 	/**
 	 * Listener to pop up a context menu when right-clicking
-	 * in a Text Pad.
-	 * 
-	 * @author davit
-	 */
-	private class TextPadPopupListener extends MouseAdapter {
-		
-		public TextPadPopupListener() {
-			super();
-		}
-	
-		/**
-		 * Press right mouse button.
-		 * Responds to requests from Macs.
-		 *  
-		 */
-		public void mousePressed(MouseEvent e) {
-			if (e.isPopupTrigger()) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		}
-
-		/**
-		 * Release right mouse button.
-		 * Responds to requests from Windows/Linux.
-		 *  
-		 */
-		public void mouseReleased(MouseEvent e) {
-			if (e.isPopupTrigger()) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		}
-	}
-
-	/**
-	 * Listener to pop up a context menu when right-clicking
 	 * on a tabbed pane.
 	 * 
 	 * @author davit

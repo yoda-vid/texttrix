@@ -42,6 +42,7 @@ import java.util.*;
 import java.awt.event.*;
 import javax.swing.undo.*;
 import javax.swing.text.*;
+import javax.swing.JPopupMenu;
 import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
@@ -272,6 +273,33 @@ public class TextPad extends JTextPane implements StateEditable {
 		return list;
 	}
 	
+    /**
+     * Enable or disable the popup menu with the menu item "Orthography" and "Languages". 
+     * @param text the JTextComponent that should change
+     * @param enable true, enable the feature.
+     */
+    public void enablePopup(boolean enable ){
+        if( enable ){
+            final JPopupMenu menu = new JPopupMenu();
+
+							// adds popup menu items from the TextPad
+							ArrayList list = createPopupActions();
+							for (int i = 0; i < list.size(); i++) {
+								menu.add((Action)list.get(i));
+							}
+							
+							// adds the spell checker menu items
+            addMouseListener( new TextPadPopupListener(menu) );
+        } else {
+							MouseListener[] listeners = getMouseListeners();
+            for (int i = 0; i < listeners.length; i++){
+                if(listeners[i] instanceof TextPadPopupListener){
+                    removeMouseListener( listeners[i] );
+                }
+            }
+        }
+    }
+    
 	/** Sets the syntax highlighting style for the current file
 	 * according to the file's extension, if possible.
 	 * If the file has no extension, a ".txt" extension, or 
@@ -328,6 +356,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// transfers the text into the appropriately styled document
 		setText(text);
+		enablePopup(true);
 		
 		// still need to add undo manager to the new document
 		// via applyDocumentSettings;

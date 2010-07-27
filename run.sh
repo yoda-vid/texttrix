@@ -51,11 +51,17 @@ environment, even if the resulting executables will run in the Windows
 envrionemnt.
 
 Parameters:	
-	--cleartabs: Clears the saved tabs history.  Similar to \"fresh\", but the tabs history is completely erased rather than preserved for the next launch.
+	--cleartabs: Clears the saved tabs history.  Similar to \"fresh\", 
+	but the tabs history is completely erased rather than preserved for 
+	the next launch.
 	
-	--files [file1] [file2] ... : Specifies files to open at start-up.  Files will be placed in their own group tab, labeled "Start".  All arguments listed without a switch as the first argument will be opened until the first switch is reached.
+	--files [file1] [file2] ... : Specifies files to open at start-up.  
+	Files will be placed in their own group tab, labeled "Start".  All 
+	arguments listed without a switch as the first argument will be 
+	opened until the first switch is reached.
 	
-	--fresh: Open a session withou reopening previously saved tabs, while still preserving the names of the most recently stored tabs.
+	--fresh: Open a session withou reopening previously saved tabs, 
+	while still preserving the names of the most recently stored tabs.
 	
 	--help: Lends a hand by displaying yours truly.
 		
