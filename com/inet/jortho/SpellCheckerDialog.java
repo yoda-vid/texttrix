@@ -92,7 +92,7 @@ class SpellCheckerDialog extends JDialog implements ActionListener {
             Image image = ImageIO.read( getClass().getResourceAsStream( "icon.png" ) );
             // setIconImage appeared in Java 6.0 so use reflection to be compatible
             // with earlier JVMs. Equivalent to calling setIcomImage(image);
-            Class cls = Dialog.class;
+            Class<?> cls = Dialog.class;
             java.lang.reflect.Method m = cls.getMethod( "setIconImage", new Class[] { Image.class } );
             m.invoke( this, new Object[] { image } );
         } catch( Throwable e1 ) {

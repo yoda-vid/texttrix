@@ -514,6 +514,19 @@ public class TextTrix extends JFrame {
 				// currently selected tab
 				getGroupTabbedPane().setSelectedIndex(0);
 				
+				
+				// drag-n-drop files to open using FileDrop (public domain)
+				// http://www.iharder.net/current/java/filedrop/
+				// TODO: replace System.out with null to avoid debugging
+				new FileDrop( System.out, getGroupTabbedPane(), new FileDrop.Listener() {
+					public void filesDropped( java.io.File[] files ) {
+						for( int i = 0; i < files.length; i++ ) {
+								openFile(files[i], true, false, true);
+						}
+					}
+				});
+
+				
 				// make the file history menu entries and set the auto-indent
 				// check box
 				syncMenus();
