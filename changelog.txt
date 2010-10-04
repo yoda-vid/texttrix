@@ -12,7 +12,7 @@ http://textflex.com/texttrix
 New features/bug fixes:
 -Drag-n-drop to open files (via FileDrop public domain code)
 
-----v.0.9.3 (2010-08-07)----
+----v.0.9.3 (2010-08-06)----
 
 Text Trix now sports a spell-checker to sit alongside the recently introduced 
 syntax highlighter for stronger visualization of text.  Adapted from the jOrtho 
@@ -28,8 +28,8 @@ prompt for a file refresh.
 New features/bug fixes:
 -Integrated spell-checker (via jOrtho open-source library)
 -Tab memory and restoration across multiple windows
--"--cleartabs" option to completely clear tab memory upon launch
 -File modification polling and notification when open files are updated elsewhere
+-"--cleartabs" option to completely clear tab memory upon launch
 
 Known issues/workarounds:
 -When several large files with highlighting turned on are modified externally, the 

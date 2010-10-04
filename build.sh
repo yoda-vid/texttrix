@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-9
+# Portions created by the Initial Developer are Copyright (C) 2003-10
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -71,7 +71,7 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-9 Text Flex
+	Copyright (c) 2003-10 Text Flex
 
 Last updated:
 	2008-05-31
