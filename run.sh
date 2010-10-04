@@ -41,9 +41,7 @@ HELP="
 Runs Text Trix, the super text tool chest. 
 
 Syntax:
-      configure [--java=java-runtime-path] [--help] 
-(The command may need to be invoked with \"sh configure\", if
-the file \"configure\" does not have executable permissions.)
+	run.sh [options]
 
 Assumptions:
 	The compilation takes place in a Bash shell within a Un*x-based
@@ -76,10 +74,10 @@ Parameters:
 	--verbose: Verbose command-line output.
 
 Copyright:
-	Copyright (c) 2003-8 Text Flex
+	Copyright (c) 2003-10 Text Flex
 
 Last updated:
-	2009-09-28
+	2010-10-04
 "
 
 

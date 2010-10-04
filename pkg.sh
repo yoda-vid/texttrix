@@ -43,16 +43,14 @@ HELP="
 Packages both binary and source code archives of Text Trix.
 
 Syntax:
-	pkg.sh [ --java java-compiler-binaries-path ] [ --help ]
-(\"sh \" might need to precede the command on the same line, in case
-the file pkg.sh does not have executable permissions.)
+	pkg.sh [options]
 
 Parameters:
 	--branch=path/to/branch: The branch (or trunk) from which to
 	compile source code.  For example, to compile from the 0.7.1
-	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
-	simply specify \"--branch=trunk\".  The source code release package
-	sets the branch to \".\", since the source package does 
+	branch, specify \"--branch=branches/0.7.1\".  To compile from the 
+	trunk, 	simply specify \"--branch=trunk\".  The source code release 
+	package	sets the branch to \".\", since the source package does 
 	not contain branches and tags.  Otherwise, defaults to \"trunk\".
 	
 	--help: Lends a hand by displaying yours truly.
@@ -66,9 +64,9 @@ Parameters:
 	
 	--plgbranch=path/to/branch: The plugin branch (or trunk) from which to
 	compile plugin source code.  For example, to compile from the 0.7.1
-	branch, specify \"--plgbranch=branches/0.7.1\".  To compile from the trunk, 
-	simply specify \"--plgbranch=trunk\".  The source code release package
-	sets the branch to \".\", since the source package does 
+	branch, specify \"--plgbranch=branches/0.7.1\".  To compile from the 
+	trunk, 	simply specify \"--plgbranch=trunk\".  The source code release 
+	package	sets the branch to \".\", since the source package does 
 	not contain branches and tags.  Otherwise, defaults to \"trunk\".
 	
 	--prefix=install/location: the directory in which to install Text Trix.
@@ -77,10 +75,10 @@ Parameters:
 	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
 		
 Copyright:
-	Copyright (c) 2003-9 Text Flex
+	Copyright (c) 2003-10 Text Flex
 
 Last updated:
-	2009-09-30
+	2010-10-04
 "
 
 #####################
@@ -91,7 +89,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.3"
+VER="0.9.4"
 
 # the final destination of the resulting packages
 PREFIX=""
