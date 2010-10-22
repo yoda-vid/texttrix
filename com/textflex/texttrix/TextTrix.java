@@ -1416,7 +1416,7 @@ public class TextTrix extends JFrame {
 		doc.insertString(start, outcome.getText(), null);	// insert text
 		
 		// auto-wrap-indent the new section
-		if (t.isAutoIndent() ) t.indentRegion(start, outcome.getText().length());
+		if (t.isAutoIndent() ) t.indentRegion(start, start + outcome.getText().length());
 	}
 
 	/**
