@@ -308,7 +308,7 @@ public class LibTTx {
 	
 	public static URI getBaseURI(String folders) {
 		try {
-		URI baseURI = com.textflex.texttrix.LibTTx.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+		URI baseURI = new URI(com.textflex.texttrix.LibTTx.class.getProtectionDomain().getCodeSource().getLocation().toString());
 		String path = baseURI.toString();
 		if (path.endsWith(".jar")) {
 			path = path.substring(0, path.lastIndexOf("/")) + "/";

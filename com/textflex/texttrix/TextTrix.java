@@ -567,15 +567,25 @@ public class TextTrix extends JFrame {
 		// and Ocean themes aren't all that different from one another
 		String errorMsg = "Defaulting to the Java Ocean Look & Feel.";
 		try {
-			if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			} else { // default interface            
-//				UIManager.setLookAndFeel(
-//                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+			/* 
+			// not yet defaulting to Nimbus as the group tabbed pane doesn't 
+			// appear to integrate well
+			UIManager.LookAndFeelInfo[] feels = UIManager.getInstalledLookAndFeels();
+			int feelsLen = feels.length;
+			boolean found = false;
+			for (int i = 0; i < feelsLen; i++) {
+				UIManager.LookAndFeelInfo info = (UIManager.LookAndFeelInfo)feels[i];
+				if (info.getName().equals("Nimbus")) {
+					UIManager.setLookAndFeel(info.getClassName());
+					System.out.println("found Nimbus!");
+					found = true;
+					break;
+				}
 			}
+			if (!found)
+			*/
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (UnsupportedLookAndFeelException e) {
-			// Many systems may not have the new Nimbus L&F
 			System.out.println(errorMsg);
 		} catch (ClassNotFoundException e1) {
 			// Java 6 without Nimbus throws this exception rather than 

@@ -169,7 +169,7 @@ then
 		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
-			echo "...set to use \"$JAVA\" as the Java compiler path"
+			echo "...set to use \"$JAVA\" as the Java path"
 		elif [ ${arg:0:${#PAR_14}} = "$PAR_14" ]
 		then
 			VER14="true"
