@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-10
+# Portions created by the Initial Developer are Copyright (C) 2003-11
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -259,8 +259,8 @@ NAME="texttrix" # UNIX program name
 DIR="com/textflex/$NAME" # Java package directory structure
 PKGDIR="$NAME-$VER" # name of binary package
 PKG=$PKGDIR.zip # name of compressed binary package
-PKG14DIR="$PKGDIR-jre14"
-PKG14=$PKG14DIR.zip
+#PKG14DIR="$PKGDIR-jre14"
+#PKG14=$PKG14DIR.zip
 SRCPKGDIR="$PKGDIR-src" # name of source package
 SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR="TextTrix.jar" # executable jar
@@ -343,8 +343,8 @@ do
 done
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 cp "$TTX_DIR"/plugins/*.jar $BLD_DIR/$PKGDIR/plugins # only want jars in binary package
-cp -rf $BLD_DIR/$PKGDIR $BLD_DIR/$PKG14DIR
-cp "$TTX_DIR"/retroweaver/retroweaver-rt-*.jar $BLD_DIR/$PKG14DIR
+#cp -rf $BLD_DIR/$PKGDIR $BLD_DIR/$PKG14DIR
+#cp "$TTX_DIR"/retroweaver/retroweaver-rt-*.jar $BLD_DIR/$PKG14DIR
 cp -rf "$TTX_DIR"/retroweaver $BLD_DIR/$SRCPKGDIR
 
 # create binary package
@@ -360,12 +360,12 @@ cd $BLD_DIR/$SRCPKGDIR/texttrix
 if [ "$CYGWIN" = "true" ]
 then
 	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
-	"$JAVA"java -cp `cygpath -wp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver` -source . #-jar `cygpath -wp $BLD_DIR/$PKGDIR/$JAR $BLD_DIR/$PKG14DIR/$JAR`
-	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKG14DIR/$JAR`" "`cygpath -p -w manifest-additions-jre14.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	#"$JAVA"java -cp `cygpath -wp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver` -source . #-jar `cygpath -wp $BLD_DIR/$PKGDIR/$JAR $BLD_DIR/$PKG14DIR/$JAR`
+	#"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKG14DIR/$JAR`" "`cygpath -p -w manifest-additions-jre14.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 else
 	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
-	"$JAVA"java -cp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver -source .
-	"$JAVA"jar -cfm $BLD_DIR/$PKG14DIR/$JAR manifest-additions-jre14.mf $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	#"$JAVA"java -cp ../retroweaver/retroweaver-2.0.7.jar:../retroweaver/retroweaver-rt-2.0.7.jar:../retroweaver/asm-3.1.jar:../retroweaver/asm-commons-3.1.jar:../retroweaver/asm-util-3.1.jar net.sourceforge.retroweaver.Weaver -source .
+	#"$JAVA"jar -cfm $BLD_DIR/$PKG14DIR/$JAR manifest-additions-jre14.mf $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
 fi
 # make executable so can be run as binary on systems where jexec is installed
 #chmod 755 $BLD_DIR/$PKGDIR/$JAR
@@ -391,9 +391,9 @@ echo -n "Creating $PKG package..."
 zip -rq $PKG $PKGDIR
 echo "done"
 
-echo -n "Creating $PKG14 package..."
-zip -rq $PKG14 $PKG14DIR
-echo "done"
+#echo -n "Creating $PKG14 package..."
+#zip -rq $PKG14 $PKG14DIR
+#echo "done"
 
 echo -n "Creating $SRCPKG package..."
 zip -rq $SRCPKG $SRCPKGDIR
@@ -411,11 +411,10 @@ else
 	echo "Packages output to $BLD_DIR"
 fi
 # "latest" link to the current packages
-rm -f latest latest-jre14 latest-src
+#rm -f latest latest-jre14 latest-src
+rm -f latest latest-src
 ln -s $PKGDIR latest
-ln -s $PKG14DIR latest-jre14
+#ln -s $PKG14DIR latest-jre14
 ln -s $SRCPKGDIR latest-src
-#ls -l $ALL
-#sh $WIN_MOUNT
 
 exit 0
