@@ -47,10 +47,10 @@ import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
 
-import com.Ostermiller.Syntax.*;
-
 import com.inet.jortho.FileUserDictionary;
 import com.inet.jortho.SpellChecker;
+
+import jsyntaxpane.DefaultSyntaxKit;
 
 /**The writing pad, complete with keyboard shortcuts, auto-wrap indent
  * functions, and text sytle changes.
@@ -93,8 +93,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	private FileModifiedThread fileModifiedThread = null;
 	private DocumentListener docListener = null;
 	
-	private HighlightedDocument highlightedDoc = new HighlightedDocument();
-
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
 	 * @param aFile file to which the <code>TextPad</code> will
@@ -230,8 +228,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		
 		// creates a styled document only for certain file extensions
-		setHighlightStyle(prefs.getSpellChecker());
-//		setStyledDocument(highlightedDoc);
+//		setHighlightStyle(prefs.getSpellChecker());
 		applyDocumentSettings();
 	}
 	
@@ -310,14 +307,14 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * styled document.
 	 * @return the styled, highlighted document
 	 */
-	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
+	public void setHighlightStyle(boolean spellChecker) {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
 		String ext = getFileExtension();
 		ext = ext.toLowerCase();
-		HighlightedDocument doc = getHighlightedDoc();
-		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) {
+		if (ext.equals("") || ext.equals("txt") ) {
+//				||	getContentType().equals("text/plain")) {
 		
 		
       // enable the spell checking on the text component with all features;
@@ -325,35 +322,67 @@ public class TextPad extends JTextPane implements StateEditable {
 			// most other code will have numerous non-detected words;
 			// TODO: apply spell-checker more broadly if add more
 			// varied dictionaries
-			if (spellChecker) SpellChecker.register( this );
-			return doc;
+			if (spellChecker) SpellChecker.register(this);
+			return;
 		}
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
 		String text = getAllText();
+		SpellChecker.unregister(this);
 
 //		System.out.println("contentType: " + getContentType());
-		setStyledDocument(doc);
+//		setStyledDocument(doc);
 		
 		// sets the appropriate style
 		if (ext.equals("java")) {
-			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
-		} else if (ext.equals("c") || ext.equals("cpp")) {
-			doc.setHighlightStyle(HighlightedDocument.C_STYLE);
-		} else if (ext.equals("html") || ext.equals("htm")) {
-			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
-		} else if (ext.equals("ltx")) {
-			doc.setHighlightStyle(HighlightedDocument.LATEX_STYLE);
+			setContentType("text/java");
+			//DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
+			//kit.setProperty("Action.indent", null);
+			//kit.toggleComponent(this, "jsyntaxpane.actions.IndentAction");
+//			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
+		} else if (ext.equals("c")) {
+			setContentType("text/c");
+		} else if (ext.equals("cpp")) {
+			setContentType("text/cpp");
+		} else if (ext.equals("html") || ext.equals("htm") || ext.equals("xhtml")) {
+			setContentType("text/xhtml");
+		} else if (ext.equals("js")) {
+			setContentType("text/js");
+		} else if (ext.equals("groovy")) {
+			setContentType("text/groovy");
+		} else if (ext.equals("bash") || ext.equals("sh")) {
+			setContentType("text/base");
+		} else if (ext.equals("json")) {
+			setContentType("text/json");
+		} else if (ext.equals("xml")) {
+			setContentType("text/xml");
 		} else if (ext.equals("sql")) {
-			doc.setHighlightStyle(HighlightedDocument.SQL_STYLE);
-		} else if (ext.equals("properties") || ext.equals("sh")) {
-			doc.setHighlightStyle(HighlightedDocument.PROPERTIES_STYLE);
+			setContentType("text/sql");
+		} else if (ext.equals("properties")) {
+			setContentType("text/properties");
+		} else if (ext.equals("python")) {
+			setContentType("text/python");
+		} else if (ext.equals("tal")) {
+			setContentType("text/tal");
+		} else if (ext.equals("jflex")) {
+			setContentType("text/jflex");
+		} else if (ext.equals("ruby")) {
+			setContentType("text/ruby");
+		} else if (ext.equals("scala")) {
+			setContentType("text/scala");
+		} else if (ext.equals("clojure")) {
+			setContentType("text/clojure");
+		} else if (ext.equals("bat")) {
+			setContentType("text/dosbatch");
+		} else if (ext.equals("xpath")) {
+			setContentType("text/xpath");
+		} else if (ext.equals("lua")) {
+			setContentType("text/lua");
 		} else {
+			setContentType("text/plain");
 			// defaults to Java style
-			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		}
-		
 		// transfers the text into the appropriately styled document
 		setText(text);
 		enablePopup(true);
@@ -361,7 +390,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		// still need to add undo manager to the new document
 		// via applyDocumentSettings;
 		// note that it will cause all previous edits to be unavailable
-		return doc;
 	}
 /*	
 	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
@@ -1964,13 +1992,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		scrollPane = aScrollPane;
 	}
 	
-	/** Sets the highlighted document used for syntax highlighting.
-	 * @param doc the highlighted document
-	 */
-	public void setHighlightedDoc(HighlightedDocument doc) {
-		highlightedDoc = doc;
-	}
-	
 	
 	
 	
@@ -2005,13 +2026,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public LineDancePanel getLineDancePanel() {
 		return lineDancePanel;
-	}
-	
-	/** Gets the highlighted document used for syntax highlighting.
-	 * @return the highlighted document
-	 */
-	public HighlightedDocument getHighlightedDoc() {
-		return highlightedDoc;
 	}
 	
 	public FileModifiedThread getFileModifiedThread() {

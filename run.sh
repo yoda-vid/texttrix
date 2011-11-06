@@ -218,5 +218,5 @@ if [ $VER_14 = "true" ]
 then
 	"$Java"java -cp .:retroweaver-rt-2.0.7.jar com.textflex.texttrix.TextTrix $@
 else
-	"$JAVA"java -cp . com.textflex.texttrix.TextTrix $@
+	"$JAVA"java -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" com.textflex.texttrix.TextTrix $@
 fi

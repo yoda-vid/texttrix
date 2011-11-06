@@ -57,6 +57,8 @@ import javax.swing.plaf.metal.*;
 import com.inet.jortho.FileUserDictionary;
 import com.inet.jortho.SpellChecker;
 
+import jsyntaxpane.DefaultSyntaxKit;
+
 
 //import sun.font.TextLabelFactory;
 
@@ -319,6 +321,8 @@ public class TextTrix extends JFrame {
 		SpellChecker.registerDictionaries( null, "en" );
 		
 		
+		
+		DefaultSyntaxKit.initKit();
 		
 		
 		
@@ -2107,6 +2111,7 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
+		textPad.setHighlightStyle(getPrefs().getSpellChecker());
 //		DocumentListener listener = textPadDocListener;
 
 		// must add to array list before adding scroll pane to tabbed pane
