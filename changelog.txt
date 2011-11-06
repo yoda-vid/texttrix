@@ -2,15 +2,22 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-10, Text Flex
+Copyright (c) 2002-11, Text Flex
 http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
 
-----v.0.9.4 (201?-??-??)----
+----v.0.9.4 (2011-11-05)----
+
+This minor feature release brings cross-platform drag-n-drop file opening and 
+a few fixes. Files can be dragged from the desktop or file explorer onto the tab 
+area to be opened for editing. Bug fixes in this release include proper 
+auto-indentation on selected text and launching on older versions of Java.
 
 New features/bug fixes:
 -Drag-n-drop to open files (via FileDrop public domain code)
+-New tab button
+-Fixed launch on Java 1.4
 
 ----v.0.9.3 (2010-08-06)----
 

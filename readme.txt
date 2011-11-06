@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-10, Text Flex
+Copyright (c) 2002-11, Text Flex
 All rights reserved.
 
 -----------------
@@ -16,9 +16,8 @@ goal is to make file and text navigation easier for coding and general text
 editing.
 
 System Reqs:
--Java[tm] 1.4+ (http://java.com/en/download/index.jsp), freely available 
-from Sun Microsystems[tm] and included by default on MacOS X.  
-Java 5 Update 10+ or Java 6 recommended.
+-Java 1.4+ required (free from http://java.com). Java 5 Update 10+ or 
+Java 6 recommended.
 
 Instructions for use:
 -Double-click on the Jar Ajar[tm] self-extracting file, 
@@ -38,12 +37,3 @@ the "run.sh" script:
 
 Troubleshooting:
 -See http://textflex.com/texttrix/wiki.html for troubleshooting tips.
-
-
------------------
-Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
-Sun Microsystems, Java, and all Java-based marks are trademarks or 
-registered trademarks of Sun Microsystems, Inc. in the United States and 
-other countries. Text Flex is independent of Sun Microsystems, Inc.
-Linux is a registered trademark of Linus Torvalds.
-Apple is a registered trademark of Apple Computer, Inc.

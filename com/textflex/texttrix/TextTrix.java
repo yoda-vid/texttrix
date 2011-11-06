@@ -4008,7 +4008,8 @@ public class TextTrix extends JFrame {
 					/* File menu items */
 
 					// make new tab and text area
-					Action newAction = new AbstractAction("New tab") {
+					Action newAction = new AbstractAction("New tab", 
+							LibTTx.makeIcon("images/newtabicon-16x16.png")) {
 						public void actionPerformed(ActionEvent evt) {
 							addTextArea(getSelectedTabbedPane(), makeNewFile());
 						}
@@ -4016,11 +4017,17 @@ public class TextTrix extends JFrame {
 					LibTTx.setAcceleratedAction(newAction, "New tab",
 							newActionMnemonic, newActionShortcut);
 					fileMenu.add(newAction);
+					
+					// toolbar version
+					JButton newTabButton = toolBar.add(newAction);
+					newTabButton.setBorderPainted(false);
+					LibTTx.setRollover(newTabButton,
+							"images/newtabicon-roll-16x16.png");
 
 
 
 
-					// make new tab and text area
+					// make a new window
 					Action newWindowAction = new AbstractAction("New window") {
 						public void actionPerformed(ActionEvent evt) {
 							setFresh(true);
@@ -4068,17 +4075,20 @@ public class TextTrix extends JFrame {
 					// Close file; check if saved
 					// file menu version
 					Action closeAction = new FileCloseAction("Close", LibTTx
-							.makeIcon("images/closeicon-roll-16x16.png"));
+							.makeIcon("images/closeicon-16x16.png"));
 					LibTTx.setAcceleratedAction(closeAction, "Close",
 							closeActionMnemonic, closeActionShortcut);
 					fileMenu.add(closeAction);
 					
 					// toolbar version
+					/*
 					Action closeActionForBtn = new FileCloseAction("Close",
 							LibTTx.makeIcon("images/closeicon-16x16.png"));
 					LibTTx.setAction(closeActionForBtn, "Close file",
 							closeActionMnemonic);
 					JButton closeButton = toolBar.add(closeActionForBtn);
+					*/
+					JButton closeButton = toolBar.add(closeAction);
 					closeButton.setBorderPainted(false);
 					LibTTx.setRollover(closeButton,
 							"images/closeicon-roll-16x16.png");

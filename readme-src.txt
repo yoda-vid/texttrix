@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-9, Text Flex
+Copyright (c) 2002-11, Text Flex
 All rights reserved.
 
 -----------------
@@ -16,11 +16,9 @@ goal is to make file and text navigation easier for coding and general text
 editing.
 
 System Req:
--Java[tm] Development Kit (JDK), v.1.4+, freely available from Sun 
-Microsystems[tm] (http://java.sun.com/javase/downloads/index.jsp).  
-Java 6 is recommended.
--Bash scripts (.sh) are included for compiling and packaging on Linux(R), 
-MacOS X(R), or Windows(R) (via Cygwin) platforms.
+-Java Development Kit (JDK), v.1.4+ required.
+-Bash scripts (.sh) are included for compiling and packaging on Linux, 
+MacOS X, or Windows (via Cygwin) platforms.
 -PowerShell scripts (.ps1) are included for some tasks on Windows 
 platforms.
 
@@ -44,20 +42,9 @@ Write Your Own Plug-In:
 for details on how to write your own plug-in for Text Trix!
 
 Troubleshooting:
--Text Trix has been tested on Windows XP/Vista (Sun Java 6 Update 14), 
-Fedora 9 and Ubuntu 8.04 (OpenJDK 6), and MacOS X 10.6 (Java 6).  If 
+-Text Trix has been tested on Windows XP/7 (Sun Java 6 Update 29), 
+Fedora 15 and Ubuntu 11.04 (OpenJDK 6), and MacOS X 10.6 (Java 6).  If 
 you've tested it on another platform, please let us know about your 
 experience.
--See "readme.txt" for information on running Text Trix
--See http://textflex.com/texttrix for more details
-
-
------------------
-Text Trix, Jar Ajar, and Text Flex are trademarks of Text Flex.
-Sun Microsystems, Java, and all Java-based marks are trademarks or 
-registered trademarks of Sun Microsystems, Inc. in the United States and 
-other countries. Text Flex is independent of Sun Microsystems, Inc.
-Linux is a registered trademark of Linus Torvalds.
-Microsoft and Windows are registered trademarks of Microsoft Corporation 
-in the United States and/or other countries.
-Apple is a registered trademark of Apple Computer, Inc.
+-See "readme.txt" for information on running Text Trix.
+-See http://textflex.com/texttrix for additional details.

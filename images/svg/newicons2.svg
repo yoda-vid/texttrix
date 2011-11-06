@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,14 +10,14 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docbase="C:\myweb\textflex\trunk\texttrix\images\svg"
    sodipodi:docname="newicons2.svg"
    height="297mm"
    width="210mm"
-   inkscape:version="0.46"
+   inkscape:version="0.48.1 "
    sodipodi:version="0.32"
    id="svg1364"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.1">
   <metadata
      id="metadata341">
     <rdf:RDF>
@@ -25,6 +26,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -451,15 +453,28 @@
        y1="153.90741"
        x2="355.72561"
        y2="272.67832" />
+    <filter
+       color-interpolation-filters="sRGB"
+       inkscape:collect="always"
+       x="-0.21136922"
+       width="1.4227384"
+       y="-0.26729646"
+       height="1.5345929"
+       id="filter3905-8">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.1980076"
+         id="feGaussianBlur3907-8" />
+    </filter>
   </defs>
   <sodipodi:namedview
      inkscape:current-layer="svg1364"
-     inkscape:window-y="37"
-     inkscape:window-x="57"
-     inkscape:window-height="906"
-     inkscape:window-width="1202"
-     inkscape:cy="607.7022"
-     inkscape:cx="726.83599"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:window-height="706"
+     inkscape:window-width="1366"
+     inkscape:cy="862.06345"
+     inkscape:cx="717.60548"
      inkscape:zoom="1.2279852"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
@@ -469,7 +484,8 @@
      id="base"
      showguides="true"
      inkscape:guide-bbox="true"
-     showgrid="false">
+     showgrid="false"
+     inkscape:window-maximized="1">
     <sodipodi:guide
        orientation="horizontal"
        position="-12.668189"
@@ -565,7 +581,7 @@
      id="g1757">
     <path
        transform="matrix(1.434278,0.000000,0.000000,1.383270,-126.7953,-349.4412)"
-       d="M 108.33274 809.66583 A 3.6553991 3.8769383 0 1 0 101.02194,809.66583 A 3.6553991 3.8769383 0 1 0 108.33274 809.66583 z"
+       d="m 108.33274,809.66583 c 0,2.14118 -1.63658,3.87694 -3.6554,3.87694 -2.01882,0 -3.6554,-1.73576 -3.6554,-3.87694 0,-2.14117 1.63658,-3.87694 3.6554,-3.87694 2.01882,0 3.6554,1.73577 3.6554,3.87694 z"
        sodipodi:ry="3.8769383"
        sodipodi:rx="3.6553991"
        sodipodi:cy="809.66583"
@@ -575,7 +591,7 @@
        sodipodi:type="arc" />
     <path
        transform="matrix(1.434278,0.000000,0.000000,0.882941,-120.7115,31.09551)"
-       d="M 101.90809 839.40747 A 1.6061602 1.7169299 0 1 0 98.695773,839.40747 A 1.6061602 1.7169299 0 1 0 101.90809 839.40747 z"
+       d="m 101.90809,839.40747 c 0,0.94823 -0.7191,1.71693 -1.60616,1.71693 -0.887054,0 -1.606157,-0.7687 -1.606157,-1.71693 0,-0.94823 0.719103,-1.71693 1.606157,-1.71693 0.88706,0 1.60616,0.7687 1.60616,1.71693 z"
        sodipodi:ry="1.7169299"
        sodipodi:rx="1.6061602"
        sodipodi:cy="839.40747"
@@ -592,7 +608,7 @@
        style="fill:#ffff00;fill-rule:evenodd;stroke:#ffff00;stroke-width:1.1047514pt;" />
     <path
        transform="matrix(1.434278,0.000000,0.000000,1.383270,-97.87730,-383.7709)"
-       d="M 83.025540 833.63690 A 0.11748897 0.11748897 0 1 0 82.790562,833.63690 A 0.11748897 0.11748897 0 1 0 83.025540 833.63690 z"
+       d="m 83.02554,833.6369 c 0,0.0649 -0.0526,0.11749 -0.117489,0.11749 -0.06489,0 -0.117489,-0.0526 -0.117489,-0.11749 0,-0.0649 0.0526,-0.11749 0.117489,-0.11749 0.06489,0 0.117489,0.0526 0.117489,0.11749 z"
        sodipodi:ry="0.11748897"
        sodipodi:rx="0.11748897"
        sodipodi:cy="833.63690"
@@ -602,7 +618,7 @@
        sodipodi:type="arc" />
     <path
        transform="matrix(1.434278,0.000000,0.000000,1.383270,-93.72067,-383.7709)"
-       d="M 83.025540 833.63690 A 0.11748897 0.11748897 0 1 0 82.790562,833.63690 A 0.11748897 0.11748897 0 1 0 83.025540 833.63690 z"
+       d="m 83.02554,833.6369 c 0,0.0649 -0.0526,0.11749 -0.117489,0.11749 -0.06489,0 -0.117489,-0.0526 -0.117489,-0.11749 0,-0.0649 0.0526,-0.11749 0.117489,-0.11749 0.06489,0 0.117489,0.0526 0.117489,0.11749 z"
        sodipodi:ry="0.11748897"
        sodipodi:rx="0.11748897"
        sodipodi:cy="833.63690"
@@ -638,7 +654,7 @@ P</tspan>
      id="g1189">
     <path
        transform="translate(35.44629,-1.329236)"
-       d="M 124.94819 553.01251 A 6.6461802 6.6461802 0 1 0 111.65583,553.01251 A 6.6461802 6.6461802 0 1 0 124.94819 553.01251 z"
+       d="m 124.94819,553.01251 c 0,3.67059 -2.9756,6.64618 -6.64618,6.64618 -3.67058,0 -6.64618,-2.97559 -6.64618,-6.64618 0,-3.67058 2.9756,-6.64618 6.64618,-6.64618 3.67058,0 6.64618,2.9756 6.64618,6.64618 z"
        sodipodi:ry="6.6461802"
        sodipodi:rx="6.6461802"
        sodipodi:cy="553.01251"
@@ -1926,7 +1942,7 @@ P</tspan>
        id="g1763">
       <path
          transform="matrix(1.434278,0.000000,0.000000,1.383270,-126.7953,-349.4412)"
-         d="M 108.33274 809.66583 A 3.6553991 3.8769383 0 1 0 101.02194,809.66583 A 3.6553991 3.8769383 0 1 0 108.33274 809.66583 z"
+         d="m 108.33274,809.66583 c 0,2.14118 -1.63658,3.87694 -3.6554,3.87694 -2.01882,0 -3.6554,-1.73576 -3.6554,-3.87694 0,-2.14117 1.63658,-3.87694 3.6554,-3.87694 2.01882,0 3.6554,1.73577 3.6554,3.87694 z"
          sodipodi:ry="3.8769383"
          sodipodi:rx="3.6553991"
          sodipodi:cy="809.66583"
@@ -1936,7 +1952,7 @@ P</tspan>
          sodipodi:type="arc" />
       <path
          transform="matrix(1.434278,0.000000,0.000000,0.882941,-120.7115,31.09551)"
-         d="M 101.90809 839.40747 A 1.6061602 1.7169299 0 1 0 98.695773,839.40747 A 1.6061602 1.7169299 0 1 0 101.90809 839.40747 z"
+         d="m 101.90809,839.40747 c 0,0.94823 -0.7191,1.71693 -1.60616,1.71693 -0.887054,0 -1.606157,-0.7687 -1.606157,-1.71693 0,-0.94823 0.719103,-1.71693 1.606157,-1.71693 0.88706,0 1.60616,0.7687 1.60616,1.71693 z"
          sodipodi:ry="1.7169299"
          sodipodi:rx="1.6061602"
          sodipodi:cy="839.40747"
@@ -1953,7 +1969,7 @@ P</tspan>
          style="fill:#ffff00;fill-rule:evenodd;stroke:#ffff00;stroke-width:1.1047514pt;" />
       <path
          transform="matrix(1.434278,0.000000,0.000000,1.383270,-97.87730,-383.7709)"
-         d="M 83.025540 833.63690 A 0.11748897 0.11748897 0 1 0 82.790562,833.63690 A 0.11748897 0.11748897 0 1 0 83.025540 833.63690 z"
+         d="m 83.02554,833.6369 c 0,0.0649 -0.0526,0.11749 -0.117489,0.11749 -0.06489,0 -0.117489,-0.0526 -0.117489,-0.11749 0,-0.0649 0.0526,-0.11749 0.117489,-0.11749 0.06489,0 0.117489,0.0526 0.117489,0.11749 z"
          sodipodi:ry="0.11748897"
          sodipodi:rx="0.11748897"
          sodipodi:cy="833.63690"
@@ -1963,7 +1979,7 @@ P</tspan>
          sodipodi:type="arc" />
       <path
          transform="matrix(1.434278,0.000000,0.000000,1.383270,-93.72067,-383.7709)"
-         d="M 83.025540 833.63690 A 0.11748897 0.11748897 0 1 0 82.790562,833.63690 A 0.11748897 0.11748897 0 1 0 83.025540 833.63690 z"
+         d="m 83.02554,833.6369 c 0,0.0649 -0.0526,0.11749 -0.117489,0.11749 -0.06489,0 -0.117489,-0.0526 -0.117489,-0.11749 0,-0.0649 0.0526,-0.11749 0.117489,-0.11749 0.06489,0 0.117489,0.0526 0.117489,0.11749 z"
          sodipodi:ry="0.11748897"
          sodipodi:rx="0.11748897"
          sodipodi:cy="833.63690"
@@ -3334,7 +3350,7 @@ P</tspan>
      sodipodi:ry="27.119503"
      d="M 677.32611 264.57367 A 27.119503 27.119503 0 1 1  623.0871,264.57367 A 27.119503 27.119503 0 1 1  677.32611 264.57367 z"
      transform="translate(25.135149,48.947396)"
-     inkscape:export-filename="C:\myweb\textflex\trunk\texttrix\images\svg\closeicon-roll-16x16.png"
+     inkscape:export-filename="closeicon-16x16.png"
      inkscape:export-xdpi="26.549999"
      inkscape:export-ydpi="26.549999" />
   <text
@@ -3344,7 +3360,7 @@ P</tspan>
      y="328.03278"
      id="text3627"
      sodipodi:linespacing="125%"
-     inkscape:export-filename="C:\myweb\textflex\trunk\texttrix\images\svg\closeicon-roll-16x16.png"
+     inkscape:export-filename="closeicon-16x16.png"
      inkscape:export-xdpi="26.549999"
      inkscape:export-ydpi="26.549999"><tspan
        sodipodi:role="line"
@@ -3867,4 +3883,95 @@ P</tspan>
        id="tspan3783"
        x="561.85938"
        y="-894.93713">I</tspan></text>
+  <text
+     id="text3333-1"
+     y="22.442686"
+     x="760.66956"
+     style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     xml:space="preserve"><tspan
+       id="tspan3335-7">New Tab</tspan></text>
+  <path
+     sodipodi:type="arc"
+     style="fill:#89c2d9;fill-opacity:1;stroke:none"
+     id="path2656-2"
+     sodipodi:cx="650.2066"
+     sodipodi:cy="264.57367"
+     sodipodi:rx="27.119503"
+     sodipodi:ry="27.119503"
+     d="m 677.32611,264.57367 a 27.119503,27.119503 0 1 1 -54.23901,0 27.119503,27.119503 0 1 1 54.23901,0 z"
+     transform="translate(139.06867,-128.12827)"
+     inkscape:export-filename="newtabicon-roll-16x16.png"
+     inkscape:export-xdpi="26.549999"
+     inkscape:export-ydpi="26.549999" />
+  <text
+     xml:space="preserve"
+     style="font-size:79.8098526px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#008000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="762.82257"
+     y="165.40349"
+     id="text3627-4"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="newtabicon-roll-16x16.png"
+     inkscape:export-xdpi="26.549999"
+     inkscape:export-ydpi="26.549999"><tspan
+       sodipodi:role="line"
+       id="tspan3629-5"
+       x="762.82257"
+       y="165.40349"
+       style="fill:#008000;fill-opacity:1;font-family:Arial Black">+</tspan></text>
+  <path
+     sodipodi:type="arc"
+     style="fill:#89c2d9;fill-opacity:1;stroke:none"
+     id="path2656-2-5"
+     sodipodi:cx="650.2066"
+     sodipodi:cy="264.57367"
+     sodipodi:rx="27.119503"
+     sodipodi:ry="27.119503"
+     d="m 677.32611,264.57367 a 27.119503,27.119503 0 1 1 -54.23901,0 27.119503,27.119503 0 1 1 54.23901,0 z"
+     transform="translate(138.89085,-199.19406)"
+     inkscape:export-filename="newtabicon-16x16.png"
+     inkscape:export-xdpi="26.549999"
+     inkscape:export-ydpi="26.549999" />
+  <text
+     xml:space="preserve"
+     style="font-size:55.37362288999999300px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#008000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;"
+     x="770.66882"
+     y="85.591721"
+     id="text3627-4-4"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="newtabicon-16x16.png"
+     inkscape:export-xdpi="26.549999"
+     inkscape:export-ydpi="26.549999"><tspan
+       sodipodi:role="line"
+       id="tspan3629-5-1"
+       x="770.66882"
+       y="85.591721"
+       style="fill:#008000;fill-opacity:1;font-family:Arial Black">+</tspan></text>
+  <path
+     sodipodi:type="arc"
+     style="fill:#89c2d9;fill-opacity:1;stroke:none"
+     id="path2656-7"
+     sodipodi:cx="650.2066"
+     sodipodi:cy="264.57367"
+     sodipodi:rx="27.119503"
+     sodipodi:ry="27.119503"
+     d="m 677.32611,264.57367 a 27.119503,27.119503 0 1 1 -54.23901,0 27.119503,27.119503 0 1 1 54.23901,0 z"
+     transform="translate(101.43112,54.066315)"
+     inkscape:export-filename="closeicon-roll-16x16.png"
+     inkscape:export-xdpi="26.549999"
+     inkscape:export-ydpi="26.549999" />
+  <text
+     xml:space="preserve"
+     style="font-size:75.24284363px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#c00000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="727.40198"
+     y="338.30334"
+     id="text3627-9"
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="closeicon-roll-16x16.png"
+     inkscape:export-xdpi="26.549999"
+     inkscape:export-ydpi="26.549999"><tspan
+       sodipodi:role="line"
+       id="tspan3629-0"
+       x="727.40198"
+       y="338.30334"
+       style="fill:#c00000;fill-opacity:1;font-family:Arial Black">x</tspan></text>
 </svg>
