@@ -110,6 +110,8 @@ PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 PAR_PLUG="--plug"
 PAR_API="--api"
 PAR_CHANGELOG="--log"
+PAR_CLEAN="--clean"
+CLEAN=0
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
@@ -201,6 +203,12 @@ then
 			PLUG=1
 			echo "...set to build plugins"
 			
+		# clean
+		elif [ ${arg:0:${#PAR_CLEAN}} = "$PAR_CLEAN" ]
+		then
+			CLEAN=1
+			echo "...set to clean files and exit"
+			
 		# build API
 		elif [ ${arg:0:${#PAR_API}} = "$PAR_API" ]
 		then
@@ -250,22 +258,29 @@ DIR="com/textflex/texttrix" # src package structure
 # Build operations
 #####################
 
+cd "$BASE_DIR" # change to work directory
+
+#############
+# Clean files and exit
+if [ $CLEAN = 1 ]
+then
+	rm */*/*/*.class
+	exit 0
+fi
+
 #############
 # Compile Text Trix classes
-cd "$BASE_DIR" # change to work directory
 echo ""
 echo "Compiling the Text Trix program..."
 echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
 if [ "$CYGWIN" = "true" ]
 then
-	#"$JAVA"javac -cp `cygpath -p -w gnu/getopt:.` -target 1.4 -source 1.4 "`cygpath -p -w com/Ostermiller/Syntax/`"*.java
 	#"$JAVA"javac -target jsr14 -source 1.5 "`cygpath -p -w com/inet/jortho`"/*.java
-	"$JAVA"javac -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" -target 1.4 -source 1.4 "`cygpath -p -w $DIR/`"*.java
+	"$JAVA"javac -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" "`cygpath -p -w $DIR/`"*.java
 else
-	"$JAVA"javac -cp gnu/getopt:. -target 1.4 -source 1.4 com/Ostermiller/Syntax/*.java
-	"$JAVA"javac -target jsr14 -source 1.5 com/inet/jortho/*.java
-	"$JAVA"javac -target 1.4 -source 1.4 $DIR/*.java
+	#"$JAVA"javac -target jsr14 -source 1.5 com/inet/jortho/*.java
+	"$JAVA"javac -cp lib/jsyntaxpane.jar:. $DIR/*.java
 fi
 
 #############

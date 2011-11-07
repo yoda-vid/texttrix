@@ -335,6 +335,7 @@ public class TextPad extends JTextPane implements StateEditable {
 //		setStyledDocument(doc);
 		
 		// sets the appropriate style
+		DefaultSyntaxKit.setWrapped(false);
 		if (ext.equals("java")) {
 			setContentType("text/java");
 			//DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
@@ -346,7 +347,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		} else if (ext.equals("cpp")) {
 			setContentType("text/cpp");
 		} else if (ext.equals("html") || ext.equals("htm") || ext.equals("xhtml")) {
+			DefaultSyntaxKit.setWrapped(true);
 			setContentType("text/xhtml");
+			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
+			kit.deinstallComponent(this, "jsyntaxpane.components.LineNumbersRuler");
 		} else if (ext.equals("js")) {
 			setContentType("text/js");
 		} else if (ext.equals("groovy")) {
@@ -391,11 +395,20 @@ public class TextPad extends JTextPane implements StateEditable {
 		// via applyDocumentSettings;
 		// note that it will cause all previous edits to be unavailable
 	}
-/*	
-	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
-		return setHighlightStyle(spellChecker, null);
+	
+	/*
+	public Dimension getPreferredScrollableViewportSize() {
+		return getPreferredSize();
 	}
-*/
+	
+	public boolean getScrollableTracksViewportWidth() {
+		return true;
+	}
+	
+	public boolean getScrollableTracksViewportHeight() {
+		return false;
+	}
+	*/
 	
 	/** Gets the file extension of the current file.
 	 * @return the file extension, which is the part of
@@ -853,9 +866,18 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void indent(int tabChars, int tabs, int offset, int length) {
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
+		//System.out.println("tabWidth: " + tabWidth + ", charWidth: " + charWidth + ", tabs: " + tabs + ", offset: " + offset + ", length: " + length + ", styledDoc: " + getStyledDocument().toString());
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
+		
+		StyleContext sc = new StyleContext();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
+		/*
+		Style defaultStyle = sc.getStyle(StyleContext.DEFAULT_STYLE);
+		final Style mainStyle = sc.addStyle("MainStyle", defaultStyle);
+		StyleConstants.setLeftIndent(mainStyle, tabs * tabWidth);
+		getStyledDocument().setLogicalStyle(offset, mainStyle);
+		*/
 		
 		// waiting until fix (Java Bug ID#5073988 )?  But first line does indent,
 		// though the first tab merely increases in size to fill up the firstLineIndent

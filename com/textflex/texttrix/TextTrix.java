@@ -2111,6 +2111,7 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
+		//textPad.setPreferredSize(new Dimension(300, 300));
 		textPad.setHighlightStyle(getPrefs().getSpellChecker());
 //		DocumentListener listener = textPadDocListener;
 
