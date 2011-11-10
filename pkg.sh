@@ -89,7 +89,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.4"
+VER="0.9.5"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -294,7 +294,7 @@ rm -rf $ALL
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
-	"$TTX_DIR"/changelog.txt \
+	"$TTX_DIR"/changelog.txt "$TTX_DIR"/lib \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
 	"$TTX_DIR"/dictionaries "$BLD_DIR/$PKGDIR"
 
@@ -320,7 +320,7 @@ cd "$TTX_DIR"
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
-cp -rf pkg.sh run.sh manifest-additions*.mf build.sh run.ps1 build.ps1 gnu \
+cp -rf pkg.sh run.sh manifest-additions*.mf build.sh run.ps1 build.ps1 \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
@@ -343,7 +343,6 @@ do
 done
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 cp "$TTX_DIR"/plugins/*.jar $BLD_DIR/$PKGDIR/plugins # only want jars in binary package
-cp -rf "$TTX_DIR"/retroweaver $BLD_DIR/$SRCPKGDIR
 
 # create binary package
 
@@ -357,9 +356,9 @@ cd $BLD_DIR/$SRCPKGDIR/texttrix
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/inet
 else
-	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/inet
 fi
 # make executable so can be run as binary on systems where jexec is installed
 #chmod 755 $BLD_DIR/$PKGDIR/$JAR

@@ -58,6 +58,7 @@ import com.inet.jortho.FileUserDictionary;
 import com.inet.jortho.SpellChecker;
 
 import jsyntaxpane.DefaultSyntaxKit;
+import jsyntaxpane.SyntaxViewWrapped;
 
 
 //import sun.font.TextLabelFactory;
@@ -112,7 +113,7 @@ public class TextTrix extends JFrame {
 	/* General GUI components */
 	private static ArrayList ttxWindows = new ArrayList();
 	private MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
-	private static ArrayList textAreas = new ArrayList(); // all the TextPads
+//	private static ArrayList textAreas = new ArrayList(); // all the TextPads
 	private Container contentPane = getContentPane(); // main frame content pane
 //	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
@@ -291,6 +292,43 @@ public class TextTrix extends JFrame {
 
 			public void componentResized(ComponentEvent evt) {
 				getPrefs().storeSize(getWidth(), getHeight());
+				//TextPad pad = getSelectedTextPad();
+				Iterator it = getTextPads().iterator();
+				while (it.hasNext()) {
+//					System.out.println("here");
+					TextPad pad = (TextPad)it.next();
+					if (pad != null && pad.getWrappedView() != null) {
+						JScrollPane scrollPane = pad.getScrollPane();
+						scrollPane.getViewport().setViewSize(new Dimension(
+								scrollPane.getWidth() - 10, scrollPane.getHeight()));
+				}
+					/*
+					//SyntaxViewWrapped view = (SyntaxViewWrapped)pad.getWrappedView();
+					if (view != null) {
+						//view.setSize(getWidth(), getHeight());
+						//System.out.println("reset size; getMinSpan: " + view.getMinimumSpan(View.X_AXIS));
+						int viewCount = view.getViewCount();
+						for (int i = 0; i < viewCount; i++) {
+							View childView = view.getView(i);
+							//view.childAllocation(i, new Rectangle(0, 0, -10, 10));
+							//view.layoutChanged(View.X_AXIS);
+							//childView.setSize(getWidth(), getHeight());
+							//SimpleAttributeSet attr = childView.getAttributes();
+							//StyleConstants.setLeftIndent(attr, 1 * 7);
+							//view.preferenceChanged(childView, true, true);
+							System.out.println("reset view " + i);
+						}
+						
+						short n = 50;
+						short rightInset = (short)(getWidth() - view.getPreferredSpan(View.X_AXIS));
+						System.out.println("prefspan: " + view.getPreferredSpan(View.X_AXIS) + ", minSpan" + view.getMinimumSpan(View.X_AXIS) + ", rightInset: " + rightInset);
+						//view.setInsets(n, n, n, n);
+						//SimpleAttributeSet attribs = new SimpleAttributeSet();
+						//StyleConstants.setLeftIndent(attribs, 1 * 7);
+						//view.setParagraphInsets(attribs);
+					}
+					*/
+				}
 			}
 			
 
@@ -1783,7 +1821,6 @@ public class TextTrix extends JFrame {
 	 */
 	public  MotherTabbedPane getTabbedPane(TextPad textPad) {
 		int lenGroup = getGroupTabbedPane().getTabCount();
-		int tabIndex = -1;
 		MotherTabbedPane pane = null;
 		// finds the Text Pad by searching for the index of the component
 		// in each tab group
@@ -1796,7 +1833,23 @@ public class TextTrix extends JFrame {
 		return null;
 	}
 	
-	/** Gets the indext of the given Text Pad in the given tabbed pane.
+	/** Gets all of the TextPads.
+	 * @return ArrayList of all the TextPads
+	 */
+	public ArrayList getTextPads() {
+		ArrayList pads = new ArrayList();
+		int lenGroup = getGroupTabbedPane().getTabCount();
+		for (int i = 0; i < lenGroup; i++) {
+			MotherTabbedPane pane = getTabbedPaneAt(i);
+			int padCount = pane.getTabCount();
+			for (int j = 0; j < padCount; j++) {
+				pads.add(((JScrollPane) pane.getComponentAt(i)).getViewport().getView());
+			}
+		}
+		return pads;
+	}
+	
+	/** Gets the index of the given Text Pad in the given tabbed pane.
 	 * @param pane the tabbed pane that holds the Text Pad
 	 * @return the index of the Text Pad
 	 */

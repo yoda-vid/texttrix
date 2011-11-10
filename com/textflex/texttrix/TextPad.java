@@ -350,6 +350,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			DefaultSyntaxKit.setWrapped(true);
 			setContentType("text/xhtml");
 			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
+			setWrappedView((WrappedPlainView)kit.getView());
 			kit.deinstallComponent(this, "jsyntaxpane.components.LineNumbersRuler");
 		} else if (ext.equals("js")) {
 			setContentType("text/js");
@@ -395,6 +396,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		// via applyDocumentSettings;
 		// note that it will cause all previous edits to be unavailable
 	}
+	
+	private WrappedPlainView wrappedView = null;
+	public WrappedPlainView getWrappedView() { return wrappedView; }
+	private void setWrappedView(WrappedPlainView val) { wrappedView = val; }
 	
 	/*
 	public Dimension getPreferredScrollableViewportSize() {
