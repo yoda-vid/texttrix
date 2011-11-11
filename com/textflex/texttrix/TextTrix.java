@@ -52,6 +52,7 @@ import javax.print.attribute.*;
 import javax.swing.plaf.*;
 import javax.swing.plaf.metal.*;
 //import javax.xml.soap.Text;
+import java.lang.reflect.InvocationTargetException;
 
 
 import com.inet.jortho.FileUserDictionary;
@@ -59,6 +60,7 @@ import com.inet.jortho.SpellChecker;
 
 import jsyntaxpane.DefaultSyntaxKit;
 import jsyntaxpane.SyntaxViewWrapped;
+import jsyntaxpane.SyntaxDocument;
 
 
 //import sun.font.TextLabelFactory;
@@ -167,6 +169,7 @@ public class TextTrix extends JFrame {
 	private StatusBarCreator statusBarCreator = null; // worker thread
 	private JPanel statusBarPanel = null; // the panel
 	private JLabel statusBar = null; // the status label; not really a "bar"
+	private JProgressBar statusProgress = null;
 	private JTextField lineNumFld = new JTextField(5); // Line Find
 	private JTextField wordFindFld = null; // Word Find
 	private JPopupMenu statusBarPopup = null; // status bar popup menu
@@ -475,7 +478,7 @@ public class TextTrix extends JFrame {
 		// invoke worker thread to create status bar
 		statusBarPanel = new JPanel(); // worker builds on the panel
 		// other thread interacts with statusBar label, so need to create early
-		statusBar = new JLabel("Text Trix Welcomes You");
+		statusBar = new JLabel();
 		(statusBarCreator = new StatusBarCreator()).start();
 		
 		
@@ -2649,6 +2652,8 @@ public class TextTrix extends JFrame {
 				if (getPrefs().getHighlighting() && getHighlighting()) {
 					t.setHighlightStyle(getPrefs().getSpellChecker());
 				}
+				Thread loadCheck = new Thread(new CheckDocLoad(t));
+				loadCheck.start();
 				autoAutoIndent(t);
 				return true;
 			} catch (IOException exception) {
@@ -2671,6 +2676,42 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
+	
+	private class CheckDocLoad implements Runnable {
+		private TextPad pad;
+		private String status;
+		
+		public CheckDocLoad(TextPad aPad) {
+			pad = aPad;
+		}
+		
+		public void run() {
+			try {
+				int doneCount = 0;
+				SyntaxDocument doc = (SyntaxDocument)pad.getStyledDocument();
+				int totLines = pad.getTotalLineNumber();
+				status = (totLines > 1000)
+						? "Loading document..."
+						: "Loading large document (this may take awhile)...";
+				//statusMsg.setText(status);
+				statusProgress.setIndeterminate(true);
+				statusProgress.setString(status);
+				while (doneCount < 2) {
+					if (doc.isParseDone()) {
+						doneCount++;
+					} else {
+						doneCount = 0;
+					}
+					Thread.sleep(500);
+				}
+				//statusMsg.setText("");
+				statusProgress.setIndeterminate(false);
+				statusProgress.setString("");
+			} catch(InterruptedException e) {
+			}
+		}
+	}
+				
 	
 	/** Finds the tab with the given path.
 	 * @param path the path of the file to find
@@ -5012,6 +5053,12 @@ public class TextTrix extends JFrame {
 					
 					
 					
+					// progres bar for showing document loading status
+					statusProgress = new JProgressBar();
+					statusProgress.setString("");
+					statusProgress.setStringPainted(true);
+					
+					
 					
 					// Line Find
 					JLabel lineNumLbl = new JLabel("Line Find:");
@@ -5136,6 +5183,8 @@ public class TextTrix extends JFrame {
 					
 					// Add the components
 					statusBarPanel.add(statusBar);
+					//statusBarPanel.add(statusMsg);
+					statusBarPanel.add(statusProgress);
 					statusBarPanel.add(wordFindLbl);
 					statusBarPanel.add(wordFindFld);
 					statusBarPanel.add(lineNumLbl);
@@ -5164,6 +5213,17 @@ public class TextTrix extends JFrame {
 					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
 						2,
 						SpringLayout.SOUTH, statusBar);
+					
+					// position the statusMsg label
+					layout.putConstraint(SpringLayout.WEST, statusProgress,
+						5,
+						SpringLayout.EAST, statusBar);
+					layout.putConstraint(SpringLayout.NORTH, statusProgress,
+						2,
+						SpringLayout.NORTH, statusBarPanel);
+					layout.putConstraint(SpringLayout.SOUTH, statusBarPanel,
+						2,
+						SpringLayout.SOUTH, statusProgress);
 					
 					
 					
