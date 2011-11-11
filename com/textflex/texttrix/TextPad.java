@@ -357,7 +357,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		} else if (ext.equals("groovy")) {
 			setContentType("text/groovy");
 		} else if (ext.equals("bash") || ext.equals("sh")) {
-			setContentType("text/base");
+			setContentType("text/bash");
 		} else if (ext.equals("json")) {
 			setContentType("text/json");
 		} else if (ext.equals("xml")) {
