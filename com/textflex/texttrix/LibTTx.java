@@ -308,7 +308,8 @@ public class LibTTx {
 	
 	public static URI getBaseURI(String folders) {
 		try {
-		URI baseURI = new URI(com.textflex.texttrix.LibTTx.class.getProtectionDomain().getCodeSource().getLocation().toString());
+		URI baseURI = new URI(com.textflex.texttrix.LibTTx.class.
+				getProtectionDomain().getCodeSource().getLocation().toString());
 		String path = baseURI.toString();
 		if (path.endsWith(".jar")) {
 			path = path.substring(0, path.lastIndexOf("/")) + "/";
@@ -350,7 +351,9 @@ public class LibTTx {
 	 */
 	public static String[] getPlugInPaths(File plugInDir) {
 		String[] list = getPlugInList(plugInDir);
-		for (int i = 0; i < list.length; i++) {
+		if (list == null) return null;
+		int listLen = list.length;
+		for (int i = 0; i < listLen; i++) {
 			list[i] = plugInDir.toString() + File.separator + list[i];
 		}
 		return list;

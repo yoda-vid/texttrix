@@ -479,6 +479,7 @@ public class TextTrix extends JFrame {
 		statusBarPanel = new JPanel(); // worker builds on the panel
 		// other thread interacts with statusBar label, so need to create early
 		statusBar = new JLabel();
+		statusProgress = new JProgressBar();
 		(statusBarCreator = new StatusBarCreator()).start();
 		
 		
@@ -2688,7 +2689,9 @@ public class TextTrix extends JFrame {
 		public void run() {
 			try {
 				int doneCount = 0;
-				SyntaxDocument doc = (SyntaxDocument)pad.getStyledDocument();
+				StyledDocument styledDoc = pad.getStyledDocument();
+				if (!(styledDoc instanceof SyntaxDocument)) return;
+				SyntaxDocument doc = (SyntaxDocument)styledDoc;
 				int totLines = pad.getTotalLineNumber();
 				status = (totLines > 1000)
 						? "Loading document..."
@@ -5053,8 +5056,8 @@ public class TextTrix extends JFrame {
 					
 					
 					
-					// progres bar for showing document loading status
-					statusProgress = new JProgressBar();
+					// progres bar for showing document loading status;
+					// object should have already been created
 					statusProgress.setString("");
 					statusProgress.setStringPainted(true);
 					

@@ -279,16 +279,16 @@ public class TextPad extends JTextPane implements StateEditable {
         if( enable ){
             final JPopupMenu menu = new JPopupMenu();
 
-							// adds popup menu items from the TextPad
-							ArrayList list = createPopupActions();
-							for (int i = 0; i < list.size(); i++) {
-								menu.add((Action)list.get(i));
-							}
+			// adds popup menu items from the TextPad
+			ArrayList list = createPopupActions();
+			for (int i = 0; i < list.size(); i++) {
+				menu.add((Action)list.get(i));
+			}
 							
-							// adds the spell checker menu items
+			// adds the spell checker menu items
             addMouseListener( new TextPadPopupListener(menu) );
         } else {
-							MouseListener[] listeners = getMouseListeners();
+			MouseListener[] listeners = getMouseListeners();
             for (int i = 0; i < listeners.length; i++){
                 if(listeners[i] instanceof TextPadPopupListener){
                     removeMouseListener( listeners[i] );
