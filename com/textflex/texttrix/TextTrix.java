@@ -76,7 +76,6 @@ public class TextTrix extends JFrame {
 	private static final String FILE_WINDOW_SPLITTER_REGEX = "\\{w\\}";
 	private static final String NEWLINE 
 		= System.getProperty("line.separator"); // newlines
-	private static final String LINE_DANCE = "LineDance";
 	private static final String GROUP_START = "Start";
 	
 	// command-line arguments
@@ -1756,7 +1755,8 @@ public class TextTrix extends JFrame {
 			MotherTabbedPane pane = getTabbedPaneAt(i);
 			int padCount = pane.getTabCount();
 			for (int j = 0; j < padCount; j++) {
-				pads.add(((JScrollPane) pane.getComponentAt(i)).getViewport().getView());
+				pads.add(((JScrollPane) pane.getComponentAt(j))
+						.getViewport().getView());
 			}
 		}
 		return pads;
@@ -4290,7 +4290,8 @@ public class TextTrix extends JFrame {
 						public void actionPerformed(ActionEvent evt) {
 							// Line Dance for the current Text Pad
 							if (lineDanceDialog == null) {
-								lineDanceDialog = new LineDanceDialog();
+								lineDanceDialog = 
+										new LineDanceDialog(getThis());
 							}
 							lineDanceDialog.updatePadPanel();
 							lineDanceDialog.setVisible(true);
@@ -5043,221 +5044,6 @@ public class TextTrix extends JFrame {
 	}
 	
 	
-	/** The dialog window that holds the Line Dance components.
-	 * The dialog is modeled after PlugInWindow dialogs.
-	 * One dialog is created for all Text Pads, but each pad has
-	 * its own Line Dance panel and associated table.
-	 */
-	private class LineDanceDialog extends JDialog {
-		
-		JPanel padPanel = new JPanel(); // Line Dance panel
-		Container contentPane = null; // content pane for the dialog
-		
-		/** Constructs a Line Dance dialog, including its main panel
-		 * and table.
-		 */
-		public LineDanceDialog() {
-			// Setup the owner and title
-			super(getThis(), "Line Dance");
-			
-			// Setup the content pane and its layout
-			contentPane = getContentPane();
-			contentPane.setLayout(new GridBagLayout());
-			GridBagConstraints constraints = new GridBagConstraints();
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			constraints.anchor = GridBagConstraints.SOUTH;
-			
-			// Get the size from the saved preferences
-			getPrefs().applyPlugInSizeLoc(this, LINE_DANCE, 350, 300);
-
-			// store window size and location with each movement
-			ComponentListener compListener = new ComponentListener() {
-				public void componentMoved(ComponentEvent evt) {
-					getPrefs().storePlugInLocation(LINE_DANCE,
-							getLocation());
-				}
-
-				public void componentResized(ComponentEvent evt) {
-					getPrefs().storePlugInSize(LINE_DANCE, getWidth(),
-							getHeight());
-				}
-
-				public void componentShown(ComponentEvent evt) {
-				}
-
-				public void componentHidden(ComponentEvent evt) {
-				}
-			};
-			addComponentListener(compListener);
-			
-			
-			// Runs the plug-in if the user hits the "Remember Line"
-			// button;
-			// creates a shortcut key (alt-L) as an alternative way to invoke
-			// the button
-			Action remCurrLineAction = 
-				new AbstractAction("Remember line", null) {
-				public void actionPerformed(ActionEvent e) {
-					TextPad p = getSelectedTextPad();
-					p.remLineNum(p.getSelectedText());
-				}
-			};
-			LibTTx.setAcceleratedAction(
-				remCurrLineAction,
-				"Remember line",
-				'R',
-				KeyStroke.getKeyStroke("alt R"));
-			JButton remCurrLineBtn = new JButton(remCurrLineAction);
-			
-			
-			
-			// Runs the plug-in if the user hits the "Forget Line"
-			// button;
-			// creates a shortcut key (alt-L) as an alternative way to invoke
-			// the button
-			Action forgetSelLineAction = 
-				new AbstractAction("Forget line", null) {
-				public void actionPerformed(ActionEvent e) {
-					getSelectedTextPad().forgetSelectedLines();
-				}
-			};
-			LibTTx.setAcceleratedAction(
-				forgetSelLineAction,
-				"Forget line",
-				'F',
-				KeyStroke.getKeyStroke("alt F"));
-			JButton forgetSelLineBtn = new JButton(forgetSelLineAction);
-			
-			
-			// Runs the plug-in if the user hits the "Line Dance"
-			// button;
-			// creates a shortcut key (alt-L) as an alternative way to invoke
-			// the button
-			Action lineDanceAction = 
-				new AbstractAction("Line Dance", null) {
-				public void actionPerformed(ActionEvent e) {
-					lineDance();
-				}
-			};
-			LibTTx.setAcceleratedAction(
-				lineDanceAction,
-				"Line Dance",
-				'L',
-				KeyStroke.getKeyStroke("alt L"));
-			JButton lineDanceBtn = new JButton(lineDanceAction);
-			
-			
-			
-			// Runs the plug-in if the user hits the "Name Line"
-			// button;
-			// creates a shortcut key (alt-L) as an alternative way to invoke
-			// the button
-			Action nameLineAction = 
-				new AbstractAction("Name Line", null) {
-				public void actionPerformed(ActionEvent e) {
-					getSelectedTextPad().editLineName();
-				}
-			};
-			LibTTx.setAcceleratedAction(
-				nameLineAction,
-				"Name Line",
-				'N',
-				KeyStroke.getKeyStroke("alt N"));
-			JButton nameLineBtn = new JButton(nameLineAction);
-			
-			
-			
-			
-			// Add the components
-			LibTTx.addGridBagComponent(
-				remCurrLineBtn,
-				constraints,
-				0,
-				1,
-				1,
-				1,
-				100,
-				0,
-				contentPane);
-			
-			LibTTx.addGridBagComponent(
-				nameLineBtn,
-				constraints,
-				1,
-				1,
-				1,
-				1,
-				100,
-				0,
-				contentPane);
-			
-			LibTTx.addGridBagComponent(
-				forgetSelLineBtn,
-				constraints,
-				2,
-				1,
-				1,
-				1,
-				100,
-				0,
-				contentPane);
-			
-			LibTTx.addGridBagComponent(
-				lineDanceBtn,
-				constraints,
-				0,
-				2,
-				3,
-				1,
-				100,
-				0,
-				contentPane);
-		}
-		
-		/** Moves the cursor to the position remembered in 
-		 * the selected table line entry.
-		 */
-		public void lineDance() {
-			TextPad pad = getSelectedTextPad();
-			pad.lineDance();
-		}
-		
-		/** Updates the panel dialog with the current
-		 * Text Pad's panel.
-		 */
-		public void updatePadPanel() {
-			// Remove the old panel
-			contentPane.remove(padPanel);
-			contentPane.validate();
-			
-			// Retrieve and add the current pad's panel
-			TextPad pad = getSelectedTextPad();
-			// gets panel only if pad exists and is selected
-			if (pad != null) {
-				// gets the panel
-				padPanel = pad.getLineDancePanel();
-				// sets up the layout
-				GridBagConstraints constraints = new GridBagConstraints();
-				constraints.fill = GridBagConstraints.HORIZONTAL;
-				constraints.anchor = GridBagConstraints.NORTH;
-				
-				// adds the panel
-				LibTTx.addGridBagComponent(
-					padPanel,
-					constraints,
-					0,
-					0,
-					3,
-					1,
-					100,
-					0,
-					contentPane);
-				contentPane.validate();
-			}
-		}
-		
-	}
-
 	
 	
 }
