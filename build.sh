@@ -49,12 +49,14 @@ the file build.sh does not have executable permissions.)
 Parameters:
 	--api: Builds the API documentation files.
 	
-	--branch=path/to/branch: The branch (or trunk) from which to
-	compile source code.  For example, to compile from the 0.7.1
-	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
-	simply specify \"--branch=trunk\".  The source code release package
-	sets the branch to \".\", since the source package does 
-	not contain branches and tags.  Otherwise, defaults to \"trunk\".
+	--branch=path/to/branch: The branch (or trunk) with reference to
+	the repository root from which to compile source code. For example, 
+	to compile from the 0.7.1 branch, specify \"--branch=branches/0.7.1\". 
+	To compile from the trunk, simply specify \"--branch=trunk\", or 
+	leave it blank. The source code release package sets the branch to 
+	\".\", since the source package does not contain branches and tags.
+	Note that this arguments is not used directly in this script, but 
+	passed to the plugins script when the \"--plug\" flag is set.
 	
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  

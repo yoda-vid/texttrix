@@ -115,17 +115,19 @@ class FileHist implements Runnable {
 
 	/**
 	 * Updates the file history menu by deleting old entries and replacing
-	 * them with the current ones. Assumes that <code>fileHistStart</code>
-	 * in <code>TextTrix</code> has been set.
+	 * them with the current ones.
 	 *  
 	 */
 	public void updateFileHist() {
-		for (int i = menu.getItemCount() - 1; i >= fileHistStart; i--) {
-			menu.remove(i);
+		if (fileHistStart > -1) {
+			// remove previous file history entries if they had been
+			// previously added
+			for (int i = menu.getItemCount() - 1; i >= fileHistStart; i--) {
+				menu.remove(i);
+			}
 		}
 		createFileHist();
 		menu.revalidate();
-
 	}
 
 }
