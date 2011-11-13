@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-8
+ * Portions created by the Initial Developer are Copyright (C) 2002-11
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -46,14 +46,11 @@ import javax.swing.filechooser.FileFilter;
 import java.net.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-//import java.awt.peer.TextAreaPeer;
 import java.awt.print.*;
 import javax.print.attribute.*;
 import javax.swing.plaf.*;
 import javax.swing.plaf.metal.*;
-//import javax.xml.soap.Text;
 import java.lang.reflect.InvocationTargetException;
-
 
 import com.inet.jortho.FileUserDictionary;
 import com.inet.jortho.SpellChecker;
@@ -61,9 +58,6 @@ import com.inet.jortho.SpellChecker;
 import jsyntaxpane.DefaultSyntaxKit;
 import jsyntaxpane.SyntaxViewWrapped;
 import jsyntaxpane.SyntaxDocument;
-
-
-//import sun.font.TextLabelFactory;
 
 /**
  * The main Text Trix class. Takes care of all basic graphical user interface
@@ -104,7 +98,7 @@ public class TextTrix extends JFrame {
 	private boolean updateForTextPad = true; // flag to update UI and Hx for pad
 	// flag to update file history menu entries
 	private static boolean updateFileHist = false;
-	private FileHist fileHist = null; // file history
+//	private FileHist fileHist = null; // file history
 	// starting position of file history in file menu
 	private static int fileHistStart = -1;
 	private static boolean fresh = false; // temporarily don't reopen tabs
@@ -115,14 +109,10 @@ public class TextTrix extends JFrame {
 	/* General GUI components */
 	private static ArrayList ttxWindows = new ArrayList();
 	private MotherTabbedPane groupTabbedPane = null; // multiple tabbed panes
-//	private static ArrayList textAreas = new ArrayList(); // all the TextPads
 	private Container contentPane = getContentPane(); // main frame content pane
-//	private static JTabbedPane tabbedPane = null; // multiple TextPads
 	private static JPopupMenu popup = null; // make popup menu
 	private static JPopupMenu tabsPopup = null; // make popup menu
 	private static JFileChooser chooser = null; // file dialog
-	private static FileFilter allFilter = null; // TODO: may be unnecessary
-//	private TextPadDocListener textPadDocListener = new TextPadDocListener();
 	private LineDanceDialog lineDanceDialog = null;
 	
 	/* Menu bar controls */
@@ -135,16 +125,6 @@ public class TextTrix extends JFrame {
 	private JMenu toolsMenu = null; // tools plugins
 	private JToolBar toolBar = null; // icons
 	private static JMenu fileMenu = null; // file menu, which incl file history
-	private JMenuItem boldItem = null; // bold [format]
-	private JMenuItem italicItem = null; // italic [format]
-	private JMenuItem underlineItem = null; // underline [format]
-	private JMenuItem insertItem = null; // note
-	private JMenu fontSize = null; // FontSize [format]
-	private JMenu alignment = null; // Alignment [format]
-	private JMenu textColor = null; // Color [format]
-	private JMenu backgroundColor = null; // background Color [format]
-	private ButtonGroup group = new ButtonGroup(); // creation of object for
-													// regrouping of buttons
 
 	/* Preferences panel controls */
 	private static Prefs prefs = null; // preferences
@@ -271,12 +251,6 @@ public class TextTrix extends JFrame {
 				
 		// Create the preferences and apply specific prefs
 		getPrefs();
-//		applyHighlightingPref();
-		
-		
-		
-		
-		
 		
 		
 		/* Setup the main Text Trix window */
@@ -363,6 +337,9 @@ public class TextTrix extends JFrame {
 		
 		
 		
+		
+		/* Start the jsyntaxpane highlighter */
+		
 		DefaultSyntaxKit.initKit();
 		
 		
@@ -403,24 +380,13 @@ public class TextTrix extends JFrame {
 		// Add the group pane to the frame
 		addTabbedPane(groupTabbedPane, "");
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 
 		// display tool tips for up to 100s
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
 
 		// set text and web file filters for open/save dialog boxes
 		chooser = getChooser();//new JFileChooser();
-		allFilter = chooser.getFileFilter();
+		FileFilter allFilter = chooser.getFileFilter();
 		final ExtensionFileFilter webFilter = new ExtensionFileFilter();
 		webFilter.addExtension("html");
 		webFilter.addExtension("htm");
@@ -461,7 +427,7 @@ public class TextTrix extends JFrame {
 		chooser.setFileFilter(allFilter);
 
 		// prepare the file history
-		fileHist = new FileHist();
+//		fileHist = new FileHist();
 
 		// line saver
 		lineSaverAction = new AbstractAction("Save current line number") {
@@ -519,7 +485,6 @@ public class TextTrix extends JFrame {
 					// this tab group to be identified later and not included in
 					// tab memory and reopening
 					getGroupTabbedPane().setTitleAt(0, GROUP_START);
-//					addTabbedPane(getGroupTabbedPane(), "");
 				}
 
 				// load files left open at the close of the last session
@@ -573,10 +538,14 @@ public class TextTrix extends JFrame {
 				});
 
 				
-				// make the file history menu entries and set the auto-indent
-				// check box
-				syncMenus();
-
+				// Synchronizes the menus with the current text pad settings. 
+				// Creates the file history menu entries in the File menu and 
+				// flags the auto-indent check box according to the current 
+				// text pad's setting.
+				//syncMenus();
+				Thread fileHistThread = new Thread(new FileHist(getThis()));
+				fileHistThread.start();
+				setAutoIndent();
 			}
 		});
 
@@ -603,10 +572,6 @@ public class TextTrix extends JFrame {
 	 *            command-line arguments
 	 */
 	public static void main(String[] args) {
-	
-		
-//		LibTTx.loadJar((new File(LibTTx.getBaseFile(), "jortho.jar")).getPath());
-
 		
 		// Set the look and feel: native for Windows systems, default Java Ocean
 		// for all other platforms to provide a more consistent look, since Windows
@@ -685,6 +650,7 @@ public class TextTrix extends JFrame {
 					// "--verbose" to turn on verbose command-line output
 					setVerbose(true);
 				} else if (args[i].equals(ARG_CLEAR_TABS)) {
+					// "--cleartabs" clears memory of previously opened tabs
 					setClearTabs(true);
 					getPrefs().storeReopenTabsList("");
 				}
@@ -749,6 +715,10 @@ public class TextTrix extends JFrame {
 		return verbose;
 	}
 	
+//	FileHist getFileHist() { return fileHist; }
+	JMenu getFileMenu() { return fileMenu; }
+	int getFileHistStart() { return fileHistStart; }
+	
 	
 	/** Opens a new Text Trix window.
 	 * Creates a new instance of the TextTrix frame and
@@ -808,7 +778,7 @@ public class TextTrix extends JFrame {
 	 * file history menu entries in the File menu and flags the auto-indent
 	 * check box according to the current text pad's setting.
 	 *  
-	 */
+	 *
 	public void syncMenus() {
 		if (fileHistStart != -1) {
 //			System.out.println("syncing menus: " + fileHistStart);
@@ -816,6 +786,7 @@ public class TextTrix extends JFrame {
 		}
 		setAutoIndent(); // applies the auto-wrap-indent feature
 	}
+	*/
 
 	/**
 	 * Opens the given file. Useful for opening files at program start-up
@@ -888,11 +859,8 @@ public class TextTrix extends JFrame {
 	 * title to display in taskbar icons. The updater is useful to display the
 	 * name of the currently selected file, for example. This name is
 	 * automatically appended to the front of the text, " - Text Trix".
-	 * 
-	 * @param frame
-	 *            the Text Trix window frame
-	 * @param filename
-	 *            name of given file, such as the currently displayed one
+	 * @param frame the Text Trix window frame
+	 * @param filename name of given file, such as the currently displayed one
 	 */
 	public static void updateTitle(JFrame frame, String filename) {
 		String titleSuffix = " - Text Trix";
@@ -951,7 +919,9 @@ public class TextTrix extends JFrame {
 	 */
 	public void applyGeneralPrefs() {
 		// Update the file history based on whether should save or not
-		fileHist.start(fileMenu);
+		//fileHist.start(fileMenu);
+		Thread fileHistThread = new Thread(new FileHist(this));
+		fileHistThread.start();
 		
 		// Update all the tabs in each tab group
 		MotherTabbedPane pane = getGroupTabbedPane();
@@ -972,9 +942,6 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
-		
-		// apply syntax highlighting preference
-//		applyHighlightingPref();
 		
 		// Re-select the originally selected tab
 		pane.setSelectedIndex(origPaneIndex);
@@ -1059,17 +1026,17 @@ public class TextTrix extends JFrame {
 	
 	
 	
-	/** This method takes as inputs the font size
-	 * in which user can convert his text and
-	 * the name of the size
-	 * Then adds a button for each size and organize
-	 * all the buttons in a group
-	 * End, adds this group at Font Size operation
+	/** 
+	 * Creates a button for the given font size and adds the button to the 
+	 * group of font size buttons.
+	 * @param nameOfSize size name to be displayed in button
+	 * @param size the actual size of the font
 	 */
-	public void fontSizeGroupOfButtons(final String nameOfSize, final int size) {
+	private void fontSizeGroupOfButtons(final String nameOfSize, final int size,
+			ButtonGroup group, JMenu menu) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfSize);
 		group.add(button);
-		fontSize.add(button);
+		menu.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				if (switchToHTMLView(null, true)) {
@@ -1088,11 +1055,11 @@ public class TextTrix extends JFrame {
 	* all the buttons in a group
 	* End, adds this group at Alignment operation
 	*/
-	public void alignmentGroupOfButton(final String nameOfAlignment,
-			final int location) {
+	private void alignmentGroupOfButton(final String nameOfAlignment,
+			final int location, ButtonGroup group, JMenu menu) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfAlignment);
 		group.add(button);
-		alignment.add(button);
+		menu.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				if (switchToHTMLView(null, true)) {
@@ -1111,10 +1078,11 @@ public class TextTrix extends JFrame {
 	* all the buttons in a group
 	* End, adds this group at Color operation
 	*/
-	public void colorGroupOfButton(final String nameOfColor, final Color color) {
+	private void colorGroupOfButton(final String nameOfColor, final Color color,
+			ButtonGroup group, JMenu menu) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
 		group.add(button);
-		textColor.add(button);
+		menu.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				if (switchToHTMLView(null, true)) {
@@ -1133,11 +1101,11 @@ public class TextTrix extends JFrame {
 	* all the buttons in a group
 	* End, adds this group at Background Color operation
 	*/
-	public void backColorGroupOfButton(final String nameOfColor,
-			final Color color) {
+	private void backColorGroupOfButton(final String nameOfColor,
+			final Color color, ButtonGroup group, JMenu menu) {
 		JRadioButtonMenuItem button = new JRadioButtonMenuItem(nameOfColor);
 		group.add(button);
-		backgroundColor.add(button);
+		menu.add(button);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				if (switchToHTMLView(null, true)) {
@@ -1151,9 +1119,7 @@ public class TextTrix extends JFrame {
 	/**
 	 * Creates a plugin action. Allows the plugin to be invoked from a button or
 	 * other action-capable interface.
-	 * 
-	 * @param pl
-	 *            plugin from which to make an action
+	 * @param pl plugin from which to make an action
 	 */
 	public void makePlugInAction(final PlugIn pl) {
 
@@ -1477,26 +1443,20 @@ public class TextTrix extends JFrame {
 
 	/**
 	 * Selects the given region of text. Works on the given text pad.
-	 * 
-	 * @param t
-	 *            given text pad, not necessarily the selected one, though
-	 *            probably only relevant if so
-	 * @param baseline
-	 *            starting point from which to measure <code>start</code> and
-	 *            <cdoe>end</code>
-	 * @param start
-	 *            beginning point of selection, relative to baseline
-	 * @param end
-	 *            end point of selection, relative to baseline
+	 * @param t text pad from which to select text
+	 * @param offset starting point from which to measure <code>start</code> 
+	 * and <cdoe>end</code>
+	 * @param start beginning point of selection, relative to baseline
+	 * @param end end point of selection, relative to baseline
 	 */
-	public void textSelection(TextPad t, int baseline, int start, int end) {
+	public void textSelection(TextPad t, int offset, int start, int end) {
 		if (end != -1 && start != end) {
-			t.setCaretPositionTop(baseline + start);
-			t.moveCaretPosition(baseline + end);
+			t.setCaretPositionTop(offset + start);
+			t.moveCaretPosition(offset + end);
 			t.getCaret().setSelectionVisible(true);
 			// to ensure selection visibility
 		} else {
-			t.setCaretPositionTop(baseline + start);
+			t.setCaretPositionTop(offset + start);
 		}
 	}
 	
@@ -1510,16 +1470,11 @@ public class TextTrix extends JFrame {
 	 * Note that "loaded plug-in" does not mean that the plug-in is in use,
 	 * but includes both used and ignored plug-ins that Text Trix has
 	 * read and at least prepared for use.
-	 * @param t
-	 *            given text pad, not necessarily the selected one, though
-	 *            probably only relevant if so
-	 * @param baseline
-	 *            starting point from which to measure <code>start</code> and
-	 *            <cdoe>end</code>
-	 * @param start
-	 *            beginning point of selection, relative to baseline
-	 * @param end
-	 *            end point of selection, relative to baseline
+	 * @param t text pad from which to select text
+	 * @param offset starting point from which to measure <code>start</code> 
+	 * and <cdoe>end</code>
+	 * @param start beginning point of selection, relative to baseline
+	 * @param end end point of selection, relative to baseline
 	 */
 	public void textSelectionReverse(TextPad t, int baseline, int start, int end) {
 		textSelection(t, baseline, end, start);
@@ -1705,52 +1660,6 @@ public class TextTrix extends JFrame {
 		return saveDir;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/** Sets the selection to the given Text Pad index in
-	 * the given tab group.
-	 * @param motherIdx index of the tab group
-	 * @param padIdx index of the tab within the tab group
-	 */
-	public void setSelectedTextPad(int motherIdx, int padIdx) {
-		getGroupTabbedPane().setSelectedIndex(motherIdx);
-		getSelectedTabbedPane().setSelectedIndex(padIdx);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	/** Gets the tabbed pane for tab groups.
 	 * @return the "mother" pane of all other tabs
 	 */
@@ -1903,6 +1812,17 @@ public class TextTrix extends JFrame {
 		}
 	}
 
+	/** Sets the selection to the given Text Pad index in
+	 * the given tab group.
+	 * @param motherIdx index of the tab group
+	 * @param padIdx index of the tab within the tab group
+	 */
+	public void setSelectedTextPad(int motherIdx, int padIdx) {
+		getGroupTabbedPane().setSelectedIndex(motherIdx);
+		getSelectedTabbedPane().setSelectedIndex(padIdx);
+	}
+	
+	
 	/**
 	 * Makes new file with next non-existent file of name format,
 	 * <code>NewFile<i>n</i>.txt</code>, where <code>n</code> is the next
@@ -1936,7 +1856,6 @@ public class TextTrix extends JFrame {
 			b = b && ((TextTrix)ttxWindows.get(i)).closeAllTabs();
 			reopenPaths += FILE_WINDOW_SPLITTER + getPrefs().getReopenTabsList();
 		}
-//		System.out.println("reopentabs list: " + reopenPaths);
 		// store the file list and exit Text Trix if all the files closed
 		// successfully, set to reopen tabs, and not set for a fresh session
 		if (b == true) {
@@ -1960,7 +1879,6 @@ public class TextTrix extends JFrame {
 		String openedPaths = "";
 		boolean reopenTabs = getPrefs().getReopenTabs();
 		// resets open tabs history
-//		getPrefs().storeReopenTabsList("");
 		boolean b = true; // flags whether ok to close tab
 		boolean newGrp = false; // flag for new tab group
 		
@@ -1995,12 +1913,10 @@ public class TextTrix extends JFrame {
 				}
 			}
 		}
-//		System.out.println("openedPaths: " + openedPaths + ", getFresh: " + getFresh());
 		// preserves most recently saved tabs if set to fresh session
 		if (b == true) {
 			if (!getFresh() && reopenTabs) {
 				getPrefs().storeReopenTabsList(openedPaths);
-//				System.out.println("storeReopenTabsList: " + getPrefs().getReopenTabsList());
 			}
 		}
 		return b;
@@ -2030,10 +1946,8 @@ public class TextTrix extends JFrame {
 	 * <code>Save as...</code> dialog discards the text area, though maybe not
 	 * so in future releases.
 	 * 
-	 * @param tabIndex
-	 *            tab to close
-	 * @param tabbedPane
-	 *            pane holding a tab to be closed
+	 * @param tabIndex index of tab to close
+	 * @param tabbedPane pane holding a tab to be closed
 	 * @return <code>true</code> if the tab successfully closes
 	 */
 	public boolean closeTextArea(int tabIndex, MotherTabbedPane tabbedPane) {
@@ -2126,15 +2040,6 @@ public class TextTrix extends JFrame {
 		updateUIForTextPad(newTabbedPane, getSelectedTextPad());
 		updateTabHistory(getSelectedTabbedPane());
 		
-		/*
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				updateUIForTextPad(newTabbedPane, getSelectedTextPad());
-				updateTabHistory(getGroupTabbedPane());
-			}
-		});
-		*/
-		
 		// adds a change listener to listen for tab switches and display the
 		// options of the tab's TextPad
 		newTabbedPane.addChangeListener(new TextPadChangeListener(newTabbedPane));
@@ -2156,7 +2061,7 @@ public class TextTrix extends JFrame {
 			return;
 		}
 	
-	// Create the new Text Pad		
+		// Create the new Text Pad		
 		updateTabIndexHistory = true;
 		final TextPad textPad = new TextPad(file, getPrefs());
 		
@@ -2168,18 +2073,14 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
-		//textPad.setPreferredSize(new Dimension(300, 300));
 		textPad.setHighlightStyle(getPrefs().getSpellChecker());
-//		DocumentListener listener = textPadDocListener;
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
 		tabbedPane.addTab(file.getName() + " ", scrollPane);
-//		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
-						textPad.addDocListener(new TextPadDocListener(textPad));
-//		textPad.addMouseListener(new TextPadPopupListener());
+		textPad.addDocListener(new TextPadDocListener(textPad));
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
 				updateStatusBarLineNumbers(textPad);
@@ -2205,7 +2106,6 @@ public class TextTrix extends JFrame {
 			
 			if (lineDanceDialog != null && lineDanceDialog.isVisible()) {
 				lineDanceDialog.updatePadPanel();
-//				System.out.println("hello.");
 			}
 			
 			// doesn't work when creating new tabs via
@@ -2232,7 +2132,6 @@ public class TextTrix extends JFrame {
 		// all selections are recorded
 		if (i == -1) i = pane.getSelectedIndex();
 		if (updateTabIndexHistory) {
-//			System.out.println("Updating tab index: " + i);
 			pane.addTabHistory(i);
 		} else {
 			updateTabIndexHistory = true;
@@ -2276,14 +2175,12 @@ public class TextTrix extends JFrame {
 	 * Useful to apply on top of the <code>TextPad</code>'s
 	 * <code>applyDocumentSettings</code> function.
 	 * 
-	 * @param textPad
-	 *            <code>TextPad</code> requiring applied settings
+	 * @param textPad pad requiring applied settings
 	 */
 	public void addExtraTextPadDocumentSettings(TextPad textPad) {
-//		textPad.getDocument().addDocumentListener(new TextPadDocListener(textPad));
-						textPad.addDocListener(new TextPadDocListener(textPad));
+		textPad.addDocListener(new TextPadDocListener(textPad));
 		textPad.setChanged(true);
-		updateTabTitle(textPad);//getSelectedTabbedPane());
+		updateTabTitle(textPad);
 	}
 
 	/**
@@ -2354,12 +2251,9 @@ public class TextTrix extends JFrame {
 	 * <code>TextPad</code>'s settings, and finally adds
 	 * <code>TextTrix</code> -specific settings.
 	 * 
-	 * @param textPad
-	 *            <code>TextPad</code> to read a file into
-	 * @param in
-	 *            file reader
-	 * @param desc
-	 *            reader stream description
+	 * @param textPad pad to read a file into
+	 * @param in file reader
+	 * @param desc reader stream description
 	 */
 	public void read(final TextPad textPad, Reader in, Object desc)
 			throws IOException {
@@ -2369,7 +2263,6 @@ public class TextTrix extends JFrame {
 		// runs in EDT to prevent GUI lock-up during loading
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-//				textPad.getDocument().removeDocumentListener(textPadDocListener);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
 					textPad.removeDocListener();
 					textPad.setHighlightStyle(getPrefs().getSpellChecker());
@@ -2383,7 +2276,6 @@ public class TextTrix extends JFrame {
 				textPad.setCaretPosition(0);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
-//				textPad.getDocument().addDocumentListener(textPadDocListener);
 			}
 		});
 	}
@@ -2402,10 +2294,8 @@ public class TextTrix extends JFrame {
 	/**
 	 * Removes a tab containing a text area.
 	 * 
-	 * @param i
-	 *            tab index
-	 * @param tp
-	 *            tabbed pane from which to remove a tab
+	 * @param i tab index
+	 * @param tp tabbed pane from which to remove a tab
 	 */
 	public  void removeTextArea(int i, MotherTabbedPane tp) {
 		TextPad t = getSelectedTextPad();
@@ -2420,16 +2310,13 @@ public class TextTrix extends JFrame {
 	/**
 	 * Saves text area contents to a given path.
 	 * 
-	 * @param path
-	 *            file path in which to save
-	 * @param t
-	 *            the pad to save; if <code>null</code>, defaults to the
-	 *            currently selected pad
+	 * @param path file path in which to save
+	 * @param t the pad to save; if <code>null</code>, defaults to the
+	 *            currently selected pad if null
 	 * @return true for a successful save, false if otherwise
 	 * @see #saveFile
 	 */
 	public boolean saveFile(String path, TextPad t) {
-		//	System.out.println("printing");
 		if (t == null)
 			t = getSelectedTextPad();
 		PrintWriter out = null;
@@ -2449,9 +2336,6 @@ public class TextTrix extends JFrame {
 				// assumes that path points to a valid file
 				String origName = t.getFile().getName();
 				t.setFile(path);
-//				t.getFileModifiedThread().setLastModifiedByTTx(t.getFile().lastModified());
-//				if (!t.getFile().getPath().equals(path)) {
-//				}
 
 				// stops any auto-save timer attached to the pad
 				// since the file has just been saved;
@@ -2469,7 +2353,6 @@ public class TextTrix extends JFrame {
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
 						t.applyDocumentSettings();
-//						t.getDocument().addDocumentListener(new TextPadDocListener(t));
 						t.addDocListener(new TextPadDocListener(t));
 					}
 					// automatically starts indenting, if applicable, after
@@ -2491,34 +2374,7 @@ public class TextTrix extends JFrame {
 		}
 		return false;
 	}
-
-	/**
-	 * Saves text from the currently selected <code>TextPad</code> to a given
-	 * path.
-	 * 
-	 * @param path
-	 *            file path in which to save
-	 * @return true if the file saved successfully
-	 * @see #saveFile(String, TextPad)
-	 * @see #saveFile(TextPad)
-	 */
-	public boolean saveFile(String path) {
-		return saveFile(path, null);
-	}
-
-	/**
-	 * Saves text from the given <code>TextPad</code> to a given path.
-	 * 
-	 * @param pad
-	 *            the pad whose conents will be saved
-	 * @return true if the file saved successfully
-	 * @see #saveFile(String, TextPad)
-	 * @see #saveFile(String)
-	 */
-	public boolean saveFile(TextPad pad) {
-		return saveFile(pad.getPath(), pad);
-	}
-
+	
 	/**
 	 * Saves the file to the given path. Similar to
 	 * <code>saveFile(String)</code>, but tailored for the program exit by
@@ -2581,7 +2437,8 @@ public class TextTrix extends JFrame {
 	 * @see #openFile
 	 * @return true if the file is successfully opened or already open
 	 */
-	public boolean openFile(File file, boolean editable, boolean resource, boolean reuseTab) {
+	public boolean openFile(File file, boolean editable, boolean resource, 
+			boolean reuseTab) {
 		String path = file.getPath();
 		
 		// Check to see if the file is already open before creating new tab
@@ -2653,7 +2510,8 @@ public class TextTrix extends JFrame {
 				if (getPrefs().getHighlighting() && getHighlighting()) {
 					t.setHighlightStyle(getPrefs().getSpellChecker());
 				}
-				Thread loadCheck = new Thread(new CheckDocLoad(t));
+				Thread loadCheck = new Thread(
+						new CheckDocLoad(t, statusProgress));
 				loadCheck.start();
 				autoAutoIndent(t);
 				return true;
@@ -2678,43 +2536,6 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 	
-	private class CheckDocLoad implements Runnable {
-		private TextPad pad;
-		private String status;
-		
-		public CheckDocLoad(TextPad aPad) {
-			pad = aPad;
-		}
-		
-		public void run() {
-			try {
-				int doneCount = 0;
-				StyledDocument styledDoc = pad.getStyledDocument();
-				if (!(styledDoc instanceof SyntaxDocument)) return;
-				SyntaxDocument doc = (SyntaxDocument)styledDoc;
-				int totLines = pad.getTotalLineNumber();
-				status = (totLines > 1000)
-						? "Loading document..."
-						: "Loading large document (this may take awhile)...";
-				//statusMsg.setText(status);
-				statusProgress.setIndeterminate(true);
-				statusProgress.setString(status);
-				while (doneCount < 2) {
-					if (doc.isParseDone()) {
-						doneCount++;
-					} else {
-						doneCount = 0;
-					}
-					Thread.sleep(500);
-				}
-				//statusMsg.setText("");
-				statusProgress.setIndeterminate(false);
-				statusProgress.setString("");
-			} catch(InterruptedException e) {
-			}
-		}
-	}
-				
 	
 	/** Finds the tab with the given path.
 	 * @param path the path of the file to find
@@ -2732,55 +2553,6 @@ public class TextTrix extends JFrame {
 		return -1;
 	}
 
-	/**
-	 * Opens a file into a text pad, making the file editable, treating
-	 * it not as a resource, and not reusing any tabs. 
-	 * Calls the file open dialog. Opens the file
-	 * into a new pad unless the currently selected one is empty. Sets the
-	 * file's name as a the tab's title and the path as the tab's tool tip.
-	 * Assumes that the file is readable as text.  Anytime multiple files are
-	 * opened at once, the <code>updateForTextPad</code> flag should
-	 * be set to false to prevent the change listener from responding
-	 * after the fact, since the listener is on an EvokeLater.  The tab history
-	 * should be updated manually for each file, and the UI should be
-	 * updated after opening the last file, just before resetting the flag 
-	 * to true.
-	 * 
-	 * @param file
-	 *            file to open
-	 * @see #openFile
-	 */
-	public boolean openFile(File file) {
-		return openFile(file, true, false, false);
-	}
-	
-	 /** Opens a file into a text pad, without reusing any tabs. 
-	 * Calls the file open dialog. Opens the file
-	 * into a new pad unless the currently selected one is empty. Sets the
-	 * file's name as a the tab's title and the path as the tab's tool tip.
-	 * Assumes that the file is readable as text.  Anytime multiple files are
-	 * opened at once, the <code>updateForTextPad</code> flag should
-	 * be set to false to prevent the change listener from responding
-	 * after the fact, since the listener is on an EvokeLater.  The tab history
-	 * should be updated manually for each file, and the UI should be
-	 * updated after opening the last file, just before resetting the flag 
-	 * to true.
-	 * 
-	 * @param file
-	 *            file to open
-	 * @param editable
-	 *            <code>true</code> if the resulting text pad should be
-	 *            editable
-	 * @param resource
-	 *            <code>true</code> if the file should be accessed as a
-	 *            resource, via
-	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
-	 * @see #openFile
-	*/
-	public boolean openFile(File file, boolean editable, boolean resource) {
-		return openFile(file, editable, resource, false);
-	}
-	
 	/**Refreshes a tab without the user having to close and reopen it.
 	 * Useful when an open file is externally changed.
 	*/
@@ -2797,8 +2569,7 @@ public class TextTrix extends JFrame {
 	 * Text Pad's filename extension matches the user-defined list of files to
 	 * automatically auto-indent.
 	 * 
-	 * @param t
-	 *            Text Pad whose file is to be checked
+	 * @param t pad whose file is to be checked
 	 */
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
@@ -2813,14 +2584,13 @@ public class TextTrix extends JFrame {
 	 * Checks if the given file extension is in the user-defined list of files
 	 * to automatically auto-indent.
 	 * 
-	 * @param path
-	 *            file to check
+	 * @param path file to check
 	 * @return <code>true</code> if the file's extension is in the list
 	 * @see #autoAutoIndent(TextPad)
 	 */
 	public boolean isAutoIndentExt(String path) {
 		// get the file extension index
-		int extIndex = path.lastIndexOf(".") + 1;//LibTTx.reverseIndexOf(path, ".", path.length()) + 1;
+		int extIndex = path.lastIndexOf(".") + 1;
 		// stop searching if no extension
 		if (extIndex < 0 || extIndex >= path.length())
 			return false;
@@ -2833,8 +2603,7 @@ public class TextTrix extends JFrame {
 		// compare the extension with the list of extensions;
 		// return true once find
 		while (tokenizer.hasMoreTokens()) {
-			if (tokenizer.nextElement().equals(ext))
-				return true;
+			if (tokenizer.nextElement().equals(ext)) return true;
 		}
 		return false;
 	}
@@ -2843,37 +2612,21 @@ public class TextTrix extends JFrame {
 	 * Evokes a save dialog to save a file just before exiting the program, when
 	 * the text pad will no longer exist.
 	 * 
-	 * @param owner
-	 *            parent frame; can be null
+	 * @param owner parent frame; can be null
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public  boolean fileSaveDialogOnExit(JFrame owner) {
-		if (!prepFileSaveDialog())
+		if (!prepFileSaveDialog(null))
 			return false;
 		return getSavePathOnExit(owner);
-	}
-
-	/**
-	 * Evokes a save dialog. Sets the tabbed pane tab to the saved file name.
-	 * Assumes that the text pad from which to save is the currently
-	 * selected text pad.
-	 * 
-	 * @param owner
-	 *            parent frame; can be null
-	 * @return true if the approve button is chosen, false if otherwise
-	 */
-	public boolean fileSaveDialog(JFrame owner) {
-		return fileSaveDialog(getSelectedTextPad(), owner);
 	}
 
 	/**
 	 * Evokes a save dialog to save the given pad's file. Sets the tabbed pane
 	 * tab to the saved file name.
 	 * 
-	 * @param pad
-	 *            the text pad with the file to save
-	 * @param owner
-	 *            parent frame; can be null
+	 * @param pad the text pad with the file to save
+	 * @param owner parent frame; can be null
 	 * @return true if the approve button is chosen, false if otherwise
 	 */
 	public boolean fileSaveDialog(TextPad pad, JFrame owner) {
@@ -2887,19 +2640,17 @@ public class TextTrix extends JFrame {
 	 * and selects it, if the file has already been saved. If not, returns to
 	 * the most recent directory in the current session and selects no file.
 	 * 
-	 * @param t
-	 *            the pad from which to gather the path defaults; if
+	 * @param t the pad from which to gather the path defaults; if
 	 *            <code>null</code> the pad defaults to the currently selected
 	 *            pad
 	 * @return <code>true</code> if a Text Pad is selected, necessary to save
 	 *         a file
 	 * @see #prepFileSaveDialog()
 	 */
-	public  boolean prepFileSaveDialog(TextPad t) {
+	public boolean prepFileSaveDialog(TextPad t) {
 		//	int tabIndex = getSelectedTabbedPane().getSelectedIndex();
 		if (t == null)
 			t = getSelectedTextPad();
-		//	if (tabIndex != -1) {
 		if (t != null) {
 			//	    TextPad t = (TextPad)textAreas.get(tabIndex);
 			if (t.fileExists()) {
@@ -2922,18 +2673,6 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Prepares the file save dialog for the currently selected
-	 * <code>TextPad</code>
-	 * 
-	 * @return <code>true</code> if a Text Pad is selected, necessary to save
-	 *         a file
-	 * @see #prepFileSaveDialog(TextPad)
-	 */
-	public  boolean prepFileSaveDialog() {
-		return prepFileSaveDialog(null);
-	}
-
-	/**
 	 * Helper function to <code>fileSaveDialog</code> when exiting Text Trix.
 	 * Unlike <code>getSavePath(JFrame)</code>, this method does not attempt
 	 * to update the graphical components, currently in the process of closing.
@@ -2942,8 +2681,7 @@ public class TextTrix extends JFrame {
 	 * determine whether to continue with the overwrite, get another name, or
 	 * cancel the whole operation.
 	 * 
-	 * @param owner
-	 *            the frame to which the dialog will serve; can be null
+	 * @param owner the frame to which the dialog will serve; can be null
 	 * @return true if the file is saved successfully
 	 * @see #getSavePath(TextPad, JFrame)
 	 */
@@ -3005,10 +2743,8 @@ public class TextTrix extends JFrame {
 	 * <code>getSavePathOnExit(JFrame)</code>, this method attempts to update
 	 * the graphical components.
 	 * 
-	 * @param pad
-	 *            the <code>TextPad</code> whose file will be saved
-	 * @param owner
-	 *            the frame to which the dialog will serve; can be null
+	 * @param pad the <code>TextPad</code> whose file will be saved
+	 * @param owner the frame to which the dialog will serve; can be null
 	 * @return true if the file is saved successfully
 	 * @see #getSavePathOnExit(JFrame)
 	 */
@@ -3057,7 +2793,6 @@ public class TextTrix extends JFrame {
 							case 0:
 								// Close the duplicate pad in deference to the current one
 								removeTextArea(idPath, getTabbedPaneAt(paneIdx));
-//							System.out.println("paneIdx: " + paneIdx);
 								break;
 							case 1:
 								// Shows the other, duplicate file and exit
@@ -3096,7 +2831,9 @@ public class TextTrix extends JFrame {
 						pane.setToolTipTextAt(getTextPadIndex(pane, pad), path);
 						updateTitle(owner, f.getName());
 						getPrefs().storeFileHist(path);
-						fileHist.start(fileMenu);
+						//fileHist.start(fileMenu);
+						Thread fileHistThread = new Thread(new FileHist(this));
+						fileHistThread.start();
 
 						return true;
 
@@ -3210,8 +2947,7 @@ public class TextTrix extends JFrame {
 	 * <code>stopTextPadAutoSaveTimer(TextPad)</code>, which interrupts and
 	 * destroys the timer object.
 	 * 
-	 * @param pad
-	 *            the pad containing the document to save automatically
+	 * @param pad the pad containing the document to save automatically
 	 * @see #stopTextPadAutoSaveTimer(TextPad)
 	 * @see #getSavePath(TextPad, JFrame)
 	 */
@@ -3235,8 +2971,7 @@ public class TextTrix extends JFrame {
 	 * Stops the auto-save timer by calling its interrupt method and destroying
 	 * the object.
 	 * 
-	 * @param pad
-	 *            the pad with the auto-save timer to stop
+	 * @param pad the pad with the auto-save timer to stop
 	 * @see #startTextPadAutoSaveTimer(TextPad)
 	 */
 	public static void stopTextPadAutoSaveTimer(TextPad pad) {
@@ -3263,8 +2998,7 @@ public class TextTrix extends JFrame {
 	/**
 	 * Updates the status bar with the latest line number information.
 	 * 
-	 * @param pad
-	 *            the pad
+	 * @param pad the pad
 	 */
 	public void updateStatusBarLineNumbers(TextPad pad) {
 		// TODO: make one component of a larger status-bar update operation
@@ -3284,8 +3018,7 @@ public class TextTrix extends JFrame {
 	 * website to find the resource and notify its maintainers to include the
 	 * file in the next release.
 	 * 
-	 * @param path
-	 *            the path to the missing resource
+	 * @param path the path to the missing resource
 	 */
 	private void displayMissingResourceDialog(String path) {
 		JOptionPane.showMessageDialog(getThis(), "Hm, I can't seem to find \""
@@ -3407,7 +3140,6 @@ public class TextTrix extends JFrame {
 		for (int i = offset; i < files.length; i++) {
 			// opens the file if it exists
 			boolean success = false;
-//			System.out.println("file: " + files[i].getPath());
 			if (files[i].exists()) {
 				// opens files according to whether the file is given 
 				// on the command line/reopening or through 
@@ -3435,10 +3167,9 @@ public class TextTrix extends JFrame {
 		return msg;
 	}
 	
-	/** Opens multiple files from the given paths, waiting until the 
-	 * final file has been
-	 * opened before updating the UI, but updating the tab
-	 * history continuously.
+	/** Opens multiple files from the given paths, waiting until the final file 
+	 * has been opened before updating the UI, but updating the tab history 
+	 * continuously.
 	 * The <code>TextPadChangeListener</code> is uncoupled
 	 * during this operation to prevent it from updating the
 	 * UI and tab history after the fact, since the listener is
@@ -3463,101 +3194,6 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Evokes a open file dialog, from which the user can select a file to
-	 * display in the currently selected tab's text area. Filters for text
-	 * files, though provides option to display all files.
-	 */
-	private class FileOpenAction extends BrowseFilesFromTextPad {
-
-		/**
-		 * Constructs the file open action
-		 * 
-		 * @param aOwner
-		 *            the parent frame
-		 * @param aName
-		 *            the action's name
-		 * @param aIcon
-		 *            the action's icon
-		 */
-		public FileOpenAction(Component aOwner, String aName, Icon aIcon) {
-			super(aOwner, aName, aIcon, getThis().getChooser());
-		}
-
-		/**
-		 * Displays a file open chooser when the action is invoked. Defaults to
-		 * the directory from which the last file was opened or, if no files
-		 * have been opened, to the user's home directory.
-		 * 
-		 * @param evt
-		 *            action invocation
-		 */
-		public void actionPerformed(ActionEvent evt) {
-			
-			setTextPad(getSelectedTextPad());
-			setCurrentDir(new File(getOpenDir()));
-
-			// displays the dialog and opens all files selected
-			boolean repeat = false;
-			do {
-				super.actionPerformed(evt);
-				String msg = "";
-				File[] files = getSelectedFiles();
-				// bring up the dialog and retrieve the result
-				if (files != null) {
-					
-					msg = openFiles(files, 0, false);
-					
-					
-					/*
-					// first uncouples the change listener from responding to
-					// the Text Pad additions; need to uncouple when opening
-					// multiple files at once because change listener is on an
-					// EvokeLater and can't respond to text pads as they're added
-					setUpdateForTextPad(false);
-					
-					// opens the files
-					for (int i = 0; i < files.length; i++) {
-						// opens the file
-						if (openFile(files[i])) {
-							// if successful, updates the tab history
-							updateTabHistory(getSelectedTabbedPane());
-						} else {
-							// record unopened files
-							msg = msg + files[i] + "\n";
-						}
-					}
-					// updates the UI to reflect the last opened tab
-					updateUIForTextPad(getSelectedTabbedPane(), getSelectedTextPad());
-					
-					// recouples the listener
-					setUpdateForTextPad(true);
-					*/
-					
-					
-					// request another opportunity to open files if any
-					// failures
-					if (msg.equals("")) { // no unopened files
-						repeat = false;
-					} else { // some files left unopened
-						// notify the user which files couldn't be opened
-						String title = "Couldn't open";
-						msg = "The following files couldn't be opened:\n" + msg
-								+ "Would you like to try again?";
-						// request another chance to open them or other files
-						repeat = LibTTx.yesNoDialog(getOwner(), msg, title);
-					}
-					fileHist.start(fileMenu);
-					setAutoIndent();
-				} else { // Cancel button
-					repeat = false;
-				}
-			} while (repeat);
-			// repeat if failed opens for user to retry
-		}
-
-	}
-
-	/**
 	 * Responds to user input calling for a save dialog.
 	 */
 	private class FileSaveAction extends AbstractAction {
@@ -3566,12 +3202,9 @@ public class TextTrix extends JFrame {
 		/**
 		 * Constructs the file open action
 		 * 
-		 * @param aOwner
-		 *            the parent frame
-		 * @param name
-		 *            the action's name
-		 * @param icon
-		 *            the action's icon
+		 * @param aOwner the parent frame
+		 * @param name the action's name
+		 * @param icon the action's icon
 		 */
 		public FileSaveAction(JFrame aOwner, String name, Icon icon) {
 			owner = aOwner;
@@ -3582,12 +3215,11 @@ public class TextTrix extends JFrame {
 		/**
 		 * Displays a file save chooser when the action is invoked.
 		 * 
-		 * @param evt
-		 *            action invocation
+		 * @param evt action invocation
 		 * @see #fileSaveDialog(JFrame)
 		 */
 		public void actionPerformed(ActionEvent evt) {
-			fileSaveDialog(owner);
+			fileSaveDialog(getSelectedTextPad(), owner);
 		}
 	}
 
@@ -3600,10 +3232,8 @@ public class TextTrix extends JFrame {
 		/**
 		 * Constructs the file close action.
 		 * 
-		 * @param name
-		 *            name of the action
-		 * @param icon
-		 *            graphics for the action
+		 * @param name name of the action
+		 * @param icon graphics for the action
 		 */
 		public FileCloseAction(String name, Icon icon) {
 			putValue(Action.NAME, name);
@@ -3639,19 +3269,16 @@ public class TextTrix extends JFrame {
 		/**
 		 * Flags a text insertion.
 		 * 
-		 * @param e
-		 *            insertion event
+		 * @param e insertion event
 		 */
 		public void insertUpdate(DocumentEvent e) {
-//			System.out.println("TextPadDocListener detected insert");
 			setChanged();
 		}
 
 		/**
 		 * Flags a text removal.
 		 * 
-		 * @param e
-		 *            removal event
+		 * @param e removal event
 		 */
 		public void removeUpdate(DocumentEvent e) {
 			setChanged();
@@ -3660,8 +3287,7 @@ public class TextTrix extends JFrame {
 		/**
 		 * Flags any sort of text change.
 		 * 
-		 * @param e
-		 *            any text change event
+		 * @param e any text change event
 		 */
 		public void changedUpdate(DocumentEvent e) {
 		}
@@ -3673,12 +3299,9 @@ public class TextTrix extends JFrame {
 		 *  
 		 */
 		public void setChanged() {
-//			final TextPad pad = getSelectedTextPad();
-//			if (!(pad.getIgnoreChanged() && pad.getChanged())) {
 			if (!pad.getChanged()) {
-//				System.out.println("i'm here");
 				pad.setChanged(true);
-				updateTabTitle(pad);//getSelectedTabbedPane());
+				updateTabTitle(pad);
 				if (getPrefs().getAutoSave()) {
 					startTextPadAutoSaveTimer(pad);
 				}
@@ -3695,11 +3318,8 @@ public class TextTrix extends JFrame {
 	 */
 	private class TextPadAutoSaveTimer extends StoppableThread {
 
-		//		private boolean stopped = false;
 		private TextPad textPad = null;
-
 		private boolean chooserShowing = false;
-
 		private Thread thread = null;
 
 		/**
@@ -3772,7 +3392,7 @@ public class TextTrix extends JFrame {
 							// saves the pad directly if it already exists;
 							// otherwise, asks for a file path
 							if (textPad.fileExists()) {
-								saveFile(textPad);
+								saveFile(textPad.getPath(), textPad);
 							} else {
 								// asks users whether they would like to supply
 								// a file
@@ -4242,7 +3862,7 @@ public class TextTrix extends JFrame {
 								// Check if file exists
 								if (t.fileExists()) {
 									// file exists, so attempt to save to file path
-									if (!saveFile(t.getPath())) {
+									if (!saveFile(t.getPath(), null)) {
 										// error dialog to user if can't save, for 
 										// whatever reason
 										String msg = t.getPath()
@@ -4437,20 +4057,6 @@ public class TextTrix extends JFrame {
 
 					// edit menu preferences separator
 					editMenu.addSeparator();
-/*
-					// insertItem
-					// The insertItem can be inserted anywhere
-					// we think that it is going something wrong
-					String XXX = "? ! / SOMETHING IS PROPABLY WRONG HERE / ! ?";
-					insertItem = new JMenuItem(XXX);
-					insertItem
-							.addActionListener(new DefaultEditorKit.InsertContentAction());
-					insertItem.setAccelerator(KeyStroke.getKeyStroke(
-							KeyEvent.VK_P, InputEvent.CTRL_MASK));
-					editMenu.add(insertItem);
-					// edit menu separator
-					editMenu.addSeparator();
-*/
 									
 					// group tab title
 					Action chgGrpTabTitleAction = new AbstractAction("Change group tab title...") {
@@ -4780,60 +4386,64 @@ public class TextTrix extends JFrame {
 
 					// format menu separator
 					formatMenu.addSeparator();
+					ButtonGroup group = new ButtonGroup();
 
 					// Font size operation
-					fontSize = new JMenu("Fontsize");
-					fontSizeGroupOfButtons("Size: 10", 10);
-					fontSizeGroupOfButtons("Size: 12", 12);
-					fontSizeGroupOfButtons("Size: 14", 14);
-					fontSizeGroupOfButtons("Size: 16", 16);
-					fontSizeGroupOfButtons("Size: 18", 18);
-					fontSizeGroupOfButtons("Size: 20", 20);
-					fontSizeGroupOfButtons("Size: 22", 22);
-					fontSizeGroupOfButtons("Size: 24", 24);
+					JMenu fontSize = new JMenu("Fontsize");
+					fontSizeGroupOfButtons("Size: 10", 10, group, fontSize);
+					fontSizeGroupOfButtons("Size: 12", 12, group, fontSize);
+					fontSizeGroupOfButtons("Size: 14", 14, group, fontSize);
+					fontSizeGroupOfButtons("Size: 16", 16, group, fontSize);
+					fontSizeGroupOfButtons("Size: 18", 18, group, fontSize);
+					fontSizeGroupOfButtons("Size: 20", 20, group, fontSize);
+					fontSizeGroupOfButtons("Size: 22", 22, group, fontSize);
+					fontSizeGroupOfButtons("Size: 24", 24, group, fontSize);
 					formatMenu.add(fontSize);
 					
 					// format menu separator
 					formatMenu.addSeparator();
 
 					// Alignment operation
-					alignment = new JMenu("Alignment");
-					alignmentGroupOfButton("Alignment: Beginning", 3);
-					alignmentGroupOfButton("Alignment: Middle", 1);
-					alignmentGroupOfButton("Alignment: End", 2);
+					JMenu alignment = new JMenu("Alignment");
+					alignmentGroupOfButton("Alignment: Beginning", 3, group, 
+							alignment);
+					alignmentGroupOfButton("Alignment: Middle", 1, group,
+							alignment);
+					alignmentGroupOfButton("Alignment: End", 2, group, 
+							alignment);
 					formatMenu.add(alignment);
 
 					// format menu separator
 					formatMenu.addSeparator();
 
 					// Coloring operation
-					textColor = new JMenu("Color");
-					colorGroupOfButton("Black", Color.BLACK);
-					colorGroupOfButton("Blue", Color.BLUE);
-					colorGroupOfButton("Orange", Color.ORANGE);
-					colorGroupOfButton("Red", Color.RED);
-					colorGroupOfButton("Yellow", Color.YELLOW);
-					colorGroupOfButton("Cyan", Color.CYAN);
-					colorGroupOfButton("Dark Gray", Color.DARK_GRAY);
-					colorGroupOfButton("Green", Color.GREEN);
-					colorGroupOfButton("Magenta", Color.MAGENTA);
-					colorGroupOfButton("Pink", Color.PINK);
-					colorGroupOfButton("White", Color.WHITE);
+					JMenu textColor = new JMenu("Color");
+					colorGroupOfButton("Black", Color.BLACK, group, textColor);
+					colorGroupOfButton("Blue", Color.BLUE, group, textColor);
+					colorGroupOfButton("Orange", Color.ORANGE, group, textColor);
+					colorGroupOfButton("Red", Color.RED, group, textColor);
+					colorGroupOfButton("Yellow", Color.YELLOW, group, textColor);
+					colorGroupOfButton("Cyan", Color.CYAN, group, textColor);
+					colorGroupOfButton("Dark Gray", Color.DARK_GRAY, group, textColor);
+					colorGroupOfButton("Green", Color.GREEN, group, textColor);
+					colorGroupOfButton("Magenta", Color.MAGENTA, group, textColor);
+					colorGroupOfButton("Pink", Color.PINK, group, textColor);
+					colorGroupOfButton("White", Color.WHITE, group, textColor);
 					formatMenu.add(textColor);
 
 					// Background Coloring operation
-					backgroundColor = new JMenu("Background Coloring");
-					backColorGroupOfButton("Red", Color.RED);
-					backColorGroupOfButton("Black", Color.BLACK);
-					backColorGroupOfButton("Blue", Color.BLUE);
-					backColorGroupOfButton("Yellow", Color.YELLOW);
-					backColorGroupOfButton("Cyan", Color.CYAN);
-					backColorGroupOfButton("Dark Gray", Color.DARK_GRAY);
-					backColorGroupOfButton("Magenta", Color.MAGENTA);
-					backColorGroupOfButton("Green", Color.GREEN);
-					backColorGroupOfButton("Pink", Color.PINK);
-					backColorGroupOfButton("White", Color.WHITE);
-					formatMenu.add(backgroundColor);
+					JMenu bgColor = new JMenu("Background Coloring");
+					backColorGroupOfButton("Red", Color.RED, group, bgColor);
+					backColorGroupOfButton("Black", Color.BLACK, group, bgColor);
+					backColorGroupOfButton("Blue", Color.BLUE, group, bgColor);
+					backColorGroupOfButton("Yellow", Color.YELLOW, group, bgColor);
+					backColorGroupOfButton("Cyan", Color.CYAN, group, bgColor);
+					backColorGroupOfButton("Dark Gray", Color.DARK_GRAY, group, bgColor);
+					backColorGroupOfButton("Magenta", Color.MAGENTA, group, bgColor);
+					backColorGroupOfButton("Green", Color.GREEN, group, bgColor);
+					backColorGroupOfButton("Pink", Color.PINK, group, bgColor);
+					backColorGroupOfButton("White", Color.WHITE, group, bgColor);
+					formatMenu.add(bgColor);
 					
 					
 					
@@ -4873,7 +4483,7 @@ public class TextTrix extends JFrame {
 							String path = "shortcuts.html";
 							// ArrayIndexOutOfBoundsException while opening file
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642)
-							if (!openFile(new File(path), false, true)) {
+							if (!openFile(new File(path), false, true, false)) {
 								displayMissingResourceDialog(path);
 							} else {
 								// place at end of EDT because file reading occurs in 
@@ -4904,7 +4514,7 @@ public class TextTrix extends JFrame {
 							String path = "license.txt";
 							// ArrayIndexOutOfBoundsException while opening file
 							// from menu is an JVM 1.5.0-beta1 bug (#4962642)
-							if (!openFile(new File(path), false, true)) {
+							if (!openFile(new File(path), false, true, false)) {
 								displayMissingResourceDialog(path);
 							}
 						}
@@ -5394,95 +5004,6 @@ public class TextTrix extends JFrame {
 		
 	}
 
-	/**
-	 * Worker thread class to update the file history entries.
-	 * 
-	 * @author davit
-	 *  
-	 */
-	private class FileHist extends Thread {
-		JMenu menu = null;
-
-		/**
-		 * Starts creating the entries within the given menu.
-		 * 
-		 * @param aMenu
-		 *            menu to add file history entries
-		 */
-		public void start(JMenu aMenu) {
-			menu = aMenu;
-			(new Thread(this, "thread")).start();
-		}
-
-		/**
-		 * Updates the file history record and menu entries.
-		 *  
-		 */
-		public void run() {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					updateFileHist();
-				}
-			});
-		}
-
-		/**
-		 * Creates the file history menu entries.
-		 * 
-		 *  
-		 */
-		public void createFileHist() {
-			// assumes that the file history entries are at the entries in the
-			// menu
-			String[] files = getPrefs().retrieveFileHist();
-			for (int i = 0; i < files.length; i++) {
-				String file = files[i];
-				Action fileAction = createFileHistAction(file);
-				menu.add(fileAction);
-			}
-		}
-
-		/**
-		 * Creates the actions to add to the history menu.
-		 * 
-		 * @param file
-		 *            file to open when invoking the action
-		 * @return action to open the given file
-		 */
-		public Action createFileHistAction(final String file) {
-			String fileDisp = file;
-			int pathLen = file.length();
-			if (pathLen > 30) {
-				fileDisp = file.substring(0, 10) + "..."
-						+ file.substring(pathLen - 15);
-			}
-			// action to open the file
-			Action act = new AbstractAction(fileDisp) {
-				public void actionPerformed(ActionEvent evt) {
-					openFile(new File(file), true, false, true);
-				}
-			};
-			LibTTx.setAction(act, file); // tool tip displays full file path
-			return act;
-		}
-
-		/**
-		 * Updates the file history menu by deleting old entries and replacing
-		 * them with the current ones. Assumes that <code>fileHistStart</code>
-		 * in <code>TextTrix</code> has been set.
-		 *  
-		 */
-		public void updateFileHist() {
-			for (int i = menu.getItemCount() - 1; i >= fileHistStart; i--) {
-				menu.remove(i);
-			}
-			createFileHist();
-			menu.revalidate();
-
-		}
-
-	}
-	
 	/** Change listener for events in the {@link Text Pad}.
 	 */
 	private class TextPadChangeListener implements ChangeListener {

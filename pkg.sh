@@ -78,7 +78,7 @@ Copyright:
 	Copyright (c) 2003-10 Text Flex
 
 Last updated:
-	2010-10-04
+	2011-11-11
 "
 
 #####################
