@@ -18,7 +18,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-9
+# Portions created by the Initial Developer are Copyright (C) 2003-11
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -74,10 +74,10 @@ Parameters:
 	--verbose: Verbose command-line output.
 
 Copyright:
-	Copyright (c) 2003-10 Text Flex
+	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2010-10-04
+	2011-11-15
 "
 
 
@@ -91,8 +91,6 @@ Last updated:
 PAR_JAVA="--java"
 JAVA=""
 READ_JAVA=0
-PAR_14="--ver14"
-VER_14="false"
 
 ################
 # Automatically detect the Cygwin environment
@@ -101,12 +99,12 @@ echo "Welcome to Text Trix!"
 echo ""
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
-CYGWIN="false"
+CYGWIN=0
 LINUX="false"
 MAC="false"
 if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
 then
-	CYGWIN="true"
+	CYGWIN=1
 elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
 then
 	LINUX="true"
@@ -170,10 +168,6 @@ then
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
 			echo "...set to use \"$JAVA\" as the Java path"
-		elif [ ${arg:0:${#PAR_14}} = "$PAR_14" ]
-		then
-			VER14="true"
-			echo "...set to run in Java 1.4 compatibility mode"
 		else
 			echo "...passing \"$arg\" to Text Trix session"
 		fi
@@ -214,9 +208,9 @@ DIR="com/textflex/texttrix" # src package structure
 ##############
 
 cd "$BASE_DIR"
-if [ $VER_14 = "true" ]
+if [ $CYGWIN -eq 1 ]
 then
-	"$Java"java -cp .:retroweaver-rt-2.0.7.jar com.textflex.texttrix.TextTrix $@
-else
 	"$JAVA"java -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" com.textflex.texttrix.TextTrix $@
+else
+	"$JAVA"java -cp lib/jsyntaxpane.jar:. com.textflex.texttrix.TextTrix $@
 fi

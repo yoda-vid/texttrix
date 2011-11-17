@@ -7,6 +7,16 @@ http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
 
+----v.0.9.5 alpha 1 (2011-11-??)----
+
+This alpha build brings a completely new syntax highlighter to Text Trix. While previous versions have used the Ostermiller package to provide syntax highlighting for Java, HTML, C/C++, and a few other languages, the highlighter package has not been underdevelopment for close to a decade and has suffered from performance issues as well as support for newer languages. As a replacement for the Ostermiller package, a customized version of the open-source jsyntaxpane highlighter has now been incorporated into Text Trix. This highlighter brings support for many new languages, including python, SQL, bash, Groovy, json, and Scala. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.
+
+As this is an alpha build still in early development, please note the following known issues/requirments:
+-This new package requires Java 6 or higher to run. If you require Java 1.4 or Java 5, you can use a previous version of Text Trix (through v.0.9.4). 
+-Loading large files with syntax highlighting can take a considerable amount of time. The program will appear to hang, but it is actually continuing to load the file. We are working on ways to load files in the background.
+-Word-wrap indent is not currently working for syntax highlighted files. Text will wrap to the next line, but unlike in previous versions, the text will wrap to the beginning of the line rather than from the point of the previous line's indentation.
+-The syntax highlighter is a customized version of the open-source jsyntaxpane v.0.9.6pre, modified to incorporate into the a JTextPane rather than JEditorPane and to use WrappedPlainView rather than PlainView for HTML and XML documents.
+
 ----v.0.9.4 (2011-11-05)----
 
 This minor feature release brings cross-platform drag-n-drop file opening and 

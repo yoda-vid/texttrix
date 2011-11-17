@@ -67,7 +67,8 @@ Parameters:
 	branch, specify \"--plgbranch=branches/0.7.1\".  To compile from the 
 	trunk, 	simply specify \"--plgbranch=trunk\".  The source code release 
 	package	sets the branch to \".\", since the source package does 
-	not contain branches and tags.  Otherwise, defaults to \"trunk\".
+	not contain branches and tags.  Otherwise, defaults to the --branch
+	directory.
 	
 	--prefix=install/location: the directory in which to install Text Trix.
 	Defaults to "/usr/share".
@@ -75,7 +76,7 @@ Parameters:
 	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
 		
 Copyright:
-	Copyright (c) 2003-10 Text Flex
+	Copyright (c) 2003-11 Text Flex
 
 Last updated:
 	2011-11-11
