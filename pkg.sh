@@ -90,7 +90,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.5"
+VER="0.9.5a1"
 
 # the final destination of the resulting packages
 PREFIX=""

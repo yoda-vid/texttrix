@@ -7,7 +7,7 @@ http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
 
-----v.0.9.5 alpha 1 (2011-11-??)----
+----v.0.9.5 alpha 1 (2011-11-18)----
 
 This alpha build brings a completely new syntax highlighter to Text Trix. While previous versions have used the Ostermiller package to provide syntax highlighting for Java, HTML, C/C++, and a few other languages, the highlighter package has not been underdevelopment for close to a decade and has suffered from performance issues as well as support for newer languages. As a replacement for the Ostermiller package, a customized version of the open-source jsyntaxpane highlighter has now been incorporated into Text Trix. This highlighter brings support for many new languages, including python, SQL, bash, Groovy, json, and Scala. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.
 
