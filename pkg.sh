@@ -90,7 +90,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.5a1"
+VER="0.9.5"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -321,7 +321,7 @@ cd "$TTX_DIR"
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
-cp -rf pkg.sh run.sh manifest-additions*.mf build.sh run.ps1 build.ps1 \
+cp -rf pkg.sh run.sh manifest-additions.mf build.sh run.ps1 build.ps1 \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
