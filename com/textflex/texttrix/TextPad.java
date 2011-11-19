@@ -1351,16 +1351,24 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	public void removeAllText() {
+		try {
+			Document doc = getDocument();
+			int len = doc.getLength();
+			doc.remove(0, len);
+		} catch (BadLocationException e) {
+			System.out.println("Couldn't remove all text.");
+		}
+	}
+	
 	/**Replaces the entire body of text with the given string.
 	 * @param s the string to replace the document's text
 	*/
 	public void replaceAllText(String s) {
 		try {
 			//	    System.out.println(s);
-			Document doc = getDocument();
-			int len = doc.getLength();
-			doc.remove(0, len);
-			doc.insertString(0, s, null);
+			removeAllText();
+			getDocument().insertString(0, s, null);
 		} catch (BadLocationException e) {
 			System.out.println("Couldn't replace it all.");
 		}

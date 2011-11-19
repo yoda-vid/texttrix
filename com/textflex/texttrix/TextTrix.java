@@ -2198,16 +2198,31 @@ public class TextTrix extends JFrame {
 					textPad.setHighlightStyle(getPrefs().getSpellChecker());
 					textPad.addDocListener(new TextPadDocListener(textPad));
 				}
+				loadText(textPad, text, 0);
+			}
+		});
+	}
+	
+	private void loadText(final TextPad textPad, final String text, 
+			final int caretPos) {
+		// loads text into TextPad in separate thread because
+		// of the potentially very long highlighting operation
+		Thread textThread = new Thread() {
+			public void run() {
 				textPad.setText(text);
 				textPad.applyDocumentSettings();
 				// resets caret and modification flags, assuming that
 				// the read in text is the same as that from the
 				// original file
-				textPad.setCaretPosition(0);
+				textPad.setCaretPosition(caretPos);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
 			}
-		});
+		};
+		textThread.start();
+		Thread loadCheck = 
+				new Thread(new CheckDocLoad(textPad, statusProgress));
+		loadCheck.start();
 	}
 	
 	/** Removes the currently selected tabbed pane from the
@@ -2279,11 +2294,15 @@ public class TextTrix extends JFrame {
 					if (getPrefs().getHighlighting() && getHighlighting()
 								&& !LibTTx.getFileExtension(origName)
 										.equalsIgnoreCase(t.getFileExtension())) {
+						String text = t.getAllText();
+						int caretPos = t.getCaretPosition();
+						t.removeAllText();
 						t.setHighlightStyle(getPrefs().getSpellChecker());
+						t.addDocListener(new TextPadDocListener(t));
+						loadText(t, text, caretPos);
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
-						t.applyDocumentSettings();
-						t.addDocListener(new TextPadDocListener(t));
+// 						t.applyDocumentSettings();
 					}
 					// automatically starts indenting, if applicable, after
 					// rather than before applying the syntax highlighting 
@@ -2440,9 +2459,9 @@ public class TextTrix extends JFrame {
 				if (getPrefs().getHighlighting() && getHighlighting()) {
 					t.setHighlightStyle(getPrefs().getSpellChecker());
 				}
-				Thread loadCheck = new Thread(
-						new CheckDocLoad(t, statusProgress));
-				loadCheck.start();
+// 				Thread loadCheck = new Thread(
+// 						new CheckDocLoad(t, statusProgress));
+// 				loadCheck.start();
 				autoAutoIndent(t);
 				return true;
 			} catch (IOException exception) {
