@@ -2209,7 +2209,12 @@ public class TextTrix extends JFrame {
 		// of the potentially very long highlighting operation
 		Thread textThread = new Thread() {
 			public void run() {
-				textPad.setText(text);
+// 				textPad.setText(text);
+				try {
+					textPad.getDocument().insertString(0, text, null);
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
 				textPad.applyDocumentSettings();
 				// resets caret and modification flags, assuming that
 				// the read in text is the same as that from the
