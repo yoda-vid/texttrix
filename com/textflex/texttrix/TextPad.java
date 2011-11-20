@@ -1286,27 +1286,12 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void applyDocumentSettings() {
 		StyledDocument doc = getStyledDocument();
-/*		
-		UndoableEditListener[] undos = doc.getUndoableEditListeners();
-		for (int i = 0; i < undos.length; i++) {
-			doc.removeUndoableEditListener(undos[i]);
-		}
-*/
 		// need to remove and re-add the undo manager to properly
 		// undo events after reading in new text
 		doc.removeUndoableEditListener(undoManager);	
 		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
 		applyAutoIndent();
-//		System.out.println("undoble added for " + getFile().getPath());
-/*
-		if (autoIndent) {
-			setIndentTabs(getTabSize());
-			setNoTabs();
-		} else {
-			setDefaultTabs(getTabSize());
-		}
-*/		
 	}
 	
 	/** Visually indents the tabs and word-wrapped lines
@@ -1318,12 +1303,15 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * indentation of word-wrapped lines will be turned off.
 	 */
 	public void applyAutoIndent() {
-		if (autoIndent) {
-			setIndentTabs(getTabSize());
-			setNoTabs();
-		} else {
-			setDefaultTabs(getTabSize());
-		}
+		// TODO: commenting out for now as visual indentation not currently
+		// working with WrappedPlainView, and calls to paragraph attributes
+		// causing crash on loading
+// 		if (autoIndent) {
+// 			setIndentTabs(getTabSize());
+// 			setNoTabs();
+// 		} else {
+// 			setDefaultTabs(getTabSize());
+// 		}
 	}
 
 	/**Tells whether the pad has any characters in it.
