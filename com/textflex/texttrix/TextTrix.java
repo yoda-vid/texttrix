@@ -141,7 +141,8 @@ public class TextTrix extends JFrame {
 	
 	/* Printer controls */
 	// print request attributes
-	private HashPrintRequestAttributeSet printAttributes = new HashPrintRequestAttributeSet();
+	private HashPrintRequestAttributeSet printAttributes = 
+			new HashPrintRequestAttributeSet();
 	private PageFormat pageFormat = null; // page formatting
 	
 	/* Status bar */
@@ -167,7 +168,8 @@ public class TextTrix extends JFrame {
 		final String[] filteredPaths = filterArgs(paths);
 	
 		// create file menu in constructor rather than when defining class
-		// variables b/c would otherwise uWindowListenerse bold font for this menu alone
+		// variables b/c would otherwise uWindowListenerse bold font for this 
+		// menu alone
 		resetMenus(); // resets file and view menus
 
 		// adds a window listener that responds to closure of the main
@@ -366,7 +368,8 @@ public class TextTrix extends JFrame {
 							// updates the Line Dance table only if visible;
 							// otherwise table will update when the panel
 							// becomes visible
-							if (lineDanceDialog != null && lineDanceDialog.isVisible()) {
+							if (lineDanceDialog != null 
+									&& lineDanceDialog.isVisible()) {
 								lineDanceDialog.updatePadPanel();
 							}
 							
@@ -413,8 +416,8 @@ public class TextTrix extends JFrame {
 		prgmFilter.addExtension("c");
 		prgmFilter.addExtension("sh");
 		prgmFilter.addExtension("js");
-		prgmFilter
-				.setDescription("Programming source code (*.java, *.cpp, *.c, *.sh, *.js)");
+		prgmFilter.setDescription(
+				"Programming source code (*.java, *.cpp, *.c, *.sh, *.js)");
 		chooser.setFileFilter(prgmFilter);
 
 		// Text! filters
@@ -434,7 +437,8 @@ public class TextTrix extends JFrame {
 				lineNumFld.setText("" + getSelectedTextPad().getLineNumber());
 			}
 		};
-		LibTTx.setAcceleratedAction(lineSaverAction, "Saves this line number in Line Find", 'L',
+		LibTTx.setAcceleratedAction(lineSaverAction, 
+				"Saves this line number in Line Find", 'L',
 				KeyStroke.getKeyStroke("ctrl shift L"));
 		
 		// invoke the worker thread to create the initial menu bar;
@@ -473,13 +477,15 @@ public class TextTrix extends JFrame {
 				// Load files specified at start from command-line
 				
 				// opens paths given as cmd-line args, placing them in their own 
-				// tab group and preparing to create a new tab group for other startup files
-				// TODO: keep track of cmd-line files so don't reopen them automatically
-				// on next startup
-				boolean cmdLineFiles = filteredPaths != null && filteredPaths.length > 0;
+				// tab group and preparing to create a new tab group for other 
+				// startup files
+				// TODO: keep track of cmd-line files so don't reopen them 
+				// automatically on next startup
+				boolean cmdLineFiles = filteredPaths != null 
+						&& filteredPaths.length > 0;
 				if (cmdLineFiles) {
 					openFiles(filteredPaths, 0, true);
-					// distinguishes the tab group with files given as arguments,
+					// distinguishes the tab group with files given as args,
 					// labled specially with the GROUP_START title, which allows
 					// this tab group to be identified later and not included in
 					// tab memory and reopening
@@ -490,24 +496,26 @@ public class TextTrix extends JFrame {
 				String reopenPaths = getPrefs().getReopenTabsList();
 				if (!getFresh() && getPrefs().getReopenTabs()) {
 					// gets the group tokens for the current window
-					String[] windowTokens = reopenPaths.split(FILE_WINDOW_SPLITTER_REGEX);
+					String[] windowTokens = 
+							reopenPaths.split(FILE_WINDOW_SPLITTER_REGEX);
 					int windowNum = ttxWindows.indexOf(getThis()) + 1;
 					if (windowNum < windowTokens.length) {
-//						System.out.println("num: " + windowNum + ", tok: " + windowTokens[windowNum]);
 						// the list consists of a comma-delimited string of
 						// filenames
-						String[] grpTokens = windowTokens[windowNum].split(FILE_GROUP_SPLITTER_REGEX);
+						String[] grpTokens = windowTokens[windowNum].split(
+								FILE_GROUP_SPLITTER_REGEX);
 						
-						// Start at 1 b/c first token is the empty group splitter
+						// Start at 1 b/c first token is empty group splitter
 						for (int i = 1; i < grpTokens.length; i++) {
 							String[] tokens = grpTokens[i].split(FILE_SPLITTER);
-							// Blank group already open initally, so simply update title
-							// and start adding files, unless cmd-line files were opened
+							// Blank group already open initally, so simply 
+							// update title and start adding files, unless 
+							// cmd-line files were opened
 							if (i == 1 && !cmdLineFiles) {
 								setSelectedTabbedPaneTitle(tokens[0]);
 							} else {
-								// adds a new tab group for other startup files if
-								// cmd-line files already occupy a group
+								// adds a new tab group for other startup files
+								// if cmd-line files already occupy a group
 								addTabbedPane(getGroupTabbedPane(), tokens[0]);
 							}
 							openFiles(tokens, 1, true);
@@ -528,7 +536,8 @@ public class TextTrix extends JFrame {
 				// drag-n-drop files to open using FileDrop (public domain)
 				// http://www.iharder.net/current/java/filedrop/
 				// TODO: replace System.out with null to avoid debugging
-				new FileDrop(null, getGroupTabbedPane(), new FileDrop.Listener() {
+				new FileDrop(null, getGroupTabbedPane(), 
+						new FileDrop.Listener() {
 					public void filesDropped( java.io.File[] files ) {
 						for( int i = 0; i < files.length; i++ ) {
 								openFile(files[i], true, false, true);
@@ -567,14 +576,13 @@ public class TextTrix extends JFrame {
 	 * Text Trix, which is the native look in Windows systems, and the
 	 * default Java Ocean look on all other platforms.
 	 * 
-	 * @param args
-	 *            command-line arguments
+	 * @param args command-line arguments
 	 */
 	public static void main(String[] args) {
 		
 		// Set the look and feel: native for Windows systems, default Java Ocean
-		// for all other platforms to provide a more consistent look, since Windows
-		// and Ocean themes aren't all that different from one another
+		// for all other platforms to provide a more consistent look, since 
+		// Windows and Ocean themes aren't all that different from one another
 		String errorMsg = "Defaulting to the Java Ocean Look & Feel.";
 		try {
 			/* 
@@ -655,7 +663,8 @@ public class TextTrix extends JFrame {
 				}
 			} else if (files || i == 0) {
 				// if files flag set to true, or first arg is not a switch,
-				// then treat the args as file paths until a switch is identified
+				// then treat the args as file paths until a switch is 
+				// identified
 				files = true;
 				filteredArgs[filteredArgsi++] = args[i];
 			}
@@ -706,7 +715,6 @@ public class TextTrix extends JFrame {
 	JMenu getFileMenu() { return fileMenu; }
 	JMenu getViewMenu() { return viewMenu; }
 	int getFileHistStart() { return fileHistStart; }
-	//JMenuBar getMenuBar() { return menuBar; }
 	LineDanceDialog getLineDanceDialog() { return lineDanceDialog; }
 	JToolBar getToolBar() { return toolBar; }
 	Action getLineSaverAction() { return lineSaverAction; }
@@ -791,21 +799,6 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Synchronizes the menus with the current text pad settings. Creates the
-	 * file history menu entries in the File menu and flags the auto-indent
-	 * check box according to the current text pad's setting.
-	 *  
-	 *
-	public void syncMenus() {
-		if (fileHistStart != -1) {
-//			System.out.println("syncing menus: " + fileHistStart);
-			fileHist.start(fileMenu); // assumes fileHistStart is up-to-date
-		}
-		setAutoIndent(); // applies the auto-wrap-indent feature
-	}
-	*/
-
-	/**
 	 * Opens the given file. Useful for opening files at program start-up
 	 * because only gives command-line feedback if the file cannot be opened;
 	 * the user may not have expected the opening in the first place and thus
@@ -861,7 +854,7 @@ public class TextTrix extends JFrame {
 	 * Switches focus synchronously to the selected <code>TextPad</code>, if
 	 * one exists.
 	 */
-	public  void focuser() {
+	public void focuser() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				TextPad t = getSelectedTextPad();
@@ -890,8 +883,7 @@ public class TextTrix extends JFrame {
 	 * name of the currently selected file, for example. This name is
 	 * automatically appended to the front of the text, " - Text Trix".
 	 * 
-	 * @param filename
-	 *            name of given file, such as the currently displayed one
+	 * @param filename name of given file, such as the currently displayed one
 	 */
 	public void updateTitle(String filename) {
 		String titleSuffix = " - Text Trix";
@@ -926,7 +918,6 @@ public class TextTrix extends JFrame {
 		// no applyPlugInsPrefs b/c CreateMenuPanel takes care of GUI updates
 		applyGeneralPrefs();
 		applyShortsPrefs();
-		//menuBarCreator.start();
 		(new MenuBarCreator(this)).start();
 	}
 
@@ -937,7 +928,6 @@ public class TextTrix extends JFrame {
 	 */
 	public void applyGeneralPrefs() {
 		// Update the file history based on whether should save or not
-		//fileHist.start(fileMenu);
 		Thread fileHistThread = new Thread(new FileHist(this));
 		fileHistThread.start();
 		
@@ -976,32 +966,22 @@ public class TextTrix extends JFrame {
 		// Cycle through each tab in each tab group
 		MotherTabbedPane pane = getGroupTabbedPane();
 		int origPaneIndex = pane.getSelectedIndex();
+		
 		// applies shortcuts according to user choice in preferences
 		// TODO: access text pad directly, rather than through selection
-		if (prefs.isHybridKeybindings()) {
-			// Hybrid shortcuts, similar to that of Pico
-			for (int h = 0; h < pane.getTabCount(); h++) {
-				pane.setSelectedIndex(h);
-				// mix of standard + Emacs-style shortcuts
-				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+		int groupTabCount = pane.getTabCount();
+		for (int h = 0; h < groupTabCount; h++) {
+			pane.setSelectedIndex(h);
+			int tabCount = getSelectedTabbedPane().getTabCount();
+			for (int i = 0; i < tabCount; i++) {
+				if (prefs.isHybridKeybindings()) {
+					// Hybrid shortcuts, similar to that of Pico
 					getTextPadAt(i).hybridKeybindings();
-				}
-			}
-		} else if (prefs.isEmacsKeybindings()) {
-			// Emacs-style shortcuts, at least the more prominent ones
-			for (int h = 0; h < pane.getTabCount(); h++) {
-				pane.setSelectedIndex(h);
-				// Emacs-style shortcuts
-				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+				} else if (prefs.isEmacsKeybindings()) {
+					// Emacs-style shortcuts
 					getTextPadAt(i).emacsKeybindings();
-				}
-			}
-		} else {
-			// Standard shortcuts
-			for (int h = 0; h < pane.getTabCount(); h++) {
-				pane.setSelectedIndex(h);
-				// standard shortcuts
-				for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
+				} else {
+					// Standard shortcuts
 					getTextPadAt(i).standardKeybindings();
 				}
 			}
