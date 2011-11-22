@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-10
+ * Portions created by the Initial Developer are Copyright (C) 2002-11
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -84,7 +84,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	private ActionMap amap = null; // map of actions
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
-//	private static boolean JVM_15 = false; // flags that running on JVM 1.5
 	private StoppableThread autoSaveTimer = null; // timer to auto save the text
 	private CompoundEdit compoundEdit = null; // group editing tasks for single undo
 	private boolean compoundEditing = false; // flags whether editing as group
@@ -92,6 +91,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private LineDancePanel lineDancePanel = null; // the Line Dance panel
 	private FileModifiedThread fileModifiedThread = null;
 	private DocumentListener docListener = null;
+	private DocumentFilter docFilter = null;
 	
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -104,7 +104,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		// TODO: decide whether to check JVM within each TextPad or only once,
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
 		
-//		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
 		setFileModifiedThread(new FileModifiedThread(this));
 		getFileModifiedThread().start();
@@ -219,17 +218,15 @@ public class TextPad extends JTextPane implements StateEditable {
 						e.printStackTrace();
 					}
 				}
-				//				System.out.println("keyChar:" + keyCode);
 			}
 
 		});
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 		
-		
 		// creates a styled document only for certain file extensions
-//		setHighlightStyle(prefs.getSpellChecker());
 		applyDocumentSettings();
+		
 	}
 	
 	/**
@@ -395,6 +392,58 @@ public class TextPad extends JTextPane implements StateEditable {
 		// still need to add undo manager to the new document
 		// via applyDocumentSettings;
 		// note that it will cause all previous edits to be unavailable
+		
+	}
+	
+	private DocumentFilter getOrMakeDocFilter() {
+		return (docFilter != null) ? docFilter : new DocumentFilter() {
+			public void insertString(DocumentFilter.FilterBypass fb, int offset,
+					String s, AttributeSet attr) {
+				try {
+					int origNum = getLineNumber();
+					super.insertString(fb, offset, s, attr);
+					int newNum = getLineNumber();
+					if (newNum > origNum) {
+// 						System.out.println("new line added");
+						lineDancePanel.updateLineNumber(origNum, newNum);
+					}
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			public void remove(DocumentFilter.FilterBypass fb, int offset,
+					int length) {
+				try {
+					int origNum = getLineNumber();
+					super.remove(fb, offset, length);
+					int newNum = getLineNumber();
+					if (newNum < origNum) {
+// 						System.out.println("line removed");
+						lineDancePanel.updateLineNumber(origNum, newNum);
+					}
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			public void replace(DocumentFilter.FilterBypass fb, int offset,
+					int length, String s, AttributeSet attr) {
+				try {
+					int origNum = getLineNumber();
+					super.replace(fb, offset, length, s, attr);
+					int newNum = getLineNumber();
+					if (newNum != origNum) {
+// 						System.out.println("line replaced");
+						lineDancePanel.updateLineNumber(origNum, newNum);
+					}
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		};
 	}
 	
 	private WrappedPlainView wrappedView = null;
@@ -1292,6 +1341,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
 		applyAutoIndent();
+		
+		if (doc instanceof AbstractDocument) {
+			AbstractDocument abstracDoc = (AbstractDocument)doc;
+			abstracDoc.setDocumentFilter(getOrMakeDocFilter());
+		}
 	}
 	
 	/** Visually indents the tabs and word-wrapped lines
@@ -1724,6 +1778,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		return getDocument().getDefaultRootElement().getElementCount();
 	}
 	
+	public int getLineOffset(int line) {
+		return getDocument().getDefaultRootElement().getElement(line - 2)
+				.getEndOffset();
+	}
+	
 	/**Gets the index position within the document, given the line number.
 	 * @param line the number of the line, starting at 1; add 1 to the
 	 * document element number
@@ -1762,7 +1821,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// adds a new entry in the table
 		lineDancePanel.addRow(new String[] {
 			"" + getLineNumber(),
-			"" + getCaretPosition(),
+// 			"" + getCaretPosition(),
 			name
 		});
 	}
@@ -1784,7 +1843,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void lineDance() {
 		// gets the position from the table
-		int position = lineDancePanel.getPosition();
+		int line = lineDancePanel.getLineNum();
+		int position = getLineOffset(line);
 		// checks the position against the length of the document,
 		// in case enough characters have been deleted from the
 		// document that the caret position would exceed the length
@@ -1821,81 +1881,81 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Useful when an open file is externally changed.
 	*/
 	public void refresh() {
-			// Ensure that has a saved file to refresh
-			if (!fileExists()) {
-				String title = "Refreshing ain't always easy";
-				String msg = "This is all we've got.  There's no saved file yet"
-					+ "\nfor us to refresh.  Sorry about that.";
-				JOptionPane.showMessageDialog(this, msg, title,
-					JOptionPane.INFORMATION_MESSAGE, null);
+		// Ensure that has a saved file to refresh
+		if (!fileExists()) {
+			String title = "Refreshing ain't always easy";
+			String msg = "This is all we've got.  There's no saved file yet"
+				+ "\nfor us to refresh.  Sorry about that.";
+			JOptionPane.showMessageDialog(this, msg, title,
+				JOptionPane.INFORMATION_MESSAGE, null);
+			return;
+		}
+		
+		// Confirms with user that willing to override any unsaved changes
+		if (getChanged()) {
+			
+			String s = "Refresh request";
+			// dialog with 2 choices: discard, cancel
+			String msg = "This file has not yet been saved."
+					+ "\nShould I still refresh it with the currently saved version?";
+			int choice = JOptionPane.showOptionDialog(this, msg,
+					"Save before refreshing", JOptionPane.WARNING_MESSAGE,
+					JOptionPane.DEFAULT_OPTION, null, new String[] { 
+							"Refresh me now", "Cancel" }, "Cancel"
+					);
+			switch (choice) {
+			// preserve the text area's contents by default
+			case 0:
+				break;
+			default:
 				return;
 			}
-			
-			// Confirms with user that willing to override any unsaved changes
-			if (getChanged()) {
-				
-				String s = "Refresh request";
-				// dialog with 2 choices: discard, cancel
-				String msg = "This file has not yet been saved."
-						+ "\nShould I still refresh it with the currently saved version?";
-				int choice = JOptionPane.showOptionDialog(this, msg,
-						"Save before refreshing", JOptionPane.WARNING_MESSAGE,
-						JOptionPane.DEFAULT_OPTION, null, new String[] { 
-								"Refresh me now", "Cancel" }, "Cancel"
-						);
-				switch (choice) {
-				// preserve the text area's contents by default
-				case 0:
-					break;
-				default:
-					return;
+		}
+		
+		// Refreshes the tab and tries to restore the caret position
+		// to its original position
+		int pos = getCaretPosition();
+		String path = getPath();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			final String text = LibTTx.readText(new BufferedReader(reader));
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					// flagging the change prior to the change prevents UI updates
+					// for the change from TextPadDocumentListener in TextTrix
+					setChanged(true);
+					setText(text);
+//					setHighlightStyle(new Prefs().getSpellChecker(), text);
+					applyAutoIndent();
+					setChanged(false);
 				}
-			}
-			
-			// Refreshes the tab and tries to restore the caret position
-			// to its original position
-			int pos = getCaretPosition();
-			String path = getPath();
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(path));
-				final String text = LibTTx.readText(new BufferedReader(reader));
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						// flagging the change prior to the change prevents UI updates
-						// for the change from TextPadDocumentListener in TextTrix
-						setChanged(true);
-						setText(text);
-//						setHighlightStyle(new Prefs().getSpellChecker(), text);
-						applyAutoIndent();
-						setChanged(false);
-					}
-				});
-//				read(t, reader, path);
-			} catch(FileNotFoundException e) {
-				// This message will most likely not be reached since
-				// the non-existant file would be detected earlier.
-				String msg = "The original file appears to have been moved, "
-					+ "\ndeleted, or set to be unreadable.";
-				JOptionPane.showMessageDialog(
-					this, 
-					msg, 
-					"File missing",
-					JOptionPane.ERROR_MESSAGE);
-			} catch(IOException e) {
-				String msg = "The original file could not be accessed.";
-				JOptionPane.showMessageDialog(
-					this, 
-					msg, 
-					"File inaccessible",
-					JOptionPane.ERROR_MESSAGE);
-			}
-//			openFile(t.getFile(), t.isEditable(), false, true);
-			// prevent caret from exceeding length of newly refreshed file
-			if (pos <= getDocument().getLength()) {
-				setCaretPosition(pos);
-			} else {
-				setCaretPosition(getDocument().getLength());
-			}
+			});
+//			read(t, reader, path);
+		} catch(FileNotFoundException e) {
+			// This message will most likely not be reached since
+			// the non-existant file would be detected earlier.
+			String msg = "The original file appears to have been moved, "
+				+ "\ndeleted, or set to be unreadable.";
+			JOptionPane.showMessageDialog(
+				this, 
+				msg, 
+				"File missing",
+				JOptionPane.ERROR_MESSAGE);
+		} catch(IOException e) {
+			String msg = "The original file could not be accessed.";
+			JOptionPane.showMessageDialog(
+				this, 
+				msg, 
+				"File inaccessible",
+				JOptionPane.ERROR_MESSAGE);
+		}
+//		openFile(t.getFile(), t.isEditable(), false, true);
+		// prevent caret from exceeding length of newly refreshed file
+		if (pos <= getDocument().getLength()) {
+			setCaretPosition(pos);
+		} else {
+			setCaretPosition(getDocument().getLength());
+		}
 	}
 	
 	public void addDocListener(DocumentListener aDocListener) {

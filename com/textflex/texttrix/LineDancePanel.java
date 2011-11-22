@@ -56,8 +56,8 @@ public class LineDancePanel extends JPanel {
 
 	/* Constants */
 	private static final int COL_LINE = 0; // index of line column
-	private static final int COL_POSITION = 1; // index of position column
-	private static final int COL_NAME = 2; // index of name column
+// 	private static final int COL_POSITION = 1; // index of position column
+	private static final int COL_NAME = 1; // index of name column
 	
 	/* GUI components */
 	DefaultTableModel tableModel = null; // table model
@@ -80,7 +80,7 @@ public class LineDancePanel extends JPanel {
 		// the table column names
 		String[] cols = {
 			"Line",
-			"Position",
+// 			"Position",
 			"Name"
 		};
 		
@@ -96,11 +96,17 @@ public class LineDancePanel extends JPanel {
 			}
 		};
 		
+		
 		// creates the table and places it in a scroll pane
 		table = new LineDanceTable(tableModel, aKeyAdapter);
 		scrollPane = new JScrollPane(table);
 		table.setPreferredScrollableViewportSize(new Dimension(300, 150));
 		
+		// set columns width preferences
+		TableColumnModel colModel = table.getColumnModel();
+		colModel.getColumn(0).setPreferredWidth(20);
+		colModel.getColumn(1).setPreferredWidth(80);
+			
 		// adds the scroll pane and table
 		LibTTx.addGridBagComponent(
 			scrollPane,
@@ -171,6 +177,26 @@ public class LineDancePanel extends JPanel {
 		}
 	}
 	
+	public void updateLineNumber(int origNum, int newNum) {
+		int rows = tableModel.getRowCount();
+		int diff = newNum - origNum;
+		int[] removeRows = new int[rows];
+		Arrays.fill(removeRows, 0);
+		for (int i = 0; i < rows; i++) {
+			int num = Integer.parseInt(
+				(String) tableModel.getValueAt(i, COL_LINE));
+			if (diff > 0 && num > origNum
+					|| diff < 0 && num >= origNum) {
+				table.setValueAt((num + diff) + "", i, COL_LINE);
+			} else if (diff < 0 && (num > newNum && num < origNum)) {
+				removeRows[i] = 1;
+			}
+		}
+		for (int i = rows - 1; i >= 0; i--) {
+			if (removeRows[i] == 1) removeRow(i);
+		}
+	}
+	
 	/** Adds a mouse listener to the table.
 	 * @param listener a listener for mouse events
 	 */
@@ -178,14 +204,16 @@ public class LineDancePanel extends JPanel {
 		table.addMouseListener(listener);
 	}
 	
+	
 	/** Gets the position number from the currently selected entry.
 	 */
-	public int getPosition() {
+	public int getLineNum() {
 		int row = table.getSelectedRow();
 		if (row == -1) return -1; // if none selected
 		// gets the recorded value
-		int position = Integer.parseInt((String) tableModel.getValueAt(row, COL_POSITION));
-		return position;
+		int line = Integer.parseInt(
+			(String) tableModel.getValueAt(row, COL_LINE));
+		return line;
 	}
 	
 	
