@@ -5,14 +5,15 @@ the text tinker
 Copyright (c) 2002-11, Text Flex
 http://textflex.com/texttrix
 
-(See http://textflex.com/texttrix/wiki.com for a more detailed Roadmap.)
+(See http://textflex.com/texttrix/wiki.html for a more detailed Roadmap.)
 
 ----v.0.9.5 alpha 2 (2011-11-??)----
 
 This alpha release builds on a completely new syntax highlighter to Text Trix. While previous versions have used the Ostermiller package to provide syntax highlighting for Java, HTML, C/C++, and a few other languages, the highlighter package has not been underdevelopment for close to a decade and has suffered from performance issues as well as support for newer languages. As a replacement for the Ostermiller package, a customized version of the open-source jsyntaxpane highlighter has now been incorporated into Text Trix. This highlighter brings support for many new languages, including python, SQL, bash, Groovy, json, and Scala. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.
 
 What's new in alpha 2 (since alpha 1):
--Loading of large documents has been significantly improved.
+-Loading of large documents has been significantly improved
+-Line Dance (for bouncing between different positions in the file) now updates during editing
 
 Known issues/requirements:
 -This new package requires Java 6 or higher to run. If you require Java 1.4 or Java 5, you can use a previous version of Text Trix (through v.0.9.4).

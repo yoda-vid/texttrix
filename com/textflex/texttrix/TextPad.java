@@ -92,6 +92,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private FileModifiedThread fileModifiedThread = null;
 	private DocumentListener docListener = null;
 	private DocumentFilter docFilter = null;
+	private WrappedPlainView wrappedView = null;
 	
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -127,18 +128,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		// adds dran-n-drop support for text
 		setDragEnabled(true);
 		
-		
-		
-		
 		// to allow multiple undos and listen for events
 		// for new key-bindings
 		imap = getInputMap(JComponent.WHEN_FOCUSED);
 		amap = getActionMap();
 		createActionTable(this);
-		
-		
-		
-		
 		
 		/* WORKAROUND:
 		 * The paragraph that follows a word-wrapped line may overlap it.  With each
@@ -226,7 +220,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// creates a styled document only for certain file extensions
 		applyDocumentSettings();
-		
 	}
 	
 	/**
@@ -311,12 +304,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		String ext = getFileExtension();
 		ext = ext.toLowerCase();
 		if (ext.equals("") || ext.equals("txt") ) {
-//				||	getContentType().equals("text/plain")) {
 		
-		
-      // enable the spell checking on the text component with all features;
-			// turn on spell checker only for plain text documents since
-			// most other code will have numerous non-detected words;
+      		// enable the spell checking on the text component with all 
+			// features; turn on spell checker only for plain text documents 
+			// since most other code will have numerous non-detected words;
 			// TODO: apply spell-checker more broadly if add more
 			// varied dictionaries
 			if (spellChecker) SpellChecker.register(this);
@@ -328,27 +319,23 @@ public class TextPad extends JTextPane implements StateEditable {
 		String text = getAllText();
 		SpellChecker.unregister(this);
 
-//		System.out.println("contentType: " + getContentType());
-//		setStyledDocument(doc);
 		
 		// sets the appropriate style
 		DefaultSyntaxKit.setWrapped(false);
 		if (ext.equals("java")) {
 			setContentType("text/java");
-			//DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
-			//kit.setProperty("Action.indent", null);
-			//kit.toggleComponent(this, "jsyntaxpane.actions.IndentAction");
-//			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		} else if (ext.equals("c")) {
 			setContentType("text/c");
 		} else if (ext.equals("cpp")) {
 			setContentType("text/cpp");
-		} else if (ext.equals("html") || ext.equals("htm") || ext.equals("xhtml")) {
+		} else if (ext.equals("html") || ext.equals("htm") 
+				|| ext.equals("xhtml")) {
 			DefaultSyntaxKit.setWrapped(true);
 			setContentType("text/xhtml");
 			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
 			setWrappedView((WrappedPlainView)kit.getView());
-			kit.deinstallComponent(this, "jsyntaxpane.components.LineNumbersRuler");
+			kit.deinstallComponent(this, 
+					"jsyntaxpane.components.LineNumbersRuler");
 		} else if (ext.equals("js")) {
 			setContentType("text/js");
 		} else if (ext.equals("groovy")) {
@@ -395,6 +382,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 	}
 	
+	/**
+	 * Gets or makes a DocumentFilter for detecting changes in numbers of 
+	 * lines and making the corresponding updates to recorded line numbers
+	 * in the LineDancePanel.
+	 */
 	private DocumentFilter getOrMakeDocFilter() {
 		return (docFilter != null) ? docFilter : new DocumentFilter() {
 			public void insertString(DocumentFilter.FilterBypass fb, int offset,
@@ -402,6 +394,8 @@ public class TextPad extends JTextPane implements StateEditable {
 				try {
 					int origNum = getLineNumber();
 					super.insertString(fb, offset, s, attr);
+					// updates line numbers if the one or more lines have been
+					// added to the document
 					int newNum = getLineNumber();
 					if (newNum > origNum) {
 // 						System.out.println("new line added");
@@ -418,6 +412,8 @@ public class TextPad extends JTextPane implements StateEditable {
 					int origNum = getLineNumber();
 					super.remove(fb, offset, length);
 					int newNum = getLineNumber();
+					// updates line numbers if the one or more lines have been
+					// removed from the document
 					if (newNum < origNum) {
 // 						System.out.println("line removed");
 						lineDancePanel.updateLineNumber(origNum, newNum);
@@ -434,6 +430,8 @@ public class TextPad extends JTextPane implements StateEditable {
 					int origNum = getLineNumber();
 					super.replace(fb, offset, length, s, attr);
 					int newNum = getLineNumber();
+					// updates line numbers if the one or more lines have been
+					// added or removed from the documents
 					if (newNum != origNum) {
 // 						System.out.println("line replaced");
 						lineDancePanel.updateLineNumber(origNum, newNum);
@@ -445,10 +443,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 		};
 	}
-	
-	private WrappedPlainView wrappedView = null;
-	public WrappedPlainView getWrappedView() { return wrappedView; }
-	private void setWrappedView(WrappedPlainView val) { wrappedView = val; }
 	
 	/*
 	public Dimension getPreferredScrollableViewportSize() {
@@ -768,8 +762,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 
 	/** Sets the default displayed tab sizes.
-	 * Only affects the displayed size, since the text itself represents the tab simply
-	 * as "\t".
+	 * Only affects the displayed size, since the text itself represents the 
+	 * tab simply as "\t".
 	 * @param tabChars number of spaces for the tab to represent
 	 * @see #setNoTabs()
 	 * @see #setIndentTabs(int) 
@@ -2123,6 +2117,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	public StoppableThread getAutoSaveTimer() {
 		return autoSaveTimer;
 	}
+	
+	public WrappedPlainView getWrappedView() { return wrappedView; }
+	private void setWrappedView(WrappedPlainView val) { wrappedView = val; }
 	
 	
 	
