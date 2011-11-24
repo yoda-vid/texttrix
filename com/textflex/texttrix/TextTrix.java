@@ -2264,7 +2264,7 @@ public class TextTrix extends JFrame {
 				 * and either handling it there or returning signal of the
 				 * failure
 				 */
-				writeText(path, t.getText(), t.getEOL());
+				LibTTx.writeText(path, t.getText(), t.getEOL());
 				// keeps track of orig filename to compare file extensions
 				// for syntax highlighting;
 				// assumes that path points to a valid file
@@ -2308,58 +2308,19 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 	
-	public static void writeText(String path, String text, String eol) {
-		PrintWriter out = null;
-		try {
-			out = new PrintWriter(new FileWriter(path), true);
-			String tmpEOL = LibTTx.getEOL(text);
-			String textCorrEOL = text.replace(tmpEOL, eol);
-			out.print(textCorrEOL);
-		} catch (IOException e) {
-			System.out.println("Could not write text to " + path);
-		} finally { // release system resources from stream
-			if (out != null)
-				out.close();
-		}
-	}
-	
 	/**
 	 * Saves the file to the given path. Similar to
 	 * <code>saveFile(String)</code>, but tailored for the program exit by
 	 * ignoring updates to the graphical user interface.
 	 * 
-	 * @param path
-	 *            the path to the modified file
+	 * @param path the path to the modified file
 	 * @return true if the file saves successfully
 	 * @see #saveFile(String)
 	 */
-	public  boolean saveFileOnExit(String path) {
+	public boolean saveFileOnExit(String path) {
 		//	System.out.println("printing");
 		TextPad t = getSelectedTextPad();
-		PrintWriter out = null;
-		try {
-			if (t != null) {
-				File f = new File(path);
-				/*
-				 * if don't use canWrite(), work instead by catching exception
-				 * and either handling it there or returning signal of the
-				 * failure
-				 */
-				// open the stream to write to
-				out = new PrintWriter(new FileWriter(path), true);
-				// write to it
-				out.print(t.getText());
-				//updateFileHist(fileMenu, path);
-				return true;
-			}
-		} catch (IOException e) {
-			//	    e.printStackTrace();
-			return false;
-		} finally { // release system resources from stream
-			if (out != null)
-				out.close();
-		}
-		return false;
+		return LibTTx.writeText(path, t.getText(), t.getEOL());
 	}
 	
 
