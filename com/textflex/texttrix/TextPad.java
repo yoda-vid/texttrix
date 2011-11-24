@@ -350,7 +350,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			setContentType("text/sql");
 		} else if (ext.equals("properties")) {
 			setContentType("text/properties");
-		} else if (ext.equals("python")) {
+		} else if (ext.equals("py")) {
 			setContentType("text/python");
 		} else if (ext.equals("tal")) {
 			setContentType("text/tal");
@@ -1496,7 +1496,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 
 	/**Converts the pad to an RTF tex view, if possible.
-	* If the document is not in RTF format, the pad reverts to its original setting.
+	 * If the document is not in RTF format, the pad reverts to its original 
+	 * setting.
 	*/
 	public void viewRTF() {
 		StateEdit stateEdit = new StateEdit(this);

@@ -44,8 +44,8 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.table.*;
 
-/** A panel that contains the table for the LIne Dance function.
- * The table records the line numbers, caret positions, and 
+/** A panel that contains the table for the Line Dance function.
+ * The table records the line numbers and 
  * user-defined names to help record multiple locations in a
  * given file.  The assumption is that each {@link TextPad}
  * contains its own Line Dance panel, which is incorporated
@@ -177,22 +177,46 @@ public class LineDancePanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * Updates the line numbers in the table based on changes to the
+	 * documents's line numbering.
+	 * For example, if a line was added in the middle of the documents, all
+	 * subsequent recorded line numbers should be incremented by one.
+	 * If two lines were added, the subsequent lines should be incremented 
+	 * by two. If three lines were deleted, any line numbers recorded in
+	 * the deleted section should be removed from the recorded lines, and 
+	 * all subsequent lines should be decremented by three. This function
+	 * should usually be called after making text changes that change
+	 * the number of lines in the text.
+	 * 
+	 * @param origNum the line number of the caret prior to text changes
+	 * @param newNum the line number of the caret after text changes.
+	 */
 	public void updateLineNumber(int origNum, int newNum) {
 		int rows = tableModel.getRowCount();
-		int diff = newNum - origNum;
-		int[] removeRows = new int[rows];
-		Arrays.fill(removeRows, 0);
+		int diff = newNum - origNum; // line change
+		int[] removeRows = new int[rows]; // table rows to remove
+		Arrays.fill(removeRows, 0); // 0 = keep, 1 = remove
+		
 		for (int i = 0; i < rows; i++) {
+			// the line number in given row of the table
 			int num = Integer.parseInt(
 				(String) tableModel.getValueAt(i, COL_LINE));
 			if (diff > 0 && num > origNum
 					|| diff < 0 && num >= origNum) {
+				// change recorded line numbers above the original caret
+				// position when lines have been added
 				table.setValueAt((num + diff) + "", i, COL_LINE);
 			} else if (diff < 0 && (num > newNum && num < origNum)) {
+				// flag to remove recorded line numbers for lines that have 
+				// been deleted from the document
 				removeRows[i] = 1;
 			}
 		}
+		
 		for (int i = rows - 1; i >= 0; i--) {
+			// remove rows flagged to be removed, working from last to first
+			// to avoid having to adjust for prior row removals
 			if (removeRows[i] == 1) removeRow(i);
 		}
 	}
@@ -231,43 +255,5 @@ class LineDanceTable extends JTable {
 	public LineDanceTable(TableModel tableModel, KeyAdapter aKeyAdapter) {
 		super(tableModel);
 		addKeyListener(aKeyAdapter);
-		/*
-		addFocusListener(new FocusAdapter() {
-			public void focusLost(FocusEvent e) {
-				int row = getSelectedRow();
-				if (row != -1) {
-					clearSelection();
-					setRowSelectionInterval(row, row);
-				}
-			}
-			
-		});
-		*/
 	}
-/*
-	public boolean editCellAt(int row, int col, EventObject e) {
-		if (e != null) System.out.println(e.toString());
-		return super.editCellAt(row, col, e);
-	}
-	public boolean editCellAt(int row, int col, EventObject e) {
-//		System.out.println(e.toString());
-		if (e instanceof KeyEvent) {
-		} else {
-			return super.editCellAt(row, col, e);
-		}
-		if (e instanceof MouseEvent) {
-			if (((MouseEvent)e).getClickCount() == 1) {
-				System.out.println("here");
-//				return super.editCellAt(row, col, e);
-				((MouseEvent)e).consume();
-			} else {
-				return super.editCellAt(row, col, e);
-			}
-		} else {
-				System.out.println("also here");
-			return super.editCellAt(row, col, e);
-		}
-		return false;
-	}
-*/
 }
