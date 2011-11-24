@@ -2191,7 +2191,15 @@ public class TextTrix extends JFrame {
 			public void run() {
 // 				textPad.setText(text);
 				try {
-					textPad.getDocument().insertString(0, text, null);
+// 					String eol = text.indexOf("\r\n") != -1 ? "\r\n" : "\n";
+// 					System.out.println("cr? " + (text.indexOf("\r") != -1));
+// 					System.out.println("eol: " + (eol.equals("\r\n") ? "crlf" : "lf"));
+// 					textPad.getDocument().putProperty(DefaultEditorKit
+// 							.EndOfLineStringProperty, "\n");
+					String eol = LibTTx.getEOL(text);
+					textPad.setEOL(eol);
+					String textLF = text.replace(eol, "\n");
+					textPad.getDocument().insertString(0, textLF, null);
 				} catch(BadLocationException e) {
 					e.printStackTrace();
 				}
@@ -2249,7 +2257,6 @@ public class TextTrix extends JFrame {
 	public boolean saveFile(String path, TextPad t) {
 		if (t == null)
 			t = getSelectedTextPad();
-		PrintWriter out = null;
 		try {
 			if (t != null) {
 				/*
@@ -2257,10 +2264,7 @@ public class TextTrix extends JFrame {
 				 * and either handling it there or returning signal of the
 				 * failure
 				 */
-				// open the stream to write to
-				out = new PrintWriter(new FileWriter(path), true);
-				// write to it
-				out.print(t.getText());
+				writeText(path, t.getText(), t.getEOL());
 				// keeps track of orig filename to compare file extensions
 				// for syntax highlighting;
 				// assumes that path points to a valid file
@@ -2298,15 +2302,25 @@ public class TextTrix extends JFrame {
 				updateTabTitle(t);//textAreas.indexOf(t));
 				return true;
 			}
+		} finally { // release system resources from stream
+			t.setupFileModifiedThread();
+		}
+		return false;
+	}
+	
+	public static void writeText(String path, String text, String eol) {
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new FileWriter(path), true);
+			String tmpEOL = LibTTx.getEOL(text);
+			String textCorrEOL = text.replace(tmpEOL, eol);
+			out.print(textCorrEOL);
 		} catch (IOException e) {
-			//	    e.printStackTrace();
-			return false;
+			System.out.println("Could not write text to " + path);
 		} finally { // release system resources from stream
 			if (out != null)
 				out.close();
-				t.setupFileModifiedThread();
 		}
-		return false;
 	}
 	
 	/**
