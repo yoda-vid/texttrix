@@ -621,7 +621,7 @@ public class LibTTx {
 				text = readText(reader);
 			} finally { // clean-up code
 				try {
-					if (reader != null) reader.close();
+					if (reader != null) reader.close();
 					in.close();
 				} catch (IOException exception) {
 				}
@@ -632,7 +632,7 @@ public class LibTTx {
 
 	/**Read in text from a file and return the text as a string.
 	 * Differs from <code>displayFile(String path)</code> because
-	 * allows editing. Note that the reader is not closed after reading.
+	 * allows editing. Note that the reader is not closed after reading.
 	 * @param reader text file stream
 	 * @return text from file
 	 */
@@ -644,15 +644,33 @@ public class LibTTx {
 		// the calling function should handle clean-up code for the reader stream.
 		// StringBuilder greatly improves performance over simple String concatenation.
 		try {
+			// read char-by-char method
 			int c;
-			while ((c = reader.read()) != -1)
-				//builder.append(line + "\n");
+			while ((c = reader.read()) != -1) {
 				builder.append((char)c);
-/*
-			while ((line = reader.readLine()) != null)
-				builder.append(line + "\n");
-//				text = text + line + "\n";
-*/
+			}
+			
+			// read into char buffer method;
+			// does not appear to be necessary because already have 
+			// BufferedReader
+// 			int n;
+// 			char[] cbuf = new char[8192];
+// 			do {
+// 				n = reader.read(cbuf);
+// 				if (n >= 0) builder.append(cbuf, 0, n);
+// 			} while (n >= 0);
+			// alternative while-loop;
+			// does not appear to work because would miss final filled cbuf,
+			// and couldn't simply append after while loop because could 
+			// end up double appending
+// 			while ((n = reader.read(cbuf)) >= 0) {
+// 				builder.append(cbuf);
+// 			}
+			
+			// readLine method;
+			// misses out on extracting EOL information
+// 			while ((line = reader.readLine()) != null)
+// 				builder.append(line + "\n");
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
@@ -660,7 +678,8 @@ public class LibTTx {
 		return text;
 	}
 	
-	public static String getEOL(String text) {
+
+	public static String getEOL(String text) {
 		int r = text.indexOf('\r');
 		String eol = "\n"; // defaults to LF (Unix)
 		String eolName = "LF";
@@ -677,6 +696,31 @@ public class LibTTx {
 		System.out.println("eolName: " + eolName);
 		return eol;
 	}
+
+// 	public static String getEOL(BufferedReader reader) {
+// 		String eol = "\n"; // defaults to LF (Unix)
+// 		String eolName = "LF";
+// 		int n;
+// 		char c;
+// 		try {
+// 			while ((n = reader.read()) != -1) {
+// 				if ((char)n == '\r') {
+// 					if ((n = reader.read()) != -1 && ((char)n == '\n') {
+// 						eol = "\r\n"; // CRLF (Windows)
+// 						eolName = "CRLF";
+// 					} else {
+// 						eol = "\r"; // CR (old-style Mac)
+// 						eolName = "CR";
+// 					}
+// 					break;
+// 				} else if ((char)n == '\n') {
+// 					break;
+// 				}
+// 			}
+// 		}
+// 		System.out.println("eolName: " + eolName);
+// 		return eol;
+// 	}
 
 	public static boolean writeText(String path, String text, String eol) {
 		PrintWriter out = null;
