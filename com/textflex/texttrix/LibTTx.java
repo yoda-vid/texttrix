@@ -726,9 +726,14 @@ public class LibTTx {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(new FileWriter(path), true);
-			String tmpEOL = LibTTx.getEOL(text);
-			String textCorrEOL = text.replace(tmpEOL, eol);
-			out.print(textCorrEOL);
+			if (eol != null) {
+				// saves with original file's newlines
+				String tmpEOL = LibTTx.getEOL(text);
+				out.print(text.replace(tmpEOL, eol));
+			} else {
+				// defaults to save with native (platform-dependent) newlines
+				out.print(text);
+			}
 			return true;
 		} catch (IOException e) {
 			System.out.println("Could not write text to " + path);
