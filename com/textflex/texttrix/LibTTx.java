@@ -693,7 +693,7 @@ public class LibTTx {
 				eolName = "CR";
 			}
 		}
-		System.out.println("eolName: " + eolName);
+// 		System.out.println("eolName: " + eolName);
 		return eol;
 	}
 
