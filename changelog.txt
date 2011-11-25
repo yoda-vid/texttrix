@@ -7,9 +7,9 @@ http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.html for a more detailed Roadmap.)
 
-----v.0.9.5 alpha 2 (2011-11-??)----
+----v.0.9.5 alpha 2 (2011-11-25)----
 
-This alpha release brings performance improvements to the new syntax highlighter to Text Trix. The new highlighter adds support for many new languages, including python, SQL, bash, Groovy, JSON, and Scala, in addition to Java, HTML, and C++ support. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.
+This Text Trix alpha release brings performance improvements to the new syntax highlighter. The new highlighter (modified from the open-source jsyntaxpane library) adds support for many new languages, including Python, SQL, bash, Groovy, JSON, and Scala, in addition to Java, HTML, and C++ support. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.
 
 The tool for jumping between different positions within a file (Line Dance) now updates recorded line numbers during editing so that no how much you add or remove from the text, you can still navigate to the places you recorded.
 

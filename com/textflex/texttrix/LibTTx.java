@@ -606,6 +606,7 @@ public class LibTTx {
 	/**Read in text from a file and return the text as a string.
 	 * Differs from <code>displayFile(String path)</code> because
 	 * allows editing.
+	 * 
 	 * @param path text file stream
 	 * @return text from file
 	 */
@@ -624,6 +625,7 @@ public class LibTTx {
 					if (reader != null) reader.close();
 					in.close();
 				} catch (IOException exception) {
+					// do nothing
 				}
 			}
 		}
@@ -633,6 +635,8 @@ public class LibTTx {
 	/**Read in text from a file and return the text as a string.
 	 * Differs from <code>displayFile(String path)</code> because
 	 * allows editing. Note that the reader is not closed after reading.
+	 * The source's original newlines are preserved.
+	 *
 	 * @param reader text file stream
 	 * @return text from file
 	 */
@@ -650,15 +654,16 @@ public class LibTTx {
 				builder.append((char)c);
 			}
 			
+			/* Alternate method 1:
 			// read into char buffer method;
 			// does not appear to be necessary because already have 
 			// BufferedReader
-// 			int n;
-// 			char[] cbuf = new char[8192];
-// 			do {
-// 				n = reader.read(cbuf);
-// 				if (n >= 0) builder.append(cbuf, 0, n);
-// 			} while (n >= 0);
+			int n;
+			char[] cbuf = new char[8192];
+			do {
+				n = reader.read(cbuf);
+				if (n >= 0) builder.append(cbuf, 0, n);
+			} while (n >= 0);
 			// alternative while-loop;
 			// does not appear to work because would miss final filled cbuf,
 			// and couldn't simply append after while loop because could 
@@ -666,11 +671,14 @@ public class LibTTx {
 // 			while ((n = reader.read(cbuf)) >= 0) {
 // 				builder.append(cbuf);
 // 			}
+			*/
 			
+			/* Alternate method 2:
 			// readLine method;
 			// misses out on extracting EOL information
-// 			while ((line = reader.readLine()) != null)
-// 				builder.append(line + "\n");
+			while ((line = reader.readLine()) != null)
+				builder.append(line + "\n");
+			*/
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		}
@@ -678,7 +686,16 @@ public class LibTTx {
 		return text;
 	}
 	
-
+	/**
+	 * Gets the end-of-line (EOL) style from the given text.
+	 * The style is determined by the first location of '\r', if found.
+	 * If '\r' is immediately followed by '\n', a CRLF eol (Windows) is 
+	 * returned; if not, a CR eol (old-style Mac) is returned. By default,
+	 * LF ('\n', Unix) styles are returned.
+	 * 
+	 * @param text the text from which to determine the EOL style
+	 * @return the eol style
+	 */
 	public static String getEOL(String text) {
 		int r = text.indexOf('\r');
 		String eol = "\n"; // defaults to LF (Unix)
@@ -721,7 +738,17 @@ public class LibTTx {
 // 		System.out.println("eolName: " + eolName);
 // 		return eol;
 // 	}
-
+	
+	/**
+	 * Writes text to a given path using the given end-of-line (EOL) style.
+	 * The text's EOL style will be replaced the given one.
+	 *
+	 * @param path path of the file in which the text will be saved
+	 * @param text the text to be written
+	 * @param eol the end-of-line style that will be applied to the text;
+	 * if null, the text's current EOL style will be preserved
+	 * @return true if the text was successfully written to the path
+	 */
 	public static boolean writeText(String path, String text, String eol) {
 		PrintWriter out = null;
 		try {
@@ -866,8 +893,6 @@ public class LibTTx {
 		} catch(IOException e1) {
 		}
 		return null;
-		
-//		return (iconURL != null) ? new ImageIcon(iconURL) : null;
 	}
 
 	/**Adds a new component to the <code>GridBagLayout</code> manager.
@@ -1088,12 +1113,9 @@ public class LibTTx {
 	/**
 	 * Front-end, helper function to ask yes/no questions.
 	 * 
-	 * @param owner
-	 *            parent frame; can be null
-	 * @param msg
-	 *            message to display in the main window section
-	 * @param title
-	 *            title to display in the title bar
+	 * @param owner parent frame; can be null
+	 * @param msg message to display in the main window section
+	 * @param title title to display in the title bar
 	 * @return true for "Yes", false for "No"
 	 */
 	public static boolean yesNoDialog(Component owner, String msg, String title) {
@@ -1107,10 +1129,15 @@ public class LibTTx {
 		}
 	}
 	
+	/**
+	 * Compares the given version string with the current Java version string.
+	 * 
+	 * @param version version number, given as a complete string
+	 * @return true if the given version number is found anywhere in the
+	 * current Java version string
+	 */
 	public static boolean checkJavaVersion(String version) {
 		String installedVersionStr = System.getProperty("java.version");
-//		float installedVersionNum = Float.parseFloat(installedVersionStr);
-//		System.out.println("installedVersionStr: " + installedVersionStr);
 		return installedVersionStr.indexOf(version) != -1;
 	}
 
