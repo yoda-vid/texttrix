@@ -1,6 +1,6 @@
 Text Trix
 the text tinker
-version 0.9.4
+version 0.9.5pre
 build:
 Copyright (c) 2002-11, Text Flex
 http://textflex.com/texttrix

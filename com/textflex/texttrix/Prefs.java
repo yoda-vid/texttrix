@@ -432,6 +432,7 @@ public class Prefs extends JDialog {//JFrame {
 	 * or ignored
 	 */
 	private void updatePlugInsList(String[] list) {
+		if (list == null) return;
 		includes = LibTTx.createArrayFromString(getIncludePlugIns());
 		ignores = LibTTx.createArrayFromString(getIgnorePlugIns());
 		String[] updatedIncludes = new String[list.length];
@@ -1664,10 +1665,13 @@ public class Prefs extends JDialog {//JFrame {
 		 */
 		private JList createList(DefaultListModel listMdl, String[] listElts) {
 			String addElt = null;
-			for (int i = 0;
-				i < listElts.length && (addElt = listElts[i]) != null;
-				i++) {
-				listMdl.addElement(addElt);
+			if (listElts != null) {
+				int listEltsLen = listElts.length;
+				for (int i = 0;
+					i < listEltsLen && (addElt = listElts[i]) != null;
+					i++) {
+					listMdl.addElement(addElt);
+				}
 			}
 			JList list = new JList(listMdl);
 			list.setSelectionMode(

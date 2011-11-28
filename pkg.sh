@@ -55,19 +55,20 @@ Parameters:
 	
 	--help: Lends a hand by displaying yours truly.
 	
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
+	--java=javac/binary/path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.  On Linux, this path defaults to
-	"/usr/java/default", the new link found in Java 6.  
+	"/usr/java/default/bin", the new link found in Java 6.  
 	
 	--plgbranch=path/to/branch: The plugin branch (or trunk) from which to
 	compile plugin source code.  For example, to compile from the 0.7.1
 	branch, specify \"--plgbranch=branches/0.7.1\".  To compile from the 
 	trunk, 	simply specify \"--plgbranch=trunk\".  The source code release 
 	package	sets the branch to \".\", since the source package does 
-	not contain branches and tags.  Otherwise, defaults to \"trunk\".
+	not contain branches and tags.  Otherwise, defaults to the --branch
+	directory.
 	
 	--prefix=install/location: the directory in which to install Text Trix.
 	Defaults to "/usr/share".
@@ -75,10 +76,10 @@ Parameters:
 	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
 		
 Copyright:
-	Copyright (c) 2003-10 Text Flex
+	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2010-10-04
+	2011-11-25
 "
 
 #####################
@@ -89,7 +90,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="0.9.4"
+VER="0.9.5"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -173,7 +174,6 @@ PAR_TIMESTAMP="--timestamp"
 
 if [ $# -gt 0 ]
 then
-	echo "Parsing user arguments..."
 	for arg in "$@"
 	do
 		# reads arguments
@@ -194,35 +194,34 @@ then
 		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
-			echo "...set to use \"$JAVA\" as the Java compiler path"
+			echo "Set to use \"$JAVA\" as the Java compiler path"
 			
 		# install location
 		elif [ ${arg:0:${#PAR_PREFIX}} = "$PAR_PREFIX" ] 
 		then
 			PREFIX="${arg#${PAR_PREFIX}=}"
-			echo "...set to use \"$PREFIX\" as the install path"
+			echo "Set to use \"$PREFIX\" as the install path"
 			
 		# texttrix branch dir
 		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 		then
 			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+			echo "Set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 		
 		# plugins branch dir
 		elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
 		then
 			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-			echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
+			echo "Set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 			
 		# timestamp labeling
 		elif [ ${arg:0:${#PAR_TIMESTAMP}} = "$PAR_TIMESTAMP" ]
 		then
 			TIMESTAMP=1
 			VER="$VER-$DATE"
-			echo "...set to label packages with \"$VER\""
+			echo "Set to label packages with \"$VER\""
 		fi
 	done
-	echo "...done"
 fi
 
 # Appends a file separator to end of Java compiler path if none there
@@ -259,8 +258,6 @@ NAME="texttrix" # UNIX program name
 DIR="com/textflex/$NAME" # Java package directory structure
 PKGDIR="$NAME-$VER" # name of binary package
 PKG=$PKGDIR.zip # name of compressed binary package
-#PKG14DIR="$PKGDIR-jre14"
-#PKG14=$PKG14DIR.zip
 SRCPKGDIR="$PKGDIR-src" # name of source package
 SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR="TextTrix.jar" # executable jar
@@ -289,12 +286,11 @@ fi
 
 echo "Packaging the files..."
 
-# remove old build packages and set up new ones
-rm -rf $ALL
+# set up new package directories
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
-	"$TTX_DIR"/changelog.txt \
+	"$TTX_DIR"/changelog.txt "$TTX_DIR"/lib \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
 	"$TTX_DIR"/dictionaries "$BLD_DIR/$PKGDIR"
 
@@ -303,15 +299,11 @@ cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
 rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn dictionaries/.svn dictionaries/User*
-# make files readable in all sorts of systems
-unix2dos *.txt $DIR/*.txt
-#chmod -f 664 *.txt $DIR/*.txt # prevent execution of text files; commented out because appears to be causing permission errors in cygwin environments
 
 # create the source package from the master package
 cd $BLD_DIR
-cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
-mv texttrix $SRCPKGDIR # copy to source package
+cp -rf $PKGDIR $SRCPKGDIR/texttrix # master --> one folder within source package
 
 # add the build files
 cd "$TTX_DIR"
@@ -320,15 +312,10 @@ cd "$TTX_DIR"
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
-cp -rf pkg.sh run.sh manifest-additions*.mf build.sh run.ps1 build.ps1 gnu \
+cp -rf pkg.sh run.sh manifest-additions.mf build.sh run.ps1 build.ps1 \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
-#chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/configure
-#chmod 755	"$BLD_DIR/$SRCPKGDIR"/texttrix/pkg.sh \
-#	"$BLD_DIR/$SRCPKGDIR"/texttrix/run.sh \
-#	"$BLD_DIR/$SRCPKGDIR"/texttrix/build.sh \
-#	"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 
 # add the plugins, copying the entire folder
 # WARNING: Remove any unwanted contents from this folder, as the whole folder
@@ -343,7 +330,6 @@ do
 done
 rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
 cp "$TTX_DIR"/plugins/*.jar $BLD_DIR/$PKGDIR/plugins # only want jars in binary package
-cp -rf "$TTX_DIR"/retroweaver $BLD_DIR/$SRCPKGDIR
 
 # create binary package
 
@@ -357,12 +343,12 @@ cd $BLD_DIR/$SRCPKGDIR/texttrix
 # self-executable jar via "java -jar [path to jar]/$JAR.jar", where $JAR is named above
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	"$JAVA"jar -cfm "`cygpath -p -w $BLD_DIR/$PKGDIR/$JAR`" "`cygpath -p -w manifest-additions.mf`" $DIR/*.class $DIR/*.txt $DIR/images/*.png $DIR/*.html com/inet
 else
-	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/Ostermiller com/inet
+	"$JAVA"jar -cfm $BLD_DIR/$PKGDIR/$JAR manifest-additions.mf $DIR/*.txt $DIR/*.class $DIR/images/*.png $DIR/*.html com/inet
 fi
 # make executable so can be run as binary on systems where jexec is installed
-#chmod 755 $BLD_DIR/$PKGDIR/$JAR
+chmod 755 $BLD_DIR/$PKGDIR/$JAR
 rm -rf */*/*.class */*/*/*.class */*/*/*/*.class
 
 # finish the source package

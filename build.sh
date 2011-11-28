@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-10
+# Portions created by the Initial Developer are Copyright (C) 2003-11
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -49,16 +49,18 @@ the file build.sh does not have executable permissions.)
 Parameters:
 	--api: Builds the API documentation files.
 	
-	--branch=path/to/branch: The branch (or trunk) from which to
-	compile source code.  For example, to compile from the 0.7.1
-	branch, specify \"--branch=branches/0.7.1\".  To compile from the trunk, 
-	simply specify \"--branch=trunk\".  The source code release package
-	sets the branch to \".\", since the source package does 
-	not contain branches and tags.  Otherwise, defaults to \"trunk\".
+	--branch=path/to/branch: The branch (or trunk) with reference to
+	the repository root from which to compile source code. For example, 
+	to compile from the 0.7.1 branch, specify \"--branch=branches/0.7.1\". 
+	To compile from the trunk, simply specify \"--branch=trunk\", or 
+	leave it blank. The source code release package sets the branch to 
+	\".\", since the source package does not contain branches and tags.
+	Note that this arguments is not used directly in this script, but 
+	passed to the plugins script when the \"--plug\" flag is set.
 	
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
+	--java=java//binaries/path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
-	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	Alternatively, the JAVA variable can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
 	
@@ -71,10 +73,10 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-10 Text Flex
+	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2008-05-31
+	2011-11-27
 "
 
 #####################
@@ -110,6 +112,8 @@ PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 PAR_PLUG="--plug"
 PAR_API="--api"
 PAR_CHANGELOG="--log"
+PAR_CLEAN="--clean"
+CLEAN=0
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
@@ -161,14 +165,8 @@ echo "found $SYSTEM"
 
 if [ $# -gt 0 ]
 then
-	echo "Parsing user arguments..."
 	for arg in "$@"
 	do
-		if [ x"$ARGS_ECHO" = "x" ]
-		then
-			ARGS_ECHO="Parsing user arguments..."
-		fi
-		
 		# reads arguments
 		if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 		then
@@ -187,35 +185,40 @@ then
 		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
-			echo "...set to use \"$JAVA\" as the Java compiler path"
+			echo "Set to use \"$JAVA\" as the Java compiler path"
 			
 		# texttrix branch dir
 		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 		then
 			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+			echo "Set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 		
 		# build plugins
 		elif [ ${arg:0:${#PAR_PLUG}} = "$PAR_PLUG" ]
 		then
 			PLUG=1
-			echo "...set to build plugins"
+			echo "Set to build plugins"
+			
+		# clean
+		elif [ ${arg:0:${#PAR_CLEAN}} = "$PAR_CLEAN" ]
+		then
+			CLEAN=1
+			echo "Set to clean files and exit"
 			
 		# build API
 		elif [ ${arg:0:${#PAR_API}} = "$PAR_API" ]
 		then
 			API=1
-			echo "...set to build API documentation"
+			echo "Set to build API documentation"
 			
 		# build SVN changelog
 		elif [ ${arg:0:${#PAR_CHANGELOG}} = "$PAR_CHANGELOG" ]
 		then
 			CHANGELOG=1
-			echo "...set to build changelog"
+			echo "Set to build changelog"
 			
 		fi
 	done
-	echo "...done"
 fi
 
 if [ x$JAVA = x"false" ]
@@ -250,22 +253,27 @@ DIR="com/textflex/texttrix" # src package structure
 # Build operations
 #####################
 
+cd "$BASE_DIR" # change to work directory
+
+#############
+# Clean files and exit
+if [ $CLEAN = 1 ]
+then
+	rm */*/*/*.class
+	exit 0
+fi
+
 #############
 # Compile Text Trix classes
-cd "$BASE_DIR" # change to work directory
 echo ""
 echo "Compiling the Text Trix program..."
 echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"javac -cp `cygpath -p -w gnu/getopt:.` -target 1.4 -source 1.4 "`cygpath -p -w com/Ostermiller/Syntax/`"*.java
-	"$JAVA"javac -target jsr14 -source 1.5 "`cygpath -p -w com/inet/jortho`"/*.java
-	"$JAVA"javac -target 1.4 -source 1.4 "`cygpath -p -w $DIR/`"*.java
+	"$JAVA"javac -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" "`cygpath -p -w $DIR/`"*.java
 else
-	"$JAVA"javac -cp gnu/getopt:. -target 1.4 -source 1.4 com/Ostermiller/Syntax/*.java
-	"$JAVA"javac -target jsr14 -source 1.5 com/inet/jortho/*.java
-	"$JAVA"javac -target 1.4 -source 1.4 $DIR/*.java
+	"$JAVA"javac -cp lib/jsyntaxpane.jar:. $DIR/*.java
 fi
 
 #############

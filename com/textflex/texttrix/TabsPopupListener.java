@@ -15,10 +15,10 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2004
+ * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s): David Young <dvd@textflex.com>
+ * Contributor(s): David Young <david@textflex.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -33,41 +33,47 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 package com.textflex.texttrix;
 
-/**A thread with a built-in template for a mechanism to stop the thread.
- * New thread classes can extend this class add stopping power to the 
- * <code>Thread</code> class.  For example, private classes can extend
- * <code>StoppableThread</code>, become attached to another object, and
- * retain the ability for other classes to stop the thread.
- * 
- * @author David Young
- */
-public abstract class StoppableThread extends Thread {
-	
-	private boolean stopped = false; // flag to stop the thread
-	
-	/**Checks whether the flag to stop the thread is set to <code>true</code>.
-	 * 
-	 * @return <code>true</code> if the stop flag has been set
-	 */
-	public boolean isStopped() {
-		return stopped;
-	}
-	
-	/**Sets the stop flag.
-	 * 
-	 * @param aStopped stop value
-	 */
-	public void setStopped(boolean aStopped) {
-		stopped = aStopped;
-	}
-	
-	/**Requests the thread to stop.
-	 * Must be overridden to perform the stoppage.
-	 *
-	 */
-	public abstract void requestStop();
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JPopupMenu;
 
+/**
+ * Listener to pop up a context menu when right-clicking
+ * on a tabbed pane.
+ * 
+ * @author davit
+ */
+class TabsPopupListener extends MouseAdapter {
+
+	private JPopupMenu tabsPopup;
+	
+	public TabsPopupListener(JPopupMenu aTabsPopup) {
+		super();
+		tabsPopup = aTabsPopup;
+	}
+
+	/**
+	 * Press right mouse button.
+	 * Responds to requests from Macs.
+	 *  
+	 */
+	public void mousePressed(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			tabsPopup.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
+
+	/**
+	 * Release right mouse button.
+	 * Responds to requests from Windows/Linux.
+	 *  
+	 */
+	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			tabsPopup.show(e.getComponent(), e.getX(), e.getY());
+		}
+	}
 }

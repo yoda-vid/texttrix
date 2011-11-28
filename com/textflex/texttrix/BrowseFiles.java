@@ -199,13 +199,6 @@ public abstract class BrowseFiles extends AbstractAction {
 		textPad = aTextPad;
 	}
 	
-	/** Sets the open directory
-	public void setOpenDir(String aOpenDir) {
-		openDir = aOpenDir;
-	}
-	*/
-	
-	
 	
 	
 	/** Gets the selected file, usually the first file that
@@ -270,12 +263,5 @@ public abstract class BrowseFiles extends AbstractAction {
 	public TextPad getTextPad() {
 		return textPad;
 	}
-	
-	/*
-	public String getOpenDir() {
-		return openDir;
-	}
-	*/
-		
 
 }

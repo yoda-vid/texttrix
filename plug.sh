@@ -47,6 +47,15 @@ Syntax:
 the file pkg.sh does not have executable permissions.)
 
 Parameters:
+	--branch=texttrix-branch: Specifies the name of the main
+	Text Trix branch against which the plugins should be built.
+	Note that this branch is different from the plugins branch
+	(see below). The branch (or trunk) specified here is with
+	reference to the repository root, so that for example to compile 
+	from the 0.7.1 branch, specify \"--branch=branches/0.7.1\". 
+	To compile from the trunk, simply specify \"--branch=trunk\", or 
+	leave it blank.	
+	
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
@@ -55,15 +64,18 @@ Parameters:
 	
 	--help: Lends a hand by displaying yours truly.
 	
+	--plgbranch=branch-name: Specifies the name of branch from
+	which to load the plugins; otherwise, the trunk will be used.
+	
 	--plugins=\"list-of-plugins\": Specifies the list of plugins
 	to build and package.  Defaults to the full set of plugins
 	included by default in the Text Trix editor.
 	
 Copyright:
-	Copyright (c) 2003-4, 2008 Text Flex
+	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2008-03-09
+	2011-11-13
 "
 
 #####################

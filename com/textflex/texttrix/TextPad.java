@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-10
+ * Portions created by the Initial Developer are Copyright (C) 2002-11
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -47,10 +47,10 @@ import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
 
-import com.Ostermiller.Syntax.*;
-
 import com.inet.jortho.FileUserDictionary;
 import com.inet.jortho.SpellChecker;
+
+import jsyntaxpane.DefaultSyntaxKit;
 
 /**The writing pad, complete with keyboard shortcuts, auto-wrap indent
  * functions, and text sytle changes.
@@ -84,7 +84,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	private ActionMap amap = null; // map of actions
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
-//	private static boolean JVM_15 = false; // flags that running on JVM 1.5
 	private StoppableThread autoSaveTimer = null; // timer to auto save the text
 	private CompoundEdit compoundEdit = null; // group editing tasks for single undo
 	private boolean compoundEditing = false; // flags whether editing as group
@@ -92,9 +91,10 @@ public class TextPad extends JTextPane implements StateEditable {
 	private LineDancePanel lineDancePanel = null; // the Line Dance panel
 	private FileModifiedThread fileModifiedThread = null;
 	private DocumentListener docListener = null;
+	private DocumentFilter docFilter = null;
+	private WrappedPlainView wrappedView = null;
+	private String eol = null;
 	
-	private HighlightedDocument highlightedDoc = new HighlightedDocument();
-
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
 	 * @param aFile file to which the <code>TextPad</code> will
@@ -106,7 +106,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		// TODO: decide whether to check JVM within each TextPad or only once,
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
 		
-//		JVM_15 = System.getProperty("java.vm.version").indexOf("1.5") != -1;
 		file = aFile;
 		setFileModifiedThread(new FileModifiedThread(this));
 		getFileModifiedThread().start();
@@ -130,18 +129,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		// adds dran-n-drop support for text
 		setDragEnabled(true);
 		
-		
-		
-		
 		// to allow multiple undos and listen for events
 		// for new key-bindings
 		imap = getInputMap(JComponent.WHEN_FOCUSED);
 		amap = getActionMap();
 		createActionTable(this);
-		
-		
-		
-		
 		
 		/* WORKAROUND:
 		 * The paragraph that follows a word-wrapped line may overlap it.  With each
@@ -221,17 +213,13 @@ public class TextPad extends JTextPane implements StateEditable {
 						e.printStackTrace();
 					}
 				}
-				//				System.out.println("keyChar:" + keyCode);
 			}
 
 		});
 		// applies the user specified set of keybindings
 		applyKeybindings(prefs);
 		
-		
 		// creates a styled document only for certain file extensions
-		setHighlightStyle(prefs.getSpellChecker());
-//		setStyledDocument(highlightedDoc);
 		applyDocumentSettings();
 	}
 	
@@ -282,16 +270,16 @@ public class TextPad extends JTextPane implements StateEditable {
         if( enable ){
             final JPopupMenu menu = new JPopupMenu();
 
-							// adds popup menu items from the TextPad
-							ArrayList list = createPopupActions();
-							for (int i = 0; i < list.size(); i++) {
-								menu.add((Action)list.get(i));
-							}
+			// adds popup menu items from the TextPad
+			ArrayList list = createPopupActions();
+			for (int i = 0; i < list.size(); i++) {
+				menu.add((Action)list.get(i));
+			}
 							
-							// adds the spell checker menu items
+			// adds the spell checker menu items
             addMouseListener( new TextPadPopupListener(menu) );
         } else {
-							MouseListener[] listeners = getMouseListeners();
+			MouseListener[] listeners = getMouseListeners();
             for (int i = 0; i < listeners.length; i++){
                 if(listeners[i] instanceof TextPadPopupListener){
                     removeMouseListener( listeners[i] );
@@ -310,50 +298,81 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * styled document.
 	 * @return the styled, highlighted document
 	 */
-	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
+	public void setHighlightStyle(boolean spellChecker) {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
 		String ext = getFileExtension();
 		ext = ext.toLowerCase();
-		HighlightedDocument doc = getHighlightedDoc();
-		if (ext.equals("") || ext.equals("txt") || !getContentType().equals("text/plain")) {
+		if (ext.equals("") || ext.equals("txt") ) {
 		
-		
-      // enable the spell checking on the text component with all features;
-			// turn on spell checker only for plain text documents since
-			// most other code will have numerous non-detected words;
+      		// enable the spell checking on the text component with all 
+			// features; turn on spell checker only for plain text documents 
+			// since most other code will have numerous non-detected words;
 			// TODO: apply spell-checker more broadly if add more
 			// varied dictionaries
-			if (spellChecker) SpellChecker.register( this );
-			return doc;
+			if (spellChecker) SpellChecker.register(this);
+			return;
 		}
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
 		String text = getAllText();
+		SpellChecker.unregister(this);
 
-//		System.out.println("contentType: " + getContentType());
-		setStyledDocument(doc);
 		
 		// sets the appropriate style
+		DefaultSyntaxKit.setWrapped(false);
 		if (ext.equals("java")) {
-			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
-		} else if (ext.equals("c") || ext.equals("cpp")) {
-			doc.setHighlightStyle(HighlightedDocument.C_STYLE);
-		} else if (ext.equals("html") || ext.equals("htm")) {
-			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
-		} else if (ext.equals("ltx")) {
-			doc.setHighlightStyle(HighlightedDocument.LATEX_STYLE);
+			setContentType("text/java");
+		} else if (ext.equals("c")) {
+			setContentType("text/c");
+		} else if (ext.equals("cpp")) {
+			setContentType("text/cpp");
+		} else if (ext.equals("html") || ext.equals("htm") 
+				|| ext.equals("xhtml")) {
+			DefaultSyntaxKit.setWrapped(true);
+			setContentType("text/xhtml");
+			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
+			setWrappedView((WrappedPlainView)kit.getView());
+			kit.deinstallComponent(this, 
+					"jsyntaxpane.components.LineNumbersRuler");
+		} else if (ext.equals("js")) {
+			setContentType("text/js");
+		} else if (ext.equals("groovy")) {
+			setContentType("text/groovy");
+		} else if (ext.equals("bash") || ext.equals("sh")) {
+			setContentType("text/bash");
+		} else if (ext.equals("json")) {
+			setContentType("text/json");
+		} else if (ext.equals("xml")) {
+			setContentType("text/xml");
 		} else if (ext.equals("sql")) {
-			doc.setHighlightStyle(HighlightedDocument.SQL_STYLE);
-		} else if (ext.equals("properties") || ext.equals("sh")) {
-			doc.setHighlightStyle(HighlightedDocument.PROPERTIES_STYLE);
+			setContentType("text/sql");
+		} else if (ext.equals("properties")) {
+			setContentType("text/properties");
+		} else if (ext.equals("py")) {
+			setContentType("text/python");
+		} else if (ext.equals("tal")) {
+			setContentType("text/tal");
+		} else if (ext.equals("jflex")) {
+			setContentType("text/jflex");
+		} else if (ext.equals("ruby")) {
+			setContentType("text/ruby");
+		} else if (ext.equals("scala")) {
+			setContentType("text/scala");
+		} else if (ext.equals("clojure")) {
+			setContentType("text/clojure");
+		} else if (ext.equals("bat")) {
+			setContentType("text/dosbatch");
+		} else if (ext.equals("xpath")) {
+			setContentType("text/xpath");
+		} else if (ext.equals("lua")) {
+			setContentType("text/lua");
 		} else {
+			setContentType("text/plain");
 			// defaults to Java style
-			doc.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
 		}
-		
 		// transfers the text into the appropriately styled document
 		setText(text);
 		enablePopup(true);
@@ -361,13 +380,84 @@ public class TextPad extends JTextPane implements StateEditable {
 		// still need to add undo manager to the new document
 		// via applyDocumentSettings;
 		// note that it will cause all previous edits to be unavailable
-		return doc;
+		
 	}
-/*	
-	public HighlightedDocument setHighlightStyle(boolean spellChecker) {
-		return setHighlightStyle(spellChecker, null);
+	
+	/**
+	 * Gets or makes a DocumentFilter for detecting changes in numbers of 
+	 * lines and making the corresponding updates to recorded line numbers
+	 * in the LineDancePanel.
+	 */
+	private DocumentFilter getOrMakeDocFilter() {
+		return (docFilter != null) ? docFilter : new DocumentFilter() {
+			public void insertString(DocumentFilter.FilterBypass fb, int offset,
+					String s, AttributeSet attr) {
+				try {
+					int origNum = getLineNumber();
+					super.insertString(fb, offset, s, attr);
+					// updates line numbers if the one or more lines have been
+					// added to the document
+					int newNum = getLineNumber();
+					if (newNum > origNum) {
+// 						System.out.println("new line added");
+						lineDancePanel.updateLineNumber(origNum, newNum);
+					}
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			public void remove(DocumentFilter.FilterBypass fb, int offset,
+					int length) {
+				try {
+					int origNum = getLineNumber();
+					super.remove(fb, offset, length);
+					int newNum = getLineNumber();
+					// updates line numbers if the one or more lines have been
+					// removed from the document
+					if (newNum < origNum) {
+// 						System.out.println("line removed");
+						lineDancePanel.updateLineNumber(origNum, newNum);
+					}
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+				
+			}
+			
+			public void replace(DocumentFilter.FilterBypass fb, int offset,
+					int length, String s, AttributeSet attr) {
+				try {
+					int origNum = getLineNumber();
+					super.replace(fb, offset, length, s, attr);
+					int newNum = getLineNumber();
+					// updates line numbers if the one or more lines have been
+					// added or removed from the documents
+					if (newNum != origNum) {
+// 						System.out.println("line replaced");
+						lineDancePanel.updateLineNumber(origNum, newNum);
+					}
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		};
 	}
-*/
+	
+	/*
+	public Dimension getPreferredScrollableViewportSize() {
+		return getPreferredSize();
+	}
+	
+	public boolean getScrollableTracksViewportWidth() {
+		return true;
+	}
+	
+	public boolean getScrollableTracksViewportHeight() {
+		return false;
+	}
+	*/
 	
 	/** Gets the file extension of the current file.
 	 * @return the file extension, which is the part of
@@ -673,8 +763,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 
 	/** Sets the default displayed tab sizes.
-	 * Only affects the displayed size, since the text itself represents the tab simply
-	 * as "\t".
+	 * Only affects the displayed size, since the text itself represents the 
+	 * tab simply as "\t".
 	 * @param tabChars number of spaces for the tab to represent
 	 * @see #setNoTabs()
 	 * @see #setIndentTabs(int) 
@@ -825,9 +915,18 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void indent(int tabChars, int tabs, int offset, int length) {
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
+		//System.out.println("tabWidth: " + tabWidth + ", charWidth: " + charWidth + ", tabs: " + tabs + ", offset: " + offset + ", length: " + length + ", styledDoc: " + getStyledDocument().toString());
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
+		
+		StyleContext sc = new StyleContext();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
+		/*
+		Style defaultStyle = sc.getStyle(StyleContext.DEFAULT_STYLE);
+		final Style mainStyle = sc.addStyle("MainStyle", defaultStyle);
+		StyleConstants.setLeftIndent(mainStyle, tabs * tabWidth);
+		getStyledDocument().setLogicalStyle(offset, mainStyle);
+		*/
 		
 		// waiting until fix (Java Bug ID#5073988 )?  But first line does indent,
 		// though the first tab merely increases in size to fill up the firstLineIndent
@@ -1231,27 +1330,17 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void applyDocumentSettings() {
 		StyledDocument doc = getStyledDocument();
-/*		
-		UndoableEditListener[] undos = doc.getUndoableEditListeners();
-		for (int i = 0; i < undos.length; i++) {
-			doc.removeUndoableEditListener(undos[i]);
-		}
-*/
 		// need to remove and re-add the undo manager to properly
 		// undo events after reading in new text
 		doc.removeUndoableEditListener(undoManager);	
 		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
 		applyAutoIndent();
-//		System.out.println("undoble added for " + getFile().getPath());
-/*
-		if (autoIndent) {
-			setIndentTabs(getTabSize());
-			setNoTabs();
-		} else {
-			setDefaultTabs(getTabSize());
+		
+		if (doc instanceof AbstractDocument) {
+			AbstractDocument abstracDoc = (AbstractDocument)doc;
+			abstracDoc.setDocumentFilter(getOrMakeDocFilter());
 		}
-*/		
 	}
 	
 	/** Visually indents the tabs and word-wrapped lines
@@ -1263,12 +1352,15 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * indentation of word-wrapped lines will be turned off.
 	 */
 	public void applyAutoIndent() {
-		if (autoIndent) {
-			setIndentTabs(getTabSize());
-			setNoTabs();
-		} else {
-			setDefaultTabs(getTabSize());
-		}
+		// TODO: commenting out for now as visual indentation not currently
+		// working with WrappedPlainView, and calls to paragraph attributes
+		// causing crash on loading
+// 		if (autoIndent) {
+// 			setIndentTabs(getTabSize());
+// 			setNoTabs();
+// 		} else {
+// 			setDefaultTabs(getTabSize());
+// 		}
 	}
 
 	/**Tells whether the pad has any characters in it.
@@ -1296,16 +1388,24 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	public void removeAllText() {
+		try {
+			Document doc = getDocument();
+			int len = doc.getLength();
+			doc.remove(0, len);
+		} catch (BadLocationException e) {
+			System.out.println("Couldn't remove all text.");
+		}
+	}
+	
 	/**Replaces the entire body of text with the given string.
 	 * @param s the string to replace the document's text
 	*/
 	public void replaceAllText(String s) {
 		try {
 			//	    System.out.println(s);
-			Document doc = getDocument();
-			int len = doc.getLength();
-			doc.remove(0, len);
-			doc.insertString(0, s, null);
+			removeAllText();
+			getDocument().insertString(0, s, null);
 		} catch (BadLocationException e) {
 			System.out.println("Couldn't replace it all.");
 		}
@@ -1397,7 +1497,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 
 	/**Converts the pad to an RTF tex view, if possible.
-	* If the document is not in RTF format, the pad reverts to its original setting.
+	 * If the document is not in RTF format, the pad reverts to its original 
+	 * setting.
 	*/
 	public void viewRTF() {
 		StateEdit stateEdit = new StateEdit(this);
@@ -1673,6 +1774,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		return getDocument().getDefaultRootElement().getElementCount();
 	}
 	
+	public int getLineOffset(int line) {
+		return getDocument().getDefaultRootElement().getElement(line - 2)
+				.getEndOffset();
+	}
+	
 	/**Gets the index position within the document, given the line number.
 	 * @param line the number of the line, starting at 1; add 1 to the
 	 * document element number
@@ -1711,7 +1817,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// adds a new entry in the table
 		lineDancePanel.addRow(new String[] {
 			"" + getLineNumber(),
-			"" + getCaretPosition(),
+// 			"" + getCaretPosition(),
 			name
 		});
 	}
@@ -1733,7 +1839,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 */
 	public void lineDance() {
 		// gets the position from the table
-		int position = lineDancePanel.getPosition();
+		int line = lineDancePanel.getLineNum();
+		int position = getLineOffset(line);
 		// checks the position against the length of the document,
 		// in case enough characters have been deleted from the
 		// document that the caret position would exceed the length
@@ -1770,81 +1877,81 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Useful when an open file is externally changed.
 	*/
 	public void refresh() {
-			// Ensure that has a saved file to refresh
-			if (!fileExists()) {
-				String title = "Refreshing ain't always easy";
-				String msg = "This is all we've got.  There's no saved file yet"
-					+ "\nfor us to refresh.  Sorry about that.";
-				JOptionPane.showMessageDialog(this, msg, title,
-					JOptionPane.INFORMATION_MESSAGE, null);
+		// Ensure that has a saved file to refresh
+		if (!fileExists()) {
+			String title = "Refreshing ain't always easy";
+			String msg = "This is all we've got.  There's no saved file yet"
+				+ "\nfor us to refresh.  Sorry about that.";
+			JOptionPane.showMessageDialog(this, msg, title,
+				JOptionPane.INFORMATION_MESSAGE, null);
+			return;
+		}
+		
+		// Confirms with user that willing to override any unsaved changes
+		if (getChanged()) {
+			
+			String s = "Refresh request";
+			// dialog with 2 choices: discard, cancel
+			String msg = "This file has not yet been saved."
+					+ "\nShould I still refresh it with the currently saved version?";
+			int choice = JOptionPane.showOptionDialog(this, msg,
+					"Save before refreshing", JOptionPane.WARNING_MESSAGE,
+					JOptionPane.DEFAULT_OPTION, null, new String[] { 
+							"Refresh me now", "Cancel" }, "Cancel"
+					);
+			switch (choice) {
+			// preserve the text area's contents by default
+			case 0:
+				break;
+			default:
 				return;
 			}
-			
-			// Confirms with user that willing to override any unsaved changes
-			if (getChanged()) {
-				
-				String s = "Refresh request";
-				// dialog with 2 choices: discard, cancel
-				String msg = "This file has not yet been saved."
-						+ "\nShould I still refresh it with the currently saved version?";
-				int choice = JOptionPane.showOptionDialog(this, msg,
-						"Save before refreshing", JOptionPane.WARNING_MESSAGE,
-						JOptionPane.DEFAULT_OPTION, null, new String[] { 
-								"Refresh me now", "Cancel" }, "Cancel"
-						);
-				switch (choice) {
-				// preserve the text area's contents by default
-				case 0:
-					break;
-				default:
-					return;
+		}
+		
+		// Refreshes the tab and tries to restore the caret position
+		// to its original position
+		int pos = getCaretPosition();
+		String path = getPath();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(path));
+			final String text = LibTTx.readText(new BufferedReader(reader));
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					// flagging the change prior to the change prevents UI updates
+					// for the change from TextPadDocumentListener in TextTrix
+					setChanged(true);
+					setText(text);
+//					setHighlightStyle(new Prefs().getSpellChecker(), text);
+					applyAutoIndent();
+					setChanged(false);
 				}
-			}
-			
-			// Refreshes the tab and tries to restore the caret position
-			// to its original position
-			int pos = getCaretPosition();
-			String path = getPath();
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(path));
-				final String text = LibTTx.readText(new BufferedReader(reader));
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						// flagging the change prior to the change prevents UI updates
-						// for the change from TextPadDocumentListener in TextTrix
-						setChanged(true);
-						setText(text);
-//						setHighlightStyle(new Prefs().getSpellChecker(), text);
-						applyAutoIndent();
-						setChanged(false);
-					}
-				});
-//				read(t, reader, path);
-			} catch(FileNotFoundException e) {
-				// This message will most likely not be reached since
-				// the non-existant file would be detected earlier.
-				String msg = "The original file appears to have been moved, "
-					+ "\ndeleted, or set to be unreadable.";
-				JOptionPane.showMessageDialog(
-					this, 
-					msg, 
-					"File missing",
-					JOptionPane.ERROR_MESSAGE);
-			} catch(IOException e) {
-				String msg = "The original file could not be accessed.";
-				JOptionPane.showMessageDialog(
-					this, 
-					msg, 
-					"File inaccessible",
-					JOptionPane.ERROR_MESSAGE);
-			}
-//			openFile(t.getFile(), t.isEditable(), false, true);
-			// prevent caret from exceeding length of newly refreshed file
-			if (pos <= getDocument().getLength()) {
-				setCaretPosition(pos);
-			} else {
-				setCaretPosition(getDocument().getLength());
-			}
+			});
+//			read(t, reader, path);
+		} catch(FileNotFoundException e) {
+			// This message will most likely not be reached since
+			// the non-existant file would be detected earlier.
+			String msg = "The original file appears to have been moved, "
+				+ "\ndeleted, or set to be unreadable.";
+			JOptionPane.showMessageDialog(
+				this, 
+				msg, 
+				"File missing",
+				JOptionPane.ERROR_MESSAGE);
+		} catch(IOException e) {
+			String msg = "The original file could not be accessed.";
+			JOptionPane.showMessageDialog(
+				this, 
+				msg, 
+				"File inaccessible",
+				JOptionPane.ERROR_MESSAGE);
+		}
+//		openFile(t.getFile(), t.isEditable(), false, true);
+		// prevent caret from exceeding length of newly refreshed file
+		if (pos <= getDocument().getLength()) {
+			setCaretPosition(pos);
+		} else {
+			setCaretPosition(getDocument().getLength());
+		}
 	}
 	
 	public void addDocListener(DocumentListener aDocListener) {
@@ -1964,12 +2071,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		scrollPane = aScrollPane;
 	}
 	
-	/** Sets the highlighted document used for syntax highlighting.
-	 * @param doc the highlighted document
-	 */
-	public void setHighlightedDoc(HighlightedDocument doc) {
-		highlightedDoc = doc;
-	}
+	public void setEOL(String val) { eol = val; }
 	
 	
 	
@@ -2007,13 +2109,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		return lineDancePanel;
 	}
 	
-	/** Gets the highlighted document used for syntax highlighting.
-	 * @return the highlighted document
-	 */
-	public HighlightedDocument getHighlightedDoc() {
-		return highlightedDoc;
-	}
-	
 	public FileModifiedThread getFileModifiedThread() {
 		return fileModifiedThread;
 	}
@@ -2026,6 +2121,11 @@ public class TextPad extends JTextPane implements StateEditable {
 	public StoppableThread getAutoSaveTimer() {
 		return autoSaveTimer;
 	}
+	
+	public WrappedPlainView getWrappedView() { return wrappedView; }
+	private void setWrappedView(WrappedPlainView val) { wrappedView = val; }
+	
+	public String getEOL() { return eol; }
 	
 	
 	
