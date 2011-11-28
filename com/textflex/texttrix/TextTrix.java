@@ -2192,22 +2192,17 @@ public class TextTrix extends JFrame {
 			final int caretPos) {
 		// loads text into TextPad in separate thread because
 		// of the potentially very long highlighting operation
-		Thread textThread = new Thread() {
-			public void run() {
-// 				textPad.setText(text);
-				try {
-// 					String eol = text.indexOf("\r\n") != -1 ? "\r\n" : "\n";
-// 					System.out.println("cr? " + (text.indexOf("\r") != -1));
-// 					System.out.println("eol: " + (eol.equals("\r\n") ? "crlf" : "lf"));
-// 					textPad.getDocument().putProperty(DefaultEditorKit
-// 							.EndOfLineStringProperty, "\n");
+// 		Thread textThread = new Thread() {
+// 			public void run() {
+// 				try {
 					String eol = LibTTx.getEOL(text);
 					textPad.setEOL(eol);
 					String textLF = text.replace(eol, "\n");
-					textPad.getDocument().insertString(0, textLF, null);
-				} catch(BadLocationException e) {
-					e.printStackTrace();
-				}
+// 					textPad.getDocument().insertString(0, textLF, null);
+					textPad.setText(textLF);
+// 				} catch(BadLocationException e) {
+// 					e.printStackTrace();
+// 				}
 				textPad.applyDocumentSettings();
 				// resets caret and modification flags, assuming that
 				// the read in text is the same as that from the
@@ -2215,9 +2210,9 @@ public class TextTrix extends JFrame {
 				textPad.setCaretPosition(caretPos);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
-			}
-		};
-		textThread.start();
+// 			}
+// 		};
+// 		textThread.start();
 		Thread loadCheck = 
 				new Thread(new CheckDocLoad(textPad, statusProgress));
 		loadCheck.start();
