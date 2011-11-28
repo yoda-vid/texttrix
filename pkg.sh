@@ -258,8 +258,6 @@ NAME="texttrix" # UNIX program name
 DIR="com/textflex/$NAME" # Java package directory structure
 PKGDIR="$NAME-$VER" # name of binary package
 PKG=$PKGDIR.zip # name of compressed binary package
-#PKG14DIR="$PKGDIR-jre14"
-#PKG14=$PKG14DIR.zip
 SRCPKGDIR="$PKGDIR-src" # name of source package
 SRCPKG="$SRCPKGDIR.zip" # name of compressed package of source
 JAR="TextTrix.jar" # executable jar
@@ -288,8 +286,7 @@ fi
 
 echo "Packaging the files..."
 
-# remove old build packages and set up new ones
-rm -rf $ALL
+# set up new package directories
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
@@ -305,9 +302,8 @@ rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn dictionaries/.svn diction
 
 # create the source package from the master package
 cd $BLD_DIR
-cp -rf $PKGDIR texttrix # master --> one folder within source package
 mkdir $SRCPKGDIR # create empty source package to hold copy of master
-mv texttrix $SRCPKGDIR # copy to source package
+cp -rf $PKGDIR $SRCPKGDIR/texttrix # master --> one folder within source package
 
 # add the build files
 cd "$TTX_DIR"
