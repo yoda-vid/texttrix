@@ -97,7 +97,6 @@ public class TextTrix extends JFrame {
 	private boolean updateForTextPad = true; // flag to update UI and Hx for pad
 	// flag to update file history menu entries
 	private static boolean updateFileHist = false;
-//	private FileHist fileHist = null; // file history
 	// starting position of file history in file menu
 	private static int fileHistStart = -1;
 	private static boolean fresh = false; // temporarily don't reopen tabs
@@ -115,8 +114,6 @@ public class TextTrix extends JFrame {
 	private LineDanceDialog lineDanceDialog = null;
 	
 	/* Menu bar controls */
-	// menu and tool bar worker thread
-//	private MenuBarCreator menuBarCreator = null;
 	private JMenuBar menuBar = null; // menu bar
 	private static JCheckBoxMenuItem autoIndent = null; // auto-wrap-indent
 	private JMenu viewMenu = null; // view menu
@@ -3225,19 +3222,18 @@ public class TextTrix extends JFrame {
 							if (getPrefs().getAutoSavePrompt()
 									&& textPad.fileExists()) {
 								// creates a save prompt dialog
-								int choice = JOptionPane
-										.showConfirmDialog(
-												getThis(),
-												"We're about to auto-save this baby"
-														+ " ("
-														+ textPad.getFilename()
-														+ ")."
-														+ "\nYou OK with that?"
-														+ "\n(\"No\" means we won't ask again "
-														+ "about this file.)",
-												"Auto-Save Prompt",
-												JOptionPane.YES_NO_OPTION,
-												JOptionPane.QUESTION_MESSAGE);
+								int choice = JOptionPane.showConfirmDialog(
+										getThis(),
+										"We're about to auto-save this baby"
+												+ " ("
+												+ textPad.getFilename()
+												+ ")."
+												+ "\nYou OK with that?"
+												+ "\n(\"No\" means we won't ask again "
+												+ "about this file.)",
+										"Auto-Save Prompt",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE);
 								if (choice == JOptionPane.NO_OPTION) {
 									return;
 								}
@@ -3253,20 +3249,19 @@ public class TextTrix extends JFrame {
 								// path rather than diving immediately and
 								// cryptically
 								// into the file save dialog
-								int choice = JOptionPane
-										.showConfirmDialog(
-												getThis(),
-												"We're about to auto-save this baby"
-														+ " ("
-														+ textPad.getFilename()
-														+ "), "
-														+ "\nbut we need a name for it.  "
-														+ "Mind if we got that from you?"
-														+ "\n(\"No\" means we won't ask again "
-														+ "about this file.)",
-												"Auto-Save Prompt",
-												JOptionPane.YES_NO_OPTION,
-												JOptionPane.QUESTION_MESSAGE);
+								int choice = JOptionPane.showConfirmDialog(
+										getThis(),
+										"We're about to auto-save this baby"
+												+ " ("
+												+ textPad.getFilename()
+												+ "), "
+												+ "\nbut we need a name for it.  "
+												+ "Mind if we got that from you?"
+												+ "\n(\"No\" means we won't ask again "
+												+ "about this file.)",
+										"Auto-Save Prompt",
+										JOptionPane.YES_NO_OPTION,
+										JOptionPane.QUESTION_MESSAGE);
 								// exit immediately if users cancel the save
 								if (choice == JOptionPane.NO_OPTION) {
 									return;
@@ -3326,10 +3321,8 @@ public class TextTrix extends JFrame {
 			if (getUpdateForTextPad()) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-//						if (getUpdateForTextPad()) {
-							updateUIForTextPad(pane, t);
-							updateTabHistory(pane);
-//						}
+						updateUIForTextPad(pane, t);
+						updateTabHistory(pane);
 					}
 				});
 			}

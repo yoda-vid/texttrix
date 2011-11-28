@@ -55,12 +55,12 @@ Parameters:
 	
 	--help: Lends a hand by displaying yours truly.
 	
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
+	--java=javac/binary/path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.  On Linux, this path defaults to
-	"/usr/java/default", the new link found in Java 6.  
+	"/usr/java/default/bin", the new link found in Java 6.  
 	
 	--plgbranch=path/to/branch: The plugin branch (or trunk) from which to
 	compile plugin source code.  For example, to compile from the 0.7.1
@@ -79,7 +79,7 @@ Copyright:
 	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2011-11-11
+	2011-11-25
 "
 
 #####################
@@ -174,7 +174,6 @@ PAR_TIMESTAMP="--timestamp"
 
 if [ $# -gt 0 ]
 then
-	echo "Parsing user arguments..."
 	for arg in "$@"
 	do
 		# reads arguments
@@ -195,35 +194,34 @@ then
 		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
-			echo "...set to use \"$JAVA\" as the Java compiler path"
+			echo "Set to use \"$JAVA\" as the Java compiler path"
 			
 		# install location
 		elif [ ${arg:0:${#PAR_PREFIX}} = "$PAR_PREFIX" ] 
 		then
 			PREFIX="${arg#${PAR_PREFIX}=}"
-			echo "...set to use \"$PREFIX\" as the install path"
+			echo "Set to use \"$PREFIX\" as the install path"
 			
 		# texttrix branch dir
 		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 		then
 			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+			echo "Set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 		
 		# plugins branch dir
 		elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
 		then
 			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-			echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
+			echo "Set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 			
 		# timestamp labeling
 		elif [ ${arg:0:${#PAR_TIMESTAMP}} = "$PAR_TIMESTAMP" ]
 		then
 			TIMESTAMP=1
 			VER="$VER-$DATE"
-			echo "...set to label packages with \"$VER\""
+			echo "Set to label packages with \"$VER\""
 		fi
 	done
-	echo "...done"
 fi
 
 # Appends a file separator to end of Java compiler path if none there
@@ -304,11 +302,6 @@ cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
 rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn dictionaries/.svn dictionaries/User*
-# make files readable in all sorts of systems
-#unix2dos *.txt $DIR/*.txt
-# prevent execution of text files; 
-# commented out because appears to be causing permission errors in cygwin
-#chmod -f 664 *.txt $DIR/*.txt 
 
 # create the source package from the master package
 cd $BLD_DIR

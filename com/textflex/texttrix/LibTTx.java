@@ -325,10 +325,6 @@ public class LibTTx {
 		return null;
 	}
 	
-	public static URI getBaseURI() {
-		return getBaseURI("");
-	}
-
 	/** Gets a list of all the plug-ins in a given directory.
 	 * 
 	 * @param plugInDir the plug-in directory

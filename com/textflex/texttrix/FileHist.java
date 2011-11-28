@@ -92,8 +92,7 @@ class FileHist implements Runnable {
 	/**
 	 * Creates the actions to add to the history menu.
 	 * 
-	 * @param file
-	 *            file to open when invoking the action
+	 * @param file file to open when invoking the action
 	 * @return action to open the given file
 	 */
 	public Action createFileHistAction(final String file) {

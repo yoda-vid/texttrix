@@ -38,15 +38,10 @@
 # ***** END LICENSE BLOCK *****
 
 HELP="
-Runs Text Trix, the super text tool chest. 
+Runs the Text Trix application.
 
 Syntax:
 	run.sh [options]
-
-Assumptions:
-	The compilation takes place in a Bash shell within a Un*x-based
-environment, even if the resulting executables will run in the Windows
-envrionemnt.
 
 Parameters:	
 	--cleartabs: Clears the saved tabs history.  Similar to \"fresh\", 
@@ -63,13 +58,11 @@ Parameters:
 	
 	--help: Lends a hand by displaying yours truly.
 		
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
-	jar, and other Java tools necessary for compilation.  
-	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
-	to specify the path, which would override any command-line 
-	specification.
+	--java=java/binary/path: Specifies the path to the java binary. 
+	Alternatively, the JAVA variable in can be hand-edited 
+	to specify the path, which would override this argument.
 	
-	--nohigh: Turns on syntax highlighting.
+	--nohigh: Turns off syntax highlighting.
 	
 	--verbose: Verbose command-line output.
 
@@ -77,7 +70,7 @@ Copyright:
 	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2011-11-15
+	2011-11-25
 "
 
 
@@ -90,7 +83,6 @@ Last updated:
 
 PAR_JAVA="--java"
 JAVA=""
-READ_JAVA=0
 
 ################
 # Automatically detect the Cygwin environment
@@ -146,7 +138,6 @@ echo "found $SYSTEM"
 
 if [ $# -gt 0 ]
 then
-	echo "Parsing user arguments..."
 	for arg in "$@"
 	do
 		# reads arguments
@@ -167,12 +158,11 @@ then
 		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
-			echo "...set to use \"$JAVA\" as the Java path"
+			echo "Set to use \"$JAVA\" as the Java path"
 		else
-			echo "...passing \"$arg\" to Text Trix session"
+			echo "Passing \"$arg\" to Text Trix session"
 		fi
 	done
-	echo "...done"
 fi
 
 if [ x$JAVA = x"false" ]

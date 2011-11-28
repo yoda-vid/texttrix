@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-10
+# Portions created by the Initial Developer are Copyright (C) 2003-11
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -58,9 +58,9 @@ Parameters:
 	Note that this arguments is not used directly in this script, but 
 	passed to the plugins script when the \"--plug\" flag is set.
 	
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
+	--java=java//binaries/path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
-	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
+	Alternatively, the JAVA variable can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
 	
@@ -73,10 +73,10 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-10 Text Flex
+	Copyright (c) 2003-11 Text Flex
 
 Last updated:
-	2008-05-31
+	2011-11-27
 "
 
 #####################
@@ -165,14 +165,8 @@ echo "found $SYSTEM"
 
 if [ $# -gt 0 ]
 then
-	echo "Parsing user arguments..."
 	for arg in "$@"
 	do
-		if [ x"$ARGS_ECHO" = "x" ]
-		then
-			ARGS_ECHO="Parsing user arguments..."
-		fi
-		
 		# reads arguments
 		if [ "x$arg" = "x--help" -o "x$arg" = "x-h" ] # help docs
 		then
@@ -191,41 +185,40 @@ then
 		elif [ ${arg:0:${#PAR_JAVA}} = "$PAR_JAVA" ]
 		then
 			JAVA="${arg#${PAR_JAVA}=}"
-			echo "...set to use \"$JAVA\" as the Java compiler path"
+			echo "Set to use \"$JAVA\" as the Java compiler path"
 			
 		# texttrix branch dir
 		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
 		then
 			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
+			echo "Set to use \"$BRANCH_DIR\" as the texttrix branch dir"
 		
 		# build plugins
 		elif [ ${arg:0:${#PAR_PLUG}} = "$PAR_PLUG" ]
 		then
 			PLUG=1
-			echo "...set to build plugins"
+			echo "Set to build plugins"
 			
 		# clean
 		elif [ ${arg:0:${#PAR_CLEAN}} = "$PAR_CLEAN" ]
 		then
 			CLEAN=1
-			echo "...set to clean files and exit"
+			echo "Set to clean files and exit"
 			
 		# build API
 		elif [ ${arg:0:${#PAR_API}} = "$PAR_API" ]
 		then
 			API=1
-			echo "...set to build API documentation"
+			echo "Set to build API documentation"
 			
 		# build SVN changelog
 		elif [ ${arg:0:${#PAR_CHANGELOG}} = "$PAR_CHANGELOG" ]
 		then
 			CHANGELOG=1
-			echo "...set to build changelog"
+			echo "Set to build changelog"
 			
 		fi
 	done
-	echo "...done"
 fi
 
 if [ x$JAVA = x"false" ]
@@ -278,10 +271,8 @@ echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
 if [ "$CYGWIN" = "true" ]
 then
-	#"$JAVA"javac -target jsr14 -source 1.5 "`cygpath -p -w com/inet/jortho`"/*.java
 	"$JAVA"javac -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" "`cygpath -p -w $DIR/`"*.java
 else
-	#"$JAVA"javac -target jsr14 -source 1.5 com/inet/jortho/*.java
 	"$JAVA"javac -cp lib/jsyntaxpane.jar:. $DIR/*.java
 fi
 
