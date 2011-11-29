@@ -1354,7 +1354,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void applyAutoIndent() {
 		// TODO: commenting out for now as visual indentation not currently
 		// working with WrappedPlainView, and calls to paragraph attributes
-		// causing crash on loading
+		// causing crash on loading and extremely long loading times
+		// when mixed with syntax highlighting
 // 		if (autoIndent) {
 // 			setIndentTabs(getTabSize());
 // 			setNoTabs();

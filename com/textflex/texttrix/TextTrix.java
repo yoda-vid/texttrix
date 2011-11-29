@@ -2190,18 +2190,25 @@ public class TextTrix extends JFrame {
 	
 	private void loadText(final TextPad textPad, final String text, 
 			final int caretPos) {
-		// loads text into TextPad in separate thread because
-		// of the potentially very long highlighting operation
-// 		Thread textThread = new Thread() {
-// 			public void run() {
-// 				try {
+		/*
+		// need to load text into TextPad in separate thread when mixed
+		// with TextPad#applyAutoIndent function because of the potentially 
+		// very long highlighting operation, but the separate thread is not 
+		// needed now that the indent code has been commented out for now
+		Thread textThread = new Thread() {
+			public void run() {
+				try {
 					String eol = LibTTx.getEOL(text);
 					textPad.setEOL(eol);
+					
+					// manually replacing the newlines and inserting via
+					// Document#insertString is necessary to avoid crashes
+					// when loading multiple files, although occasional
+					// loading errors continue to occur
 					String textLF = text.replace(eol, "\n");
-// 					textPad.getDocument().insertString(0, textLF, null);
-					textPad.setText(textLF);
-// 				} catch(BadLocationException e) {
-// 					e.printStackTrace();
+					textPad.getDocument().insertString(0, textLF, null);
+				} catch(BadLocationException e) {
+					e.printStackTrace();
 // 				}
 				textPad.applyDocumentSettings();
 				// resets caret and modification flags, assuming that
@@ -2210,9 +2217,23 @@ public class TextTrix extends JFrame {
 				textPad.setCaretPosition(caretPos);
 				textPad.setChanged(false);
 				updateTabTitle(textPad);
-// 			}
-// 		};
-// 		textThread.start();
+			}
+		};
+		textThread.start();
+		*/
+		// reads and saves the end-of-line style to reapply when saving
+		String eol = LibTTx.getEOL(text);
+		textPad.setEOL(eol);
+		
+		// sets the text, applies filters and managers, repositions the
+		// caret to the original position, and sets the file modification flags
+		textPad.setText(text);
+		textPad.applyDocumentSettings();
+		textPad.setCaretPosition(caretPos);
+		textPad.setChanged(false);
+		updateTabTitle(textPad);
+		
+		// provides feedback on document loading status
 		Thread loadCheck = 
 				new Thread(new CheckDocLoad(textPad, statusProgress));
 		loadCheck.start();
