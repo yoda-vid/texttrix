@@ -269,11 +269,13 @@ echo ""
 echo "Compiling the Text Trix program..."
 echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
+CLASSPATH=lib/jsyntaxpane.jar:.
 if [ "$CYGWIN" = "true" ]
 then
-	"$JAVA"javac -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" "`cygpath -p -w $DIR/`"*.java
+	CLASSPATH=`cygpath -wp $CLASSPATH`
+	"$JAVA"javac -cp $CLASSPATH "`cygpath -wp $DIR/`"*.java
 else
-	"$JAVA"javac -cp lib/jsyntaxpane.jar:. $DIR/*.java
+	"$JAVA"javac -cp $CLASSPATH $DIR/*.java
 fi
 
 #############
@@ -306,9 +308,9 @@ then
 	echo "Building API documentation..."
 	if [ "$CYGWIN" = "true" ]
 	then	
-		"$JAVA"javadoc -d "`cygpath -p -w $API_DIR`" -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
+		"$JAVA"javadoc -d "`cygpath -p -w $API_DIR`" -classpath $CLASSPATH -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
 	else
-		"$JAVA"javadoc -d "$API_DIR" -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
+		"$JAVA"javadoc -d "$API_DIR" -classpath $CLASSPATH -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
 	fi
 	echo "...done"
 fi

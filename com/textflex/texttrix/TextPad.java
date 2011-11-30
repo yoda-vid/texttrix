@@ -262,8 +262,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 	
     /**
-     * Enable or disable the popup menu with the menu item "Orthography" and "Languages". 
-     * @param text the JTextComponent that should change
+     * Enable or disable the popup menu with the menu item "Orthography" and 
+	 * "Languages". 
      * @param enable true, enable the feature.
      */
     public void enablePopup(boolean enable ){
@@ -296,7 +296,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * and any other document settings, such as TextPad
 	 * document listeners, will be re-applied to the new
 	 * styled document.
-	 * @return the styled, highlighted document
 	 */
 	public void setHighlightStyle(boolean spellChecker) {
 		// detects the file extension and returns if the document

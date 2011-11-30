@@ -49,7 +49,7 @@ Parameters:
 	the next launch.
 	
 	--files [file1] [file2] ... : Specifies files to open at start-up.  
-	Files will be placed in their own group tab, labeled "Start".  All 
+	Files will be placed in their own group tab, labeled \"Start\".  All 
 	arguments listed without a switch as the first argument will be 
 	opened until the first switch is reached.
 	

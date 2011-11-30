@@ -1385,7 +1385,7 @@ public class TextTrix extends JFrame {
 	 * but includes both used and ignored plug-ins that Text Trix has
 	 * read and at least prepared for use.
 	 * @param t text pad from which to select text
-	 * @param offset starting point from which to measure <code>start</code> 
+	 * @param baseline starting point from which to measure <code>start</code> 
 	 * and <cdoe>end</code>
 	 * @param start beginning point of selection, relative to baseline
 	 * @param end end point of selection, relative to baseline
@@ -2188,6 +2188,12 @@ public class TextTrix extends JFrame {
 		});
 	}
 	
+	/**
+	 * Loads text into a TextPad and sets teh caret position.
+	 * The associated documents managers will also be applied, and the text's
+	 * end-of-line style will be stored for future reference.
+	 * Loading process will be displayed in the progress bar.
+	 */
 	private void loadText(final TextPad textPad, final String text, 
 			final int caretPos) {
 		/*
@@ -2336,7 +2342,6 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @param path the path to the modified file
 	 * @return true if the file saves successfully
-	 * @see #saveFile(String)
 	 */
 	public boolean saveFileOnExit(String path) {
 		//	System.out.println("printing");
@@ -2575,7 +2580,6 @@ public class TextTrix extends JFrame {
 	 *            pad
 	 * @return <code>true</code> if a Text Pad is selected, necessary to save
 	 *         a file
-	 * @see #prepFileSaveDialog()
 	 */
 	public boolean prepFileSaveDialog(TextPad t) {
 		//	int tabIndex = getSelectedTabbedPane().getSelectedIndex();
