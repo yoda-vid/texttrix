@@ -73,6 +73,9 @@ import jsyntaxpane.DefaultSyntaxKit;
  * as the pad, the pad's shortcuts keep out of the way of the spreadsheet.
  */
 public class TextPad extends JTextPane implements StateEditable {
+	
+	private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+	
 	private File file; // the file that the pad displays
 	private boolean changed = false; // flag that text changed
 	private boolean ignoreChanged = false;
@@ -1456,7 +1459,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		// records the edit event for undoing and gets the text
 		StateEdit stateEdit = new StateEdit(this);
 		String text = getText();
-		text = text.replaceAll("\n", "<p>");
+		if (!text.startsWith("<html>")) {
+			text = text.replace("\n", "<p>").replace("\t", TAB);
+		}
+// 		text = text.replaceAll("[^>]\n", "<p>");
 //		System.out.println(text);
 		
 		// sets the style
