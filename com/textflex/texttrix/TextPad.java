@@ -331,8 +331,10 @@ public class TextPad extends JTextPane implements StateEditable {
 			setContentType("text/c");
 		} else if (ext.equals("cpp")) {
 			setContentType("text/cpp");
-		} else if (ext.equals("html") || ext.equals("htm") 
-				|| ext.equals("xhtml")) {
+		} else if (ext.equals("html") 
+				|| ext.equals("htm") 
+				|| ext.equals("xhtml")
+				|| ext.equals("css")) {
 			DefaultSyntaxKit.setWrapped(true);
 			setContentType("text/xhtml");
 			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
@@ -343,7 +345,8 @@ public class TextPad extends JTextPane implements StateEditable {
 			setContentType("text/js");
 		} else if (ext.equals("groovy")) {
 			setContentType("text/groovy");
-		} else if (ext.equals("bash") || ext.equals("sh")) {
+		} else if (ext.equals("bash") 
+				|| ext.equals("sh")) {
 			setContentType("text/bash");
 		} else if (ext.equals("json")) {
 			setContentType("text/json");
@@ -373,15 +376,11 @@ public class TextPad extends JTextPane implements StateEditable {
 			setContentType("text/lua");
 		} else {
 			setContentType("text/plain");
-			// defaults to Java style
+			// defaults to plain style
 		}
 		// transfers the text into the appropriately styled document
 		setText(text);
 		enablePopup(true);
-		
-		// still need to add undo manager to the new document
-		// via applyDocumentSettings;
-		// note that it will cause all previous edits to be unavailable
 		
 	}
 	
