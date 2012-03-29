@@ -98,7 +98,7 @@ API_DIR="docs/api"
 API=0
 
 # build changelog; 1 = build
-CHANGELOG_END="2008-06-19"
+CHANGELOG_END="" # insert date as YYYY-MM-DD format
 CHANGELOG=0
 
 ####################
