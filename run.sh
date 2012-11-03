@@ -198,9 +198,10 @@ DIR="com/textflex/texttrix" # src package structure
 ##############
 
 cd "$BASE_DIR"
+CLASSPATH=lib/jsyntaxpane.jar:lib/oster.jar:.
 if [ $CYGWIN -eq 1 ]
 then
-	"$JAVA"java -cp "`cygpath -wp lib/jsyntaxpane.jar:.`" com.textflex.texttrix.TextTrix $@
+	"$JAVA"java -cp "`cygpath -wp $CLASSPATH`" com.textflex.texttrix.TextTrix $@
 else
-	"$JAVA"java -cp lib/jsyntaxpane.jar:. com.textflex.texttrix.TextTrix $@
+	"$JAVA"java -cp $CLASSPATH com.textflex.texttrix.TextTrix $@
 fi

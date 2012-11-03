@@ -269,7 +269,7 @@ echo ""
 echo "Compiling the Text Trix program..."
 echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
-CLASSPATH=lib/jsyntaxpane.jar:.
+CLASSPATH=lib/jsyntaxpane.jar:lib/oster.jar:.
 if [ "$CYGWIN" = "true" ]
 then
 	CLASSPATH=`cygpath -wp $CLASSPATH`

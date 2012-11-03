@@ -47,6 +47,8 @@ import java.io.*;
 import javax.swing.event.*;
 import java.beans.*;
 
+import com.Ostermiller.Syntax.*;
+
 import com.inet.jortho.FileUserDictionary;
 import com.inet.jortho.SpellChecker;
 
@@ -98,6 +100,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	private WrappedPlainView wrappedView = null;
 	private String eol = null;
 	
+	private HighlightedDocument highlightedDoc = new HighlightedDocument();
+
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
 	 * @param aFile file to which the <code>TextPad</code> will
@@ -335,12 +339,19 @@ public class TextPad extends JTextPane implements StateEditable {
 				|| ext.equals("htm") 
 				|| ext.equals("xhtml")
 				|| ext.equals("css")) {
-			DefaultSyntaxKit.setWrapped(true);
-			setContentType("text/xhtml");
-			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
-			setWrappedView((WrappedPlainView)kit.getView());
-			kit.deinstallComponent(this, 
-					"jsyntaxpane.components.LineNumbersRuler");
+			// modified version of JSyntaxPane to allow for wrapping,
+			// which unfortunately does not work for wrap-indent
+// 			DefaultSyntaxKit.setWrapped(true);
+// 			setContentType("text/xhtml");
+// 			DefaultSyntaxKit kit = (DefaultSyntaxKit)getEditorKit();
+// 			setWrappedView((WrappedPlainView)kit.getView());
+// 			kit.deinstallComponent(this, 
+// 					"jsyntaxpane.components.LineNumbersRuler");
+					
+			// Ostermiller syntax highlighter for better wrapped text
+			HighlightedDocument doc = getHighlightedDoc();
+			setStyledDocument(doc);
+			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
 		} else if (ext.equals("js")) {
 			setContentType("text/js");
 		} else if (ext.equals("groovy")) {
@@ -382,6 +393,13 @@ public class TextPad extends JTextPane implements StateEditable {
 		setText(text);
 		enablePopup(true);
 		
+	}
+	
+	/** Gets the highlighted document used for syntax highlighting.
+	 * @return the highlighted document
+	 */
+	public HighlightedDocument getHighlightedDoc() {
+		return highlightedDoc;
 	}
 	
 	/**
@@ -1353,16 +1371,19 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * indentation of word-wrapped lines will be turned off.
 	 */
 	public void applyAutoIndent() {
-		// TODO: commenting out for now as visual indentation not currently
+		// TODO: visual indentation not currently
 		// working with WrappedPlainView, and calls to paragraph attributes
 		// causing crash on loading and extremely long loading times
-		// when mixed with syntax highlighting
-// 		if (autoIndent) {
-// 			setIndentTabs(getTabSize());
-// 			setNoTabs();
-// 		} else {
-// 			setDefaultTabs(getTabSize());
-// 		}
+		// when mixed with syntax highlighting, so only using for
+		// Ostermiller syntax highlighter (HighlightedDocument) for now
+		if (getStyledDocument() instanceof HighlightedDocument) {
+			if (autoIndent) {
+				setIndentTabs(getTabSize());
+				setNoTabs();
+			} else {
+				setDefaultTabs(getTabSize());
+			}
+		}
 	}
 
 	/**Tells whether the pad has any characters in it.
