@@ -308,18 +308,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
-		String ext = getFileExtension();
-		ext = ext.toLowerCase();
-		if (ext.equals("") || ext.equals("txt") ) {
-		
-      		// enable the spell checking on the text component with all 
-			// features; turn on spell checker only for plain text documents 
-			// since most other code will have numerous non-detected words;
-			// TODO: apply spell-checker more broadly if add more
-			// varied dictionaries
-			if (spellChecker) SpellChecker.register(this);
-			return;
-		}
+		String ext = getFileExtension().toLowerCase();
+		if (ext.equals("") || ext.equals("txt")) return;
 		
 		// prepares to transfer text into new styled document, which
 		// will automatically style the text
@@ -328,7 +318,7 @@ public class TextPad extends JTextPane implements StateEditable {
 
 		
 		// sets the appropriate style
-		DefaultSyntaxKit.setWrapped(false);
+// 		DefaultSyntaxKit.setWrapped(false);
 		if (ext.equals("java")) {
 			setContentType("text/java");
 		} else if (ext.equals("c")) {
@@ -352,6 +342,14 @@ public class TextPad extends JTextPane implements StateEditable {
 			HighlightedDocument doc = getHighlightedDoc();
 			setStyledDocument(doc);
 			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
+// 			if (scrollPane != null) {
+// 				scrollPane.setHorizontalScrollBarPolicy(
+// 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+// 			}
+// 			System.out.println("file: " + file.getName() + ", width: " + getWidth() 
+// 					+ ", scrollPane width: " + scrollPane.getWidth());
+// 			scrollPane.getViewport().setViewSize(new Dimension(
+// 					scrollPane.getWidth() - 50, scrollPane.getHeight()));
 		} else if (ext.equals("js")) {
 			setContentType("text/js");
 		} else if (ext.equals("groovy")) {
@@ -393,6 +391,19 @@ public class TextPad extends JTextPane implements StateEditable {
 		setText(text);
 		enablePopup(true);
 		
+	}
+	
+	public void spellChecker() {
+		String ext = getFileExtension().toLowerCase();
+		if (ext.equals("") || ext.equals("txt") ) {
+		
+      		// enable the spell checking on the text component with all 
+			// features; turn on spell checker only for plain text documents 
+			// since most other code will have numerous non-detected words;
+			// TODO: apply spell-checker more broadly if add more
+			// varied dictionaries
+			SpellChecker.register(this);
+		}
 	}
 	
 	/** Gets the highlighted document used for syntax highlighting.
@@ -1963,13 +1974,13 @@ public class TextPad extends JTextPane implements StateEditable {
 				msg, 
 				"File missing",
 				JOptionPane.ERROR_MESSAGE);
-		} catch(IOException e) {
-			String msg = "The original file could not be accessed.";
-			JOptionPane.showMessageDialog(
-				this, 
-				msg, 
-				"File inaccessible",
-				JOptionPane.ERROR_MESSAGE);
+// 		} catch(IOException e) {
+// 			String msg = "The original file could not be accessed.";
+// 			JOptionPane.showMessageDialog(
+// 				this, 
+// 				msg, 
+// 				"File inaccessible",
+// 				JOptionPane.ERROR_MESSAGE);
 		}
 //		openFile(t.getFile(), t.isEditable(), false, true);
 		// prevent caret from exceeding length of newly refreshed file

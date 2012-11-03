@@ -1,2 +1,2 @@
-Class-Path: lib/jsyntaxpane.jar
+Class-Path: lib/jsyntaxpane.jar lib/oster.jar
 Main-class: com.textflex.texttrix.TextTrix

@@ -276,7 +276,7 @@ public class TextTrix extends JFrame {
 						JScrollPane scrollPane = pad.getScrollPane();
 						scrollPane.getViewport().setViewSize(new Dimension(
 								scrollPane.getWidth() - 10, scrollPane.getHeight()));
-				}
+					}
 					/*
 					//SyntaxViewWrapped view = (SyntaxViewWrapped)pad.getWrappedView();
 					if (view != null) {
@@ -518,7 +518,7 @@ public class TextTrix extends JFrame {
 							}
 							openFiles(tokens, 1, true);
 						}
-						// "recusively" opens a new window for each remaining
+						// "recursively" opens a new window for each remaining
 						// window token
 						if (windowNum < windowTokens.length - 1) {
 							openTTXWindow(null);
@@ -1964,7 +1964,7 @@ public class TextTrix extends JFrame {
 	/**
 	 * Creates a new <code>TextPad</code> object, a text area for writing, and
 	 * gives it a new tab. Can call for each new file; names the tab,
-	 * <code>Filen.txt</code>, where <code>n</code> is the tab number.
+	 * <code>File[n].txt</code>, where <code>n</code> is the tab number.
 	 * @param tabbedPane the tabbed pane to receive the new Text Pad
 	 * @param file the file to open in the new Text Pad
 	 */
@@ -1988,7 +1988,8 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
-		textPad.setHighlightStyle(getPrefs().getSpellChecker());
+		if (getPrefs().getSpellChecker()) textPad.spellChecker();
+// 		textPad.setHighlightStyle(getPrefs().getSpellChecker());
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
@@ -2442,9 +2443,9 @@ public class TextTrix extends JFrame {
 				}
 				getPrefs().storeFileHist(path);
 				//updateFileHist(fileMenu);
-				if (getPrefs().getHighlighting() && getHighlighting()) {
-					t.setHighlightStyle(getPrefs().getSpellChecker());
-				}
+// 				if (getPrefs().getHighlighting() && getHighlighting()) {
+// 					t.setHighlightStyle(getPrefs().getSpellChecker());
+// 				}
 // 				Thread loadCheck = new Thread(
 // 						new CheckDocLoad(t, statusProgress));
 // 				loadCheck.start();
