@@ -144,7 +144,7 @@ class LineDanceDialog extends JDialog {
 		// creates a shortcut key (alt-L) as an alternative way to invoke
 		// the button
 		Action lineDanceAction = 
-			new AbstractAction("Line Dance", null) {
+			new AbstractAction("Line Dance (jump to line)", null) {
 			public void actionPerformed(ActionEvent e) {
 				lineDance();
 			}
@@ -163,14 +163,14 @@ class LineDanceDialog extends JDialog {
 		// creates a shortcut key (alt-L) as an alternative way to invoke
 		// the button
 		Action nameLineAction = 
-			new AbstractAction("Name Line", null) {
+			new AbstractAction("Rename Line", null) {
 			public void actionPerformed(ActionEvent e) {
 				ttx.getSelectedTextPad().editLineName();
 			}
 		};
 		LibTTx.setAcceleratedAction(
 			nameLineAction,
-			"Name Line",
+			"Rename Line",
 			'N',
 			KeyStroke.getKeyStroke("alt N"));
 		JButton nameLineBtn = new JButton(nameLineAction);

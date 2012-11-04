@@ -18,7 +18,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-11
+# Portions created by the Initial Developer are Copyright (C) 2003-12
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -67,10 +67,10 @@ Parameters:
 	--verbose: Verbose command-line output.
 
 Copyright:
-	Copyright (c) 2003-11 Text Flex
+	Copyright (c) 2003-12 Text Flex
 
 Last updated:
-	2011-11-25
+	2012-11-03
 "
 
 
@@ -201,7 +201,6 @@ cd "$BASE_DIR"
 CLASSPATH=lib/jsyntaxpane.jar:lib/oster.jar:.
 if [ $CYGWIN -eq 1 ]
 then
-	"$JAVA"java -cp "`cygpath -wp $CLASSPATH`" com.textflex.texttrix.TextTrix $@
-else
-	"$JAVA"java -cp $CLASSPATH com.textflex.texttrix.TextTrix $@
+	CLASSPATH="`cygpath -wp $CLASSPATH`"
 fi
+"$JAVA"java -cp $CLASSPATH com.textflex.texttrix.TextTrix $@

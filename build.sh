@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-11
+# Portions created by the Initial Developer are Copyright (C) 2003-12
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -58,6 +58,8 @@ Parameters:
 	Note that this arguments is not used directly in this script, but 
 	passed to the plugins script when the \"--plug\" flag is set.
 	
+	--clean: Cleans all .class files and exits.
+	
 	--java=java//binaries/path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable can be hand-edited 
@@ -73,10 +75,10 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-11 Text Flex
+	Copyright (c) 2003-12 Text Flex
 
 Last updated:
-	2011-11-27
+	2012-11-03
 "
 
 #####################

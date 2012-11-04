@@ -63,6 +63,7 @@ public class LineDancePanel extends JPanel {
 	DefaultTableModel tableModel = null; // table model
 	LineDanceTable table = null; // the table
 	JScrollPane scrollPane = null; // scroll pane holding the table
+	private boolean editName = false;
 	
 	/** Creates the Line Dance panel to be included in the Line
 	 * Dance dialog.
@@ -87,9 +88,11 @@ public class LineDancePanel extends JPanel {
 		// an empty data set for constructing the table model
 		Object[][] data = new Object[0][3];
 		tableModel = new DefaultTableModel(data, cols) {
-			// only the name column is editable
+			// prevents any cell from being editable to ease
+			// double-clicking anywhere on the entry to jump to that line
 			public boolean isCellEditable(int row, int column) {
-				if (column == COL_NAME) {
+				if (column == COL_NAME && editName) {
+ 					// only the name column is editable
 					return true;
 				}
 				return false;
@@ -172,8 +175,10 @@ public class LineDancePanel extends JPanel {
 //		System.out.println("row: " + row);
 		if (row != -1) {
 			// opens the cell for editing
+			editName = true;
 			table.editCellAt(row, COL_NAME);
 			table.requestFocusInWindow();
+			editName = false;
 		}
 	}
 	

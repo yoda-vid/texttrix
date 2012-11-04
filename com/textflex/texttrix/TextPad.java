@@ -1812,6 +1812,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 	
 	public int getLineOffset(int line) {
+		if (line - 2 < 0) line = 2;
 		return getDocument().getDefaultRootElement().getElement(line - 2)
 				.getEndOffset();
 	}
