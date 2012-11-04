@@ -2,28 +2,34 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-11, Text Flex
+Copyright (c) 2002-12, Text Flex
 http://textflex.com/texttrix
 
 (See http://textflex.com/texttrix/wiki.html for a more detailed Roadmap.)
 
-----v.0.9.5 alpha 2 (2011-11-25)----
+----v.0.9.5 beta 1 (2012-11-04)----
 
 This Text Trix alpha release brings performance improvements to the new syntax highlighter. The new highlighter (modified from the open-source jsyntaxpane library) adds support for many new languages, including Python, SQL, bash, Groovy, JSON, and Scala, in addition to Java, HTML, and C++ support. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.
 
-The tool for jumping between different positions within a file (Line Dance) now updates recorded line numbers during editing so that no how much you add or remove from the text, you can still navigate to the places you recorded.
+The bookmark tool for recording positions in each file (Line Dance) now dynamically updates line numbers so that no how much you add or remove from the text, you can still navigate to the correct spot. Now you can also double-click anywhere on the row to jump to the line in the text. You can still edit the bookmark names with the Rename button.
 
 Files previously defaulted to Unix (LF) end-of-line (EOL) styles, even if they were previously in Windows (CRLF) format. Now Text Trix preserves the file's original EOL style.
 
-What's new in alpha 2 (since alpha 1):
--Significantly improved performance in loading large files
--Line Dance (for jumping between different positions in the file) now updates during editing
+Summary of new features:
+-Improved syntax highlighting, including support for more languages, faster performance, line numbering, width marker, and brace highlighting/completion (based on JSyntaxPane)
+-Bookmarking tool (Line Dance) dynamically updates positions and is easier to use
 -Preserves end-of-line (EOL) styles
+-Can be set as default editor in Windows (use run.bat)
+-Bug fixes
+
+What's new in beta 1 (since alpha 2):
+-Re-added Ostermiller-based syntax highlighter for html/xml files to restore indented word-wrap
+-Bookmark improvements (Line Dance)
+-run.bat file to launch as a default editor in Windows
 
 Known issues/requirements:
 -This new package requires Java 6 or higher to run. If you require Java 1.4 or Java 5, you can use a previous version of Text Trix (through v.0.9.4).
--Word-wrap indent is not currently working for syntax highlighted files. Text will wrap to the next line, but unlike in previous versions, the text will wrap to the beginning of the line rather than from the point of the previous line's indentation.
--The syntax highlighter is a customized version of the open-source jsyntaxpane v.0.9.6pre, modified to incorporate into the a JTextPane rather than JEditorPane and to use WrappedPlainView rather than PlainView for HTML and XML documents.
+-The syntax highlighter is a customized version of the open-source jsyntaxpane v.0.9.6pre, modified to incorporate into the a JTextPane rather than JEditorPane and to use WrappedPlainView rather than PlainView for HTML and XML documents (although old highlighter again used for those files).
 
 ----v.0.9.4 (2011-11-05)----
 
