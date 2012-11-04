@@ -292,7 +292,7 @@ mkdir $PKGDIR/plugins
 cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
 	"$TTX_DIR"/changelog.txt "$TTX_DIR"/lib \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
-	"$TTX_DIR"/dictionaries "$BLD_DIR/$PKGDIR"
+	"$TTX_DIR"/dictionaries "$TTX_DIR"/run.bat "$BLD_DIR/$PKGDIR"
 
 
 # create the master package, which will eventually become the binary package
