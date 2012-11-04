@@ -5,8 +5,6 @@ the text tinker
 Copyright (c) 2002-12, Text Flex
 http://textflex.com/texttrix
 
-(See http://textflex.com/texttrix/wiki.html for a more detailed Roadmap.)
-
 ----v.0.9.5 beta 1 (2012-11-04)----
 
 This Text Trix alpha release brings performance improvements to the new syntax highlighter. The new highlighter (modified from the open-source jsyntaxpane library) adds support for many new languages, including Python, SQL, bash, Groovy, JSON, and Scala, in addition to Java, HTML, and C++ support. Built into the highlighter are also a line number ruler, width marker, and parenthesis/bracket highlighters.

@@ -99,8 +99,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private DocumentFilter docFilter = null;
 	private WrappedPlainView wrappedView = null;
 	private String eol = null;
-	
-	private HighlightedDocument highlightedDoc = new HighlightedDocument();
+	private HighlightedDocument highlightedDoc = null; // Ostermiller syntax
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -304,7 +303,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * document listeners, will be re-applied to the new
 	 * styled document.
 	 */
-	public void setHighlightStyle(boolean spellChecker) {
+	public void setHighlightStyle() {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
@@ -410,6 +409,9 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @return the highlighted document
 	 */
 	public HighlightedDocument getHighlightedDoc() {
+		if (highlightedDoc == null) {
+			highlightedDoc = new HighlightedDocument();
+		}
 		return highlightedDoc;
 	}
 	
@@ -949,7 +951,7 @@ public class TextPad extends JTextPane implements StateEditable {
 
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		
-		StyleContext sc = new StyleContext();
+// 		StyleContext sc = new StyleContext();
 		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
 		/*
 		Style defaultStyle = sc.getStyle(StyleContext.DEFAULT_STYLE);

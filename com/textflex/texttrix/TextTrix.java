@@ -1989,7 +1989,7 @@ public class TextTrix extends JFrame {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
 		if (getPrefs().getSpellChecker()) textPad.spellChecker();
-// 		textPad.setHighlightStyle(getPrefs().getSpellChecker());
+// 		textPad.setHighlightStyle();
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
@@ -2179,12 +2179,17 @@ public class TextTrix extends JFrame {
 		// runs in EDT to prevent GUI lock-up during loading
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				loadText(textPad, text);
 				if (getPrefs().getHighlighting() && getHighlighting()) {
+					// need to set highlight style after loading text
+					// for the Ostermiller highlighter to continue dynamically 
+					// updating syntax coloration
 					textPad.removeDocListener();
-					textPad.setHighlightStyle(getPrefs().getSpellChecker());
+					textPad.setHighlightStyle();
 					textPad.addDocListener(new TextPadDocListener(textPad));
 				}
-				loadText(textPad, text, 0);
+				autoAutoIndent(textPad);
+				textPad.setCaretPosition(0);
 			}
 		});
 	}
@@ -2195,48 +2200,16 @@ public class TextTrix extends JFrame {
 	 * end-of-line style will be stored for future reference.
 	 * Loading process will be displayed in the progress bar.
 	 */
-	private void loadText(final TextPad textPad, final String text, 
-			final int caretPos) {
-		/*
-		// need to load text into TextPad in separate thread when mixed
-		// with TextPad#applyAutoIndent function because of the potentially 
-		// very long highlighting operation, but the separate thread is not 
-		// needed now that the indent code has been commented out for now
-		Thread textThread = new Thread() {
-			public void run() {
-				try {
-					String eol = LibTTx.getEOL(text);
-					textPad.setEOL(eol);
-					
-					// manually replacing the newlines and inserting via
-					// Document#insertString is necessary to avoid crashes
-					// when loading multiple files, although occasional
-					// loading errors continue to occur
-					String textLF = text.replace(eol, "\n");
-					textPad.getDocument().insertString(0, textLF, null);
-				} catch(BadLocationException e) {
-					e.printStackTrace();
-// 				}
-				textPad.applyDocumentSettings();
-				// resets caret and modification flags, assuming that
-				// the read in text is the same as that from the
-				// original file
-				textPad.setCaretPosition(caretPos);
-				textPad.setChanged(false);
-				updateTabTitle(textPad);
-			}
-		};
-		textThread.start();
-		*/
+	private void loadText(final TextPad textPad, final String text) {
 		// reads and saves the end-of-line style to reapply when saving
 		String eol = LibTTx.getEOL(text);
 		textPad.setEOL(eol);
 		
 		// sets the text, applies filters and managers, repositions the
 		// caret to the original position, and sets the file modification flags
+// 		textPad.replaceAllText(text);
 		textPad.setText(text);
 		textPad.applyDocumentSettings();
-		textPad.setCaretPosition(caretPos);
 		textPad.setChanged(false);
 		updateTabTitle(textPad);
 		
@@ -2312,14 +2285,15 @@ public class TextTrix extends JFrame {
 								&& !LibTTx.getFileExtension(origName)
 										.equalsIgnoreCase(t.getFileExtension())) {
 						String text = t.getAllText();
+// 						t.removeAllText();
 						int caretPos = t.getCaretPosition();
-						t.removeAllText();
-						t.setHighlightStyle(getPrefs().getSpellChecker());
+						loadText(t, text);
+						t.setHighlightStyle();
 						t.addDocListener(new TextPadDocListener(t));
-						loadText(t, text, caretPos);
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
 // 						t.applyDocumentSettings();
+						t.setCaretPosition(caretPos);
 					}
 					// automatically starts indenting, if applicable, after
 					// rather than before applying the syntax highlighting 
@@ -2432,8 +2406,9 @@ public class TextTrix extends JFrame {
 				t.setFile(path); // sets file pointer
 				t.setupFileModifiedThread(); // sets last modified time
 				// TODO: check whether thread safe
-				getSelectedTabbedPane().setToolTipTextAt(getSelectedTabbedPane().getSelectedIndex(), t
-						.getPath());
+				getSelectedTabbedPane().setToolTipTextAt(
+						getSelectedTabbedPane().getSelectedIndex(), 
+						t.getPath());
 				// set the path to the last opened directory
 				setOpenDir(file.getParent());
 				// file.getParent() returns null when opening file
@@ -2449,7 +2424,7 @@ public class TextTrix extends JFrame {
 // 				Thread loadCheck = new Thread(
 // 						new CheckDocLoad(t, statusProgress));
 // 				loadCheck.start();
-				autoAutoIndent(t);
+// 				autoAutoIndent(t);
 				return true;
 			} catch (IOException exception) {
 				//		exception.printStackTrace();
