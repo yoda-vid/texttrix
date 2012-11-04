@@ -17,8 +17,7 @@ editing.
 
 System Reqs
 ----------------
-Java 5+, available free from http://java.com. Tested on Java 6, 7.
--Java Development Kit (JDK), v.1.5+ required for compiling.
+-Java Development Kit (JDK), v.6+, is required for compiling Text Trix.
 -Bash scripts (.sh) are included for compiling and packaging on Linux, 
 MacOS X, or Windows (via Cygwin) platforms.
 -PowerShell scripts (.ps1) are included for some tasks on Windows 
@@ -26,11 +25,15 @@ platforms.
 
 Instructions for compilation
 --------------------------------
--Unzip the Text Trix source package
--Compile the Java classes:
-	-cd to the source directory.
-	-Run "texttrix/build.sh --plug" to build the editor and all plugins.
--Run "texttrix/run.sh" to start the editor.
+1) Unzip the Text Trix source package
+2) Compile the Java classes:
+  -cd to the source directory.
+  -Run "texttrix/build.sh --plug" to build the editor and all plugins.
+3) Run "texttrix/run.sh" to start the editor.
+
+https://sourceforge.net/p/texttrix/wiki/Building%20Text%20Trix/
+outlines all of the different ways to compile Text Trix, whether from this 
+source package or from the various branches in the Subversion repository.
 
 (Optional:) Installation
 --------------------------

@@ -17,14 +17,22 @@ editing.
 
 System Reqs
 ----------------
-Java 5+, available free from http://java.com. Tested on Java 6, 7.
+Java 6+, available free from http://java.com.
 
 Instructions for use
 -----------------------
--Double-click on the Jar Ajar[tm] self-extracting file, 
-"TextTrix-x.y.z-installer.jar".  Follow the instructions to unpack and launch.
+Text Trix comes packaged as a Jar Ajar self-extracting file or a zip file.
+
+TextTrix-x.y.z-installer.jar:
+-Double-click the file and follow the instructions to unpack and launch.
 -The installed program can be re-launched by running the JAR file again.  
 The JAR file will detect the previous installation and launch the program.
+
+TextTrix-x.y.z.zip:
+-Unzip the file.
+-Double-click on "TextTrix.jar".
+-On Linux, you may need to change the "Open with" program to Java 
+(eg Sun Java 6 or OpenJDK 6).
 
 Launching from command-line
 ------------------------------------
