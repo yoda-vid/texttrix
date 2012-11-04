@@ -259,7 +259,14 @@ cd "$BASE_DIR" # change to work directory
 # Clean files and exit
 if [ $CLEAN = 1 ]
 then
-	rm */*/*/*.class
+	CLASS_FILES=`find -name *.class`
+	if [ "$CLASS_FILES" != "" ]
+	then
+		rm $CLASS_FILES
+		echo "Removed all .class files"
+	else
+		echo "No .class files to remove"
+	fi
 	exit 0
 fi
 
@@ -270,13 +277,13 @@ echo "Compiling the Text Trix program..."
 echo "Using the Java binary directory at [defaults to PATH]:"
 echo "$JAVA"
 CLASSPATH=lib/jsyntaxpane.jar:lib/oster.jar:.
+JAVA_FILES=`find -path ./com/inet/jorthotests -prune -o -path ./com/*.java -print`
 if [ "$CYGWIN" = "true" ]
 then
 	CLASSPATH=`cygpath -wp $CLASSPATH`
-	"$JAVA"javac -cp $CLASSPATH "`cygpath -wp $DIR/`"*.java
-else
-	"$JAVA"javac -cp $CLASSPATH $DIR/*.java
+	JAVA_FILES=`cygpath -wp $JAVA_FILES`
 fi
+"$JAVA"javac -cp $CLASSPATH -source 1.5 $JAVA_FILES
 
 #############
 # Build plugins
