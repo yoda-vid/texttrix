@@ -425,9 +425,6 @@ public class TextTrix extends JFrame {
 
 		chooser.setFileFilter(allFilter);
 
-		// prepare the file history
-//		fileHist = new FileHist();
-
 		// line saver
 		lineSaverAction = new AbstractAction("Save current line number") {
 			public void actionPerformed(ActionEvent evt) {
@@ -2184,9 +2181,7 @@ public class TextTrix extends JFrame {
 					// need to set highlight style after loading text
 					// for the Ostermiller highlighter to continue dynamically 
 					// updating syntax coloration
-					textPad.removeDocListener();
-					textPad.setHighlightStyle();
-					textPad.addDocListener(new TextPadDocListener(textPad));
+					applyHighlighting(textPad);
 				}
 				autoAutoIndent(textPad);
 				textPad.setCaretPosition(0);
@@ -2209,7 +2204,6 @@ public class TextTrix extends JFrame {
 		// caret to the original position, and sets the file modification flags
 // 		textPad.replaceAllText(text);
 		textPad.setText(text);
-		textPad.applyDocumentSettings();
 		textPad.setChanged(false);
 		updateTabTitle(textPad);
 		
@@ -2217,6 +2211,13 @@ public class TextTrix extends JFrame {
 		Thread loadCheck = 
 				new Thread(new CheckDocLoad(textPad, statusProgress));
 		loadCheck.start();
+	}
+	
+	private void applyHighlighting(TextPad textPad) {
+		textPad.removeDocListener();
+		textPad.setHighlightStyle();
+		textPad.addDocListener(new TextPadDocListener(textPad));
+		textPad.applyDocumentSettings();
 	}
 	
 	/** Removes the currently selected tabbed pane from the
@@ -2288,8 +2289,9 @@ public class TextTrix extends JFrame {
 // 						t.removeAllText();
 						int caretPos = t.getCaretPosition();
 						loadText(t, text);
-						t.setHighlightStyle();
-						t.addDocListener(new TextPadDocListener(t));
+						applyHighlighting(t);
+// 						t.setHighlightStyle();
+// 						t.addDocListener(new TextPadDocListener(t));
 						// reattach undo manager and listeners;
 						// note that prevents undos from before the save
 // 						t.applyDocumentSettings();

@@ -1367,7 +1367,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		doc.removeUndoableEditListener(undoManager);	
 		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
-		applyAutoIndent();
+//  		applyAutoIndent();
 		
 		if (doc instanceof AbstractDocument) {
 			AbstractDocument abstracDoc = (AbstractDocument)doc;
