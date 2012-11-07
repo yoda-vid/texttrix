@@ -78,7 +78,7 @@ Copyright:
 	Copyright (c) 2003-12 Text Flex
 
 Last updated:
-	2012-11-03
+	2012-11-07
 "
 
 #####################
@@ -316,11 +316,10 @@ then
 	echo ""
 	echo "Building API documentation..."
 	if [ "$CYGWIN" = "true" ]
-	then	
-		"$JAVA"javadoc -d "`cygpath -p -w $API_DIR`" -classpath $CLASSPATH -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
-	else
-		"$JAVA"javadoc -d "$API_DIR" -classpath $CLASSPATH -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
+	then
+		API_DIR="`cygpath -p -w $API_DIR`"
 	fi
+	"$JAVA"javadoc -d "$API_DIR" -classpath $CLASSPATH -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
 	echo "...done"
 fi
 
