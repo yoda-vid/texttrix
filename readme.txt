@@ -49,5 +49,5 @@ Windows Explorer and browse for the "run.bat" script.
 
 Troubleshooting
 -------------------
--See https://sourceforge.net/projects/texttrix/ for tips, bug reports, and forums
+-See https://sourceforge.net/projects/texttrix/ for tips/bug reports/forums
 -See http://textflex.com/texttrix for the main website
