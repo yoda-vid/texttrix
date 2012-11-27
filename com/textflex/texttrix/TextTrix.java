@@ -938,18 +938,22 @@ public class TextTrix extends JFrame {
 		int origPaneIndex = pane.getSelectedIndex();
 		// access each tab by selecting it and applying settings
 		// TODO: access text pad directly, rather than through selection
-		for (int h = 0; h < pane.getTabCount(); h++) {
+		boolean autoSave = getPrefs().getAutoSave();
+		boolean spellCheck = getPrefs().getSpellChecker();
+		int tabCount = pane.getTabCount();
+		for (int h = 0; h < tabCount; h++) {
 			pane.setSelectedIndex(h);
 			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 				TextPad pad = getTextPadAt(i);
 				// restarts the save timer
-				if (getPrefs().getAutoSave()) {
-					if (pad.getChanged()) {
-						startTextPadAutoSaveTimer(pad);
-					}
+				if (autoSave) {
+					if (pad.getChanged()) startTextPadAutoSaveTimer(pad);
 				} else {
 					stopTextPadAutoSaveTimer(pad);
 				}
+				
+				// resets spell-checker
+				pad.spellChecker(spellCheck);
 			}
 		}
 		
@@ -1985,7 +1989,7 @@ public class TextTrix extends JFrame {
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
-		if (getPrefs().getSpellChecker()) textPad.spellChecker();
+		textPad.spellChecker(getPrefs().getSpellChecker());
 // 		textPad.setHighlightStyle();
 
 		// must add to array list before adding scroll pane to tabbed pane
