@@ -1256,7 +1256,7 @@ public class TextTrix extends JFrame {
 	public void textTinker(PlugIn pl) {
 		TextPad t = getSelectedTextPad();
 		if (t != null) {
-			viewPlain();
+// 			viewPlain();
 			// plugins generally need to work on displayed text
 			// works through Document rather than getText/setText since
 			// the latter method does not seem to work on all systems,
@@ -2128,7 +2128,7 @@ public class TextTrix extends JFrame {
 		boolean changeView = true;
 		if (pad == null) pad = getSelectedTextPad();
 		if (pad == null) return false;
-		System.out.println("html");
+// 		System.out.println("html");
 		if (!pad.isHTMLView()) {
 			if (warning) {
 				changeView = LibTTx.yesNoDialog(
