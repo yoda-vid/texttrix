@@ -579,7 +579,11 @@ public class TextTrix extends JFrame {
 		// for all other platforms to provide a more consistent look, since 
 		// Windows and Ocean themes aren't all that different from one another
 		String errorMsg = "Defaulting to the Java Ocean Look & Feel.";
+		String osName = System.getProperty("os.name").toLowerCase();
 		try {
+			if (osName.startsWith("mac os x")) {
+				System.setProperty("apple.laf.useScreenMenuBar", "true");
+			}
 			/* 
 			// not yet defaulting to Nimbus as the group tabbed pane doesn't 
 			// appear to integrate well
