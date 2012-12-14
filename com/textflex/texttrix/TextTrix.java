@@ -384,47 +384,8 @@ public class TextTrix extends JFrame {
 		ToolTipManager.sharedInstance().setDismissDelay(100000);
 
 		// set text and web file filters for open/save dialog boxes
-		chooser = getChooser();//new JFileChooser();
-		FileFilter allFilter = chooser.getFileFilter();
-		final ExtensionFileFilter webFilter = new ExtensionFileFilter();
-		webFilter.addExtension("html");
-		webFilter.addExtension("htm");
-		webFilter.addExtension("xhtml");
-		webFilter.addExtension("shtml");
-		webFilter.addExtension("css");
-		webFilter.addExtension("js");
-		webFilter.setDescription("Web files (*.html, *.htm, "
-				+ "*.xhtml, *.shtml, *.css, *.js)");
-		chooser.setFileFilter(webFilter);
+		chooser = getChooser();
 		
-		
-		
-
-		// RTF file filters
-		final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
-		rtfFilter.addExtension("rtf");
-		rtfFilter.setDescription("RTF files (*.rtf)");
-		chooser.setFileFilter(rtfFilter);
-
-		// source code filters
-		final ExtensionFileFilter prgmFilter = new ExtensionFileFilter();
-		prgmFilter.addExtension("java");
-		prgmFilter.addExtension("cpp");
-		prgmFilter.addExtension("c");
-		prgmFilter.addExtension("sh");
-		prgmFilter.addExtension("js");
-		prgmFilter.setDescription(
-				"Programming source code (*.java, *.cpp, *.c, *.sh, *.js)");
-		chooser.setFileFilter(prgmFilter);
-
-		// Text! filters
-		final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
-		txtFilter.addExtension("txt");
-		txtFilter.setDescription("Text files (*.txt)");
-		chooser.setFileFilter(txtFilter);
-
-		chooser.setFileFilter(allFilter);
-
 		// line saver
 		lineSaverAction = new AbstractAction("Save current line number") {
 			public void actionPerformed(ActionEvent evt) {
@@ -3013,6 +2974,45 @@ public class TextTrix extends JFrame {
 		        }
 		    }
 			chooser = new JF();
+			FileFilter allFilter = chooser.getFileFilter();
+			
+			// web file filters
+			final ExtensionFileFilter webFilter = new ExtensionFileFilter();
+			webFilter.addExtension("html");
+			webFilter.addExtension("htm");
+			webFilter.addExtension("xhtml");
+			webFilter.addExtension("shtml");
+			webFilter.addExtension("css");
+			webFilter.addExtension("js");
+			webFilter.setDescription("Web files (*.html, *.htm, "
+					+ "*.xhtml, *.shtml, *.css, *.js)");
+			chooser.setFileFilter(webFilter);
+	
+			// RTF file filters
+			final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
+			rtfFilter.addExtension("rtf");
+			rtfFilter.setDescription("RTF files (*.rtf)");
+			chooser.setFileFilter(rtfFilter);
+	
+			// source code filters
+			final ExtensionFileFilter prgmFilter = new ExtensionFileFilter();
+			prgmFilter.addExtension("java");
+			prgmFilter.addExtension("cpp");
+			prgmFilter.addExtension("c");
+			prgmFilter.addExtension("sh");
+			prgmFilter.addExtension("js");
+			prgmFilter.setDescription(
+					"Programming source code (*.java, *.cpp, *.c, *.sh, *.js)");
+			chooser.setFileFilter(prgmFilter);
+	
+			// Text! filters
+			final ExtensionFileFilter txtFilter = new ExtensionFileFilter();
+			txtFilter.addExtension("txt");
+			txtFilter.setDescription("Text files (*.txt)");
+			chooser.setFileFilter(txtFilter);
+	
+			chooser.setFileFilter(allFilter);
+
 		}
 		return chooser;
 	}
