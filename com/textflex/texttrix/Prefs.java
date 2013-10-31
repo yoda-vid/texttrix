@@ -858,7 +858,7 @@ public class Prefs extends JDialog {//JFrame {
 	 */
 	public String getAutoIndentExt() {
 		return generalPrefs.get(AUTO_INDENT_EXT, 	
-				".java, .c, .cpp, .html, .htm, .css, .shtml, .xhtml, .xml, .sh");
+				TextPad.collectHighlightExtDotList());
 	}
 	/**Gets the stored flag for whether the windows should become active 
 	 * together.

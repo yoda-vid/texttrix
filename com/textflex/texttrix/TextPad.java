@@ -78,6 +78,14 @@ public class TextPad extends JTextPane implements StateEditable {
 	
 	private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 	
+	public static final java.util.List<String> HIGHLIGHT_EXT_LIST 
+			= Arrays.asList(
+				"java", "c", "cpp", "html", "htm", "xhtml", "xhtml", "css",
+				"js", "groovy", "bash", "sh", "json", "xml", "sql", 
+				"properties", "py", "tal", "jflex", "ruby", "scala",
+				"clojure", "bat", "xpath", "lua"
+	);
+    
 	private File file; // the file that the pad displays
 	private boolean changed = false; // flag that text changed
 	private boolean ignoreChanged = false;
@@ -293,7 +301,7 @@ public class TextPad extends JTextPane implements StateEditable {
             }
         }
     }
-    
+	
 	/** Sets the syntax highlighting style for the current file
 	 * according to the file's extension, if possible.
 	 * If the file has no extension, a ".txt" extension, or 
@@ -318,15 +326,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// sets the appropriate style
 // 		DefaultSyntaxKit.setWrapped(false);
-		if (ext.equals("java")) {
-			setContentType("text/java");
-		} else if (ext.equals("c")) {
-			setContentType("text/c");
-		} else if (ext.equals("cpp")) {
-			setContentType("text/cpp");
-		} else if (ext.equals("html") 
+		if (ext.equals("html") 
 				|| ext.equals("htm") 
 				|| ext.equals("xhtml")
+				|| ext.equals("shtml")
 				|| ext.equals("css")) {
 			// modified version of JSyntaxPane to allow for wrapping,
 			// which unfortunately does not work for wrap-indent
@@ -349,47 +352,32 @@ public class TextPad extends JTextPane implements StateEditable {
 // 					+ ", scrollPane width: " + scrollPane.getWidth());
 // 			scrollPane.getViewport().setViewSize(new Dimension(
 // 					scrollPane.getWidth() - 50, scrollPane.getHeight()));
-		} else if (ext.equals("js")) {
-			setContentType("text/js");
-		} else if (ext.equals("groovy")) {
-			setContentType("text/groovy");
 		} else if (ext.equals("bash") 
 				|| ext.equals("sh")) {
 			setContentType("text/bash");
-		} else if (ext.equals("json")) {
-			setContentType("text/json");
-		} else if (ext.equals("xml")) {
-			setContentType("text/xml");
-		} else if (ext.equals("sql")) {
-			setContentType("text/sql");
-		} else if (ext.equals("properties")) {
-			setContentType("text/properties");
 		} else if (ext.equals("py")) {
 			setContentType("text/python");
-		} else if (ext.equals("tal")) {
-			setContentType("text/tal");
-		} else if (ext.equals("jflex")) {
-			setContentType("text/jflex");
-		} else if (ext.equals("ruby")) {
-			setContentType("text/ruby");
-		} else if (ext.equals("scala")) {
-			setContentType("text/scala");
-		} else if (ext.equals("clojure")) {
-			setContentType("text/clojure");
 		} else if (ext.equals("bat")) {
 			setContentType("text/dosbatch");
-		} else if (ext.equals("xpath")) {
-			setContentType("text/xpath");
-		} else if (ext.equals("lua")) {
-			setContentType("text/lua");
+		} else if (HIGHLIGHT_EXT_LIST.contains(ext)) {
+			setContentType("text/" + ext);
 		} else {
-			setContentType("text/plain");
 			// defaults to plain style
+			setContentType("text/plain");
 		}
 		// transfers the text into the appropriately styled document
 		setText(text);
 		enablePopup(true);
 		
+	}
+	
+	public static String collectHighlightExtDotList() {
+		StringBuilder sb = new StringBuilder();
+		for (String s : HIGHLIGHT_EXT_LIST) {
+			if (sb.length() != 0) sb.append(", ");
+			sb.append(".").append(s);
+		}
+		return sb.toString();
 	}
 	
 	public void spellChecker(boolean check) {

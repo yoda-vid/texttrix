@@ -2984,14 +2984,14 @@ public class TextTrix extends JFrame {
 			webFilter.addExtension("shtml");
 			webFilter.addExtension("css");
 			webFilter.addExtension("js");
-			webFilter.setDescription("Web files (*.html, *.htm, "
-					+ "*.xhtml, *.shtml, *.css, *.js)");
+			webFilter.setDescription(
+					"Web files (.html, .htm, .xhtml, .shtml, .css, .js)");
 			chooser.setFileFilter(webFilter);
 	
 			// RTF file filters
 			final ExtensionFileFilter rtfFilter = new ExtensionFileFilter();
 			rtfFilter.addExtension("rtf");
-			rtfFilter.setDescription("RTF files (*.rtf)");
+			rtfFilter.setDescription("RTF files (.rtf)");
 			chooser.setFileFilter(rtfFilter);
 	
 			// source code filters
@@ -3001,8 +3001,10 @@ public class TextTrix extends JFrame {
 			prgmFilter.addExtension("c");
 			prgmFilter.addExtension("sh");
 			prgmFilter.addExtension("js");
+			prgmFilter.addExtension("py");
 			prgmFilter.setDescription(
-					"Programming source code (*.java, *.cpp, *.c, *.sh, *.js)");
+					"Programming source code (" 
+						+ TextPad.collectHighlightExtDotList() + ")");
 			chooser.setFileFilter(prgmFilter);
 	
 			// Text! filters
