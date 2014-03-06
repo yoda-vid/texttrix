@@ -2167,6 +2167,7 @@ public class TextTrix extends JFrame {
 	private void loadText(final TextPad textPad, final String text) {
 		// reads and saves the end-of-line style to reapply when saving
 		String eol = LibTTx.getEOL(text);
+		System.out.println("loading eol..." + LibTTx.getEOLName(eol));
 		textPad.setEOL(eol);
 		
 		// sets the text, applies filters and managers, repositions the
@@ -2236,6 +2237,7 @@ public class TextTrix extends JFrame {
 				 * failure
 				 */
 				LibTTx.writeText(path, t.getText(), t.getEOL());
+				System.out.println("saving eol..." + LibTTx.getEOLName(t.getEOL()));
 				// keeps track of orig filename to compare file extensions
 				// for syntax highlighting;
 				// assumes that path points to a valid file

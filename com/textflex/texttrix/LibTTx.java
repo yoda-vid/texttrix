@@ -693,47 +693,32 @@ public class LibTTx {
 	 * @return the eol style
 	 */
 	public static String getEOL(String text) {
-		int r = text.indexOf('\r');
+		int r = text.indexOf("\r");
 		String eol = "\n"; // defaults to LF (Unix)
-		String eolName = "LF";
+		System.out.println("r: " + r + ", n: " + text.indexOf('\n'));
 		if (r != -1) {
 			int n = text.indexOf('\n');
 			if (n == r + 1) {
 				eol = "\r\n"; // CRLF (Windows)
-				eolName = "CRLF";
 			} else {
 				eol = "\r"; // CR (old-style Mac)
-				eolName = "CR";
 			}
 		}
-// 		System.out.println("eolName: " + eolName);
 		return eol;
 	}
-
-// 	public static String getEOL(BufferedReader reader) {
-// 		String eol = "\n"; // defaults to LF (Unix)
-// 		String eolName = "LF";
-// 		int n;
-// 		char c;
-// 		try {
-// 			while ((n = reader.read()) != -1) {
-// 				if ((char)n == '\r') {
-// 					if ((n = reader.read()) != -1 && ((char)n == '\n') {
-// 						eol = "\r\n"; // CRLF (Windows)
-// 						eolName = "CRLF";
-// 					} else {
-// 						eol = "\r"; // CR (old-style Mac)
-// 						eolName = "CR";
-// 					}
-// 					break;
-// 				} else if ((char)n == '\n') {
-// 					break;
-// 				}
-// 			}
-// 		}
-// 		System.out.println("eolName: " + eolName);
-// 		return eol;
-// 	}
+	
+	public static String getEOLName(String eol) {
+		if (eol == null) return null;
+		String eolName = null;
+		if (eol.equals("\n")) {
+			eolName = "LF";
+		} else if (eol.equals("\r\n")) {
+			eolName = "CRLF";
+		} else if (eol.equals("\r")) {
+			eolName = "CR";
+		}
+		return eolName;
+	}
 	
 	/**
 	 * Writes text to a given path using the given end-of-line (EOL) style.
