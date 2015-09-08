@@ -337,7 +337,7 @@ public class TextTrix extends JFrame {
 		
 		
 		/* Start the jsyntaxpane highlighter */
-		
+		DefaultSyntaxKit.setFontSize(getPrefs().getFontSize());
 		DefaultSyntaxKit.initKit();
 		
 		
@@ -906,6 +906,7 @@ public class TextTrix extends JFrame {
 		boolean autoSave = getPrefs().getAutoSave();
 		boolean spellCheck = getPrefs().getSpellChecker();
 		int tabCount = pane.getTabCount();
+		int fontSize = -1;
 		for (int h = 0; h < tabCount; h++) {
 			pane.setSelectedIndex(h);
 			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
@@ -919,6 +920,16 @@ public class TextTrix extends JFrame {
 				
 				// resets spell-checker
 				pad.spellChecker(spellCheck);
+				
+				if (h == 0 && i == 0) {
+					int currFontSize = pad.getFont().getSize();
+					fontSize = getPrefs().getFontSize();
+					if (fontSize == currFontSize) fontSize = -1;
+					DefaultSyntaxKit.setFontSize(fontSize);
+				}
+				if (fontSize != -1) {
+					pad.setFont(pad.getFont().deriveFont((float)fontSize));
+				}
 			}
 		}
 		

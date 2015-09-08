@@ -139,6 +139,11 @@ public class Prefs extends JDialog {//JFrame {
 	private JCheckBox spellCheckerChk = null;
 	
 	
+	// display font size
+	private static final String FONT_SIZE = "fontSize";
+	private JSpinner fontSizeSpinner = null; // numerical input
+	private SpinnerNumberModel fontSizeMdl = null;
+	
 	
 	/* Shorts preferences--shortcuts */
 	private Preferences shortsPrefs = prefs.node("Shorts"); // shorts-specific prefs holder
@@ -195,7 +200,7 @@ public class Prefs extends JDialog {//JFrame {
 	 */
 	public Prefs(JFrame frame, Action okAction, Action applyAction, Action cancelAction) {
 		super(frame, "You've Got Options");
-		applyPlugInSizeLoc(this, PREFS, 600, 300);
+		applyPlugInSizeLoc(this, PREFS, 600, 320);
 		
 		// adds a listener to remember the window size and location
 		addComponentListener(new ComponentListener() {
@@ -497,6 +502,7 @@ public class Prefs extends JDialog {//JFrame {
 		generalPrefs.putBoolean(AUTO_SAVE_PROMPT, autoSavePromptChk.isSelected());
 		generalPrefs.putBoolean(HIGHLIGHTING, highlightingChk.isSelected());
 		generalPrefs.putBoolean(SPELL_CHECKER, spellCheckerChk.isSelected());
+		generalPrefs.putInt(FONT_SIZE, fontSizeMdl.getNumber().intValue());
 	}
 	
 	/** Stores the Shorts preferences.
@@ -905,6 +911,9 @@ public class Prefs extends JDialog {//JFrame {
 		return generalPrefs.getBoolean(SPELL_CHECKER, true);
 	}
 	
+	public int getFontSize() {
+		return generalPrefs.getInt(FONT_SIZE, 11);
+	}
 	
 	
 	
@@ -949,9 +958,10 @@ public class Prefs extends JDialog {//JFrame {
 	 * 
 	 * @author davit
 	 */
-	private class CreateGeneralPanel implements Runnable {//extends Thread {
+	private class CreateGeneralPanel implements Runnable {
 		
 		private JLabel autoSaveIntervalLbl = null;
+		private JLabel fontSizeLbl = null;
 
 		/** Starts the thread.
 		 * 
@@ -1099,6 +1109,17 @@ public class Prefs extends JDialog {//JFrame {
 					spellCheckerChk = 
 						new JCheckBox(spellCheckerTxt, getSpellChecker());
 					spellCheckerChk.setToolTipText(spellCheckerTipTxt);
+					
+					// display font size
+					fontSizeLbl = 
+						new JLabel("Font size:");
+					String fontSizeTipTxt =
+						"<html>Default font size for typed text.</html>";
+					fontSizeLbl.setToolTipText(fontSizeTipTxt);
+					// the numerical model for the spinner
+					fontSizeMdl =
+						new SpinnerNumberModel(getFontSize(), 4, 24, 1);
+					fontSizeSpinner = new JSpinner(fontSizeMdl);
 					
 					
 					
@@ -1350,6 +1371,26 @@ public class Prefs extends JDialog {//JFrame {
 						0,
 						0,
 						panel);
+					LibTTx.addGridBagComponent(
+						fontSizeLbl,
+						constraints,
+						0,
+						8,
+						1,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						fontSizeSpinner,
+						constraints,
+						1,
+						8,
+						1,
+						1,
+						0,
+						0,
+						panel);
 						
 					
 					// Export/Import Preferences
@@ -1358,7 +1399,7 @@ public class Prefs extends JDialog {//JFrame {
 						importExportPrefsLbl,
 						constraints,
 						0,
-						8,
+						9,
 						3,
 						1,
 						0,
@@ -1368,7 +1409,7 @@ public class Prefs extends JDialog {//JFrame {
 						exportPrefsButton,
 						constraints,
 						0,
-						9,
+						10,
 						1,
 						1,
 						100,
@@ -1379,7 +1420,7 @@ public class Prefs extends JDialog {//JFrame {
 						importPrefsButton,
 						constraints,
 						1,
-						9,
+						10,
 						1,
 						1,
 						100,
@@ -1389,7 +1430,7 @@ public class Prefs extends JDialog {//JFrame {
 						resetPrefsButton,
 						constraints,
 						2,
-						9,
+						10,
 						1,
 						1,
 						100,

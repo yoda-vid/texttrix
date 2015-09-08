@@ -160,7 +160,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		*/
 //		setFont(getFont().deriveFont(11.5f));
 		// TODO: set font face and size in prefs
-		setFont(new Font("Arial,SansSerif", Font.PLAIN, 11));
+		setFont(new Font("Arial,SansSerif", Font.PLAIN, prefs.getFontSize()));
 		
 		
 		// (ctrl-backspace) delete from caret to current word start
