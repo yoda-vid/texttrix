@@ -2202,7 +2202,7 @@ public class TextTrix extends JFrame {
 	
 	private void applyHighlighting(TextPad textPad) {
 		textPad.removeDocListener();
-		textPad.setHighlightStyle(getPrefs().getFontSize());
+		textPad.setHighlightStyle();
 		textPad.addDocListener(new TextPadDocListener(textPad));
 		textPad.applyDocumentSettings();
 	}
