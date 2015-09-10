@@ -2,10 +2,10 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-12, Text Flex
+Copyright (c) 2002-15, Text Flex
 http://textflex.com/texttrix
 
-----v.0.9.5 beta 2 (2012-11-xx)----
+----v.0.9.5 beta 2 (2015-09-08)----
 
 The Text Trix now features an additional syntax highlighter. The new highlighter 
 (modified from the open-source JSyntaxPane library) has greatly improved 
@@ -27,14 +27,17 @@ Summary of new features:
 performance, line numbering, width marker, and brace highlighting/completion 
 (based on JSyntaxPane)
 -Bookmarking tool (Line Dance) keeps better track of positions
+-Change display font size in preferences
 -Preserves end-of-line (EOL) styles
 -Can be set as default editor in Windows (use run.bat)
 -Bug fixes
 
 What's new in beta 2 (since beta 1):
--Fixed undo/redo when using the Ostermiller highlighter
--Bookmark improvements (Line Dance)
+-Change display font size in preferences
+-Bookmark dynamic updates (Line Dance)
 -run.bat file to launch as a default editor in Windows
+-Fixed undo/redo when using the Ostermiller highlighter
+-Fixes for running on Java 8 on Windows 10
 
 Known issues/requirements:
 -This new package requires Java 6 or higher to run. If you require Java 1.4/5, 

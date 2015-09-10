@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-12, Text Flex
+Copyright (c) 2002-15, Text Flex
 All rights reserved.
 
 =============================================
@@ -32,7 +32,7 @@ TextTrix-x.y.z.zip:
 -Unzip the file.
 -Double-click on "TextTrix.jar".
 -On Linux, you may need to change the "Open with" program to Java 
-(eg Sun Java 6 or OpenJDK 6).
+(eg OpenJDK 8).
 
 Launching from command-line
 ------------------------------------

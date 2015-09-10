@@ -59,6 +59,8 @@ import jsyntaxpane.DefaultSyntaxKit;
 import jsyntaxpane.SyntaxViewWrapped;
 import jsyntaxpane.SyntaxDocument;
 
+import com.Ostermiller.Syntax.TokenStyles;
+
 /**
  * The main Text Trix class. Takes care of all basic graphical user interface
  * operations, such as setting up and responding to changes in the
@@ -337,8 +339,12 @@ public class TextTrix extends JFrame {
 		
 		
 		/* Start the jsyntaxpane highlighter */
-		DefaultSyntaxKit.setFontSize(getPrefs().getFontSize());
+		int fontSize = getPrefs().getFontSize();
+		DefaultSyntaxKit.setFontSize(fontSize);
 		DefaultSyntaxKit.initKit();
+		
+		TokenStyles.setFontSize(fontSize);
+		TokenStyles.initialize();
 		
 		
 		
@@ -2196,7 +2202,7 @@ public class TextTrix extends JFrame {
 	
 	private void applyHighlighting(TextPad textPad) {
 		textPad.removeDocListener();
-		textPad.setHighlightStyle();
+		textPad.setHighlightStyle(getPrefs().getFontSize());
 		textPad.addDocListener(new TextPadDocListener(textPad));
 		textPad.applyDocumentSettings();
 	}

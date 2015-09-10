@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-12, Text Flex
+Copyright (c) 2002-15, Text Flex
 All rights reserved.
 
 =============================================
@@ -51,8 +51,8 @@ for details on how to write your own plug-in for Text Trix!
 
 Troubleshooting
 -------------------
--Text Trix has been tested on Windows XP/7 (Java 6/7), 
-Fedora 15 and Ubuntu 12.04 (OpenJDK 6), and MacOS X 10.6 (Java 6).  If 
+-Text Trix has been tested on Windows XP/7/10 (Java 6/7/8), 
+Fedora 22 and Ubuntu 15.04 (OpenJDK 8), and MacOS X 10.10 (Java 8).  If 
 you've tested it on another platform, please let us know about your 
 experience.
 -See "readme.txt" for information on running Text Trix.

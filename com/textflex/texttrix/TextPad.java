@@ -311,7 +311,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * document listeners, will be re-applied to the new
 	 * styled document.
 	 */
-	public void setHighlightStyle() {
+	public void setHighlightStyle(int fontSize) {
 		// detects the file extension and returns if the document
 		// either requires no styling or has a content type that
 		// requires its own formatting
@@ -341,9 +341,11 @@ public class TextPad extends JTextPane implements StateEditable {
 // 					"jsyntaxpane.components.LineNumbersRuler");
 					
 			// Ostermiller syntax highlighter for better wrapped text
+//  			TokenStyles.getStyle
 			HighlightedDocument doc = getHighlightedDoc();
 			setStyledDocument(doc);
 			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
+// 			setFont(getFont().deriveFont((float)fontSize));
 // 			if (scrollPane != null) {
 // 				scrollPane.setHorizontalScrollBarPolicy(
 // 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
