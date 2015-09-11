@@ -196,9 +196,9 @@ do
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
 	if [ "$CYGWIN" = "true" ]
 	then
-		"$JAVA"javac -source 1.4 -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir/$PLUGINS_BRANCH_DIR`" "`cygpath -p -w $plugin_dir/$PLUGINS_BRANCH_DIR/$DIR`"/*.java
+		"$JAVA"javac -source 1.5 -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir/$PLUGINS_BRANCH_DIR`" "`cygpath -p -w $plugin_dir/$PLUGINS_BRANCH_DIR/$DIR`"/*.java
 	else
-		"$JAVA"javac -source 1.4 -classpath "$TTX_DIR":"$plugin_dir/$PLUGINS_BRANCH_DIR" "$plugin_dir/$PLUGINS_BRANCH_DIR/$DIR/"*.java
+		"$JAVA"javac -source 1.5 -classpath "$TTX_DIR":"$plugin_dir/$PLUGINS_BRANCH_DIR" "$plugin_dir/$PLUGINS_BRANCH_DIR/$DIR/"*.java
 	fi
 	cd "$plugin_dir/$PLUGINS_BRANCH_DIR"
 	"$JAVA"jar -0cf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
