@@ -75,11 +75,13 @@ Parameters:
 	
 	--timestamp: adds a mm-dd-yy-hh\'h\'mm timestamp to each package
 		
+	--ver=version: The version number to append to the package names.
+	
 Copyright:
-	Copyright (c) 2003-11 Text Flex
+	Copyright (c) 2003-11, 2015 Text Flex
 
 Last updated:
-	2011-11-25
+	2015-09-11
 "
 
 #####################
@@ -138,6 +140,7 @@ PAR_API="--api"
 PAR_CHANGELOG="--log"
 PAR_PREFIX="--prefix"
 PAR_TIMESTAMP="--timestamp"
+PAR_VER="--ver"
 
 if [ $# -gt 0 ]
 then
@@ -181,6 +184,12 @@ then
 			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
 			echo "Set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 			
+		# verion number, which overrides default version
+		elif [ ${arg:0:${#PAR_VER}} = "$PAR_VER" ]
+		then
+			VER="${arg#${PAR_VER}=}"
+			echo "...set to use \"$VER\" as the version number..."
+		
 		# timestamp labeling
 		elif [ ${arg:0:${#PAR_TIMESTAMP}} = "$PAR_TIMESTAMP" ]
 		then

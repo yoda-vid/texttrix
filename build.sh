@@ -75,10 +75,10 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-12 Text Flex
+	Copyright (c) 2003-12, 2015 Text Flex
 
 Last updated:
-	2012-11-07
+	2015-09-11
 "
 
 #####################
