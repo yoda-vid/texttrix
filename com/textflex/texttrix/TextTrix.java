@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-11
+ * Portions created by the Initial Developer are Copyright (C) 2002-15
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -60,6 +60,7 @@ import jsyntaxpane.SyntaxViewWrapped;
 import jsyntaxpane.SyntaxDocument;
 
 import com.Ostermiller.Syntax.TokenStyles;
+import com.Ostermiller.Syntax.HighlightedDocument;
 
 /**
  * The main Text Trix class. Takes care of all basic graphical user interface
@@ -927,13 +928,29 @@ public class TextTrix extends JFrame {
 				// resets spell-checker
 				pad.spellChecker(spellCheck);
 				
+				// adjusts font size
 				if (h == 0 && i == 0) {
+					// checks font size on first tab to see if different
+					// from prefs setting
 					int currFontSize = pad.getFont().getSize();
 					fontSize = getPrefs().getFontSize();
 					if (fontSize == currFontSize) fontSize = -1;
-					DefaultSyntaxKit.setFontSize(fontSize);
+					DefaultSyntaxKit.setFontSize(fontSize); // jsyntaxpane
+					TokenStyles.setFontSize(fontSize); // oster
+					TokenStyles.initialize();
 				}
 				if (fontSize != -1) {
+					// adjusts font size if different
+					Document doc = pad.getDocument();
+					if (doc instanceof HighlightedDocument) {
+						// recolors Ostermillier-highlighted document
+						HighlightedDocument highDoc = (HighlightedDocument)doc;
+						highDoc.colorAll();
+					}
+					// adjusts font setting, which will automatically update
+					// size on JSyntaxPane-highlighted text but not 
+					// Ostermiller-highlighted documents, but will still
+					// update to remember font setting
 					pad.setFont(pad.getFont().deriveFont((float)fontSize));
 				}
 			}
