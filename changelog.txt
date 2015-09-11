@@ -5,22 +5,29 @@ the text tinker
 Copyright (c) 2002-15, Text Flex
 http://textflex.com/texttrix
 
-----v.0.9.5 beta 2 (2015-09-08)----
+----v.0.9.5 (2015-09-xx)----
 
-The Text Trix now features an additional syntax highlighter. The new highlighter 
-(modified from the open-source JSyntaxPane library) has greatly improved 
-performance and adds support for many new languages, including Python, 
-SQL, bash, Groovy, JSON, and Scala, in addition to Java, HTML, and C++ 
-syntax support. Built into the highlighter are also a line number ruler, width 
-marker, and parenthesis/bracket highlighters.
+The Text Trix editor now incorporates an additional syntax highlighter. The 
+new highlighter (modified from the open-source JSyntaxPane library) has 
+greatly improved performance and adds support for many additional 
+languages, including Python, SQL, bash, Groovy, JSON, and Scala, in 
+addition to Java, HTML, and C++ syntax support. Built into the highlighter are 
+also a line number ruler, width marker, and parenthesis/bracket highlighters.
 
-The bookmark tool for recording positions in each file (Line Dance) has been 
+The bookmark tool for recording positions in each file ("Line Dance") has been 
 updated to dynamically update its bookmarked positions as you add or remove 
 text from your file. The interface has also been tweaked for ease of use.
 
 Files previously defaulted to Unix (LF) end-of-line (EOL) styles, even if they 
 were previously in Windows (CRLF) format. Now Text Trix preserves the file's 
 original EOL style.
+
+Font size can now be adjusted in the Preferences window. The setting will only 
+adjust how text is displayed, without modifying the file, and will hopefully make 
+editing easier on new high-res displays.
+
+We've also tested for compatibility on newer systems, including Java 8 on 
+Windows 10, Mac OS X 10.10, and Fedora 22.
 
 Summary of new features:
 -Improved syntax highlighting, including support for more languages, faster 
@@ -31,13 +38,6 @@ performance, line numbering, width marker, and brace highlighting/completion
 -Preserves end-of-line (EOL) styles
 -Can be set as default editor in Windows (use run.bat)
 -Bug fixes
-
-What's new in beta 2 (since beta 1):
--Change display font size in preferences
--Bookmark dynamic updates (Line Dance)
--run.bat file to launch as a default editor in Windows
--Fixed undo/redo when using the Ostermiller highlighter
--Fixes for running on Java 8 on Windows 10
 
 Known issues/requirements:
 -This new package requires Java 6 or higher to run. If you require Java 1.4/5, 
