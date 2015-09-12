@@ -103,6 +103,8 @@ API=0
 CHANGELOG_END="" # insert date as YYYY-MM-DD format
 CHANGELOG=0
 
+JAVA_VER_SRC="1.5"
+
 ####################
 # Setup variables
 ####################

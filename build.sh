@@ -243,7 +243,7 @@ then
 	CLASSPATH=`cygpath -wp $CLASSPATH`
 	JAVA_FILES=`cygpath -wp $JAVA_FILES`
 fi
-"$JAVA"javac -cp $CLASSPATH -source 1.5 $JAVA_FILES
+"$JAVA"javac -cp $CLASSPATH -source $JAVA_VER_SRC -target $JAVA_VER_SRC $JAVA_FILES
 
 #############
 # Build plugins
