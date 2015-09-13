@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-12
+# Portions created by the Initial Developer are Copyright (C) 2015
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -35,73 +35,12 @@
 #
 # ***** END LICENSE BLOCK *****
 
-# Text Trix Builder
-
-HELP="
-Builds the Text Trix program and its packages.
-
-Syntax:
-	build.sh [ --java java-compiler-binaries-path ] [ --plug ]
-	[ --pkg ] [ --help ]
-(\"sh \" might need to precede the command on the same line, in case
-the file build.sh does not have executable permissions.)
-
-Parameters:
-	--api: Builds the API documentation files.
-	
-	--branch=path/to/branch: The branch (or trunk) with reference to
-	the repository root from which to compile source code. For example, 
-	to compile from the 0.7.1 branch, specify \"--branch=branches/0.7.1\". 
-	To compile from the trunk, simply specify \"--branch=trunk\", or 
-	leave it blank. The source code release package sets the branch to 
-	\".\", since the source package does not contain branches and tags.
-	Note that this arguments is not used directly in this script, but 
-	passed to the plugins script when the \"--plug\" flag is set.
-	
-	--clean: Cleans all .class files and exits.
-	
-	--java=java//binaries/path: Specifies the path to javac, 
-	jar, and other Java tools necessary for compilation.  
-	Alternatively, the JAVA variable can be hand-edited 
-	to specify the path, which would override any command-line 
-	specification.
-	
-	--help: Lends a hand by displaying yours truly.
-	
-	--log: Builds the SVN log from the date specified in the
-	CHANGELOG_END variable through now.
-	
-	--plug: Compiles and packages the plug-ins after compiling the
-	Text Trix program.
-	
-Copyright:
-	Copyright (c) 2003-12 Text Flex
-
-Last updated:
-	2012-11-07
-"
+# Text Trix environment setup
 
 #####################
 # User-defined variables
 # Check them!
 ####################
-
-# compiler location
-JAVA=""
-
-# build plugins; 1 = build
-PLUG=0
-
-# SVN texttrix src branch directory
-BRANCH_DIR="trunk"
-
-# API documentation directory relative to base directory; 1 = build
-API_DIR="docs/api"
-API=0
-
-# build changelog; 1 = build
-CHANGELOG_END="" # insert date as YYYY-MM-DD format
-CHANGELOG=0
 
 JAVA_VER_SRC="1.5"
 
