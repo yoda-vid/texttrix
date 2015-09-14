@@ -1078,7 +1078,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// the previous newline, or if none exists, the first character
 		// of the document
 		int lineLeadingChar = LibTTx.reverseIndexOf(doc, "\n", i) + 1;
-		System.out.println("lineLeadingChar: " + lineLeadingChar);
+// 		System.out.println("lineLeadingChar: " + lineLeadingChar);
 		// removes the first tab
 		if (doc.getText(lineLeadingChar, 1).equals("\t")) {
 			doc.remove(lineLeadingChar, 1);

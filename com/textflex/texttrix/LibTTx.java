@@ -695,7 +695,7 @@ public class LibTTx {
 	public static String getEOL(String text) {
 		int r = text.indexOf("\r");
 		String eol = "\n"; // defaults to LF (Unix)
-		System.out.println("r: " + r + ", n: " + text.indexOf('\n'));
+// 		System.out.println("r: " + r + ", n: " + text.indexOf('\n'));
 		if (r != -1) {
 			int n = text.indexOf('\n');
 			if (n == r + 1) {
