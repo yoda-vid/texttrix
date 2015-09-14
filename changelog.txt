@@ -5,7 +5,12 @@ the text tinker
 Copyright (c) 2002-15, Text Flex
 http://textflex.com/texttrix
 
-----v.0.9.5 (2015-09-xx)----
+----v.1.0.0 (2015-09-13)----
+
+We originally planned to make this release version 0.9.5, but after four years 
+of accumulated development, we've decided to bite the bullet and call this our 
+"1.0" release. Thanks to all the support from users, testers, and developers 
+over the years, big and small!
 
 The Text Trix editor now incorporates an additional syntax highlighter. The 
 new highlighter (modified from the open-source JSyntaxPane library) has 
