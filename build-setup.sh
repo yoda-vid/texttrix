@@ -42,21 +42,11 @@
 # Check them!
 ####################
 
-JAVA_VER_SRC="1.5"
+JAVA_VER_SRC="1.6"
 
 ####################
 # Setup variables
 ####################
-
-PAR_JAVA="--java"
-PAR_PLUGINS="--plugins"
-PAR_BRANCH_DIR="--branch"
-PAR_PLUGINS_BRANCH_DIR="--plgbranch"
-PAR_PLUG="--plug"
-PAR_API="--api"
-PAR_CHANGELOG="--log"
-PAR_CLEAN="--clean"
-CLEAN=0
 
 echo -n "Detecting environment..."
 SYSTEM=`uname -s`
