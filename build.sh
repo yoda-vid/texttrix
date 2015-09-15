@@ -103,9 +103,6 @@ API=0
 CHANGELOG_END="" # insert date as YYYY-MM-DD format
 CHANGELOG=0
 
-# output folder
-CLASSES_DIR="classes"
-
 ####################
 # Setup variables
 ####################
@@ -227,16 +224,9 @@ fi
 
 #############
 # Clean files and exit
-if [ $CLEAN = 1 ]
-then
-	CLASS_FILES=`find -name $CLASSES_DIR/*.class`
-	if [ "$CLASS_FILES" != "" ]
-	then
-		rm $CLASS_FILES
-		echo "Removed all .class files"
-	else
-		echo "No .class files to remove"
-	fi
+if [ $CLEAN -eq 1 ]; then
+	rm -rf $CLASSES_DIR
+	echo "All .class files removed"
 	exit 0
 fi
 

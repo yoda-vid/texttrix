@@ -257,11 +257,15 @@ echo "Packaging the files..."
 # set up new package directories
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
-cp -rf "$TTX_DIR"/com "$TTX_DIR"/readme.txt "$TTX_DIR"/readme-src.txt \
+mkdir -p $PKGDIR/$DIR/images
+cp -rf "$TTX_DIR"/$CLASSES_DIR/com "$TTX_DIR"/readme*.txt \
 	"$TTX_DIR"/changelog.txt "$TTX_DIR"/lib \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
-	"$TTX_DIR"/dictionaries "$TTX_DIR"/run.bat "$BLD_DIR/$PKGDIR"
-
+	"$TTX_DIR"/dictionaries "$TTX_DIR"/run.bat $PKGDIR
+cp "$TTX_DIR"/$DIR/images/*.png $PKGDIR/$DIR/images
+cp "$TTX_DIR"/$DIR/*.txt "$TTX_DIR"/$DIR/*.html $PKGDIR/$DIR
+JORTHO_DIR=com/inet/jortho
+cp -rf "$TTX_DIR"/$JORTHO_DIR/i18n $PKGDIR/$JORTHO_DIR
 
 # create the master package, which will eventually become the binary package
 cd "$BLD_DIR/$PKGDIR"
@@ -276,7 +280,6 @@ cp -rf $PKGDIR $SRCPKGDIR/texttrix # master --> one folder within source package
 # add the build files
 cd "$TTX_DIR"
 # remove the branch assignments because no branches in src pkg
-#sed 's/BRANCH=.*/BRANCH=\./' configure > "$BLD_DIR/$SRCPKGDIR"/texttrix/configure
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh

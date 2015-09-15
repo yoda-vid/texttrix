@@ -42,7 +42,8 @@
 # Check them!
 ####################
 
-JAVA_VER_SRC="1.6"
+JAVA_VER_SRC="1.6" # source and target version
+CLASSES_DIR="classes" # output folder
 
 ####################
 # Setup variables
