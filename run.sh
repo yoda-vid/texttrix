@@ -82,56 +82,17 @@ Last updated:
 # User argument variables
 
 PAR_JAVA="--java"
-JAVA=""
 
-################
-# Automatically detect the Cygwin environment
-
-echo "Welcome to Text Trix!"
-echo ""
-echo -n "Detecting environment..."
-SYSTEM=`uname -s`
-CYGWIN=0
-LINUX="false"
-MAC="false"
-if [ `expr "$SYSTEM" : "CYGWIN"` -eq 6 ]
+# Sets the base directory to the script location
+if [ "x$BASE_DIR" = "x" ] # empty string
 then
-	CYGWIN=1
-elif [ `expr "$SYSTEM" : "Linux"` -eq 5 ]
-then
-	LINUX="true"
-
-	# Java binary detection mechanism
-	if [ "`command -v java`" != '' ]
-	then
-		JAVA=""
-	elif [ "`command -v /usr/bin/java`" != "" ]
-	then
-		JAVA="/usr/bin"
-	elif [ "`command -v /usr/lib/jvm/java-1.6.0/bin/java`" != "" ]
-	then
-		# OpenJDK directory on Fedora distributions
-		JAVA="/usr/lib/jvm/java-1.6.0/bin"
-	elif [ "`command -v /usr/lib/jvm/java-6-openjdk/bin/java`" != "" ]
-	then
-		# OpenJDK directory on Ubuntu distributions
-		JAVA="/usr/lib/jvm/java-6-openjdk/bin"
-	elif [ "`command -v /usr/java/default/bin/java`" != "" ]
-	then
-		JAVA="/usr/java/default/bin"
-	else
-		echo "Java software doesn't appear to be installed..."
-		echo "Please download it (for free!) from http://java.com."
-		echo "Or if it's already installed, please add it to your"
-		echo "PATH or to the JAVA variable in this script."
-		read -p "Press Enter to exit this script..."
-		exit 1
-	fi
-elif [ `expr "$SYSTEM" : "Darwin"` -eq 6 ]
-then
-	MAC="true"
+	BASE_DIR=`dirname $0`
 fi
-echo "found $SYSTEM"
+cd "$BASE_DIR"
+BASE_DIR="$PWD"
+
+# Platform and GUI detection
+source "$BASE_DIR"/build-setup.sh
 
 ##############
 # Respond to user arguments
@@ -183,14 +144,6 @@ then
 	JAVA=${JAVA%\/}/
 fi
 
-# Sets the base directory to the script location
-if [ "x$BASE_DIR" = "x" ] # empty string
-then
-	BASE_DIR=`dirname $0`
-fi
-cd "$BASE_DIR"
-BASE_DIR="$PWD"
-
 DIR="com/textflex/texttrix" # src package structure
 
 ##############
@@ -198,8 +151,8 @@ DIR="com/textflex/texttrix" # src package structure
 ##############
 
 cd "$BASE_DIR"
-CLASSPATH=lib/jsyntaxpane.jar:lib/oster.jar:.
-if [ $CYGWIN -eq 1 ]
+CLASSPATH=lib/jsyntaxpane.jar:lib/oster.jar:classes:.
+if [ $CYGWIN = "true" ]
 then
 	CLASSPATH="`cygpath -wp $CLASSPATH`"
 fi

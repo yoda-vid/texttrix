@@ -103,6 +103,9 @@ API=0
 CHANGELOG_END="" # insert date as YYYY-MM-DD format
 CHANGELOG=0
 
+# output folder
+CLASSES_DIR="classes"
+
 ####################
 # Setup variables
 ####################
@@ -215,11 +218,18 @@ DIR="com/textflex/texttrix" # src package structure
 
 cd "$BASE_DIR" # change to work directory
 
+# creates the output directory
+if [ ! -e "$CLASSES_DIR" ]
+then
+	mkdir -p "$CLASSES_DIR"
+	cp -rf dictionaries $CLASSES_DIR
+fi
+
 #############
 # Clean files and exit
 if [ $CLEAN = 1 ]
 then
-	CLASS_FILES=`find -name *.class`
+	CLASS_FILES=`find -name $CLASSES_DIR/*.class`
 	if [ "$CLASS_FILES" != "" ]
 	then
 		rm $CLASS_FILES
@@ -243,7 +253,7 @@ then
 	CLASSPATH=`cygpath -wp $CLASSPATH`
 	JAVA_FILES=`cygpath -wp $JAVA_FILES`
 fi
-"$JAVA"javac -cp $CLASSPATH -source $JAVA_VER_SRC -target $JAVA_VER_SRC $JAVA_FILES
+"$JAVA"javac -cp $CLASSPATH -source $JAVA_VER_SRC -target $JAVA_VER_SRC $JAVA_FILES -d $CLASSES_DIR
 
 #############
 # Build plugins
