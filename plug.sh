@@ -194,12 +194,14 @@ for plugin in $PLUGINS
 do
 	plugin_dir=`echo "$plugin" | tr "[:upper:]" "[:lower:]"`
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
+	CLASSPATH="$TTX_DIR/$CLASSES_DIR":"$plugin_dir/$PLUGINS_BRANCH_DIR"
+	FILES="$plugin_dir/$PLUGINS_BRANCH_DIR/$DIR/"*.java
 	if [ "$CYGWIN" = "true" ]
 	then
-		"$JAVA"javac -source 1.5 -classpath "`cygpath -p -w $TTX_DIR:$plugin_dir/$PLUGINS_BRANCH_DIR`" "`cygpath -p -w $plugin_dir/$PLUGINS_BRANCH_DIR/$DIR`"/*.java
-	else
-		"$JAVA"javac -source 1.5 -classpath "$TTX_DIR":"$plugin_dir/$PLUGINS_BRANCH_DIR" "$plugin_dir/$PLUGINS_BRANCH_DIR/$DIR/"*.java
+		CLASSPATH="`cygpath -p -w $CLASSPATH`"
+		FILES="`cygpath -p -w $FILES`"
 	fi
+	"$JAVA"javac -source $JAVA_VER_SRC -target $JAVA_VER_SRC -classpath "$CLASSPATH" $FILES
 	cd "$plugin_dir/$PLUGINS_BRANCH_DIR"
 	"$JAVA"jar -0cf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
 	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
