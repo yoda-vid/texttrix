@@ -97,7 +97,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private ActionMap amap = null; // map of actions
 	private boolean autoIndent = false; // flag to auto-indent the text
 	private int tabSize = 4; // default tab display size
-	private StoppableThread autoSaveTimer = null; // timer to auto save the text
+// 	private long saveTimeCheck = -1;
 	private CompoundEdit compoundEdit = null; // group editing tasks for single undo
 	private boolean compoundEditing = false; // flags whether editing as group
 	private JScrollPane scrollPane = null; // the scroll pane that houses this pad
@@ -1317,6 +1317,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		fileModifiedThread = thread;
 	}
 	
+// 	public void setSaveTimeCheck(long val) { saveTimeCheck = val; }
+	
 	
 	
 	
@@ -2091,13 +2093,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
-	/**Sets the current auto-save timer.
-	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
-	 * with changed content if the user has enabled the feature.
-	 */
-	public void setAutoSaveTimer(StoppableThread aAutoSaveTimer) {
-		autoSaveTimer = aAutoSaveTimer;
-	}
 	
 	/** Sets the scroll pane that houses this pad.
 	 * @param aScrollPane the pane that houses this pad
@@ -2107,6 +2102,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	}
 	
 	public void setEOL(String val) { eol = val; }
+	
+	public void setIgnoreChanged(boolean val) { ignoreChanged = val; }
 	
 	
 	
@@ -2148,19 +2145,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		return fileModifiedThread;
 	}
 	
-	/**Gets the current auto-save timer.
-	 * <code>TextTrix</code> attaches a timer to each <code>TextPad</code>
-	 * with changed content if the user has enabled the feature.
-	 * @return the auto-save timer
-	 */
-	public StoppableThread getAutoSaveTimer() {
-		return autoSaveTimer;
-	}
-	
 	public WrappedPlainView getWrappedView() { return wrappedView; }
 	private void setWrappedView(WrappedPlainView val) { wrappedView = val; }
 	
 	public String getEOL() { return eol; }
+	
+// 	public long getSaveTimeCheck() { return saveTimeCheck; }
+	
+	public boolean isIgnoreChanged() { return ignoreChanged; }
 	
 	
 	

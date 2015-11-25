@@ -106,6 +106,7 @@ public class TextTrix extends JFrame {
 	private static boolean highlighting = true; // syntax highlighting flag
 	private static boolean verbose = false; // verbose command-line output
 	private static boolean clearTabs = false;
+	private static TextPadAutoSaveTimer autoSaveTimer = null;
 	
 	/* General GUI components */
 	private static ArrayList ttxWindows = new ArrayList();
@@ -519,6 +520,9 @@ public class TextTrix extends JFrame {
 				setAutoIndent();
 			}
 		});
+		
+		// start auto-saver
+		if (getPrefs().getAutoSave()) startTextPadAutoSaveTimer();
 
 		/*
 		 * Something apparently grabs focus after he tabbed pane ChangeListener
@@ -911,6 +915,11 @@ public class TextTrix extends JFrame {
 		// access each tab by selecting it and applying settings
 		// TODO: access text pad directly, rather than through selection
 		boolean autoSave = getPrefs().getAutoSave();
+		if (autoSave) {
+			startTextPadAutoSaveTimer();
+		} else {
+			stopTextPadAutoSaveTimer();
+		}
 		boolean spellCheck = getPrefs().getSpellChecker();
 		int tabCount = pane.getTabCount();
 		int fontSize = -1;
@@ -919,11 +928,6 @@ public class TextTrix extends JFrame {
 			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
 				TextPad pad = getTextPadAt(i);
 				// restarts the save timer
-				if (autoSave) {
-					if (pad.getChanged()) startTextPadAutoSaveTimer(pad);
-				} else {
-					stopTextPadAutoSaveTimer(pad);
-				}
 				
 				// resets spell-checker
 				pad.spellChecker(spellCheck);
@@ -2245,7 +2249,7 @@ public class TextTrix extends JFrame {
 		TextPad t = getSelectedTextPad();
 		// stops the pad's save timer and removes the pad
 		if (t != null) {
-			stopTextPadAutoSaveTimer(t);
+// 			stopTextPadAutoSaveTimer(t);
 			t.stopFileModifiedThread();
 			tp.remove(i);
 		}
@@ -2281,7 +2285,7 @@ public class TextTrix extends JFrame {
 				// stops any auto-save timer attached to the pad
 				// since the file has just been saved;
 				// relies on TextPadDocListener to restart the timer
-				stopTextPadAutoSaveTimer(t);
+// 				stopTextPadAutoSaveTimer(t);
 				
 				getPrefs().storeFileHist(path);
 				// sets the style according to extension, but only if 
@@ -2308,6 +2312,7 @@ public class TextTrix extends JFrame {
 					autoAutoIndent(t); 
 				}
 				t.setChanged(false);
+				t.setIgnoreChanged(false);
 				updateTabTitle(t);//textAreas.indexOf(t));
 				return true;
 			}
@@ -2868,18 +2873,26 @@ public class TextTrix extends JFrame {
 	 * @see #stopTextPadAutoSaveTimer(TextPad)
 	 * @see #getSavePath(TextPad, JFrame)
 	 */
-	public void startTextPadAutoSaveTimer(TextPad pad) {
+	public void startTextPadAutoSaveTimer() {
 		// retrieves stored timer in given TextPad
-		StoppableThread timer = pad.getAutoSaveTimer();
+// 		StoppableThread timer = pad.getAutoSaveTimer();
 		// creates a new timer if it doesn't exist, the case when auto-save
 		// hasn't started, or stopTextPadAutoSaveTimer has stopped it;
 		// if try to restart, get ThreadStateException for some reason
-
-		if (timer == null) {
-			pad.setAutoSaveTimer(timer = new TextPadAutoSaveTimer(pad));
-			timer.start();
-		} else if (timer.isStopped()) {
-			timer.start();
+		
+		// TODO: could check for last save time to ensure a min save time
+		// duration, though might actually be preferable to save more 
+		// aggressively
+// 		long time = System.currentTimeMillis();
+// 		ArrayList<TextPad> pads = getTextPads();
+// 		for (TextPad pad : pads) {
+// 			pad.setSaveTimeCheck(time);
+// 		}
+		if (autoSaveTimer == null) {
+			autoSaveTimer = new TextPadAutoSaveTimer();
+			autoSaveTimer.start();
+		} else if (autoSaveTimer.isStopped()) {
+			autoSaveTimer.start();
 		}
 
 	}
@@ -2891,14 +2904,13 @@ public class TextTrix extends JFrame {
 	 * @param pad the pad with the auto-save timer to stop
 	 * @see #startTextPadAutoSaveTimer(TextPad)
 	 */
-	public static void stopTextPadAutoSaveTimer(TextPad pad) {
-		StoppableThread timer = pad.getAutoSaveTimer();
-		if (timer != null) {
+	public static void stopTextPadAutoSaveTimer() {
+		if (autoSaveTimer != null) {
 			//timer.interrupt();
 			// destroys object to ensure that the startTextPadAutoSaveTimer
 			// creates a new object
 			//pad.setAutoSaveTimer(null);
-			timer.requestStop();
+			autoSaveTimer.requestStop();
 		}
 	}
 
@@ -3198,7 +3210,8 @@ public class TextTrix extends JFrame {
 				pad.setChanged(true);
 				updateTabTitle(pad);
 				if (getPrefs().getAutoSave()) {
-					startTextPadAutoSaveTimer(pad);
+					// restarts timer if stopped
+					startTextPadAutoSaveTimer();
 				}
 			}
 		}
@@ -3213,9 +3226,9 @@ public class TextTrix extends JFrame {
 	 */
 	private class TextPadAutoSaveTimer extends StoppableThread {
 
-		private TextPad textPad = null;
 		private boolean chooserShowing = false;
 		private Thread thread = null;
+		private static final String promptTitle = "Auto-Save Prompt";
 
 		/**
 		 * Creates a timer to work on the given <code>TextPad</code>. The pad
@@ -3223,8 +3236,7 @@ public class TextTrix extends JFrame {
 		 * 
 		 * @param aTextPad
 		 */
-		public TextPadAutoSaveTimer(TextPad aTextPad) {
-			textPad = aTextPad;
+		public TextPadAutoSaveTimer() {
 		}
 
 		/**
@@ -3240,15 +3252,18 @@ public class TextTrix extends JFrame {
 		}
 
 		/**
-		 * Saves the file after the time interval that the preferences specify.
-		 * Once the information dialogs have displayed, canceling the chooser,
-		 * whether opened manually or by the auto-save, disables the auto-save
-		 * function until the next save.
+		 * Saves all TextPad contents after the time interval that the 
+		 * preferences specify. Ignores any Text Pad whose contents has not
+		 * changed or which specifies that changes should be ignored.
+		 * Assumes that this Thread will be run again if any further changes 
+		 * are made to any TextPads.
 		 */
 		public void run() { 
 			interrupted(); // clears any interrupt during a previous run
 			try {
-				sleep(getPrefs().getAutoSaveInterval() * 60000);
+				final long sleepInterval 
+						= getPrefs().getAutoSaveInterval() * 60000;
+				sleep(sleepInterval);
 				// don't need getPrefs().getAutoSave() && b/c only start
 				// timer if auto-save pref set, and interrupt already called
 				// if unset while timer running
@@ -3258,61 +3273,13 @@ public class TextTrix extends JFrame {
 					// with events in the main dispatch thread
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-
-							// prompt if the preference selected;
-							// skip if file doesn't exist b/c will ask for file
-							// name later,
-							// when can still cancel the save
-							if (getPrefs().getAutoSavePrompt()
-									&& textPad.fileExists()) {
-								// creates a save prompt dialog
-								int choice = JOptionPane.showConfirmDialog(
-										getThis(),
-										"We're about to auto-save this baby"
-												+ " ("
-												+ textPad.getFilename()
-												+ ")."
-												+ "\nYou OK with that?"
-												+ "\n(\"No\" means we won't ask again "
-												+ "about this file.)",
-										"Auto-Save Prompt",
-										JOptionPane.YES_NO_OPTION,
-										JOptionPane.QUESTION_MESSAGE);
-								if (choice == JOptionPane.NO_OPTION) {
-									return;
-								}
-							}
-							
-							// saves the pad directly if it already exists;
-							// otherwise, asks for a file path
-							if (textPad.fileExists()) {
-								saveFile(textPad.getPath(), textPad);
-							} else {
-								// asks users whether they would like to supply
-								// a file
-								// path rather than diving immediately and
-								// cryptically
-								// into the file save dialog
-								int choice = JOptionPane.showConfirmDialog(
-										getThis(),
-										"We're about to auto-save this baby"
-												+ " ("
-												+ textPad.getFilename()
-												+ "), "
-												+ "\nbut we need a name for it.  "
-												+ "Mind if we got that from you?"
-												+ "\n(\"No\" means we won't ask again "
-												+ "about this file.)",
-										"Auto-Save Prompt",
-										JOptionPane.YES_NO_OPTION,
-										JOptionPane.QUESTION_MESSAGE);
-								// exit immediately if users cancel the save
-								if (choice == JOptionPane.NO_OPTION) {
-									return;
-								}
-								// solicits users for a file name;
-								// main prgm as dialog owner
-								fileSaveDialog(textPad, getThis());
+							ArrayList<TextPad> pads = getTextPads();
+							for (TextPad pad : pads) {
+// 								long minTime = pad.getSaveTimeCheck() 
+// 										+ sleepInterval;
+								if (pad.getChanged() && !pad.isIgnoreChanged())
+// 										&& System.currentTimeMillis() > minTime) 
+									autoSave(pad);
 							}
 						}
 					});
@@ -3338,6 +3305,67 @@ public class TextTrix extends JFrame {
 			if (thread != null) {
 				thread.interrupt();
 				thread = null;
+			}
+		}
+		/** 
+		 * Saves the contents of the TextPad. If the TextPad does not yet have
+		 * an associated file, the user will first be flagged whether to save 
+		 * to file and what to name it. If the user elects not to save the
+		 * contents, the TextPad will be flagged not to auto-save.
+		 */
+		private void autoSave(TextPad textPad) {
+			// prompt if the preference selected;
+			// skip if file doesn't exist b/c will ask for file
+			// name later,
+			// when can still cancel the save
+			if (getPrefs().getAutoSavePrompt()
+					&& textPad.fileExists()) {
+				// creates a save prompt dialog
+				int choice = JOptionPane.showConfirmDialog(
+						TextTrix.this,
+						"We're about to auto-save this baby ("
+								+ textPad.getFilename()
+								+ ").\nYou OK with that?"
+								+ "\n(\"No\" means we won't ask again "
+								+ "about this file.)",
+						promptTitle,
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+				if (choice == JOptionPane.NO_OPTION) {
+					textPad.setIgnoreChanged(true);
+					return;
+				}
+			}
+			
+			// saves the pad directly if it already exists;
+			// otherwise, asks for a file path
+			if (textPad.fileExists()) {
+				saveFile(textPad.getPath(), textPad);
+			} else {
+				// asks users whether they would like to supply
+				// a file
+				// path rather than diving immediately and
+				// cryptically
+				// into the file save dialog
+				int choice = JOptionPane.showConfirmDialog(
+						TextTrix.this,
+						"We're about to auto-save this baby ("
+								+ textPad.getFilename()
+								+ "),\nbut we need a name for it.  "
+								+ "Mind if we got that from you?"
+								+ "\n(\"No\" means we won't ask again "
+								+ "about this file.)",
+						promptTitle,
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+				// exit immediately if users cancel the save
+				if (choice == JOptionPane.NO_OPTION) {
+					textPad.setIgnoreChanged(true);
+					return;
+				}
+				// solicits users for a file name;
+				// main prgm as dialog owner
+				fileSaveDialog(textPad, getThis());
 			}
 		}
 	}
