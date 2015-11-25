@@ -883,7 +883,7 @@ public class Prefs extends JDialog {//JFrame {
 	 * @return <code>true</code> if the program should auto-save files
 	 */
 	public boolean getAutoSave() {
-		return generalPrefs.getBoolean(AUTO_SAVE, false);
+		return generalPrefs.getBoolean(AUTO_SAVE, true);
 	}
 	/**Gets the stored interval between the first change in a file and
 	 * its automatic save.
@@ -899,7 +899,7 @@ public class Prefs extends JDialog {//JFrame {
 	 * @return <code>true</code> if the program should prompt the user
 	 */
 	public boolean getAutoSavePrompt() {
-		return generalPrefs.getBoolean(AUTO_SAVE_PROMPT, true);
+		return generalPrefs.getBoolean(AUTO_SAVE_PROMPT, false);
 	}
 	
 	public boolean getHighlighting() {
