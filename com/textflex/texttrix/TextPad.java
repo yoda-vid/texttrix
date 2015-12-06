@@ -107,7 +107,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	private DocumentFilter docFilter = null;
 	private WrappedPlainView wrappedView = null;
 	private String eol = null;
-	private HighlightedDocument highlightedDoc = null; // Ostermiller syntax
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -341,9 +340,13 @@ public class TextPad extends JTextPane implements StateEditable {
 // 					"jsyntaxpane.components.LineNumbersRuler");
 					
 			// Ostermiller syntax highlighter for better wrapped text
-			HighlightedDocument doc = getHighlightedDoc();
-			setStyledDocument(doc);
-			doc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
+			StyledDocument doc = getStyledDocument();
+			if (doc == null || !(doc instanceof HighlightedDocument)) {
+				doc = new HighlightedDocument();
+				setStyledDocument(doc);
+			}
+			HighlightedDocument highlightedDoc = (HighlightedDocument)doc;
+			highlightedDoc.setHighlightStyle(HighlightedDocument.HTML_KEY_STYLE);
 			// setting font doesn't appear to work; apparently need to update
 			// tokens, though directly updating them does not work either
 // 			setFont(getFont().deriveFont((float)fontSize));
@@ -398,16 +401,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		} else {
 			SpellChecker.unregister(this);
 		}
-	}
-	
-	/** Gets the highlighted document used for syntax highlighting.
-	 * @return the highlighted document
-	 */
-	public HighlightedDocument getHighlightedDoc() {
-		if (highlightedDoc == null) {
-			highlightedDoc = new HighlightedDocument();
-		}
-		return highlightedDoc;
 	}
 	
 	/**
@@ -1708,11 +1701,16 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void paste() {
 		int start = getCaretPosition(); // to mark beginning of pasted region
 		super.paste();
+		int end = getCaretPosition(); // marks end of region
 		
 		// refreshes the graphical indents in the pasted region
 		if (autoIndent) {
-			int end = getCaretPosition(); // marks end of region
 			indentRegion(start, end);
+		}
+		
+		if (getStyledDocument() instanceof HighlightedDocument) {
+			HighlightedDocument doc = (HighlightedDocument)getStyledDocument();
+			doc.color(start, end - start);
 		}
 	}
 	
