@@ -5,6 +5,13 @@ the text tinker
 Copyright (c) 2002-15, Text Flex
 http://textflex.com/texttrix
 
+----v.1.0.1 (201x-xx-xx)----
+
+-Fixed delay in highlighting copy/pasted HTML text as wel as cursor 
+misalignment on Mac
+-Auto-saves by default
+-Small performance fixes and build improvements
+
 ----v.1.0.0 (2015-09-13)----
 
 We originally planned to make this release version 0.9.5, but after four years 
