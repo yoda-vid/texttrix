@@ -63,6 +63,7 @@ public class LibTTx {
 	/** System-indenpendent newline.
 	 */
 	public static final String NEWLINE = System.getProperty("line.separator");
+	public static final String DIR_PLUGINS = "plugins";
 
 	/** Constructs the library object, almost never necessary since
 	 * virtually all of its methods are static.
