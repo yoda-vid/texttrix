@@ -2420,6 +2420,7 @@ public class TextTrix extends JFrame {
 					read(t, reader, path);
 				}
 				t.setFile(path); // sets file pointer
+				t.setEditable(editable);
 				t.setupFileModifiedThread(); // sets last modified time
 				// TODO: check whether thread safe
 				getSelectedTabbedPane().setToolTipTextAt(
