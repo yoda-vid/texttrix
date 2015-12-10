@@ -1550,18 +1550,7 @@ public class TextTrix extends JFrame {
 	 * @return the plugins folder
 	 */
 	public File getPlugInsFile() {
-		// check from classes root directory
-		File plugInsFile = new File(LibTTx.getBaseURI(LibTTx.DIR_PLUGINS));
-		if (!plugInsFile.exists()) {
-			// check from working directory
-			plugInsFile = new File(LibTTx.DIR_PLUGINS);
-			if (!plugInsFile.exists()) {
-				System.out.println("I haven't been able to locate"
-					+ newline + plugInsFile.toString()
-					+ newline + "for your plug-ins.");
-			}
-		}
-		return plugInsFile;
+		return LibTTx.getFileFromBase(LibTTx.DIR_PLUGINS);
 	}
 
 	/**

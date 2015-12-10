@@ -307,6 +307,11 @@ public class LibTTx {
 		return baseDir;
 	}
 	
+	/**
+	 * Gets a file (or folder) relative to the root directory. 
+	 * @param folders path relative to the root directory
+	 * @return the URI of the file if it exists, or null if not
+	 */
 	public static URI getBaseURI(String folders) {
 		try {
 		URI baseURI = new URI(com.textflex.texttrix.LibTTx.class.
@@ -326,6 +331,28 @@ public class LibTTx {
 		return null;
 	}
 	
+	/**
+	 * Gets a file (or folder) relative to the root directory, or if 
+	 * not found there, from the working directory is checked instead.
+	 * @param name filename or folder name
+	 * @return the file if it exists, or null if not
+	 * @see #getBaseURI root folder is found based on this method
+	 */
+	public static File getFileFromBase(String name) {
+		// check from classes root directory
+		File file = new File(getBaseURI(name));
+		if (!file.exists()) {
+			// check from working directory
+			file = new File(name);
+			if (!file.exists()) {
+				System.out.println("I haven't been able to locate"
+					+ NEWLINE + file.toString() + ".");
+			}
+		}
+// 		System.out.println("found file path: " + file.getAbsolutePath());
+		return file;
+	}
+
 	/** Gets a list of all the plug-ins in a given directory.
 	 * 
 	 * @param plugInDir the plug-in directory

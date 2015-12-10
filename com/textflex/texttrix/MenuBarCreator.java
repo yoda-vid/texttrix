@@ -861,7 +861,8 @@ class MenuBarCreator implements Runnable {
 				
 				// Line Dance action
 				Action lineDanceViewAction = new AbstractAction(
-						"Line Dance...", LibTTx.makeIcon("images/linedance.png")) {
+						"Line Dance (Bookmarks)...", 
+						LibTTx.makeIcon("images/linedance.png")) {
 					public void actionPerformed(ActionEvent evt) {
 						// Line Dance for the current Text Pad
 						LineDanceDialog lineDanceDialog = 
@@ -874,7 +875,8 @@ class MenuBarCreator implements Runnable {
 						lineDanceDialog.setVisible(true);
 					}
 				};
-				LibTTx.setAction(lineDanceViewAction, "Line Dance", 'L');
+				LibTTx.setAction(lineDanceViewAction, "Line Dance (Bookmarks)", 
+						'L');
 				viewMenu.add(lineDanceViewAction);
 				
 				// Line Dance toolbar button
@@ -1079,6 +1081,25 @@ class MenuBarCreator implements Runnable {
 				};
 				LibTTx.setAction(shortcutsAction, "Shortcuts", 'S');
 				helpMenu.add(shortcutsAction);
+
+					
+				
+				
+				
+				// changelog
+				Action changelogAction = new AbstractAction("Changelog") {
+					
+					public void actionPerformed(ActionEvent evt) {
+						String path = "changelog.txt";
+						// assumes same directory as this class
+						if (!ttx.openFile(LibTTx.getFileFromBase(path), false, 
+								false, false)) {
+							ttx.displayMissingResourceDialog(path);
+						}
+					}
+				};
+				LibTTx.setAction(changelogAction, "Changelog", 'C');
+				helpMenu.add(changelogAction);
 
 					
 				

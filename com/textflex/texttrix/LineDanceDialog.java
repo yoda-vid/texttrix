@@ -67,7 +67,7 @@ class LineDanceDialog extends JDialog {
 	 */
 	public LineDanceDialog(TextTrix aTtx) {
 		// Setup the owner and title
-		super(aTtx, "Line Dance");
+		super(aTtx, "Line Dance (Bookmarks)");
 		ttx = aTtx;
 		
 		// Setup the content pane and its layout
