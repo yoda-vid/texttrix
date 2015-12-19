@@ -81,7 +81,7 @@ Copyright:
 	Copyright (c) 2003-11, 2015 Text Flex
 
 Last updated:
-	2015-09-13
+	2015-12-19
 "
 
 #####################
@@ -111,6 +111,9 @@ BRANCH_DIR="trunk"
 
 # SVN plugins src branch directory
 PLUGINS_BRANCH_DIR="$BRANCH_DIR"
+
+LAUNCH4J="launch4j-3.8"
+LAUNCH4J_CONFIG="launch4j-config.xml"
 
 ##############################
 # System setup
@@ -261,7 +264,8 @@ mkdir -p $PKGDIR/$DIR/images
 cp -rf "$TTX_DIR"/$CLASSES_DIR/com "$TTX_DIR"/readme*.txt \
 	"$TTX_DIR"/changelog.txt "$TTX_DIR"/lib \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
-	"$TTX_DIR"/dictionaries "$TTX_DIR"/run.bat $PKGDIR
+	"$TTX_DIR"/dictionaries "$TTX_DIR"/run.bat \
+	"$TTX_DIR"/$LAUNCH4J_CONFIG $PKGDIR
 cp "$TTX_DIR"/$DIR/images/*.png $PKGDIR/$DIR/images
 cp "$TTX_DIR"/$DIR/*.txt "$TTX_DIR"/$DIR/*.html $PKGDIR/$DIR
 JORTHO_DIR=com/inet/jortho
@@ -321,6 +325,23 @@ fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $BLD_DIR/$PKGDIR/$JAR
 rm -rf */*/*.class */*/*/*.class */*/*/*/*.class
+
+# Builds launch4j executable
+cd $BLD_DIR/$PKGDIR
+L4J_PATH="$BLD_DIR/$PKGDIR/$LAUNCH4J_CONFIG"
+ls $L4J_PATH
+if [ "$CYGWIN" = "true" ]
+then
+	L4J_PATH=`cygpath -wp $L4J_PATH`
+fi
+$WK_DIR/$LAUNCH4J/launch4j $L4J_PATH
+# waits until exe file is built since launch4j appears to run
+# in a separate process
+while [ ! -f "$BLD_DIR/$PKGDIR/TextTrix.exe" ]
+do
+	sleep 2
+done
+rm $L4J_PATH
 
 # finish the source package
 cd $BLD_DIR/$SRCPKGDIR
