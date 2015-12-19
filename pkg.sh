@@ -327,21 +327,28 @@ chmod 755 $BLD_DIR/$PKGDIR/$JAR
 rm -rf */*/*.class */*/*/*.class */*/*/*/*.class
 
 # Builds launch4j executable
+echo -n "Creating Windows executable file..."
 cd $BLD_DIR/$PKGDIR
-L4J_PATH="$BLD_DIR/$PKGDIR/$LAUNCH4J_CONFIG"
-ls $L4J_PATH
-if [ "$CYGWIN" = "true" ]
+L4J_EXE="$WK_DIR/$LAUNCH4J/launch4j"
+if [ -e $L4J_EXE ]
 then
-	L4J_PATH=`cygpath -wp $L4J_PATH`
+	L4J_PATH="$BLD_DIR/$PKGDIR/$LAUNCH4J_CONFIG"
+	if [ "$CYGWIN" = "true" ]
+	then
+		L4J_PATH=`cygpath -wp $L4J_PATH`
+	fi
+	$L4J_EXE $L4J_PATH
+	# waits until exe file is built since launch4j appears to run
+	# in a separate process
+	while [ ! -f "$BLD_DIR/$PKGDIR/TextTrix.exe" ]
+	do
+		sleep 2
+	done
+else
+	echo -n "could not find launch4j...skipping..."
 fi
-$WK_DIR/$LAUNCH4J/launch4j $L4J_PATH
-# waits until exe file is built since launch4j appears to run
-# in a separate process
-while [ ! -f "$BLD_DIR/$PKGDIR/TextTrix.exe" ]
-do
-	sleep 2
-done
 rm $L4J_PATH
+echo "done"
 
 # finish the source package
 cd $BLD_DIR/$SRCPKGDIR
