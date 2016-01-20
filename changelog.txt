@@ -2,15 +2,16 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002-15, Text Flex
+Copyright (c) 2002, 2016, Text Flex
 http://textflex.com/texttrix
 
-----v.1.0.1 (201x-xx-xx)----
+----v.1.0.1 (2016-xx-xx)----
 
--Fixed delay in highlighting copy/pasted HTML text as wel as cursor 
+-Fixed delay in highlighting copy/pasted HTML text as well as cursor 
 misalignment on Mac
 -Auto-saves by default
 -Small performance fixes and build improvements
+-Windows executable (TextTrix.exe) provided for ease of launching
 
 ----v.1.0.0 (2015-09-13)----
 
