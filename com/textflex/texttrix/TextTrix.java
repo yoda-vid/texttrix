@@ -940,6 +940,7 @@ public class TextTrix extends JFrame {
 					fontSize = getPrefs().getFontSize();
 					if (fontSize == currFontSize) fontSize = -1;
 					DefaultSyntaxKit.setFontSize(fontSize); // jsyntaxpane
+					DefaultSyntaxKit.initKit(); // set new size for new tabs
 					TokenStyles.setFontSize(fontSize); // oster
 					TokenStyles.initialize();
 				}
