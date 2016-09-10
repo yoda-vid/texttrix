@@ -12,8 +12,6 @@ http://textflex.com/texttrix
 misalignment on Mac
 -Auto-saves by default
 -Small performance fixes and build improvements
--Fixed delay in highlighting copy/pasted HTML text as well as cursor 
-misalignment on Mac
 
 ----v.1.0.0 (2015-09-13)----
 
