@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-11, 2015
+# Portions created by the Initial Developer are Copyright (C) 2003, 2016
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -40,7 +40,8 @@
 ################################
 
 HELP="
-Packages both binary and source code archives of Text Trix.
+Packages both binary and source code archives of Text Trix. Assumes
+that the binaries have already been built, typically using build.sh.
 
 Syntax:
 	pkg.sh [options]
@@ -78,10 +79,10 @@ Parameters:
 	--ver=version: The version number to append to the package names.
 	
 Copyright:
-	Copyright (c) 2003-11, 2015 Text Flex
+	Copyright (c) 2003, 2016 Text Flex
 
 Last updated:
-	2015-12-19
+	2016-09-10
 "
 
 #####################

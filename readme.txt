@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002-15, Text Flex
+Copyright (c) 2002, 2016, Text Flex
 All rights reserved.
 
 =============================================
@@ -27,6 +27,8 @@ TextTrix-x.y.z-installer.jar:
 -Double-click the file and follow the instructions to unpack and launch.
 -The installed program can be re-launched by running the JAR file again.  
 The JAR file will detect the previous installation and launch the program.
+-As of Text Trix 1.0.1, you can also launch or create a shortcut to the
+ TextTrix.exe file on Windows platforms for quick launch
 
 TextTrix-x.y.z.zip:
 -Unzip the file.
