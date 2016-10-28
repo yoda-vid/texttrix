@@ -937,11 +937,14 @@ public class TextTrix extends JFrame {
 					// from prefs setting
 					int currFontSize = pad.getFont().getSize();
 					fontSize = getPrefs().getFontSize();
-					if (fontSize == currFontSize) fontSize = -1;
-					DefaultSyntaxKit.setFontSize(fontSize); // jsyntaxpane
-					DefaultSyntaxKit.initKit(); // set new size for new tabs
-					TokenStyles.setFontSize(fontSize); // oster
-					TokenStyles.initialize();
+					if (fontSize == currFontSize) {
+						fontSize = -1;
+					} else {
+						DefaultSyntaxKit.setFontSize(fontSize); // jsyntaxpane
+						DefaultSyntaxKit.initKit(); // set new size for new tabs
+						TokenStyles.setFontSize(fontSize); // oster
+						TokenStyles.initialize();
+					}
 				}
 				if (fontSize != -1) {
 					// adjusts font size if different
