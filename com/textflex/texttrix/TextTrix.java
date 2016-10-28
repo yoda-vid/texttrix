@@ -422,107 +422,112 @@ public class TextTrix extends JFrame {
 		// open the initial files and create the status bar;
 		// must make sure no operation requires the menu or tool bars, which M
 		// enuBarCreator is the process of making
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
 		
-		// creates a panel to store the components that will
-		// fit into the center position of the main window
-		JPanel centerPanel = new JPanel(new BorderLayout());
-
-		// adds the panel's compoenents
-		centerPanel.add(getGroupTabbedPane(), BorderLayout.CENTER);
-		centerPanel.add(statusBarPanel, BorderLayout.SOUTH);
-		// adds the panel to the main window, central position
-		contentPane.add(centerPanel, BorderLayout.CENTER);
-
-		// make first tab and text area;
-		// can only create after making several other user interface
-		// components, such as the autoIndent check menu item
-
-		// Load files specified at start from command-line
+				// creates a panel to store the components that will
+				// fit into the center position of the main window
+				JPanel centerPanel = new JPanel(new BorderLayout());
 		
-		// opens paths given as cmd-line args, placing them in their own 
-		// tab group and preparing to create a new tab group for other 
-		// startup files
-		// TODO: keep track of cmd-line files so don't reopen them 
-		// automatically on next startup
-		boolean cmdLineFiles = filteredPaths != null 
-				&& filteredPaths.length > 0;
-		if (cmdLineFiles) {
-			openFiles(filteredPaths, 0, true);
-			// distinguishes the tab group with files given as args,
-			// labled specially with the GROUP_START title, which allows
-			// this tab group to be identified later and not included in
-			// tab memory and reopening
-			getGroupTabbedPane().setTitleAt(0, GROUP_START);
-		}
-
-		// load files left open at the close of the last session
-		String reopenPaths = getPrefs().getReopenTabsList();
-		System.out.println("reopen paths: " + reopenPaths);
-		if (!getFresh() && getPrefs().getReopenTabs()) {
-			// gets the group tokens for the current window
-			String[] windowTokens = 
-					reopenPaths.split(FILE_WINDOW_SPLITTER_REGEX);
-			int windowNum = ttxWindows.indexOf(getThis()) + 1;
-			System.out.println("windowNum: " + windowNum 
-					+ ", windowTokens.length: " + windowTokens.length);
-			if (windowNum < windowTokens.length) {
-				// the list consists of a comma-delimited string of
-				// filenames
-				String[] grpTokens = windowTokens[windowNum].split(
-						FILE_GROUP_SPLITTER_REGEX);
+				// adds the panel's compoenents
+				centerPanel.add(getGroupTabbedPane(), BorderLayout.CENTER);
+				centerPanel.add(statusBarPanel, BorderLayout.SOUTH);
+				// adds the panel to the main window, central position
+				contentPane.add(centerPanel, BorderLayout.CENTER);
+		
+				// make first tab and text area;
+				// can only create after making several other user interface
+				// components, such as the autoIndent check menu item
+		
+				// Load files specified at start from command-line
 				
-				// Start at 1 b/c first token is empty group splitter
-				for (int i = 1; i < grpTokens.length; i++) {
-					String[] tokens = grpTokens[i].split(FILE_SPLITTER);
-					// Blank group already open initally, so simply 
-					// update title and start adding files, unless 
-					// cmd-line files were opened
-					if (i == 1 && !cmdLineFiles) {
-						setSelectedTabbedPaneTitle(tokens[0]);
-					} else {
-						// adds a new tab group for other startup files
-						// if cmd-line files already occupy a group
-						addTabbedPane(getGroupTabbedPane(), tokens[0]);
+				// opens paths given as cmd-line args, placing them in their own 
+				// tab group and preparing to create a new tab group for other 
+				// startup files
+				// TODO: keep track of cmd-line files so don't reopen them 
+				// automatically on next startup
+				boolean cmdLineFiles = filteredPaths != null 
+						&& filteredPaths.length > 0;
+				if (cmdLineFiles) {
+					openFiles(filteredPaths, 0, true);
+					// distinguishes the tab group with files given as args,
+					// labled specially with the GROUP_START title, which allows
+					// this tab group to be identified later and not included in
+					// tab memory and reopening
+					getGroupTabbedPane().setTitleAt(0, GROUP_START);
+				}
+		
+				// load files left open at the close of the last session
+				String reopenPaths = getPrefs().getReopenTabsList();
+				System.out.println("reopen paths: " + reopenPaths);
+				if (!getFresh() && getPrefs().getReopenTabs()) {
+					// gets the group tokens for the current window
+					String[] windowTokens = 
+							reopenPaths.split(FILE_WINDOW_SPLITTER_REGEX);
+					int windowNum = ttxWindows.indexOf(getThis()) + 1;
+					System.out.println("windowNum: " + windowNum 
+							+ ", windowTokens.length: " + windowTokens.length);
+					if (windowNum < windowTokens.length) {
+						// the list consists of a comma-delimited string of
+						// filenames
+						String[] grpTokens = windowTokens[windowNum].split(
+								FILE_GROUP_SPLITTER_REGEX);
+						
+						// Start at 1 b/c first token is empty group splitter
+						for (int i = 1; i < grpTokens.length; i++) {
+							String[] tokens = grpTokens[i].split(FILE_SPLITTER);
+							// Blank group already open initally, so simply 
+							// update title and start adding files, unless 
+							// cmd-line files were opened
+							if (i == 1 && !cmdLineFiles) {
+								setSelectedTabbedPaneTitle(tokens[0]);
+							} else {
+								// adds a new tab group for other startup files
+								// if cmd-line files already occupy a group
+								addTabbedPane(getGroupTabbedPane(), tokens[0]);
+							}
+							openFiles(tokens, 1, true);
+						}
+						// "recursively" opens a new window for each remaining
+						// window token
+						if (windowNum < windowTokens.length - 1) {
+							openTTXWindow(null);
+						}
 					}
-					openFiles(tokens, 1, true);
 				}
-				// "recursively" opens a new window for each remaining
-				// window token
-				if (windowNum < windowTokens.length - 1) {
-					openTTXWindow(null);
-				}
-			}
-		}
+				
+				// selects the first tab group and updates the UI for the 
+				// currently selected tab
+				getGroupTabbedPane().setSelectedIndex(0);
+				
+				
+				// drag-n-drop files to open using FileDrop (public domain)
+				// http://www.iharder.net/current/java/filedrop/
+				// TODO: replace System.out with null to avoid debugging
+				new FileDrop(null, getGroupTabbedPane(), 
+						new FileDrop.Listener() {
+					public void filesDropped( java.io.File[] files ) {
+						for( int i = 0; i < files.length; i++ ) {
+								openFile(files[i], true, false, true);
+						}
+					}
+				});
 		
-		// selects the first tab group and updates the UI for the 
-		// currently selected tab
-		getGroupTabbedPane().setSelectedIndex(0);
-		
-		
-		// drag-n-drop files to open using FileDrop (public domain)
-		// http://www.iharder.net/current/java/filedrop/
-		// TODO: replace System.out with null to avoid debugging
-		new FileDrop(null, getGroupTabbedPane(), 
-				new FileDrop.Listener() {
-			public void filesDropped( java.io.File[] files ) {
-				for( int i = 0; i < files.length; i++ ) {
-						openFile(files[i], true, false, true);
-				}
+				
+				// Synchronizes the menus with the current text pad settings. 
+				// Creates the file history menu entries in the File menu and 
+				// flags the auto-indent check box according to the current 
+				// text pad's setting.
+				//syncMenus();
+				Thread fileHistThread = new Thread(new FileHist(getThis()));
+				fileHistThread.start();
+				setAutoIndent();
+				
+				// start auto-saver
+				if (getPrefs().getAutoSave()) startTextPadAutoSaveTimer();
+				
 			}
 		});
-
-		
-		// Synchronizes the menus with the current text pad settings. 
-		// Creates the file history menu entries in the File menu and 
-		// flags the auto-indent check box according to the current 
-		// text pad's setting.
-		//syncMenus();
-		Thread fileHistThread = new Thread(new FileHist(getThis()));
-		fileHistThread.start();
-		setAutoIndent();
-		
-		// start auto-saver
-		if (getPrefs().getAutoSave()) startTextPadAutoSaveTimer();
 
 		/*
 		 * Something apparently grabs focus after he tabbed pane ChangeListener
