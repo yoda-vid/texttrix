@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-11, 2015
+ * Portions created by the Initial Developer are Copyright (C) 2002, 2017
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -183,7 +183,7 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& keyChar == KeyEvent.VK_TAB
 						&& isLeadingTab()) {
 					// performs the action after adding the tab
-					indentCurrentParagraph(getTabSize());
+					indentCurrentParagraph(getTabSize(), false);
 				}
 			}
 			
@@ -882,9 +882,9 @@ public class TextPad extends JTextPane implements StateEditable {
 			if (j == -1) j = end - 1; // if found none, go to end
 			
 			// count and graphically indent tabs at head of curr line
-			int tabs = leadingTabsCount(s, i);
-			if (tabs >= 0)
-				indent(tabChars, tabs, i, j - i + 1);
+			WhitespaceCounter counter = leadingTabsCount(s, i);
+			if (counter.tabs >= 0)
+				indent(tabChars, counter, i, j - i + 1);
 			i = j + 1;
 		}
 	}
@@ -894,34 +894,25 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * the same number for the next line, for example.
 	 * @param s text to count for tabs
 	 * @param offset position to start counting
-	 * @return number of continuous tabs from a given position
+	 * @return WhitespaceCounter with number of continuous tabs and/or spaces 
+	 * from a given position as well as the given whitespace in a StringBuilder
 	 * @see #leadingTabsCount(Document, int)
 	 */
-	public int leadingTabsCount(String s, int offset) {
-		int tabs = 0;
-		for (int i = offset; i < s.length() && s.charAt(i) == '\t'; i++)
-			++tabs;
-		return tabs;
-	}
-
-	/** Counts the number of continuous tabs from a given position.
-	 * Useful when determining the number of tabs in the current line to auto-indent
-	 * the same number for the next line, for example.
-	 * @param doc the document with the text to count for tabs
-	 * @param offset position to start counting
-	 * @return number of continuous tabs from a given position
-	 * @see #leadingTabsCount(String, int)
-	 */
-	public int leadingTabsCount(Document doc, int offset) {
-		int tabs = 0;
-		int len = doc.getLength();
-		try {
-			for (int i = offset; i < len && doc.getText(i, 1).equals("\t"); i++)
-				++tabs;
-		} catch (BadLocationException e) {
-			e.printStackTrace();
+	public WhitespaceCounter leadingTabsCount(String s, int offset) {
+		WhitespaceCounter counter = new WhitespaceCounter();
+		int len = s.length();
+		for (int i = offset; i < len; i++) {
+			if (s.charAt(i) == '\t') {
+				counter.tabs++;
+				counter.strBuilder.append('\t');
+			} else if (s.charAt(i) == ' ') {
+				counter.spaces++;
+				counter.strBuilder.append(' ');
+			} else {
+				break;
+			}
 		}
-		return tabs;
+		return counter;
 	}
 
 	/** Indents a paragraph by a given number of tabs and size per tab.
@@ -932,7 +923,8 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * @param offset position in text at which to start indenting
 	 * @param length position in text at which to stop indenting
 	 */
-	public void indent(int tabChars, int tabs, int offset, int length) {
+	public void indent(int tabChars, WhitespaceCounter counter, int offset, int length) {
+		// TODO: update for spaces
 		int charWidth = getFontMetrics(getFont()).charWidth(' ');
 		int tabWidth = charWidth * tabChars;
 		//System.out.println("tabWidth: " + tabWidth + ", charWidth: " + charWidth + ", tabs: " + tabs + ", offset: " + offset + ", length: " + length + ", styledDoc: " + getStyledDocument().toString());
@@ -940,7 +932,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		SimpleAttributeSet attribs = new SimpleAttributeSet();
 		
 // 		StyleContext sc = new StyleContext();
-		StyleConstants.setLeftIndent(attribs, tabs * tabWidth);
+		StyleConstants.setLeftIndent(attribs, counter.tabs * tabWidth);
 		/*
 		Style defaultStyle = sc.getStyle(StyleContext.DEFAULT_STYLE);
 		final Style mainStyle = sc.addStyle("MainStyle", defaultStyle);
@@ -959,10 +951,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		 * the command provides an area into which these tabs can drag
 		 * the text from the first line.
 		*/
-		StyleConstants.setFirstLineIndent(attribs, tabs * charWidth * -1.7f);
+		StyleConstants.setFirstLineIndent(attribs, counter.tabs * charWidth * -1.7f);
 		undoManager.setIgnoreNextStyleChange(true);
 		getStyledDocument().setParagraphAttributes(offset, length, // next char
-		attribs, false); // false to preserve default font
+				attribs, false); // false to preserve default font
 	}
 
 	/** Indents the current paragraph, no matter where the caret is within it.
@@ -989,39 +981,24 @@ public class TextPad extends JTextPane implements StateEditable {
 		boolean decrementTab) {
 		String s = getAllText();
 		int start = LibTTx.reverseIndexOf(s, "\n", getCaretPosition()) + 1;
-		int tabs = leadingTabsCount(s, start);
+		WhitespaceCounter counter = leadingTabsCount(s, start);
 		// the tab has already been deleted in JVM >= v.1.5;
 		// tabs should equal the final number of tab characters, so tabs
 		// must be decremented in JVM < v.1.5
 		if (decrementTab) {
-			--tabs;
+			int counterLen = counter.strBuilder.length();
+			if (counterLen > 0) {
+				char firstWhitespaceChar = counter.strBuilder.charAt(0);
+				if (firstWhitespaceChar == '\t') {
+					counter.tabs--;
+				} else if (firstWhitespaceChar == ' ') {
+					counter.spaces--;
+				}
+			}
 		}
 //		System.out.println("tabs: " + tabs);
 		int end = s.indexOf("\n", start);
-		indent(tabChars, tabs, start, (end == -1 ? s.length() : end + 1) - start);
-	}
-
-	/** Indents the current paragraph, no matter where the caret is within it.
-	 * Renders tabs as spaces, but indents the entire region according to the 
-	 * currently set number of spaces per tab.  
-	 * Assumes that either an indent, as opposed to an unindent,
-	 * has occurred, or that the Java Virtual Machine is >= v.1.5, or both. 
-	 * @see #indentCurrentParagraph(int, boolean)
-	 * @see #indentCurrentParagraph(int)
-	 */
-	public void indentCurrentParagraph() {
-		indentCurrentParagraph(getTabSize(), false);
-	}
-
-	/** Indents the current paragraph, no matter where the caret is within it.
-	 * Renders tabs as spaces, but indents the entire region a given number of spaces
-	 * per tab.  Assumes that either an indent, as opposed to an unindent,
-	 * has occurred, or that the Java Virtual Machine is >= v.1.5, or both. 
-	 * @param tabChars number of spaces for each tab to represent
-	 * @see #indentCurrentParagraph(int, boolean)
-	 */
-	public void indentCurrentParagraph(int tabChars) {
-		indentCurrentParagraph(tabChars, false);
+		indent(tabChars, counter, start, (end == -1 ? s.length() : end + 1) - start);
 	}
 
 	/** Determines whether the tab is at the start of a given line.
@@ -1075,7 +1052,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// removes the first tab
 		if (doc.getText(lineLeadingChar, 1).equals("\t")) {
 			doc.remove(lineLeadingChar, 1);
-			indentCurrentParagraph();
+			indentCurrentParagraph(getTabSize(), false);
 		}
 	}
 	
@@ -1334,7 +1311,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			undoManager.undo();
 //			System.out.println("here");
 			if (autoIndent) {
-				indentCurrentParagraph();
+				indentCurrentParagraph(getTabSize(), false);
 			}
 		}
 	}
@@ -1621,19 +1598,12 @@ public class TextPad extends JTextPane implements StateEditable {
 			if (n == 0)
 				n = -1;
 			*/
-			// counts the number of tabs at the start of the previous paragraph
-			for (tabs = 0; getDocument().getText(++n, 1).equals("\t"); tabs++);
-//			System.out.println("tab count: " + tabs);
-
-			// construct a string of all the tabs
-			StringBuffer tabStr = new StringBuffer(tabs);
-			for (int i = 0; i < tabs; i++) {
-				tabStr.append('\t');
-			}
+			WhitespaceCounter counter = leadingTabsCount(getAllText(), ++n);
+			
 			// add the tabs
 			getDocument().insertString(
 				getCaretPosition(),
-				tabStr.toString(),
+				counter.strBuilder.toString(),
 				null);
 		} catch (BadLocationException e) {
 			System.out.println(
@@ -1726,7 +1696,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		do {
 			// indentCurrentParagraph relies on caret position
 			setCaretPosition(prevBreak); 
-			indentCurrentParagraph();
+			indentCurrentParagraph(getTabSize(), false);
 		} while (
 			start
 				< (prevBreak = LibTTx.reverseIndexOf(text, "\n", prevBreak)));
@@ -1755,7 +1725,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			// deletions either occur within a line or join two lines,
 			// however disparate, into one
 			if (isAutoIndent()) {
-				indentCurrentParagraph();
+				indentCurrentParagraph(getTabSize(), false);
 			}
 		} catch (BadLocationException badE) {
 			System.out.println("having trouble deleting next char...");
@@ -2253,5 +2223,16 @@ public class TextPad extends JTextPane implements StateEditable {
 			}
 		}
 	}
+	
+	/**
+	 * Counter for whitespace. Useful for recording whitespace at the start
+	 * of a line for auto-indent.
+	 */
+	private class WhitespaceCounter {
+		int tabs = 0;
+		int spaces = 0;
+		StringBuilder strBuilder = new StringBuilder();
+	}
+	
 }
 
