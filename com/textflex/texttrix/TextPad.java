@@ -184,6 +184,10 @@ public class TextPad extends JTextPane implements StateEditable {
 						&& isLeadingTab()) {
 					// performs the action after adding the tab
 					indentCurrentParagraph(getTabSize(), false);
+				} else if (autoIndent 
+					&& keyChar == KeyEvent.VK_SPACE
+					&& getSelectionStart() != getSelectionEnd()) {
+					event.consume();
 				}
 			}
 			
@@ -218,10 +222,29 @@ public class TextPad extends JTextPane implements StateEditable {
 					// because shift+TAB is normally captured by the 
 					// focusing mechanism
 					
-//					System.out.println("tab");
+// 					System.out.println("tab over selection");
 					evt.consume();
 					try {
-						tabRegion();
+						tabRegion("\t");
+					} catch (BadLocationException e) {
+						e.printStackTrace();
+					}
+				} else if (autoIndent 
+					&& keyCode == KeyEvent.VK_SPACE
+					&& getSelectionStart() != getSelectionEnd()) {
+					// space indent entire region
+					// Unindent code needs to be placed in the action map
+					// because shift+TAB is normally captured by the 
+					// focusing mechanism
+					
+// 					System.out.println("space over selection");
+					evt.consume();
+					try {
+						if (evt.isShiftDown()) {
+							tabRegionReverse();
+						} else {
+							tabRegion(" ");
+						}
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
@@ -592,7 +615,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			 */
 			public void actionPerformed(ActionEvent evt) {
 				if (autoIndent) {
-//					System.out.println("shift tab");
+ 					System.out.println("shift tab");
 					try {
 						if (getSelectionStart() != getSelectionEnd()) {
 							tabRegionReverse();
@@ -611,7 +634,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		amap.put(
 			"unindentTabs",
 			unidentTabsAction);
-		
 		
 		// (ctrl-n) advance a line
 		imap.put(
@@ -1060,7 +1082,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * Any line that that starts or has a leading tab within the selected
 	 * region receives a new leading tab.
 	*/
-	public void tabRegion() throws BadLocationException {
+	public void tabRegion(String whitespace) throws BadLocationException {
 		Document doc = getDocument();
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
@@ -1083,7 +1105,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			// add a tab after any newline or at the start of 
 			// the document; the tab follows the newline
 			if (i == -1|| currChar.equals("\n")) {
-				buf.append("\t");
+				buf.append(whitespace);
 				charsAdded++;
 			}
 		}
@@ -1121,12 +1143,16 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// starts from the character just before the selected region
 		// to the last character that the selection encompasses
+		// TODO:
+		// -extend region to immediately preceding newline
+		// -remove whitespace only contiguously extending from newlines
 		for (int i = start - 1; i < end; i++) {
 			// gets each char except the char at the beginning of the doc
 			if (i != -1) currChar = doc.getText(i, 1);
 			// adds each char except the one immediately preceding the
 			// selected region and the first tab encountered in the line
-			if (i != start - 1 && !(checkTab && currChar.equals("\t"))) {
+			if (i != start - 1 && !(checkTab 
+					&& (currChar.equals("\t") || currChar.equals(" ")))) {
 				buf.append(currChar);
 				charsAdded++;
 			} else {
@@ -1148,8 +1174,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// remove one final tab if the last selected character is a newline,
 		// and the tab immediately follows the selection
-		if (doc.getLength() > end && checkTab && doc.getText(end, 1).equals("\t"))
+		if (doc.getLength() > end && checkTab 
+				&& (doc.getText(end, 1).equals("\t") 
+					|| doc.getText(end, 1).equals(" "))) {
 			doc.remove(end, 1);
+		}
 		stopCompoundEdit();
 		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
 		
