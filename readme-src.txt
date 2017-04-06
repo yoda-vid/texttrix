@@ -7,7 +7,7 @@ This software is OSI Certified Open Source Software.
 OSI Certified is a certification mark of the
 Open Source Initiative.
 
-Copyright (c) 2002, 2016, Text Flex
+Copyright (c) 2002, 2017, Text Flex
 All rights reserved.
 
 =============================================
@@ -19,9 +19,9 @@ System Reqs
 ----------------
 -Java Development Kit (JDK), v.6+, is required for compiling Text Trix.
 -Bash scripts (.sh) are included for compiling and packaging on Linux, 
-MacOS X, or Windows (via Cygwin) platforms.
+ MacOS X, or Windows (via Cygwin) platforms.
 -PowerShell scripts (.ps1) are included for some tasks on Windows 
-platforms.
+ platforms.
 
 Instructions for compilation
 --------------------------------
@@ -38,22 +38,36 @@ source package or from the various branches in the Subversion repository.
 (Optional:) Installation
 --------------------------
 -You can also run the "texttrix/pkg.sh" script to create distributable 
-packages, along with a double-clickable TextTrix.jar file.
+ packages, along with a double-clickable TextTrix.jar file.
 -To make a self-extracting Jar Ajar[tm] package for your newly compiled 
-Text Trix package, download the Jar Ajar packaging suite 
-(http://textflex.com/jarajar).  Install it, launch its graphical packager, and 
-you'lll be able to fill in the details in no time.
+ Text Trix package, download the Jar Ajar packaging suite 
+ (http://textflex.com/jarajar).  Install it, launch its graphical packager, and 
+ you'lll be able to fill in the details in no time.
+
+(Optional:) Compile the custom JSyntaxPaneTTx package
+--------------------------
+-Install Apache Maven if not already installed
+-cd to "jsyntaxpanettx/trunk"
+-Run "mvn package"
+-To add your own lexers, copy a JFlex file from 
+ src/main/jflex/jsyntaxpane/lexers, updating any reference to the 
+ language name
+-Similarly, copy and update the corresponding Java file in 
+ src/main/java/jsyntaxpane/syntaxkits
+-Update 
+ src/main/resources/META-INF/services/jsyntaxpane/kitsfortypes.properties 
+ with the new language lexer
 
 Write Your Own Plug-In
 ----------------------------
 -See the https://sourceforge.net/p/texttrix/wiki/PlugIn/
-for details on how to write your own plug-in for Text Trix!
+ for details on how to write your own plug-in for Text Trix!
 
 Troubleshooting
 -------------------
 -Text Trix has been tested on Windows XP/7/10 (Java 6/7/8), 
-Fedora 22 and Ubuntu 15.04 (OpenJDK 8), and MacOS X 10.11 (Java 8).  If 
-you've tested it on another platform, please let us know about your 
-experience.
+ Fedora 22 and Ubuntu 15.04 (OpenJDK 8), and MacOS X 10.11 (Java 8).  If 
+ you've tested it on another platform, please let us know about your 
+ experience.
 -See "readme.txt" for information on running Text Trix.
 -See http://textflex.com/texttrix for additional details.

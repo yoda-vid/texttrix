@@ -83,7 +83,7 @@ public class TextPad extends JTextPane implements StateEditable {
 				"java", "c", "cpp", "html", "htm", "xhtml", "xhtml", "css",
 				"js", "groovy", "bash", "sh", "json", "xml", "sql", 
 				"properties", "py", "tal", "jflex", "ruby", "scala",
-				"clojure", "bat", "xpath", "lua"
+				"clojure", "bat", "xpath", "lua", "pl"
 	);
     
 	private File file; // the file that the pad displays
@@ -386,6 +386,8 @@ public class TextPad extends JTextPane implements StateEditable {
 			setContentType("text/bash");
 		} else if (ext.equals("py")) {
 			setContentType("text/python");
+		} else if (ext.equals("pl")) {
+			setContentType("text/perl");
 		} else if (ext.equals("bat")) {
 			setContentType("text/dosbatch");
 		} else if (HIGHLIGHT_EXT_LIST.contains(ext)) {
