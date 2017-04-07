@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2011
+ * Portions created by the Initial Developer are Copyright (C) 2011, 2017
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -84,7 +84,7 @@ class FileOpenAction extends BrowseFilesFromTextPad {
 			// bring up the dialog and retrieve the result
 			if (files != null) {
 				
-				msg = ttx.openFiles(files, 0, false);
+				msg = ttx.openFiles(files, 0, false, true);
 				
 				// request another opportunity to open files if any
 				// failures

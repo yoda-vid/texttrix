@@ -1064,7 +1064,7 @@ class MenuBarCreator implements Runnable {
 						String path = "shortcuts.html";
 						// ArrayIndexOutOfBoundsException while opening file
 						// from menu is an JVM 1.5.0-beta1 bug (#4962642)
-						if (!ttx.openFile(new File(path), false, true, false)) {
+						if (!ttx.openFile(new File(path), false, true, false, false)) {
 							ttx.displayMissingResourceDialog(path);
 						} else {
 							// place at end of EDT because file reading occurs in 
@@ -1093,7 +1093,7 @@ class MenuBarCreator implements Runnable {
 						String path = "changelog.txt";
 						// assumes same directory as this class
 						if (!ttx.openFile(LibTTx.getFileFromBase(path), false, 
-								false, false)) {
+								false, false, false)) {
 							ttx.displayMissingResourceDialog(path);
 						}
 					}
@@ -1114,7 +1114,7 @@ class MenuBarCreator implements Runnable {
 						String path = "license.txt";
 						// ArrayIndexOutOfBoundsException while opening file
 						// from menu is an JVM 1.5.0-beta1 bug (#4962642)
-						if (!ttx.openFile(new File(path), false, true, false)) {
+						if (!ttx.openFile(new File(path), false, true, false, false)) {
 							ttx.displayMissingResourceDialog(path);
 						}
 					}

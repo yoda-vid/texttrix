@@ -105,7 +105,7 @@ class FileHist implements Runnable {
 		// action to open the file
 		Action act = new AbstractAction(fileDisp) {
 			public void actionPerformed(ActionEvent evt) {
-				ttx.openFile(new File(file), true, false, true);
+				ttx.openFile(new File(file), true, false, true, true);
 			}
 		};
 		LibTTx.setAction(act, file); // tool tip displays full file path

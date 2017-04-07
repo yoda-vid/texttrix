@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-15
+ * Portions created by the Initial Developer are Copyright (C) 2002, 2017
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -181,7 +181,7 @@ public class TextTrix extends JFrame {
 				boolean closedTabs = false;
 				// check whether only one window is open
 				if (ttxWindows.size() <= 1) {
-					closedTabs = exitTextTrix();
+					exitTextTrix();
 				} else {
 					closedTabs = closeAllTabs();
 				}
@@ -449,7 +449,7 @@ public class TextTrix extends JFrame {
 				boolean cmdLineFiles = filteredPaths != null 
 						&& filteredPaths.length > 0;
 				if (cmdLineFiles) {
-					openFiles(filteredPaths, 0, true);
+					openFiles(filteredPaths, 0, true, false);
 					// distinguishes the tab group with files given as args,
 					// labled specially with the GROUP_START title, which allows
 					// this tab group to be identified later and not included in
@@ -486,7 +486,7 @@ public class TextTrix extends JFrame {
 								// if cmd-line files already occupy a group
 								addTabbedPane(getGroupTabbedPane(), tokens[0]);
 							}
-							openFiles(tokens, 1, true);
+							openFiles(tokens, 1, true, false);
 						}
 						// "recursively" opens a new window for each remaining
 						// window token
@@ -508,7 +508,7 @@ public class TextTrix extends JFrame {
 						new FileDrop.Listener() {
 					public void filesDropped( java.io.File[] files ) {
 						for( int i = 0; i < files.length; i++ ) {
-								openFile(files[i], true, false, true);
+								openFile(files[i], true, false, true, true);
 						}
 					}
 				});
@@ -797,7 +797,7 @@ public class TextTrix extends JFrame {
 		}
 		
 		// Open the file if possible, or supply explanation if not
-		if (!openFile(file, true, false, reuseTab)) {
+		if (!openFile(file, true, false, reuseTab, false)) {
 			String msg = newline + "Sorry, but " + path + " can't be read."
 					+ newline + "Is it a directory?  Does it have the right "
 					+ "permsissions for reading?";
@@ -1769,75 +1769,34 @@ public class TextTrix extends JFrame {
 	 * @return true if Text Trix exits successfully
 	 * @see #closeAllTabs
 	 */
-	public boolean exitTextTrix() {
-		String reopenPaths = "";
+	public void exitTextTrix() {
 		boolean b = true;
 		for (int i = 0; i < ttxWindows.size(); i++) {
 			b = b && ((TextTrix)ttxWindows.get(i)).closeAllTabs();
-			reopenPaths += FILE_WINDOW_SPLITTER + getPrefs().getReopenTabsList();
 		}
-		// store the file list and exit Text Trix if all the files closed
-		// successfully, set to reopen tabs, and not set for a fresh session
-		if (b == true) {
-			if (!getFresh() && getPrefs().getReopenTabs()) {
-				getPrefs().storeReopenTabsList(reopenPaths);
-				System.out.println("saved reopen paths: " + reopenPaths);
-			}
-			System.exit(0);
-		}
-		return b;
+		// exit Text Trix if all the files closed
+		if (b) System.exit(0);
 	}
 	
-	/**	Closes each tab individually, checking
-	 * for unsaved text areas in the meantime.
-	 * The tab filenames are stored as one continuous string, separated by the
-	 * names of their tab groups.
-	 * TODO: restore open tabs if close canceled
+	/**	Closes each tab individually, checking for unsaved files.
 	 * @return true if all tabs are successfully closed
 	 */
 	public boolean closeAllTabs() {
-		// Get the open file history and prep for new entries
-		String openedPaths = "";
-		boolean reopenTabs = getPrefs().getReopenTabs();
-		// resets open tabs history
 		boolean b = true; // flags whether ok to close tab
-		boolean newGrp = false; // flag for new tab group
 		
 		// Close the tabs
 		MotherTabbedPane pane = getGroupTabbedPane();
 		// cycles through the tab groups
 		for (int i = 0; i < pane.getTabCount() && b; i++) {
-			// appends the tab group name
-			String groupTabTitle = getGroupTabbedPane().getTitleAt(i);
-			// don't save "Start" group, which contains files
-			// specified on the command line
-			if (!groupTabTitle.equals(GROUP_START)) {
-				openedPaths = openedPaths 
-					+ FILE_GROUP_SPLITTER 
-					+ groupTabTitle;
-				pane.setSelectedIndex(i);
-				// identifies the number of tabs in the tab group
-				int totTabs = getSelectedTabbedPane().getTabCount();
-		
-				// closes the files and prepares to store their paths in the list
-				// of files left open at the end of the session
-				while (totTabs > 0 && b) {
-					// only stores if told to in prefs
-					if (reopenTabs) {
-						TextPad t = getTextPadAt(0);
-						if (t.fileExists()) {
-							openedPaths = openedPaths + FILE_SPLITTER + t.getPath();
-						}
-					}
-					b = closeTextArea(0, getSelectedTabbedPane());
-					totTabs = getSelectedTabbedPane().getTabCount();
-				}
-			}
-		}
-		// preserves most recently saved tabs if set to fresh session
-		if (b == true) {
-			if (!getFresh() && reopenTabs) {
-				getPrefs().storeReopenTabsList(openedPaths);
+			pane.setSelectedIndex(i);
+			// identifies the number of tabs in the tab group
+			int totTabs = getSelectedTabbedPane().getTabCount();
+	
+			// closes the files and prepares to store their paths in the list
+			// of files left open at the end of the session
+			while (totTabs > 0 && b) {
+				b = closeTextArea(0, getSelectedTabbedPane());
+				totTabs = getSelectedTabbedPane().getTabCount();
 			}
 		}
 		return b;
@@ -2358,11 +2317,13 @@ public class TextTrix extends JFrame {
 	 *            resource, via <code>TextTrix.class.getResourceAsStream(path)</code>
 	 * @param reuseTab <code>true</code> if a tab should be reused, even
 	 * if it is isn't empty or is empty but with unsaved changes
+	 * @param store <code>true</code> if the list of all tabs should be stored,
+	 * assuming that the preferences flag is to store tabs
 	 * @see #openFile
 	 * @return true if the file is successfully opened or already open
 	 */
 	public boolean openFile(File file, boolean editable, boolean resource, 
-			boolean reuseTab) {
+			boolean reuseTab, boolean store) {
 		String path = file.getPath();
 		
 		// Check to see if the file is already open before creating new tab
@@ -2440,6 +2401,9 @@ public class TextTrix extends JFrame {
 // 						new CheckDocLoad(t, statusProgress));
 // 				loadCheck.start();
 // 				autoAutoIndent(t);
+				if (store && !getFresh() && getPrefs().getReopenTabs()) {
+					storeTabs();
+				}
 				return true;
 			} catch (IOException exception) {
 				//		exception.printStackTrace();
@@ -2462,6 +2426,42 @@ public class TextTrix extends JFrame {
 		return false;
 	}
 	
+	/**
+	 * Stores the list of open files to preferences.
+	 * Assumes that the flag to store files is true.
+	 */
+	void storeTabs() {
+		String reopenPaths = "";
+		// cycles through all TextTrix windows
+		int windowsSize = ttxWindows.size();
+		for (int i = 0; i < windowsSize; i++) {
+			// master ("mother") tabbed pane
+			MotherTabbedPane masterPane = getGroupTabbedPane();
+			int masterPaneSize = masterPane.getTabCount();
+			String openedPaths = ""; // in each group
+			for (int j = 0; j < masterPaneSize; j++) {
+				String groupTabTitle = masterPane.getTitleAt(j);
+				// don't save "Start" group, which contains files
+				// specified on the command line
+				if (!groupTabTitle.equals(GROUP_START)) {
+					openedPaths += FILE_GROUP_SPLITTER + groupTabTitle;
+					// gathers filenames from TextPads in the group pane
+					MotherTabbedPane groupPane = 
+						(MotherTabbedPane)masterPane.getComponentAt(j);
+					int totTabs = groupPane.getTabCount();
+					for (int k = 0; k < totTabs; k++) {
+						TextPad t = getTextPadAt(groupPane, k);
+						if (t.fileExists()) {
+							openedPaths += FILE_SPLITTER + t.getPath();
+						}
+					}
+				}
+			}
+			reopenPaths += FILE_WINDOW_SPLITTER + openedPaths;
+		}
+		getPrefs().storeReopenTabsList(reopenPaths);
+		System.out.println("saved reopen paths: " + reopenPaths);
+	}
 	
 	/** Finds the tab with the given path.
 	 * @param path the path of the file to find
@@ -3053,6 +3053,7 @@ public class TextTrix extends JFrame {
 			prgmFilter.addExtension("sh");
 			prgmFilter.addExtension("js");
 			prgmFilter.addExtension("py");
+			prgmFilter.addExtension("pl");
 			prgmFilter.setDescription(
 					"Programming source code (" 
 						+ TextPad.collectHighlightExtDotList() + ")");
@@ -3099,7 +3100,8 @@ public class TextTrix extends JFrame {
 	 * the openInitialFile method
 	 * @see #openInitialFile
 	 */
-	public String openFiles(File[] files, int offset, boolean initialFiles) {
+	public String openFiles(File[] files, int offset, boolean initialFiles,
+			boolean store) {
 		String msg = "";
 		
 		// first uncouples the change listener from responding to
@@ -3120,7 +3122,7 @@ public class TextTrix extends JFrame {
 				success = 
 					initialFiles 
 					? openInitialFile(files[i], reuseTab) 
-					: openFile(files[i], true, false, reuseTab);
+					: openFile(files[i], true, false, reuseTab, store);
 			}
 			reuseTab = false;
 			if (success) {
@@ -3143,27 +3145,20 @@ public class TextTrix extends JFrame {
 	/** Opens multiple files from the given paths, waiting until the final file 
 	 * has been opened before updating the UI, but updating the tab history 
 	 * continuously.
-	 * The <code>TextPadChangeListener</code> is uncoupled
-	 * during this operation to prevent it from updating the
-	 * UI and tab history after the fact, since the listener is
-	 * on an <code>EvokeLater</code>.  The Text Pad will
-	 * still be added, but the title and menu settings won't be
-	 * updated until the last file, since the other files' updates will
-	 * be replaced by each successively opened file, and they will 
-	 * each update the UI whenever they are brought to focus.
 	 * @param paths the paths of the files to open
 	 * @param offset starting index in the files array
 	 * @param initialFiles if true, the files will be opened by 
 	 * the openInitialFile method
-	 * @see #openInitialFile
+	 * @see #openFiles(File[], int, boolean)
 	 */
-	public String openFiles(String[] paths, int offset, boolean initialFiles) {
+	public String openFiles(String[] paths, int offset, boolean initialFiles,
+			boolean store) {
 		File[] files = new File[paths.length];
 		// converts paths to files, starting from the offset
 		for (int i = offset; i < paths.length && paths[i] != null; i++) {
 			files[i] = new File(paths[i]);
 		}
-		return openFiles(files, offset, initialFiles);
+		return openFiles(files, offset, initialFiles, store);
 	}
 
 	/**
