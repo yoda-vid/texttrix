@@ -1795,7 +1795,7 @@ public class TextTrix extends JFrame {
 			// closes the files and prepares to store their paths in the list
 			// of files left open at the end of the session
 			while (totTabs > 0 && b) {
-				b = closeTextArea(0, getSelectedTabbedPane());
+				b = closeTextArea(0, getSelectedTabbedPane(), false);
 				totTabs = getSelectedTabbedPane().getTabCount();
 			}
 		}
@@ -1828,9 +1828,12 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @param tabIndex index of tab to close
 	 * @param tabbedPane pane holding a tab to be closed
+	 * @param store <code>true</code> to store the current list of open tabs
+	 * after closing the given text area
 	 * @return <code>true</code> if the tab successfully closes
 	 */
-	public boolean closeTextArea(int tabIndex, MotherTabbedPane tabbedPane) {
+	public boolean closeTextArea(int tabIndex, MotherTabbedPane tabbedPane, 
+			boolean store) {
 		boolean successfulClose = false;
 		
 		// Get the given Text Pad
@@ -1881,18 +1884,18 @@ public class TextTrix extends JFrame {
 			successfulClose = true;
 		}
 
-		/*
-		 * Potential JVM bug (>= v.1.4.2): The tab change listener doesn't
-		 * appear to respond to tab changes when closing a tab. Our listener
-		 * updates the main window title when changing tabs, but the title
-		 * remains the same after the user closes a window.
-		 * 
-		 * Workaround: The text pad close method manually updates the title for
-		 * the newly selected pad, if it exists.
-		 */
-		t = getSelectedTextPad();
-		if (successfulClose && t != null) {
-			updateTitle(t.getFilename());
+		if (successfulClose) {
+			// stores the updated list of open tabs
+			if (store && !getFresh() && getPrefs().getReopenTabs()) storeTabs();
+			// Potential JVM bug (>= v.1.4.2): The tab change listener doesn't
+			// appear to respond to tab changes when closing a tab. Our listener
+			// updates the main window title when changing tabs, but the title
+			// remains the same after the user closes a window.
+			// 
+			// Workaround: The text pad close method manually updates the title for
+			// the newly selected pad, if it exists.
+			t = getSelectedTextPad();
+			if (t != null) updateTitle(t.getFilename());
 		}
 		return successfulClose;
 	}

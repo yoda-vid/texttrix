@@ -1315,7 +1315,7 @@ class MenuBarCreator implements Runnable {
 				ttx.setUpdateTabIndexHistory(false);
 				pane.removeTabHistory(i);
 				ttx.setUpdateTabIndexHistory(true);
-				ttx.closeTextArea(i, pane);
+				ttx.closeTextArea(i, pane, true);
 			}
 		}
 	}
