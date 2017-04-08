@@ -2,8 +2,15 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002, 2016, Text Flex
+Copyright (c) 2002, 2017, Text Flex
 http://textflex.com/texttrix
+
+----v.1.0.2 (2017-xx-xx)----
+
+-Auto-indent support for spaces in addition to tabs
+-Saves tab list on-the-fly for restoring during next session
+-Fixed additional empty window from occasionally opening at startup
+-Fixed inappropriate font size reduction in some cases
 
 ----v.1.0.1 (2016-09-10)----
 
