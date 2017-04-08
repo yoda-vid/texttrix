@@ -49,14 +49,15 @@ source package or from the various branches in the Subversion repository.
 -Install Apache Maven if not already installed
 -cd to "jsyntaxpanettx/trunk"
 -Run "mvn package"
--To add your own lexers, copy a JFlex file from 
- src/main/jflex/jsyntaxpane/lexers, updating any reference to the 
- language name
+
+To add your own lexer:
+-Copy a JFlex file from "src/main/jflex/jsyntaxpane/lexers", updating any 
+ reference to the language name
 -Similarly, copy and update the corresponding Java file in 
- src/main/java/jsyntaxpane/syntaxkits
--Update 
- src/main/resources/META-INF/services/jsyntaxpane/kitsfortypes.properties 
- with the new language lexer
+ "src/main/java/jsyntaxpane/syntaxkits"
+-In "src/main/resources/META-INF/services/jsyntaxpane":
+  -Update "kitsfortypes.properties" with the new language lexer
+  -Copy and update the corresponding "syntaxkits/[lang]syntaxkit" folder
 
 Write Your Own Plug-In
 ----------------------------
