@@ -1957,12 +1957,10 @@ public class TextPad extends JTextPane implements StateEditable {
 					// for the change from TextPadDocumentListener in TextTrix
 					setChanged(true);
 					setText(text);
-//					setHighlightStyle(new Prefs().getSpellChecker(), text);
 					applyAutoIndent();
 					setChanged(false);
 				}
 			});
-//			read(t, reader, path);
 		} catch(FileNotFoundException e) {
 			// This message will most likely not be reached since
 			// the non-existant file would be detected earlier.
@@ -1973,15 +1971,7 @@ public class TextPad extends JTextPane implements StateEditable {
 				msg, 
 				"File missing",
 				JOptionPane.ERROR_MESSAGE);
-// 		} catch(IOException e) {
-// 			String msg = "The original file could not be accessed.";
-// 			JOptionPane.showMessageDialog(
-// 				this, 
-// 				msg, 
-// 				"File inaccessible",
-// 				JOptionPane.ERROR_MESSAGE);
 		}
-//		openFile(t.getFile(), t.isEditable(), false, true);
 		// prevent caret from exceeding length of newly refreshed file
 		if (pos <= getDocument().getLength()) {
 			setCaretPosition(pos);

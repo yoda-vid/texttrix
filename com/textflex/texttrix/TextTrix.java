@@ -63,7 +63,7 @@ import com.Ostermiller.Syntax.TokenStyles;
 import com.Ostermiller.Syntax.HighlightedDocument;
 
 /**
- * The main Text Trix class. Takes care of all basic graphical user interface
+ * The main Text Trix graphical user interface. Takes care of all basic GUI
  * operations, such as setting up and responding to changes in the
  * <code>Text Pad</code>s, tool bar, menus, and dialogs. Manages and mediates
  * the plug-ins' actions.
@@ -272,45 +272,16 @@ public class TextTrix extends JFrame {
 
 			public void componentResized(ComponentEvent evt) {
 				getPrefs().storeSize(getWidth(), getHeight());
-				//TextPad pad = getSelectedTextPad();
 				Iterator it = getTextPads().iterator();
 				while (it.hasNext()) {
-//					System.out.println("here");
 					TextPad pad = (TextPad)it.next();
 					if (pad != null && pad.getWrappedView() != null) {
 						JScrollPane scrollPane = pad.getScrollPane();
 						scrollPane.getViewport().setViewSize(new Dimension(
 								scrollPane.getWidth() - 10, scrollPane.getHeight()));
 					}
-					/*
-					//SyntaxViewWrapped view = (SyntaxViewWrapped)pad.getWrappedView();
-					if (view != null) {
-						//view.setSize(getWidth(), getHeight());
-						//System.out.println("reset size; getMinSpan: " + view.getMinimumSpan(View.X_AXIS));
-						int viewCount = view.getViewCount();
-						for (int i = 0; i < viewCount; i++) {
-							View childView = view.getView(i);
-							//view.childAllocation(i, new Rectangle(0, 0, -10, 10));
-							//view.layoutChanged(View.X_AXIS);
-							//childView.setSize(getWidth(), getHeight());
-							//SimpleAttributeSet attr = childView.getAttributes();
-							//StyleConstants.setLeftIndent(attr, 1 * 7);
-							//view.preferenceChanged(childView, true, true);
-							System.out.println("reset view " + i);
-						}
-						
-						short n = 50;
-						short rightInset = (short)(getWidth() - view.getPreferredSpan(View.X_AXIS));
-						System.out.println("prefspan: " + view.getPreferredSpan(View.X_AXIS) + ", minSpan" + view.getMinimumSpan(View.X_AXIS) + ", rightInset: " + rightInset);
-						//view.setInsets(n, n, n, n);
-						//SimpleAttributeSet attribs = new SimpleAttributeSet();
-						//StyleConstants.setLeftIndent(attribs, 1 * 7);
-						//view.setParagraphInsets(attribs);
-					}
-					*/
 				}
 			}
-			
 
 			public void componentShown(ComponentEvent evt) {
 			}
@@ -331,7 +302,7 @@ public class TextTrix extends JFrame {
 		
 		/* Prep jortho spell checker */
 		
-		// Create user dictionary in the current working directory of your application
+		// Create user dictionary in the current working directory
 		SpellChecker.setUserDictionaryProvider( new FileUserDictionary() );
 		
 		// Load the configuration from the file dictionaries.cnf and 
@@ -561,30 +532,12 @@ public class TextTrix extends JFrame {
 			if (osName.startsWith("mac os x")) {
 				System.setProperty("apple.laf.useScreenMenuBar", "true");
 			}
-			/* 
-			// not yet defaulting to Nimbus as the group tabbed pane doesn't 
-			// appear to integrate well
-			UIManager.LookAndFeelInfo[] feels = UIManager.getInstalledLookAndFeels();
-			int feelsLen = feels.length;
-			boolean found = false;
-			for (int i = 0; i < feelsLen; i++) {
-				UIManager.LookAndFeelInfo info = (UIManager.LookAndFeelInfo)feels[i];
-				if (info.getName().equals("Nimbus")) {
-					UIManager.setLookAndFeel(info.getClassName());
-					System.out.println("found Nimbus!");
-					found = true;
-					break;
-				}
-			}
-			if (!found)
-			*/
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (UnsupportedLookAndFeelException e) {
 			System.out.println(errorMsg);
 		} catch (ClassNotFoundException e1) {
 			// Java 6 without Nimbus throws this exception rather than 
 			// the unsupported L&F one, so error message will suffice
-//			errorMsg = "Class not found exception in main..." + NEWLINE + errorMsg;
 			System.out.println(errorMsg);
 		} catch (InstantiationException e2) {
 			errorMsg = "Instantiation exception in main..." 
@@ -1142,7 +1095,8 @@ public class TextTrix extends JFrame {
 						if (t != null && selectionStart != selectionEnd) {
 							// reverse selection to prevent selected area from
 							// scrolling off screen if area > 1 line
-							textSelectionReverse(t, 0, selectionStart, selectionEnd);
+							textSelectionReverse(t, 0, selectionStart, 
+									selectionEnd);
 						}
 					}
 				}
@@ -1284,8 +1238,8 @@ public class TextTrix extends JFrame {
 				t.startCompoundEdit();
 				
 				// By default, only sends the selected text;
-				// if no region is selected, or if plug-in flags to works on the text pad's entire
-				// text, sends the plugin all the text
+				// if no region is selected, or if plug-in flags to works on 
+				// the text pad's entire text, sends the plugin all the text
 				if (start == end || pl.getAlwaysEntireText()) { // no selection
 					text = doc.getText(0, doc.getLength()); // all the text
 
@@ -1364,7 +1318,9 @@ public class TextTrix extends JFrame {
 		doc.insertString(start, outcome.getText(), null);	// insert text
 		
 		// auto-wrap-indent the new section
-		if (t.isAutoIndent() ) t.indentRegion(start, start + outcome.getText().length());
+		if (t.isAutoIndent()) {
+			t.indentRegion(start, start + outcome.getText().length());
+		}
 	}
 
 	/**
@@ -1402,7 +1358,8 @@ public class TextTrix extends JFrame {
 	 * @param start beginning point of selection, relative to baseline
 	 * @param end end point of selection, relative to baseline
 	 */
-	public void textSelectionReverse(TextPad t, int baseline, int start, int end) {
+	public void textSelectionReverse(TextPad t, int baseline, int start, 
+			int end) {
 		textSelection(t, baseline, end, start);
 	}
 
@@ -1461,8 +1418,9 @@ public class TextTrix extends JFrame {
 					if (plugIns[i] instanceof PlugInWindow
 							&& !LibTTx.inUnsortedList(plugIns[i].getPath(),
 									includes)) {
-						if ((diag = getPlugInDialog(plugIns[i].getFilename())) != null) {
-							diag.setVisible(false);//closeWindow();
+						if ((diag = getPlugInDialog(plugIns[i].getFilename())) 
+								!= null) {
+							diag.setVisible(false);
 						}
 					}
 				}
@@ -1589,7 +1547,7 @@ public class TextTrix extends JFrame {
 	/** Gets the selected tab group.
 	 * @return the tab group tabbed pane
 	 */
-	public  MotherTabbedPane getSelectedTabbedPane() {
+	public MotherTabbedPane getSelectedTabbedPane() {
 		MotherTabbedPane pane = getGroupTabbedPane();
 		int i = pane.getSelectedIndex();
 		if (i != -1) {
@@ -1604,12 +1562,13 @@ public class TextTrix extends JFrame {
 	 * 
 	 * @return <code>TextPad</code> whose tab is currently selected
 	 */
-	public  TextPad getSelectedTextPad() {
+	public TextPad getSelectedTextPad() {
 		MotherTabbedPane pane = getSelectedTabbedPane();
 		if (pane != null) {
 			int i = pane.getSelectedIndex();
 			if (i != -1) {
-				return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();
+				return (TextPad)((JScrollPane)pane.getComponentAt(i))
+						.getViewport().getView();
 			}
 		}
 		return null;
@@ -1623,7 +1582,7 @@ public class TextTrix extends JFrame {
 	 * @return the given Text Pad; <code>null</code> if the tabbed pane lacks
 	 *         the index value
 	 */
-	public  TextPad getTextPadAt(int i) {
+	public TextPad getTextPadAt(int i) {
 		return getTextPadAt(getSelectedTabbedPane(), i);
 	}
 	
@@ -1632,10 +1591,11 @@ public class TextTrix extends JFrame {
 	 * @param i the tab index
 	 * @return the Text Pad
 	 */
-	public  TextPad getTextPadAt(JTabbedPane pane, int i) {
+	public TextPad getTextPadAt(JTabbedPane pane, int i) {
 		if (i < -1 || i >= pane.getTabCount())
 			return null;
-		return (TextPad) ((JScrollPane) pane.getComponentAt(i)).getViewport().getView();
+		return (TextPad)((JScrollPane)pane.getComponentAt(i))
+				.getViewport().getView();
 		
 	}
 	
@@ -1643,7 +1603,7 @@ public class TextTrix extends JFrame {
 	 * @param i the index of the group tab to retrieve
 	 * @return the tab group tabbed pane
 	 */
-	public  MotherTabbedPane getTabbedPaneAt(int i) {
+	public MotherTabbedPane getTabbedPaneAt(int i) {
 		return (MotherTabbedPane) getGroupTabbedPane().getComponentAt(i);
 	}
 	
@@ -1651,7 +1611,7 @@ public class TextTrix extends JFrame {
 	 * @param textPad the text pad
 	 * @return the tabbed pane of the text pad's tabbed pane
 	 */
-	public  MotherTabbedPane getTabbedPane(TextPad textPad) {
+	public MotherTabbedPane getTabbedPane(TextPad textPad) {
 		int lenGroup = getGroupTabbedPane().getTabCount();
 		MotherTabbedPane pane = null;
 		// finds the Text Pad by searching for the index of the component
@@ -1892,8 +1852,8 @@ public class TextTrix extends JFrame {
 			// updates the main window title when changing tabs, but the title
 			// remains the same after the user closes a window.
 			// 
-			// Workaround: The text pad close method manually updates the title for
-			// the newly selected pad, if it exists.
+			// Workaround: The text pad close method manually updates the title
+			// for the newly selected pad, if it exists.
 			t = getSelectedTextPad();
 			if (t != null) updateTitle(t.getFilename());
 		}
@@ -1901,11 +1861,12 @@ public class TextTrix extends JFrame {
 	}
 
 	/** Adds a new tab group to the given tabbed pane.
-	 * @param tabbedPane the tabbed pane to receive the new tab group tabbed pane
+	 * @param tabbedPane the tabbed pane to receive the new group tabbed pane
 	 * @param title the title for the new tab group
 	 */
 	public void addTabbedPane(MotherTabbedPane tabbedPane, String title) {
-		final MotherTabbedPane newTabbedPane = new MotherTabbedPane(JTabbedPane.TOP);
+		final MotherTabbedPane newTabbedPane 
+				= new MotherTabbedPane(JTabbedPane.TOP);
 		
 		// keep the tabs the same width when substituting chars
 		newTabbedPane.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -1925,7 +1886,8 @@ public class TextTrix extends JFrame {
 		
 		// adds a change listener to listen for tab switches and display the
 		// options of the tab's TextPad
-		newTabbedPane.addChangeListener(new TextPadChangeListener(newTabbedPane));
+		newTabbedPane.addChangeListener(
+				new TextPadChangeListener(newTabbedPane));
 		
 	}
 	
@@ -1957,7 +1919,6 @@ public class TextTrix extends JFrame {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		textPad.setScrollPane(scrollPane);
 		textPad.spellChecker(getPrefs().getSpellChecker());
-// 		textPad.setHighlightStyle();
 
 		// must add to array list before adding scroll pane to tabbed pane
 		// or else get IndexOutOfBoundsException from the array list
@@ -2040,7 +2001,7 @@ public class TextTrix extends JFrame {
 	 * @param textPad
 	 *            Text Pad to update
 	 */
-	public  void updateTabTitle(TextPad textPad) {
+	public void updateTabTitle(TextPad textPad) {
 		MotherTabbedPane pane = getTabbedPane(textPad);
 		int tabIndex = getTextPadIndex(pane, textPad);
 
@@ -2169,12 +2130,12 @@ public class TextTrix extends JFrame {
 	private void loadText(final TextPad textPad, final String text) {
 		// reads and saves the end-of-line style to reapply when saving
 		String eol = LibTTx.getEOL(text);
-		if (verbose) System.out.println("loading eol..." + LibTTx.getEOLName(eol));
+		if (verbose) System.out.println(
+				"loading eol..." + LibTTx.getEOLName(eol));
 		textPad.setEOL(eol);
 		
 		// sets the text, applies filters and managers, repositions the
 		// caret to the original position, and sets the file modification flags
-// 		textPad.replaceAllText(text);
 		textPad.setText(text);
 		textPad.setChanged(false);
 		updateTabTitle(textPad);
@@ -2209,8 +2170,8 @@ public class TextTrix extends JFrame {
 	 * @param i tab index
 	 * @param tp tabbed pane from which to remove a tab
 	 */
-	public  void removeTextArea(int i, MotherTabbedPane tp) {
-		TextPad t = getSelectedTextPad();
+	public void removeTextArea(int i, MotherTabbedPane tp) {
+		TextPad t = getTextPadAt(tp, i);
 		// stops the pad's save timer and removes the pad
 		if (t != null) {
 // 			stopTextPadAutoSaveTimer(t);
@@ -2229,61 +2190,43 @@ public class TextTrix extends JFrame {
 	 * @see #saveFile
 	 */
 	public boolean saveFile(String path, TextPad t) {
-		if (t == null)
-			t = getSelectedTextPad();
+		if (t == null) t = getSelectedTextPad();
+		if (t == null) return false;
 		try {
-			if (t != null) {
-				/*
-				 * if don't use canWrite(), work instead by catching exception
-				 * and either handling it there or returning signal of the
-				 * failure
-				 */
-				LibTTx.writeText(path, t.getText(), t.getEOL());
-				System.out.println("saving eol..." + LibTTx.getEOLName(t.getEOL()));
-				// keeps track of orig filename to compare file extensions
-				// for syntax highlighting;
-				// assumes that path points to a valid file
-				String origName = t.getFile().getName();
-				t.setFile(path);
+			LibTTx.writeText(path, t.getText(), t.getEOL());
+			System.out.println("saving eol..." 
+					+ LibTTx.getEOLName(t.getEOL()));
+			// keeps track of orig filename to compare file extensions
+			// for syntax highlighting;
+			// assumes that path points to a valid file
+			String origName = t.getFile().getName();
+			t.setFile(path);
 
-				// stops any auto-save timer attached to the pad
-				// since the file has just been saved;
-				// relies on TextPadDocListener to restart the timer
-// 				stopTextPadAutoSaveTimer(t);
-				
-				getPrefs().storeFileHist(path);
-				// sets the style according to extension, but only if 
-				// the next extension is different from the previous one
-				if (!origName.equals(t.getFile().getName())) {
-					if (getPrefs().getHighlighting() && getHighlighting()
-								&& !LibTTx.getFileExtension(origName)
-										.equalsIgnoreCase(t.getFileExtension())) {
-						String text = t.getAllText();
-// 						t.removeAllText();
-						int caretPos = t.getCaretPosition();
-						loadText(t, text);
-						applyHighlighting(t);
-// 						t.setHighlightStyle();
-// 						t.addDocListener(new TextPadDocListener(t));
-						// reattach undo manager and listeners;
-						// note that prevents undos from before the save
-// 						t.applyDocumentSettings();
-						t.setCaretPosition(caretPos);
-					}
-					// automatically starts indenting, if applicable, after
-					// rather than before applying the syntax highlighting 
-					// so that the indentations are applied to the new styled doc
-					autoAutoIndent(t); 
+			getPrefs().storeFileHist(path);
+			// sets the style according to extension, but only if 
+			// the next extension is different from the previous one
+			if (!origName.equals(t.getFile().getName())) {
+				if (getPrefs().getHighlighting() && getHighlighting()
+							&& !LibTTx.getFileExtension(origName)
+									.equalsIgnoreCase(t.getFileExtension())) {
+					String text = t.getAllText();
+					int caretPos = t.getCaretPosition();
+					loadText(t, text);
+					applyHighlighting(t);
+					t.setCaretPosition(caretPos);
 				}
-				t.setChanged(false);
-				t.setIgnoreChanged(false);
-				updateTabTitle(t);//textAreas.indexOf(t));
-				return true;
+				// automatically starts indenting, if applicable, after
+				// rather than before applying the syntax highlighting 
+				// so that the indentations are applied to the new styled doc
+				autoAutoIndent(t); 
 			}
+			t.setChanged(false);
+			t.setIgnoreChanged(false);
+			updateTabTitle(t);
+			return true;
 		} finally { // release system resources from stream
 			t.setupFileModifiedThread();
 		}
-		return false;
 	}
 	
 	/**
@@ -2317,7 +2260,8 @@ public class TextTrix extends JFrame {
 	 * @param editable <code>true</code> if the resulting text pad should be
 	 *            editable
 	 * @param resource <code>true</code> if the file should be accessed as a
-	 *            resource, via <code>TextTrix.class.getResourceAsStream(path)</code>
+	 *            resource, via 
+	 *            <code>TextTrix.class.getResourceAsStream(path)</code>
 	 * @param reuseTab <code>true</code> if a tab should be reused, even
 	 * if it is isn't empty or is empty but with unsaved changes
 	 * @param store <code>true</code> if the list of all tabs should be stored,
@@ -2366,15 +2310,9 @@ public class TextTrix extends JFrame {
 					reader = new BufferedReader(new FileReader(path));
 				}
 
-				// check if tabs exist; get TextPad if true
-				/*
-				 * t.getText() != null, even if have typed nothing in it. Add
-				 * tab and set its text if no tabs exist or if current tab has
-				 * tokens; set current tab's text otherwise.
-				 * Defaults to creating a new tab, unless a tab already exists and 
-				 * tab reuse is forced or the tab is empty or has no unsaved changes.
-				 */
-				if (t != null && (reuseTab && (t.isEmpty() && !t.getChanged()))) {
+				// enter file contents into current text area if it is empty
+				// and unmodified; otherwise, create a new text area
+				if (t != null && reuseTab && t.isEmpty() && !t.getChanged()) {
 					read(t, reader, path);
 				} else {
 					addTextArea(getSelectedTabbedPane(), file);
@@ -2396,14 +2334,7 @@ public class TextTrix extends JFrame {
 					setOpenDir(System.getProperty("user.dir"));
 				}
 				getPrefs().storeFileHist(path);
-				//updateFileHist(fileMenu);
-// 				if (getPrefs().getHighlighting() && getHighlighting()) {
-// 					t.setHighlightStyle(getPrefs().getSpellChecker());
-// 				}
-// 				Thread loadCheck = new Thread(
-// 						new CheckDocLoad(t, statusProgress));
-// 				loadCheck.start();
-// 				autoAutoIndent(t);
+				// save the list of open tabs
 				if (store && !getFresh() && getPrefs().getReopenTabs()) {
 					storeTabs();
 				}
@@ -2468,7 +2399,8 @@ public class TextTrix extends JFrame {
 	
 	/** Finds the tab with the given path.
 	 * @param path the path of the file to find
-	 * @return the index of the tab with the file of the given tab; -1 if no such tab exists
+	 * @return the index of the tab with the file of the given tab; 
+	 * -1 if no such tab exists
 	*/
 	public int getIdenticalTextPadIndex(String path, int paneIdx) {
 		MotherTabbedPane pane = getTabbedPaneAt(paneIdx);
@@ -2482,7 +2414,8 @@ public class TextTrix extends JFrame {
 		return -1;
 	}
 
-	/**Refreshes a tab without the user having to close and reopen it.
+	/**
+	 * Refreshes a tab without the user having to close and reopen it.
 	 * Useful when an open file is externally changed.
 	*/
 	public void refreshTab() {
@@ -2502,9 +2435,10 @@ public class TextTrix extends JFrame {
 	 */
 	public void autoAutoIndent(TextPad t) {
 		String path = t.getPath();
-		// if tab set to auto-indent, or file fits auto-indent extension in prefs
-		// and prefs set to auto-indent, then auto-indent
-		if (t.isAutoIndent() || getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
+		// if tab set to auto-indent, or file fits auto-indent extension in 
+		// prefs and it set to auto-indent, then auto-indent
+		if (t.isAutoIndent() 
+				|| getPrefs().getAutoIndent() && isAutoIndentExt(path)) {
 			t.setAutoIndent(true);
 		}
 	}
@@ -2613,7 +2547,7 @@ public class TextTrix extends JFrame {
 	 * @return true if the file is saved successfully
 	 * @see #getSavePath(TextPad, JFrame)
 	 */
-	public  boolean getSavePathOnExit(JFrame owner) {
+	public boolean getSavePathOnExit(JFrame owner) {
 		boolean repeat = false;
 		File f = null;
 		// repeat the retrieval until gets an unused file name,
@@ -2707,20 +2641,26 @@ public class TextTrix extends JFrame {
 					// saving the selected tab.
 					if (idPath != -1) {
 						String closeIDTabWarning = 
-							"A text pad saved to the path you have chosen"
-							+ NEWLINE + "is already open.  Should I close it?  It may have"
-							+ NEWLINE + "unsaved changes.";
-						String[] closeIDTabOptions = { "Close it anyway", "Show me", "Cancel" };
+							"The file path you have chosen is already open in"
+							+ "\nanother tab. May I close it? It may have"
+							+ "\nunsaved changes.";
+						String[] closeIDTabOptions = { 
+								"Close it", 
+								"Show me", 
+								"Cancel"
+						};
 						// retrieves the user's choice
 						int closeIDTabChoice = JOptionPane.showOptionDialog(
 							owner, closeIDTabWarning,
 							"Close?", JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.WARNING_MESSAGE, null, closeIDTabOptions,
-							closeIDTabOptions[1]);
+							JOptionPane.WARNING_MESSAGE, null, 
+							closeIDTabOptions, closeIDTabOptions[1]);
 						switch (closeIDTabChoice) {
 							case 0:
-								// Close the duplicate pad in deference to the current one
-								removeTextArea(idPath, getTabbedPaneAt(paneIdx));
+								// Close the duplicate pad in deference to the 
+								// current one
+								removeTextArea(idPath, 
+										getTabbedPaneAt(paneIdx));
 								break;
 							case 1:
 								// Shows the other, duplicate file and exit
@@ -2734,7 +2674,7 @@ public class TextTrix extends JFrame {
 					// Aks user whether to overwrite the original file
 					String overwrite = path
 							+ "\nalready exists.  Should I overwrite it?";
-					String[] options = { "But of course", "Please, no!",
+					String[] options = { "Yes of course", "Please, no!",
 							"Cancel" };
 					// dialog warning of a possible overwrite
 					choice = JOptionPane.showOptionDialog(owner, overwrite,
