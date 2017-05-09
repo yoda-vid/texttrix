@@ -353,6 +353,9 @@ echo "done"
 
 # finish the source package
 cd $BLD_DIR/$SRCPKGDIR
+# replace classes-oriented com with full com directory
+rm -rf texttrix/com
+cp -rf "$TTX_DIR"/com texttrix
 # remove non-source or src-related files from plugins;
 # assumes that all the directories in the "plugins" are just that--plugins
 rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \
