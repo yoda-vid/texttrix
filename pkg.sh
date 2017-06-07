@@ -16,7 +16,7 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003, 2016
+# Portions created by the Initial Developer are Copyright (C) 2003, 2017
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -79,10 +79,10 @@ Parameters:
 	--ver=version: The version number to append to the package names.
 	
 Copyright:
-	Copyright (c) 2003, 2016 Text Flex
+	Copyright (c) 2003, 2017 Text Flex
 
 Last updated:
-	2016-09-10
+	2017-06-07
 "
 
 #####################
@@ -113,7 +113,7 @@ BRANCH_DIR="trunk"
 # SVN plugins src branch directory
 PLUGINS_BRANCH_DIR="$BRANCH_DIR"
 
-LAUNCH4J="launch4j-3.8"
+LAUNCH4J="launch4j-3.9"
 LAUNCH4J_CONFIG="launch4j-config.xml"
 
 ##############################
