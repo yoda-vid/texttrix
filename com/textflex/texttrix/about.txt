@@ -1,6 +1,6 @@
 Text Trix
 the text tinker
-version 1.0.2
+version 1.0.3
 build:
-Copyright (c) 2002, 2016, Text Flex
+Copyright (c) 2002, 2017, Text Flex
 http://textflex.com/texttrix
