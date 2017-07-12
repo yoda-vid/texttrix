@@ -8,9 +8,11 @@ http://textflex.com/texttrix
 ----v.1.0.2 (2017-06-06)----
 
 -Auto-indent support for spaces in addition to tabs
--Saves tab list on-the-fly for restoring during next session
+-Saves tab list on-the-fly to restore tabs when reopening the app
+-Small syntax highlighting adjustments
 -Fixed additional empty window from occasionally opening at startup
 -Fixed inappropriate font size reduction in some cases
+-Fixed missing source files in source package
 
 ----v.1.0.1 (2016-09-10)----
 
