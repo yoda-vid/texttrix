@@ -1892,6 +1892,26 @@ public class TextTrix extends JFrame {
 	}
 	
 	/**
+	 * Generate a tab name based on max characters preference.
+	 *
+	 * @param textPad TextPad whose tab will be named
+	 *
+	 * @return the name of the file, or if the Prefs tab name max characters 
+	 * option is true, the filename truncated to the max characters set in 
+	 * Prefs.
+	 */
+	private String generateTabName(TextPad textPad) {
+		int maxChars = getPrefs().getTabNameMaxChars() 
+			? getPrefs().getTabNameMaxCharsNum() : -1;
+		String title = textPad.getFilename();
+		if (maxChars > 0) {
+			title = title.substring(0, maxChars) + "\u2026";
+		}
+		//System.out.println("maxChars: " + maxChars + ", title: " + title);
+		return title;
+	}
+	
+	/**
 	 * Creates a new <code>TextPad</code> object, a text area for writing, and
 	 * gives it a new tab. Can call for each new file; names the tab,
 	 * <code>File[n].txt</code>, where <code>n</code> is the tab number.
@@ -1924,7 +1944,7 @@ public class TextTrix extends JFrame {
 		// or else get IndexOutOfBoundsException from the array list
 		// 1 more than highest tab index since will add tab
 		int i = tabbedPane.getTabCount();
-		tabbedPane.addTab(file.getName() + " ", scrollPane);
+		tabbedPane.addTab(generateTabName(textPad) + " ", scrollPane);
 		textPad.addDocListener(new TextPadDocListener(textPad));
 		textPad.addCaretListener(new CaretListener() {
 			public void caretUpdate(CaretEvent e) {
@@ -2007,7 +2027,7 @@ public class TextTrix extends JFrame {
 
 		// updates the title with the filename and a flag indicating
 		// whether the file has unsaved changes
-		String title = textPad.getFilename();
+		String title = generateTabName(textPad);
 		if (textPad.getChanged()) { // unsaved changes present
 			pane.setTitleAt(tabIndex, title + "*");
 		} else { // all changes saved

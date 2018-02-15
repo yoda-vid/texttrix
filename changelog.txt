@@ -2,8 +2,13 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002, 2017, Text Flex
+Copyright (c) 2002, 2018, Text Flex
 http://textflex.com/texttrix
+
+----v.1.0.3 (2018-xx-xx)----
+
+-Option to cap tab displayed name length to pack more tabs into each row
+-Migrated repositories to Git
 
 ----v.1.0.2 (2017-06-06)----
 

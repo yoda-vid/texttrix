@@ -101,6 +101,13 @@ public class Prefs extends JDialog {//JFrame {
 	// comma-delimited list of paths
 	private static final String REOPEN_TABS_LIST = "reopenTabsList";
 
+	// tab name max characters
+	private static final String TAB_NAME_MAX_CHARS = "tabNameMaxChars";
+	private JCheckBox tabNameMaxCharsChk = null; // check box
+	private static final String TAB_NAME_MAX_CHARS_NUM = "tabNameMaxCharsNum";
+	private JSpinner tabNameMaxCharsNumSpinner = null; // spinner
+	private SpinnerNumberModel tabNameMaxCharsNumMdl; // numerical input
+
 	// file history
 	private static final String FILE_HIST_COUNT = "fileHistCount";
 	// input max num of files to remember
@@ -488,6 +495,10 @@ public class Prefs extends JDialog {//JFrame {
 	public void storeGeneralPrefs() {
 		generalPrefs.put(INSTALL_DIR, LibTTx.getBaseFile().getPath());
 		generalPrefs.putBoolean(REOPEN_TABS, reopenTabsChk.isSelected());
+		generalPrefs.putBoolean(TAB_NAME_MAX_CHARS, 
+			tabNameMaxCharsChk.isSelected());
+		generalPrefs.putInt(TAB_NAME_MAX_CHARS_NUM, 
+			tabNameMaxCharsNumMdl.getNumber().intValue());
 		storeFileHistCount(fileHistCountMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
@@ -839,6 +850,22 @@ public class Prefs extends JDialog {//JFrame {
 	public String getReopenTabsList() {
 		return generalPrefs.get(REOPEN_TABS_LIST, "");
 	}
+	/**Gets the stored flag for whether the program should cap the number of
+	 * characters displayed in tab names.
+	 * 
+	 * @return <code>true</code> if the program should apply a max number of 
+	 * characters in tab names
+	 */
+	public boolean getTabNameMaxChars() {
+		return generalPrefs.getBoolean(TAB_NAME_MAX_CHARS, false);
+	}
+	/**Gets the max number of characters to display in tab names.
+	 * 
+	 * @return max number of characters
+	 */
+	public int getTabNameMaxCharsNum() {
+		return generalPrefs.getInt(TAB_NAME_MAX_CHARS_NUM, 5);
+	}
 	/** Gets the stored number of files paths to remember.
 	 * 
 	 * @return the number of paths to store in the most-recently-opened-files
@@ -960,6 +987,7 @@ public class Prefs extends JDialog {//JFrame {
 	 */
 	private class CreateGeneralPanel implements Runnable {
 		
+		private JLabel tabNameMaxCharsNumLbl = null;
 		private JLabel autoSaveIntervalLbl = null;
 		private JLabel fontSizeLbl = null;
 
@@ -1003,6 +1031,36 @@ public class Prefs extends JDialog {//JFrame {
 						new SpinnerNumberModel(getFileHistCount(), 0, 100, 1);
 					fileHistCountSpinner = new JSpinner(fileHistCountMdl);
 
+					// max number of characters to display in tab names
+					String tabNameMaxCharsTxt =
+						"Cap tab name length:";
+					String tabNameMaxCharsTipTxt =
+						"<html>Limit the number of characters displayed in tab"
+							+ "<br>names to pack in more tabs in each row."
+							+ "</html>";
+					tabNameMaxCharsChk = 
+						new JCheckBox(tabNameMaxCharsTxt, getTabNameMaxChars());
+					tabNameMaxCharsChk.setToolTipText(tabNameMaxCharsTipTxt);
+					tabNameMaxCharsChk.addChangeListener(new ChangeListener() {
+						public void stateChanged(ChangeEvent e) {
+							setTabNameMaxCharsSelectors(
+								tabNameMaxCharsChk.isSelected());
+						}
+					});
+					
+					// max characters selector
+					tabNameMaxCharsNumLbl = 
+						new JLabel("Max characters:");
+					String tabNameMaxCharsNumTipTxt =
+						"<html>The max number of characters to display per tab"
+						+ "<br>title.</html>";
+					tabNameMaxCharsNumLbl.setToolTipText(
+						tabNameMaxCharsNumTipTxt);
+					// the numerical model for the spinner
+					tabNameMaxCharsNumMdl =
+						new SpinnerNumberModel(getTabNameMaxCharsNum(), 1, 100, 1);
+					tabNameMaxCharsNumSpinner = new JSpinner(tabNameMaxCharsNumMdl);
+					
 					// automatically auto-indents files whose extensions match any of those in
 					// the customizable list
 					String autoIndentTxt = "Auto-wrap-indent file types:";
@@ -1260,10 +1318,40 @@ public class Prefs extends JDialog {//JFrame {
 						0,
 						panel);
 					LibTTx.addGridBagComponent(
-						fileHistCountLbl,
+						tabNameMaxCharsChk,
 						constraints,
 						0,
 						1,
+						3,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						tabNameMaxCharsNumLbl,
+						constraints,
+						0,
+						2,
+						1,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						tabNameMaxCharsNumSpinner,
+						constraints,
+						1,
+						2,
+						1,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						fileHistCountLbl,
+						constraints,
+						0,
+						3,
 						2,
 						1,
 						0,
@@ -1273,7 +1361,7 @@ public class Prefs extends JDialog {//JFrame {
 						fileHistCountSpinner,
 						constraints,
 						2,
-						1,
+						3,
 						1,
 						1,
 						0,
@@ -1283,7 +1371,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoIndentChk,
 						constraints,
 						0,
-						2,
+						4,
 						1,
 						1,
 						0,
@@ -1293,7 +1381,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoIndentExtFld,
 						constraints,
 						1,
-						2,
+						4,
 						2,
 						1,
 						0,
@@ -1315,7 +1403,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSaveChk,
 						constraints,
 						0,
-						4,
+						5,
 						3,
 						1,
 						0,
@@ -1325,7 +1413,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSaveIntervalLbl,
 						constraints,
 						0,
-						5,
+						6,
 						1,
 						1,
 						0,
@@ -1335,7 +1423,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSaveIntervalSpinner,
 						constraints,
 						1,
-						5,
+						6,
 						1,
 						1,
 						0,
@@ -1345,7 +1433,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSavePromptChk,
 						constraints,
 						2,
-						5,
+						6,
 						1,
 						1,
 						0,
@@ -1355,7 +1443,7 @@ public class Prefs extends JDialog {//JFrame {
 						highlightingChk,
 						constraints,
 						0,
-						6,
+						7,
 						3,
 						1,
 						0,
@@ -1365,7 +1453,7 @@ public class Prefs extends JDialog {//JFrame {
 						spellCheckerChk,
 						constraints,
 						0,
-						7,
+						8,
 						3,
 						1,
 						0,
@@ -1375,7 +1463,7 @@ public class Prefs extends JDialog {//JFrame {
 						fontSizeLbl,
 						constraints,
 						0,
-						8,
+						9,
 						1,
 						1,
 						0,
@@ -1385,7 +1473,7 @@ public class Prefs extends JDialog {//JFrame {
 						fontSizeSpinner,
 						constraints,
 						1,
-						8,
+						9,
 						1,
 						1,
 						0,
@@ -1399,7 +1487,7 @@ public class Prefs extends JDialog {//JFrame {
 						importExportPrefsLbl,
 						constraints,
 						0,
-						9,
+						10,
 						3,
 						1,
 						0,
@@ -1409,7 +1497,7 @@ public class Prefs extends JDialog {//JFrame {
 						exportPrefsButton,
 						constraints,
 						0,
-						10,
+						11,
 						1,
 						1,
 						100,
@@ -1420,7 +1508,7 @@ public class Prefs extends JDialog {//JFrame {
 						importPrefsButton,
 						constraints,
 						1,
-						10,
+						11,
 						1,
 						1,
 						100,
@@ -1430,7 +1518,7 @@ public class Prefs extends JDialog {//JFrame {
 						resetPrefsButton,
 						constraints,
 						2,
-						10,
+						11,
 						1,
 						1,
 						100,
@@ -1452,6 +1540,17 @@ public class Prefs extends JDialog {//JFrame {
 			autoSaveIntervalLbl.setEnabled(b);
 			autoSaveIntervalSpinner.setEnabled(b);
 			autoSavePromptChk.setEnabled(b);
+			
+		}
+		
+		/**Enables or disables the tab name max characters selectors.
+		 * 
+		 * @param b <code>true</code> to enable the selectors,
+		 * allowing the user to adjust them
+		 */
+		public void setTabNameMaxCharsSelectors(boolean b) {
+			tabNameMaxCharsNumLbl.setEnabled(b);
+			tabNameMaxCharsNumSpinner.setEnabled(b);
 			
 		}
 	}
