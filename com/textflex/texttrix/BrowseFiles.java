@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2006-7
+ * Portions created by the Initial Developer are Copyright (C) 2006-7, 2018
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -51,6 +51,7 @@ public abstract class BrowseFiles extends AbstractAction {
 	private TextPad textPad = null; // the Text Pad
 	private String name = ""; // name of the dialog and accept button
 //	private String openDir = ""; // the last opened directory
+	private boolean saveDialog = false;
 	
 	private File selectedFile = null; // user-chosen file
 	private File[] selectedFiles = null; // user-chosen files
@@ -199,6 +200,19 @@ public abstract class BrowseFiles extends AbstractAction {
 		textPad = aTextPad;
 	}
 	
+	/**
+	 * Sets the flag for whether to open a "save" rather than an "open" file 
+	 * dialog
+	 * 
+	 * @param val true if a "save" dialog should be opened; false for an "open" 
+	 * file dialog
+	 */
+	public void setSaveDialog(boolean val) {
+		saveDialog = val;
+	}
+	
+	
+	
 	
 	
 	/** Gets the selected file, usually the first file that
@@ -262,6 +276,17 @@ public abstract class BrowseFiles extends AbstractAction {
 	 */
 	public TextPad getTextPad() {
 		return textPad;
+	}
+	
+	/**
+	 * Gets the flag for whether to open a "save" rather than an "open" file 
+	 * dialog
+	 * 
+	 * @return true if a "save" dialog should be opened; false for an "open" 
+	 * file dialog
+	 */
+	public boolean getSaveDialog() {
+		return saveDialog;
 	}
 
 }

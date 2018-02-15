@@ -15,7 +15,8 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003-8, 2015
+ * Portions created by the Initial Developer are Copyright (C) 2003-8, 2015, 
+ * 2018
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -1217,6 +1218,7 @@ public class Prefs extends JDialog {//JFrame {
 						 */
 						public void actionPerformed(ActionEvent evt) {
 							chooser.setApproveButtonText("Export");
+							this.setSaveDialog(true);
 							super.actionPerformed(evt);
 							File file = this.getSelectedFile();
 							// exports the prefs if user selects a file; the file must actually

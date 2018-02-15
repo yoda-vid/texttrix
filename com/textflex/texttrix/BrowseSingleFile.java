@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2006-7
+ * Portions created by the Initial Developer are Copyright (C) 2006-7, 2018
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -120,7 +120,12 @@ public class BrowseSingleFile extends BrowseFiles {
 		JFileChooser chooser = getChooser();
 		chooser.setCurrentDirectory(getCurrentDir());
 		chooser.setSelectedFile(getDefaultFile());
-		int result = chooser.showOpenDialog(getOwner());
+		int result;
+		if (getSaveDialog()) {
+			result = chooser.showSaveDialog(getOwner());
+		} else {
+			result = chooser.showOpenDialog(getOwner());
+		}
 		if (result == JFileChooser.APPROVE_OPTION) {
 			setSelectedFile(chooser.getSelectedFile());
 		}

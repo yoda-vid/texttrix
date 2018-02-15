@@ -9,6 +9,7 @@ http://textflex.com/texttrix
 
 -Option to cap tab displayed name length to pack more tabs into each row
 -Migrated repositories to Git
+-Fix preferences export
 
 ----v.1.0.2 (2017-06-06)----
 
