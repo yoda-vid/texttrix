@@ -2,7 +2,7 @@
 
 The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general editing.
 
-Text Trix started out as a homegrown project, originally at https://sourceforge.net/projects/texttrix/ and ported here as of August 2017. A central design philosphy is to simplify text editing without making hidden or unexpected changes to your text.
+Text Trix started out as a homegrown project, originally at https://sourceforge.net/projects/texttrix/ and ported here as of August 2017. A central design philosophy is to simplify text editing without making hidden or unexpected changes to your text.
 
 ## Features
 
@@ -14,13 +14,41 @@ Text Trix started out as a homegrown project, originally at https://sourceforge.
 * Emacs/Vi-style shortcuts available
 * Cross-platform and completely free
 
-## Building and running
+## Run
 
-**Note**: We are in the process of migrating from Sourceforge, including migration of several libraries and plugins for Text Trix. You can grab the most recent .jar files from [Text Trix 1.0.2](https://sourceforge.net/projects/texttrix/files/1%29%20Text%20Trix/TextTrix-1.0.2/texttrix-1.0.2.zip/download) can copy the `lib` and `plugins` folders into the git clone root folder.
+* Binaries of older version (Text Trix 1.0.2) available [here](https://sourceforge.net/projects/texttrix/files/1%29%20Text%20Trix/TextTrix-1.0.2)
+* Launch ``TextTrix.jar``, or use ``TextTrix.exe`` for Windows shortcut
+
+## Compile
+
+### Dependencies
+
+* Java 1.5+
+* [JSyntaxPaneTTx](https://github.com/the4thchild/jsyntaxpanettx)
+* [OsterTTx](https://github.com/the4thchild/osterttx)
+
+**Note**: We are in the process of migrating from Sourceforge, including several plugins and a more seamless build process. In the meantime, you can grab the most recent plugin .jar files from [Text Trix 1.0.2](https://sourceforge.net/projects/texttrix/files/1%29%20Text%20Trix/TextTrix-1.0.2/texttrix-1.0.2.zip/download) can copy the `plugins` folders into the git clone root folder.
+
+### Build
 
 ```
+# get Git repos
 git clone https://github.com/the4thchild/texttrix.git
-cd texttrix
+git clone https://github.com/the4thchild/jsyntaxpanettx.git
+git clone https://github.com/the4thchild/osterttx.git
+
+# build JSyntaxPaneTTx
+cd jsyntaxpanettx
+mvn package
+cp target/jsyntaxpane-0.9.6.jar ../texttrix/lib/jsyntaxpane.jar
+
+# build OsterTTx
+cd ../osterttx
+./build.sh --jar
+cp oster.jar ../texttrix/lib
+
+# build and run Text Trix
+cd ../texttrix
 ./build.sh
 ./run.sh
 ```
