@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002, 2017
+ * Portions created by the Initial Developer are Copyright (C) 2002, 2017-8
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -120,8 +120,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
 		
 		file = aFile;
-		setFileModifiedThread(new FileModifiedThread(this));
-		getFileModifiedThread().start();
+		FileModifiedThread modifiedThread = new FileModifiedThread(this);
+		modifiedThread.setPrompt(prefs.getRefreshPrompt());
+		setFileModifiedThread(modifiedThread);
+		modifiedThread.start();
 		
 		// Create Line Dance panel
 		
@@ -1928,6 +1930,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			
 			String s = "Refresh request";
 			// dialog with 2 choices: discard, cancel
+			// TODO: consider clearing changed flag if refresh
 			String msg = "This file has not yet been saved."
 					+ "\nShould I still refresh it with the currently saved version?";
 			int choice = JOptionPane.showOptionDialog(this, msg,

@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002, 2017
+ * Portions created by the Initial Developer are Copyright (C) 2002, 2017-8
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -241,7 +241,7 @@ public class TextTrix extends JFrame {
 						.getKeyStroke("alt A"));
 
 		// creates the reject action, something I'm all too familiar with
-		prefsCancelAction = new AbstractAction("No way", null) {
+		prefsCancelAction = new AbstractAction("No way (cancel!)", null) {
 			public void actionPerformed(ActionEvent evt) {
 				// Exit the prefs without saving or applying any changes
 				prefs.dispose();
@@ -880,6 +880,7 @@ public class TextTrix extends JFrame {
 		boolean spellCheck = getPrefs().getSpellChecker();
 		int tabCount = pane.getTabCount();
 		int fontSize = -1;
+		Prefs prefs = getPrefs();
 		for (int h = 0; h < tabCount; h++) {
 			pane.setSelectedIndex(h);
 			for (int i = 0; i < getSelectedTabbedPane().getTabCount(); i++) {
@@ -894,7 +895,7 @@ public class TextTrix extends JFrame {
 					// checks font size on first tab to see if different
 					// from prefs setting
 					int currFontSize = pad.getFont().getSize();
-					fontSize = getPrefs().getFontSize();
+					fontSize = prefs.getFontSize();
 					if (fontSize == currFontSize) {
 						fontSize = -1;
 					} else {
@@ -918,6 +919,12 @@ public class TextTrix extends JFrame {
 					// update to remember font setting
 					pad.setFont(pad.getFont().deriveFont((float)fontSize));
 				}
+				
+				// update tab titles for change in number of characters
+				updateTabTitle(pad);
+				
+				// reset refresh prompt
+				pad.getFileModifiedThread().setPrompt(prefs.getRefreshPrompt());
 			}
 		}
 		

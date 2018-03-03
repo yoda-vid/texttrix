@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2002-10
+ * Portions created by the Initial Developer are Copyright (C) 2002-10, 2018
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -56,11 +56,10 @@ public class FileModifiedThread extends StoppableThread {
 	private long lastModifiedWithTTx = 0;
 	private File file = null;
 	private TextPad pad = null;
-//	private boolean refreshed = false;
+	private boolean prompt = true;
 	
 	public FileModifiedThread(TextPad aPad) {
 		pad = aPad;
-//		file = aFile;
 	}
 	
 	public void start() {
@@ -97,29 +96,30 @@ public class FileModifiedThread extends StoppableThread {
 								if (lastMod > getLastModifiedWithTTx()) {
 									requestStop();
 //									System.out.println("displaying dialog");
-									// creates a save prompt dialog
-									int choice = JOptionPane
-											.showConfirmDialog(
-													textPad,
-													textPad.getFile().getPath() 
-															+ "\nhas been modified elsewhere."
-															+ "\nRefresh the file?",
-													"File Modified Elsewhere",
-													JOptionPane.YES_NO_OPTION,
-													JOptionPane.QUESTION_MESSAGE);
-									if (choice == JOptionPane.YES_OPTION) {
+									boolean refresh = true;
+									if (prompt) {
+										// prompt with save dialog
+										int choice = JOptionPane
+												.showConfirmDialog(
+														textPad,
+														textPad.getFile().getPath() 
+																+ "\nhas been modified elsewhere."
+																+ "\nRefresh the file?",
+														"File Modified Elsewhere",
+														JOptionPane.YES_NO_OPTION,
+														JOptionPane.QUESTION_MESSAGE);
+										refresh = choice == JOptionPane.YES_OPTION;
+									}
+									if (refresh) {
 										textPad.refresh();
 										setLastModifiedWithTTx(lastMod);
-//										refreshed = true;
 										getThis().start();
-//										setStopped(false);
 									}
 								}
 							}
 						}
 					});
 				}
-	//			setStopped(true); // thread stops after clean-up fns
 			} catch (InterruptedException e) {
 				// ensures that an interrupt during the sleep is still flagged
 				setStopped(true);
@@ -145,6 +145,8 @@ public class FileModifiedThread extends StoppableThread {
 		}
 	}
 	
+	
+	
 	public void setLastModifiedWithTTx(long aLastModifiedWithTTx) {
 		lastModifiedWithTTx = aLastModifiedWithTTx;
 	}
@@ -152,6 +154,12 @@ public class FileModifiedThread extends StoppableThread {
 	public void setTextPad(TextPad aPad) {
 		pad = aPad;
 	}
+	
+	public void setPrompt(boolean val) {
+		prompt = val;
+	}
+	
+	
 	
 	public TextPad getTextPad() {
 		return pad;

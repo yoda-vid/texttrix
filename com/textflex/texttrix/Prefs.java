@@ -96,7 +96,7 @@ public class Prefs extends JDialog {//JFrame {
 	// Install Directory
 	private static final String INSTALL_DIR = "installDir";
 
-	//	open tabs left last session
+	// open tabs left last session
 	private static final String REOPEN_TABS = "reopenTabs";
 	private JCheckBox reopenTabsChk = null; // check box
 	// comma-delimited list of paths
@@ -109,6 +109,10 @@ public class Prefs extends JDialog {//JFrame {
 	private JSpinner tabNameMaxCharsNumSpinner = null; // spinner
 	private SpinnerNumberModel tabNameMaxCharsNumMdl; // numerical input
 
+	// prompt before refreshing tabs
+	private static final String REFRESH_PROMPT = "refreshPrompt";
+	private JCheckBox refreshPromptChk = null;
+	
 	// file history
 	private static final String FILE_HIST_COUNT = "fileHistCount";
 	// input max num of files to remember
@@ -500,14 +504,10 @@ public class Prefs extends JDialog {//JFrame {
 			tabNameMaxCharsChk.isSelected());
 		generalPrefs.putInt(TAB_NAME_MAX_CHARS_NUM, 
 			tabNameMaxCharsNumMdl.getNumber().intValue());
+		generalPrefs.putBoolean(REFRESH_PROMPT, refreshPromptChk.isSelected());
 		storeFileHistCount(fileHistCountMdl.getNumber().intValue());
 		generalPrefs.putBoolean(AUTO_INDENT, autoIndentChk.isSelected());
 		generalPrefs.put(AUTO_INDENT_EXT, autoIndentExtFld.getText());
-//		System.out.println(getAutoIndentExt());
-		/*
-		generalPrefs.putBoolean(ACTIVATE_WINDOWS_TOGETHER, 
-			activateWindowsTogetherChk.isSelected());
-			*/
 		generalPrefs.putBoolean(AUTO_SAVE, autoSaveChk.isSelected());
 		generalPrefs.putInt(AUTO_SAVE_INTERVAL, 
 			autoSaveIntervalMdl.getNumber().intValue());
@@ -603,16 +603,7 @@ public class Prefs extends JDialog {//JFrame {
 		plugInsPrefs.putInt(PLUG_IN_X_LOC + filename, (int) p.getX());
 		plugInsPrefs.putInt(PLUG_IN_Y_LOC + filename, (int) p.getY());
 	}
-
-	/** Stores whether the program should reopen tabs automatically.
-	 * The program can reopen the tabs left open at exit during the
-	 * previous session.
-	 * @param b If <code>true</code>, the program will reopen the tabs.
-	 */
-	public void storeReopenTabs(boolean b) {
-		generalPrefs.putBoolean(REOPEN_TABS, b);
-	}
-
+	
 	/** Stores a list of files left open at exit.
 	 * The list consists of comma-delimited paths, with no spaces 
 	 * in-between paths.
@@ -867,6 +858,13 @@ public class Prefs extends JDialog {//JFrame {
 	public int getTabNameMaxCharsNum() {
 		return generalPrefs.getInt(TAB_NAME_MAX_CHARS_NUM, 5);
 	}
+	/** Gets the stored flag for prompting before freshing tabs.
+	 * 
+	 * @return true to prompt before refreshing tabs
+	 */
+	public boolean getRefreshPrompt() {
+		return generalPrefs.getBoolean(REFRESH_PROMPT, true);
+	}
 	/** Gets the stored number of files paths to remember.
 	 * 
 	 * @return the number of paths to store in the most-recently-opened-files
@@ -1034,7 +1032,7 @@ public class Prefs extends JDialog {//JFrame {
 
 					// max number of characters to display in tab names
 					String tabNameMaxCharsTxt =
-						"Cap tab name length:";
+						"Cap tab name length";
 					String tabNameMaxCharsTipTxt =
 						"<html>Limit the number of characters displayed in tab"
 							+ "<br>names to pack in more tabs in each row."
@@ -1062,6 +1060,19 @@ public class Prefs extends JDialog {//JFrame {
 						new SpinnerNumberModel(getTabNameMaxCharsNum(), 1, 100, 1);
 					tabNameMaxCharsNumSpinner = new JSpinner(tabNameMaxCharsNumMdl);
 					
+					
+					
+					// prompt before refreshing tabs
+					String refreshPromptTxt = "Prompt before refreshing tabs";
+					String refreshPromptTipTxt =
+						"<html>When a file is changed in the background, prompt"
+						+ "<br>before refreshing the tab.</html>";
+					refreshPromptChk =
+						new JCheckBox(refreshPromptTxt, getRefreshPrompt());
+					refreshPromptChk.setToolTipText(refreshPromptTipTxt);
+					
+					
+					
 					// automatically auto-indents files whose extensions match any of those in
 					// the customizable list
 					String autoIndentTxt = "Auto-wrap-indent file types:";
@@ -1082,17 +1093,6 @@ public class Prefs extends JDialog {//JFrame {
 					*/
 					autoIndentExtFld = new JTextField(autoIndentExt, 100);
 					
-
-					/*
-					// activates windows together
-					String activateWindowsTogetherTxt = "Bring all windows to the front";
-					String activateWindowsTogetherTipTxt =
-						"<html>When activating one window, all other windows are"
-							+ "brought just below it.</html>";
-					activateWindowsTogetherChk =
-						new JCheckBox(activateWindowsTogetherTxt, getActivateWindowsTogether());
-					activateWindowsTogetherChk.setToolTipText(activateWindowsTogetherTipTxt);
-					*/
 					
 					// auto-saves files
 					
@@ -1308,12 +1308,12 @@ public class Prefs extends JDialog {//JFrame {
 					
 					// add components to a grid-bag layout
 					panel.setLayout(new GridBagLayout());
-
+					int row = 0;
 					LibTTx.addGridBagComponent(
 						reopenTabsChk,
 						constraints,
 						0,
-						0,
+						row,
 						3,
 						1,
 						0,
@@ -1323,7 +1323,7 @@ public class Prefs extends JDialog {//JFrame {
 						tabNameMaxCharsChk,
 						constraints,
 						0,
-						1,
+						++row,
 						3,
 						1,
 						0,
@@ -1333,7 +1333,7 @@ public class Prefs extends JDialog {//JFrame {
 						tabNameMaxCharsNumLbl,
 						constraints,
 						0,
-						2,
+						++row,
 						1,
 						1,
 						0,
@@ -1343,8 +1343,18 @@ public class Prefs extends JDialog {//JFrame {
 						tabNameMaxCharsNumSpinner,
 						constraints,
 						1,
-						2,
+						row,
 						1,
+						1,
+						0,
+						0,
+						panel);
+					LibTTx.addGridBagComponent(
+						refreshPromptChk,
+						constraints,
+						0,
+						++row,
+						3,
 						1,
 						0,
 						0,
@@ -1353,8 +1363,8 @@ public class Prefs extends JDialog {//JFrame {
 						fileHistCountLbl,
 						constraints,
 						0,
-						3,
-						2,
+						++row,
+						1,
 						1,
 						0,
 						0,
@@ -1363,7 +1373,7 @@ public class Prefs extends JDialog {//JFrame {
 						fileHistCountSpinner,
 						constraints,
 						2,
-						3,
+						row,
 						1,
 						1,
 						0,
@@ -1373,7 +1383,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoIndentChk,
 						constraints,
 						0,
-						4,
+						++row,
 						1,
 						1,
 						0,
@@ -1383,29 +1393,17 @@ public class Prefs extends JDialog {//JFrame {
 						autoIndentExtFld,
 						constraints,
 						1,
-						4,
+						row,
 						2,
 						1,
 						0,
 						0,
 						panel);
-					/*
-					LibTTx.addGridBagComponent(
-						activateWindowsTogetherChk,
-						constraints,
-						0,
-						3,
-						2,
-						1,
-						0,
-						0,
-						panel);
-						*/
 					LibTTx.addGridBagComponent(
 						autoSaveChk,
 						constraints,
 						0,
-						5,
+						++row,
 						3,
 						1,
 						0,
@@ -1415,7 +1413,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSaveIntervalLbl,
 						constraints,
 						0,
-						6,
+						++row,
 						1,
 						1,
 						0,
@@ -1425,7 +1423,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSaveIntervalSpinner,
 						constraints,
 						1,
-						6,
+						row,
 						1,
 						1,
 						0,
@@ -1435,7 +1433,7 @@ public class Prefs extends JDialog {//JFrame {
 						autoSavePromptChk,
 						constraints,
 						2,
-						6,
+						row,
 						1,
 						1,
 						0,
@@ -1445,7 +1443,7 @@ public class Prefs extends JDialog {//JFrame {
 						highlightingChk,
 						constraints,
 						0,
-						7,
+						++row,
 						3,
 						1,
 						0,
@@ -1455,7 +1453,7 @@ public class Prefs extends JDialog {//JFrame {
 						spellCheckerChk,
 						constraints,
 						0,
-						8,
+						++row,
 						3,
 						1,
 						0,
@@ -1465,7 +1463,7 @@ public class Prefs extends JDialog {//JFrame {
 						fontSizeLbl,
 						constraints,
 						0,
-						9,
+						++row,
 						1,
 						1,
 						0,
@@ -1489,7 +1487,7 @@ public class Prefs extends JDialog {//JFrame {
 						importExportPrefsLbl,
 						constraints,
 						0,
-						10,
+						++row,
 						3,
 						1,
 						0,
@@ -1499,7 +1497,7 @@ public class Prefs extends JDialog {//JFrame {
 						exportPrefsButton,
 						constraints,
 						0,
-						11,
+						++row,
 						1,
 						1,
 						100,
@@ -1510,7 +1508,7 @@ public class Prefs extends JDialog {//JFrame {
 						importPrefsButton,
 						constraints,
 						1,
-						11,
+						row,
 						1,
 						1,
 						100,
@@ -1520,7 +1518,7 @@ public class Prefs extends JDialog {//JFrame {
 						resetPrefsButton,
 						constraints,
 						2,
-						11,
+						row,
 						1,
 						1,
 						100,
