@@ -262,7 +262,8 @@ echo "Packaging the files..."
 mkdir $PKGDIR
 mkdir $PKGDIR/plugins
 mkdir -p $PKGDIR/$DIR/images
-cp -rf "$TTX_DIR"/$CLASSES_DIR/com "$TTX_DIR"/readme*.txt \
+cp -rf "$TTX_DIR"/$CLASSES_DIR/com "$TTX_DIR"/readme.txt \
+	"$TTX_DIR"/README.md \
 	"$TTX_DIR"/changelog.txt "$TTX_DIR"/lib \
 	"$TTX_DIR/$DIR"/license.txt "$TTX_DIR"/logo.ico \
 	"$TTX_DIR"/dictionaries "$TTX_DIR"/run.bat \
@@ -288,7 +289,7 @@ cd "$TTX_DIR"
 sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
 		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
-cp -rf pkg.sh run.sh manifest-additions.mf build*.sh run.ps1 build.ps1 \
+cp -rf pkg.sh run.sh manifest-additions.mf build*.sh README.md \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
@@ -304,7 +305,7 @@ do
 	mv $SRCPKGDIR/plugins/$file/$PLUGINS_BRANCH_DIR/* $SRCPKGDIR/plugins/$file
 	rm -rf $SRCPKGDIR/plugins/$file/tags $SRCPKGDIR/plugins/$file/branches $SRCPKGDIR/plugins/$file/trunk
 done
-rm $PKGDIR/readme-src.txt # remove source-specific files for binary package
+rm $PKGDIR/README.md # remove source-specific files for binary package
 cp "$TTX_DIR"/plugins/*.jar $BLD_DIR/$PKGDIR/plugins # only want jars in binary package
 
 # create binary package
@@ -361,7 +362,7 @@ cp -rf "$TTX_DIR"/com texttrix
 rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \
 	plugins/*/$DIR/.svn plugins/*/$DIR/*.class plugins/*/$DIR/*~ \
 	plugins/*.jar
-mv texttrix/*.txt .
+mv texttrix/*.txt texttrix/*.md .
 
 # Add PKGDIR-specific files
 cp $TTX_DIR/$DIR/images/minicon-32x32.png $BLD_DIR/$PKGDIR/icon.png

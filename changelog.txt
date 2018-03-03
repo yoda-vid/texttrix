@@ -8,6 +8,7 @@ http://textflex.com/texttrix
 ----v.1.0.3 (2018-xx-xx)----
 
 -Option to cap tab displayed name length to pack more tabs into each row
+-Option to refresh tabs with files changed elsewhere without prompting
 -Migrated repositories to Git
 -Fix preferences export
 
