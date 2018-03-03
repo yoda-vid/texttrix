@@ -1946,7 +1946,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		
 		// Refreshes the tab and tries to restore the caret position
 		// to its original position
-		int pos = getCaretPosition();
+		final int pos = getCaretPosition();
 		String path = getPath();
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -1959,6 +1959,12 @@ public class TextPad extends JTextPane implements StateEditable {
 					setText(text);
 					applyAutoIndent();
 					setChanged(false);
+					// prevent caret from exceeding length of refreshed file
+					if (pos <= getDocument().getLength()) {
+						setCaretPosition(pos);
+					} else {
+						setCaretPosition(getDocument().getLength());
+					}
 				}
 			});
 		} catch(FileNotFoundException e) {
@@ -1971,12 +1977,6 @@ public class TextPad extends JTextPane implements StateEditable {
 				msg, 
 				"File missing",
 				JOptionPane.ERROR_MESSAGE);
-		}
-		// prevent caret from exceeding length of newly refreshed file
-		if (pos <= getDocument().getLength()) {
-			setCaretPosition(pos);
-		} else {
-			setCaretPosition(getDocument().getLength());
 		}
 	}
 	
