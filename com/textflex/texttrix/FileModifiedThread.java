@@ -44,7 +44,6 @@ import javax.swing.undo.*;
 import javax.swing.text.*;
 import java.io.*;
 import javax.swing.event.*;
-import java.beans.*;
 
 /**
  * File modification poller.  Flags files that have been opened in Text Trix
@@ -63,13 +62,45 @@ public class FileModifiedThread extends StoppableThread {
 	}
 	
 	public void start() {
-
 		setStopped(false);
 //		System.out.println("starting file modification thread");
 		thread = new Thread(this, "thread");
 		thread.start();
-
 	}
+	
+	// refresh the tab, prompting the user beforehand for confirmation if 
+	// necessary
+	private Runnable refreshTab = new Runnable() {
+		public void run() {
+			TextPad textPad = getTextPad();
+			// skip if file doesn't exist b/c will ask for file
+			// name later, when can still cancel the save
+			if (textPad.getFile().exists()) {
+				long lastMod = textPad.getFile().lastModified();
+				if (lastMod > getLastModifiedWithTTx()) {
+					requestStop();
+					boolean refresh = true;
+					if (prompt) {
+						// prompt with save dialog
+						int choice = JOptionPane.showConfirmDialog(
+								textPad,
+								textPad.getFile().getPath() 
+										+ "\nhas been modified elsewhere."
+										+ "\nRefresh the file?",
+								"File Modified Elsewhere",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE);
+						refresh = choice == JOptionPane.YES_OPTION;
+					}
+					if (refresh) {
+						textPad.refresh();
+						setLastModifiedWithTTx(lastMod);
+						getThis().start();
+					}
+				}
+			}
+		}
+	};
 	
 	public void run() { 
 		while(!isStopped()) {
@@ -84,41 +115,7 @@ public class FileModifiedThread extends StoppableThread {
 					// to avoid breaking the single thread rule, invokeLater
 					// runs all of the UI code to ensure that it synchronizes
 					// with events in the main dispatch thread
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							TextPad textPad = getTextPad();
-							// prompt if the preference selected;
-							// skip if file doesn't exist b/c will ask for file
-							// name later,
-							// when can still cancel the save
-							if (textPad.getFile().exists()) {
-								long lastMod = textPad.getFile().lastModified();
-								if (lastMod > getLastModifiedWithTTx()) {
-									requestStop();
-//									System.out.println("displaying dialog");
-									boolean refresh = true;
-									if (prompt) {
-										// prompt with save dialog
-										int choice = JOptionPane
-												.showConfirmDialog(
-														textPad,
-														textPad.getFile().getPath() 
-																+ "\nhas been modified elsewhere."
-																+ "\nRefresh the file?",
-														"File Modified Elsewhere",
-														JOptionPane.YES_NO_OPTION,
-														JOptionPane.QUESTION_MESSAGE);
-										refresh = choice == JOptionPane.YES_OPTION;
-									}
-									if (refresh) {
-										textPad.refresh();
-										setLastModifiedWithTTx(lastMod);
-										getThis().start();
-									}
-								}
-							}
-						}
-					});
+					EventQueue.invokeLater(refreshTab);
 				}
 			} catch (InterruptedException e) {
 				// ensures that an interrupt during the sleep is still flagged
