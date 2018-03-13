@@ -120,8 +120,8 @@ public class TextPad extends JTextPane implements StateEditable {
 		// within TextTrix, with ways to check TextTrix or pass as a parameter 
 		
 		file = aFile;
-		FileModifiedThread modifiedThread = new FileModifiedThread(this);
-		modifiedThread.setPrompt(prefs.getRefreshPrompt());
+		FileModifiedThread modifiedThread = new FileModifiedThread(
+				this, prefs.getRefreshPrompt());
 		setFileModifiedThread(modifiedThread);
 		modifiedThread.start();
 		

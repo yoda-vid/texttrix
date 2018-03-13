@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2003-7
+ * Portions created by the Initial Developer are Copyright (C) 2003-7, 2018
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -45,6 +45,8 @@ import java.util.*;
 import java.util.jar.*;
 import javax.swing.text.*;
 import javax.imageio.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /** Library class to act as a tool chest for Text Trix functions.
  * Most <code>LibTTx</code> functions are potentially relevant to multiple
@@ -1148,6 +1150,19 @@ public class LibTTx {
 	public static boolean checkJavaVersion(String version) {
 		String installedVersionStr = System.getProperty("java.version");
 		return installedVersionStr.indexOf(version) != -1;
+	}
+	
+	/**
+	 * Calculate the time in hour:month:seconds:millisecond format.
+	 *
+	 * @param ms time in milliseconds since the Java epoch
+	 * @return String formatting of the date
+	 */
+	public static String calcTime(long ms) {
+		DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+		Date date = new Date(ms);
+		String formatted = formatter.format(date);
+		return formatted;
 	}
 
 

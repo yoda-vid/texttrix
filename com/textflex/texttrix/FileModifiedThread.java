@@ -57,8 +57,9 @@ public class FileModifiedThread extends StoppableThread {
 	private TextPad pad = null;
 	private boolean prompt = true;
 	
-	public FileModifiedThread(TextPad aPad) {
+	public FileModifiedThread(TextPad aPad, boolean aPrompt) {
 		pad = aPad;
+		prompt = aPrompt;
 	}
 	
 	public void start() {
@@ -77,7 +78,12 @@ public class FileModifiedThread extends StoppableThread {
 			// name later, when can still cancel the save
 			if (textPad.getFile().exists()) {
 				long lastMod = textPad.getFile().lastModified();
-				if (lastMod > getLastModifiedWithTTx()) {
+				if (lastMod != lastModifiedWithTTx) {
+					String lastModTime = LibTTx.calcTime(lastMod);
+					String currModTime = LibTTx.calcTime(lastModifiedWithTTx);
+					System.out.println("file last modified: " 
+							+ lastModTime + ", current TTx file last modified: "
+							+ currModTime);
 					requestStop();
 					boolean refresh = true;
 					if (prompt) {
@@ -94,8 +100,15 @@ public class FileModifiedThread extends StoppableThread {
 					}
 					if (refresh) {
 						textPad.refresh();
-						setLastModifiedWithTTx(lastMod);
-						getThis().start();
+						// replace this object with a new one rather than 
+						// simply replacing thread since otherwise could 
+						// potentially end up with 2 concurrently running 
+						// threads
+						FileModifiedThread modThread = new FileModifiedThread(
+								pad, prompt);
+						modThread.setLastModifiedWithTTx(lastMod);
+						pad.setFileModifiedThread(modThread);
+						modThread.start();
 					}
 				}
 			}
