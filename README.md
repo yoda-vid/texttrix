@@ -32,31 +32,20 @@ Text Trix started out as a homegrown project, originally at https://sourceforge.
 ### Build
 
 ```
-# get Git repos
+# get repos of Text Trix and its dependencies
 git clone https://github.com/the4thchild/texttrix.git
 git clone https://github.com/the4thchild/jsyntaxpanettx.git
 git clone https://github.com/the4thchild/osterttx.git
 
-# build JSyntaxPaneTTx
-cd jsyntaxpanettx
-mvn package
-cp target/jsyntaxpane-0.9.6.jar ../texttrix/lib/jsyntaxpane.jar
-
-# build OsterTTx
-cd ../osterttx
-./build.sh --jar
-cp oster.jar ../texttrix/lib
-
 # build and run Text Trix
-cd ../texttrix
-./build.sh
-./run.sh
+texttrix/build.sh
+texttrix/run.sh
 ```
 
 To package the file for portability:
 
 ```
-./pkg.sh
+texttrix/pkg.sh
 ```
 
 ## Writing a plugin
