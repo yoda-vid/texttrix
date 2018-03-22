@@ -74,6 +74,8 @@ Parameters:
 	--log: Builds the SVN log from the date specified in the
 	CHANGELOG_END variable through now.
 	
+	--oster: Build osterttx library and copy output jar to lib.
+	
 	--plug: Compiles and packages the plug-ins after compiling the
 	Text Trix program.
 	
@@ -106,7 +108,9 @@ API=0
 CHANGELOG_END="" # insert date as YYYY-MM-DD format
 CHANGELOG=0
 
+# build libraries
 JSYN=0
+OSTER=0
 
 ####################
 # Setup variables
@@ -121,6 +125,7 @@ PAR_API="--api"
 PAR_CHANGELOG="--log"
 PAR_CLEAN="--clean"
 PAR_JSYN="--jsyn"
+PAR_OSTER="--oster"
 CLEAN=0
 
 # Sets the base directory to the script location
@@ -178,6 +183,12 @@ then
 		then
 			JSYN=1
 			echo "Set to build JSyntaxPaneTTX"
+			
+		# build OsterTTx
+		elif [ ${arg:0:${#PAR_OSTER}} = "$PAR_OSTER" ]
+		then
+			OSTER=1
+			echo "Set to build OsterTTx"
 			
 		# clean
 		elif [ ${arg:0:${#PAR_CLEAN}} = "$PAR_CLEAN" ]
@@ -250,13 +261,28 @@ fi
 #############
 # Build JSyntaxPaneTTx
 
-if [ $JSYN -eq 1 ]
+jsyn_dest="$BASE_DIR/lib/jsyntaxpane.jar"
+if [ $JSYN -eq 1 ] || [ ! -e "$jsyn_dest" ]
 then
 	echo ""
 	echo "Building JSyntaxPaneTTx..."
 	cd "$BASE_DIR/../jsyntaxpanettx"
 	mvn package
-	cp target/jsyntaxpane-0.9.6.jar $BASE_DIR/lib/jsyntaxpane.jar
+	cp target/jsyntaxpane-0.9.6.jar "$jsyn_dest"
+	cd "$BASE_DIR"
+fi
+
+#############
+# Build OsterTTx
+
+oster_dest="$BASE_DIR/lib/oster.jar"
+if [ $OSTER -eq 1 ] || [ ! -e "$oster_dest" ]
+then
+	echo ""
+	echo "Building OsterTTx..."
+	cd "$BASE_DIR/../osterttx"
+	./build.sh --jar
+	cp oster.jar "$oster_dest"
 	cd "$BASE_DIR"
 fi
 
