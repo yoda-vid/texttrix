@@ -16,7 +16,8 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003-12, 2015
+# Portions created by the Initial Developer are Copyright (C) 2003-12, 
+# 2015-8
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
@@ -66,6 +67,8 @@ Parameters:
 	to specify the path, which would override any command-line 
 	specification.
 	
+	--jsyn: Build jsyntaxpanettx library and copy output jar to lib.
+	
 	--help: Lends a hand by displaying yours truly.
 	
 	--log: Builds the SVN log from the date specified in the
@@ -75,10 +78,10 @@ Parameters:
 	Text Trix program.
 	
 Copyright:
-	Copyright (c) 2003-12, 2015 Text Flex
+	Copyright (c) 2003-12, 2015-8 Text Flex
 
 Last updated:
-	2015-09-11
+	2018-03-22
 "
 
 #####################
@@ -103,6 +106,8 @@ API=0
 CHANGELOG_END="" # insert date as YYYY-MM-DD format
 CHANGELOG=0
 
+JSYN=0
+
 ####################
 # Setup variables
 ####################
@@ -115,6 +120,7 @@ PAR_PLUG="--plug"
 PAR_API="--api"
 PAR_CHANGELOG="--log"
 PAR_CLEAN="--clean"
+PAR_JSYN="--jsyn"
 CLEAN=0
 
 # Sets the base directory to the script location
@@ -166,6 +172,12 @@ then
 		then
 			PLUG=1
 			echo "Set to build plugins"
+			
+		# build JSyntaxPaneTTX
+		elif [ ${arg:0:${#PAR_JSYN}} = "$PAR_JSYN" ]
+		then
+			JSYN=1
+			echo "Set to build JSyntaxPaneTTX"
 			
 		# clean
 		elif [ ${arg:0:${#PAR_CLEAN}} = "$PAR_CLEAN" ]
@@ -228,6 +240,24 @@ if [ $CLEAN -eq 1 ]; then
 	rm -rf $CLASSES_DIR
 	echo "All .class files removed"
 	exit 0
+fi
+
+# make lib folder if doesn't exist
+if [ ! -e "$BASE_DIR/lib" ]; then
+	mkdir "$BASE_DIR/lib"
+fi
+
+#############
+# Build JSyntaxPaneTTx
+
+if [ $JSYN -eq 1 ]
+then
+	echo ""
+	echo "Building JSyntaxPaneTTx..."
+	cd "$BASE_DIR/../jsyntaxpanettx"
+	mvn package
+	cp target/jsyntaxpane-0.9.6.jar $BASE_DIR/lib/jsyntaxpane.jar
+	cd "$BASE_DIR"
 fi
 
 #############
