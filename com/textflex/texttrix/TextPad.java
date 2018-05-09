@@ -1346,6 +1346,8 @@ public class TextPad extends JTextPane implements StateEditable {
 			if (autoIndent) {
 				indentCurrentParagraph(getTabSize(), false);
 			}
+		} else {
+			System.out.println("cannot undo");
 		}
 	}
 
@@ -1353,8 +1355,11 @@ public class TextPad extends JTextPane implements StateEditable {
 	 * May need to make include the goofy features' text manipulations
 	 */
 	public void redo() {
-		if (undoManager.canRedo())
+		if (undoManager.canRedo()) {
 			undoManager.redo();
+		} else {
+			System.out.println("cannot undo");
+		}
 	}
 
 	/**Applies the current <code>UndoManager</code> as well as the tab size, 
@@ -2175,6 +2180,13 @@ public class TextPad extends JTextPane implements StateEditable {
 					ignoreNextStyleChange = false; // reset the ignore flag
 					return false;
 				}
+			} else if (ignoreNextStyleChange) {
+				// Java 9+ edits are of 
+				// AbstractDocument$DefaultDocumentEventUndoableWrapper
+				// rather than AbstractDocument.DefaultDocumentEvent so need 
+				// to be checked here
+				ignoreNextStyleChange = false;
+				return false;
 			}
 			// call superclass' method
 			return super.addEdit(anEdit);
@@ -2187,7 +2199,11 @@ public class TextPad extends JTextPane implements StateEditable {
 		 * @param evt the edit event
 		 */
 		public void undoableEditHappened(UndoableEditEvent evt) {
-			if (isCompoundEditing()) {
+			if (ignoreNextStyleChange) {
+				// Java 9+ events appear to propagate here and need to be 
+				// checked whether to ignore
+				ignoreNextStyleChange = false;
+			} else if (isCompoundEditing()) {
 				compoundEdit.addEdit(evt.getEdit());
 			} else {
 				super.undoableEditHappened(evt);
