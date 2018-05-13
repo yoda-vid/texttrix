@@ -50,15 +50,6 @@ the file build.sh does not have executable permissions.)
 Parameters:
 	--api: Builds the API documentation files.
 	
-	--branch=path/to/branch: The branch (or trunk) with reference to
-	the repository root from which to compile source code. For example, 
-	to compile from the 0.7.1 branch, specify \"--branch=branches/0.7.1\". 
-	To compile from the trunk, simply specify \"--branch=trunk\", or 
-	leave it blank. The source code release package sets the branch to 
-	\".\", since the source package does not contain branches and tags.
-	Note that this arguments is not used directly in this script, but 
-	passed to the plugins script when the \"--plug\" flag is set.
-	
 	--clean: Cleans all .class files and exits.
 	
 	--java=java//binaries/path: Specifies the path to javac, 
@@ -71,9 +62,6 @@ Parameters:
 	
 	--help: Lends a hand by displaying yours truly.
 	
-	--log: Builds the SVN log from the date specified in the
-	CHANGELOG_END variable through now.
-	
 	--oster: Build osterttx library and copy output jar to lib.
 	
 	--plug: Compiles and packages the plug-ins after compiling the
@@ -83,7 +71,7 @@ Copyright:
 	Copyright (c) 2003-12, 2015-8 Text Flex
 
 Last updated:
-	2018-03-22
+	2018-05-12
 "
 
 #####################
@@ -96,9 +84,6 @@ JAVA=""
 
 # build plugins; 1 = build
 PLUG=0
-
-# SVN texttrix src branch directory
-BRANCH_DIR="trunk"
 
 # API documentation directory relative to base directory; 1 = build
 API_DIR="docs/api"
@@ -118,11 +103,8 @@ OSTER=0
 
 PAR_JAVA="--java"
 PAR_PLUGINS="--plugins"
-PAR_BRANCH_DIR="--branch"
-PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 PAR_PLUG="--plug"
 PAR_API="--api"
-PAR_CHANGELOG="--log"
 PAR_CLEAN="--clean"
 PAR_JSYN="--jsyn"
 PAR_OSTER="--oster"
@@ -166,12 +148,6 @@ then
 			JAVA="${arg#${PAR_JAVA}=}"
 			echo "Set to use \"$JAVA\" as the Java compiler path"
 			
-		# texttrix branch dir
-		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
-		then
-			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "Set to use \"$BRANCH_DIR\" as the texttrix branch dir"
-		
 		# build plugins
 		elif [ ${arg:0:${#PAR_PLUG}} = "$PAR_PLUG" ]
 		then
@@ -201,12 +177,6 @@ then
 		then
 			API=1
 			echo "Set to build API documentation"
-			
-		# build SVN changelog
-		elif [ ${arg:0:${#PAR_CHANGELOG}} = "$PAR_CHANGELOG" ]
-		then
-			CHANGELOG=1
-			echo "Set to build changelog"
 			
 		fi
 	done
@@ -335,18 +305,6 @@ then
 	fi
 	"$JAVA"javadoc -d "$API_DIR" -classpath $CLASSPATH -link "http://java.sun.com/javase/6/docs/api" -overview "overview.html" "com.textflex.texttrix"
 	echo "...done"
-fi
-
-############
-# Build SVN changelog
-
-if [ $CHANGELOG -eq 1 ]
-then
-	NOW=`date +'%Y-%m-%d'`
-	echo ""
-	echo "Building changelog from $NOW until $CHANGELOG_END..."
-	svn2cl -i -r {$NOW}:{$CHANGELOG_END}
-	echo "...written to ChangeLog"
 fi
 
 exit 0
