@@ -17,7 +17,7 @@
 # The Initial Developer of the Original Code is
 # Text Flex.
 # Portions created by the Initial Developer are Copyright (C) 2003-4, 2008, 
-# 2015 the Initial Developer. All Rights Reserved.
+# 2015, 2018 the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <dvd@textflex.com>
 #
@@ -47,15 +47,6 @@ Syntax:
 the file pkg.sh does not have executable permissions.)
 
 Parameters:
-	--branch=texttrix-branch: Specifies the name of the main
-	Text Trix branch against which the plugins should be built.
-	Note that this branch is different from the plugins branch
-	(see below). The branch (or trunk) specified here is with
-	reference to the repository root, so that for example to compile 
-	from the 0.7.1 branch, specify \"--branch=branches/0.7.1\". 
-	To compile from the trunk, simply specify \"--branch=trunk\", or 
-	leave it blank.	
-	
 	--java=java-compiler-binaries-path: Specifies the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
@@ -64,45 +55,28 @@ Parameters:
 	
 	--help: Lends a hand by displaying yours truly.
 	
-	--plgbranch=branch-name: Specifies the name of branch from
-	which to load the plugins; otherwise, the trunk will be used.
-	
 	--plugins=\"list-of-plugins\": Specifies the list of plugins
 	to build and package.  Defaults to the full set of plugins
 	included by default in the Text Trix editor.
 	
 Copyright:
-	Copyright (c) 2003-11 Text Flex
+	Copyright (c) 2003, 2018 Text Flex
 
 Last updated:
-	2011-11-13
+	2018-05-12
 "
 
-#####################
-# User-defined variables
-# Check them!
 ####################
 
 # compiler location
 JAVA=""
 
-# the chosen plugins
-PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
-
-# SVN texttrix src branch directory
-BRANCH_DIR="trunk"
-
-# SVN plugins src branch directory
-PLUGINS_BRANCH_DIR="$BRANCH_DIR"
-
-####################
-# Setup variables
-####################
+# plugins to build; defaults to all folders in plugins folder 
+# in parent directory of texttrix folder
+PLUGINS=""
 
 PAR_JAVA="--java"
 PAR_PLUGINS="--plugins"
-PAR_BRANCH_DIR="--branch"
-PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 
 # Sets the base directory to the script location
 if [ "x$BASE_DIR" = "x" ] # empty string
@@ -149,17 +123,6 @@ then
 			PLUGINS="${arg#${PAR_PLUGINS}=}"
 			echo "...set to use \"$PLUGINS\" as the list of plugins"
 		
-		# texttrix branch dir
-		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
-		then
-			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "...set to use \"$BRANCH_DIR\" as the texttrix branch dir"
-		
-		# plugins branch dir
-		elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
-		then
-			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-			echo "...set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
 		fi
 	done
 	echo "...done"
@@ -175,7 +138,7 @@ fi
 
 # Sets the texttrix and plugin source directories
 TTX_DIR="$BASE_DIR" # texttrix folder within main dir
-PLGS_DIR="${BASE_DIR%$BRANCH_DIR}/../plugins" # plugins src folder
+PLGS_DIR="${BASE_DIR}/../plugins" # plugins src folder
 DIR="com/textflex/texttrix" # src package structure
 
 #####################
@@ -190,19 +153,28 @@ if [ ! -d "$TTX_DIR/plugins" ]
 then
 	mkdir "$TTX_DIR/plugins"
 fi
+
+# get all directories in plugins folder if not set at command-line
+if [[ "$PLUGINS" -eq "" ]]; then
+	PLUGINS=`ls -d */`
+fi
+
 for plugin in $PLUGINS
 do
+	# remove trailing slash
+	plugin="${plugin%%/}"
+	echo "Building plugin $plugin..."
 	plugin_dir=`echo "$plugin" | tr "[:upper:]" "[:lower:]"`
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
-	CLASSPATH="$TTX_DIR/$CLASSES_DIR":"$plugin_dir/$PLUGINS_BRANCH_DIR"
-	FILES="$plugin_dir/$PLUGINS_BRANCH_DIR/$DIR/"*.java
+	CLASSPATH="$TTX_DIR/$CLASSES_DIR":"$plugin_dir"
+	FILES="$plugin_dir/$DIR/"*.java
 	if [ "$CYGWIN" = "true" ]
 	then
 		CLASSPATH="`cygpath -p -w $CLASSPATH`"
 		FILES="`cygpath -p -w $FILES`"
 	fi
 	"$JAVA"javac -source $JAVA_VER_SRC -target $JAVA_VER_SRC -classpath "$CLASSPATH" $FILES
-	cd "$plugin_dir/$PLUGINS_BRANCH_DIR"
+	cd "$plugin_dir"
 	"$JAVA"jar -0cf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
 	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
 	cd "$PLGS_DIR"
