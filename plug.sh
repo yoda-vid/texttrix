@@ -47,15 +47,17 @@ Syntax:
 the file pkg.sh does not have executable permissions.)
 
 Parameters:
-	--java=java-compiler-binaries-path: Specifies the path to javac, 
+	--clean: Clean all .class files and exit.
+	
+	--java=java-compiler-binaries-path: Specify the path to javac, 
 	jar, and other Java tools necessary for compilation.  
 	Alternatively, the JAVA variable in pkg.sh can be hand-edited 
 	to specify the path, which would override any command-line 
 	specification.
 	
-	--help: Lends a hand by displaying yours truly.
+	--help: Lend a hand by displaying yours truly.
 	
-	--plugins=\"list-of-plugins\": Specifies the list of plugins
+	--plugins=\"list-of-plugins\": Specify the list of plugins
 	to build and package.  Defaults to the full set of plugins
 	included by default in the Text Trix editor.
 	
@@ -77,6 +79,8 @@ PLUGINS=""
 
 PAR_JAVA="--java"
 PAR_PLUGINS="--plugins"
+PAR_CLEAN="--clean"
+CLEAN=0
 
 # Sets the base directory to the script location
 if [ "x$BASE_DIR" = "x" ] # empty string
@@ -86,7 +90,8 @@ fi
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-# Platform and GUI detection
+# Platform and GUI detection as well as additional variables such as 
+# classes directory
 source "$BASE_DIR"/build-setup.sh
 
 ##############
@@ -123,6 +128,12 @@ then
 			PLUGINS="${arg#${PAR_PLUGINS}=}"
 			echo "...set to use \"$PLUGINS\" as the list of plugins"
 		
+		# clean
+		elif [ ${arg:0:${#PAR_CLEAN}} = "$PAR_CLEAN" ]
+		then
+			CLEAN=1
+			echo "Set to clean class files and exit"
+			
 		fi
 	done
 	echo "...done"
@@ -165,18 +176,33 @@ do
 	plugin="${plugin%%/}"
 	echo "Building plugin $plugin..."
 	plugin_dir=`echo "$plugin" | tr "[:upper:]" "[:lower:]"`
+	
+	# clean files only
+	if [[ $CLEAN -eq 1 ]]; then
+		rm -rf "$plugin_dir/$CLASSES_DIR"
+		echo "All .class files removed from $plugin_dir"
+		continue
+	fi
+	
+	# creates the output directory
+	if [[ ! -e "$plugin_dir/$CLASSES_DIR" ]]; then
+		mkdir -p "$plugin_dir/$CLASSES_DIR"
+	fi
+	
 	# extends the PlugIn or PlugInWindow classes of the Text Trix package
-	CLASSPATH="$TTX_DIR/$CLASSES_DIR":"$plugin_dir"
+	CLASSPATH="$TTX_DIR/$CLASSES_DIR":"$plugin_dir/$CLASSES_DIR"
 	FILES="$plugin_dir/$DIR/"*.java
-	if [ "$CYGWIN" = "true" ]
-	then
+	if [[ "$CYGWIN" = "true" ]]; then
 		CLASSPATH="`cygpath -p -w $CLASSPATH`"
 		FILES="`cygpath -p -w $FILES`"
 	fi
-	"$JAVA"javac -source $JAVA_VER_SRC -target $JAVA_VER_SRC -classpath "$CLASSPATH" $FILES
+	
+	# build class files and package in JAR
+	"$JAVA"javac -source $JAVA_VER_SRC -target $JAVA_VER_SRC \
+		-classpath "$CLASSPATH" $FILES -d "$plugin_dir/$CLASSES_DIR"
 	cd "$plugin_dir"
-	"$JAVA"jar -0cf "$plugin.jar" "$DIR"/*.class "$DIR"/*.png \
-	"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
+	"$JAVA"jar -0cf "$plugin.jar" -C "$CLASSES_DIR" . "$DIR"/*.png \
+		"$DIR"/*.html && mv "$plugin.jar" "$TTX_DIR"/plugins
 	cd "$PLGS_DIR"
 	echo "Built and packaged $plugin"
 done
