@@ -16,8 +16,8 @@
 #
 # The Initial Developer of the Original Code is
 # Text Flex.
-# Portions created by the Initial Developer are Copyright (C) 2003, 2017
-# the Initial Developer. All Rights Reserved.
+# Portions created by the Initial Developer are Copyright (C) 2003, 2017, 
+# 2018 the Initial Developer. All Rights Reserved.
 #
 # Contributor(s): David Young <david@textflex.com>
 #
@@ -47,13 +47,6 @@ Syntax:
 	pkg.sh [options]
 
 Parameters:
-	--branch=path/to/branch: The branch (or trunk) from which to
-	compile source code.  For example, to compile from the 0.7.1
-	branch, specify \"--branch=branches/0.7.1\".  To compile from the 
-	trunk, 	simply specify \"--branch=trunk\".  The source code release 
-	package	sets the branch to \".\", since the source package does 
-	not contain branches and tags.  Otherwise, defaults to \"trunk\".
-	
 	--help: Lends a hand by displaying yours truly.
 	
 	--java=javac/binary/path: Specifies the path to javac, 
@@ -63,14 +56,6 @@ Parameters:
 	specification.  On Linux, this path defaults to
 	"/usr/java/default/bin", the new link found in Java 6.  
 	
-	--plgbranch=path/to/branch: The plugin branch (or trunk) from which to
-	compile plugin source code.  For example, to compile from the 0.7.1
-	branch, specify \"--plgbranch=branches/0.7.1\".  To compile from the 
-	trunk, 	simply specify \"--plgbranch=trunk\".  The source code release 
-	package	sets the branch to \".\", since the source package does 
-	not contain branches and tags.  Otherwise, defaults to the --branch
-	directory.
-	
 	--prefix=install/location: the directory in which to install Text Trix.
 	Defaults to "/usr/share".
 	
@@ -79,10 +64,10 @@ Parameters:
 	--ver=version: The version number to append to the package names.
 	
 Copyright:
-	Copyright (c) 2003, 2017 Text Flex
+	Copyright (c) 2003, 2018 Text Flex
 
 Last updated:
-	2017-06-07
+	2018-05-12
 "
 
 #####################
@@ -93,7 +78,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="1.0.3"
+VER="1.1.0"
 
 # the final destination of the resulting packages
 PREFIX=""
@@ -103,15 +88,6 @@ BASE_DIR=""
 
 # compiler location
 JAVA=""
-
-# the chosen plugins; not currently implemented
-PLUGINS="Search ExtraReturnsRemover HTMLReplacer LetterPulse SongSheet"
-
-# SVN texttrix src branch directory
-BRANCH_DIR="trunk"
-
-# SVN plugins src branch directory
-PLUGINS_BRANCH_DIR="$BRANCH_DIR"
 
 LAUNCH4J="launch4j-3.9"
 LAUNCH4J_CONFIG="launch4j-config.xml"
@@ -137,8 +113,6 @@ source "$BASE_DIR"/build-setup.sh
 
 PAR_JAVA="--java"
 PAR_PLUGINS="--plugins"
-PAR_BRANCH_DIR="--branch"
-PAR_PLUGINS_BRANCH_DIR="--plgbranch"
 PAR_PLUG="--plug"
 PAR_API="--api"
 PAR_CHANGELOG="--log"
@@ -176,18 +150,6 @@ then
 			PREFIX="${arg#${PAR_PREFIX}=}"
 			echo "Set to use \"$PREFIX\" as the install path"
 			
-		# texttrix branch dir
-		elif [ ${arg:0:${#PAR_BRANCH_DIR}} = "$PAR_BRANCH_DIR" ]
-		then
-			BRANCH_DIR="${arg#${PAR_BRANCH_DIR}=}"
-			echo "Set to use \"$BRANCH_DIR\" as the texttrix branch dir"
-		
-		# plugins branch dir
-		elif [ ${arg:0:${#PAR_PLUGINS_BRANCH_DIR}} = "$PAR_PLUGINS_BRANCH_DIR" ]
-		then
-			PLUGINS_BRANCH_DIR="${arg#${PAR_PLUGINS_BRANCH_DIR}=}"
-			echo "Set to use \"$PLUGINS_BRANCH_DIR\" as the plugins branch dir"
-			
 		# verion number, which overrides default version
 		elif [ ${arg:0:${#PAR_VER}} = "$PAR_VER" ]
 		then
@@ -220,7 +182,7 @@ BLD_DIR="$WK_DIR/build"
 
 # Sets the texttrix and plugin source directories
 TTX_DIR="$BASE_DIR" # texttrix folder within main dir
-PLGS_DIR="${BASE_DIR%$BRANCH_DIR}/../plugins" # plugins src folder
+PLGS_DIR="${BASE_DIR}/../plugins" # plugins src folder
 DIR="com/textflex/texttrix" # src package structure
 
 ##############################
@@ -285,10 +247,6 @@ cp -rf $PKGDIR $SRCPKGDIR/texttrix # master --> one folder within source package
 
 # add the build files
 cd "$TTX_DIR"
-# remove the branch assignments because no branches in src pkg
-sed 's/BRANCH_DIR=\"trunk\"/BRANCH_DIR=/' plug.sh | \
-		sed 's/PLUGINS_BRANCH_DIR=\"$BRANCH_DIR\"/PLUGINS_BRANCH_DIR=\./' > \
-		"$BLD_DIR/$SRCPKGDIR"/texttrix/plug.sh
 cp -rf pkg.sh run.sh manifest-additions.mf build*.sh README.md \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
@@ -299,12 +257,6 @@ sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 # is currently copied, with only specific files later removed.
 cd "$BLD_DIR"
 cp -rf $PLGS_DIR $SRCPKGDIR
-# move the working branch to the each plugin's root folder, removing all other branches
-for file in `ls $SRCPKGDIR/plugins`
-do
-	mv $SRCPKGDIR/plugins/$file/$PLUGINS_BRANCH_DIR/* $SRCPKGDIR/plugins/$file
-	rm -rf $SRCPKGDIR/plugins/$file/tags $SRCPKGDIR/plugins/$file/branches $SRCPKGDIR/plugins/$file/trunk
-done
 rm $PKGDIR/README.md # remove source-specific files for binary package
 cp "$TTX_DIR"/plugins/*.jar $BLD_DIR/$PKGDIR/plugins # only want jars in binary package
 

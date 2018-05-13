@@ -162,17 +162,16 @@ public class LibTTx {
 	
 	private static PlugIn loadPlugIn(String path, String plugInName, ClassLoader loader) {
 		PlugIn plugIn = null;
-		// all plugins are in the package, com.textflex.texttrix
-		String name =
-			"com.textflex.texttrix."
-				+ plugInName.substring(0, plugInName.indexOf(".jar"));
+		// all plugins' main class is com.textflex.texttrix.Plug
+		String name = "com.textflex.texttrix.Plug";
 		try {
 			plugIn = (PlugIn) createObject(name, loader);
 		} catch (Exception e) {
-			System.out.println("The plug-in, " + name + ", could not be"
-				+ NEWLINE + "loaded.  If you'd like to use it, please visit"
-				+ NEWLINE + "http://textflex.com/texttrix/plugins.html to"
-				+ NEWLINE + "contact the plugin maker.");
+			System.out.println(
+				"The plug-in, " + plugInName + ", could not be loaded.  If "
+				+ "\nyou'd like to use it, please visit "
+				+ "\nhttp://textflex.com/texttrix/plugins.html to contact the "
+				+ "\nplugin maker.");
 		}
 		if (plugIn == null) return null;
 		plugIn.setPath(path);
