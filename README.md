@@ -33,8 +33,7 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 
 
 ```
-# we suggest placing Text Trix and all dependencies in 
-# the same folder
+# place Text Trix and all dependencies in the same folder
 mkdir ttx
 cd ttx
 
@@ -63,8 +62,7 @@ Plugin repos are collected in the [texttrix](https://github.com/topics/texttrix)
 To start adding plugins, create a plugins folder in your main folder (alongside `texttrix`) and clone in a plugin repo:
 
 ```
-# assumed to be in the folder containing texttrix, osterttx, 
-# and jsyntaxpanettx folders
+# assumed to be in the folder containing texttrix
 mkdir plugins
 cd plugins
 git clone https://github.com/the4thchild/ttx_songsheet.git
