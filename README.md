@@ -1,8 +1,8 @@
 # Text Trix
 
-The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general editing.
+The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general editing. A central design philosophy is to simplify text editing without making hidden or unexpected changes to your text.
 
-Text Trix started out as a homegrown project, originally at [SourceForge](https://sourceforge.net/projects/texttrix/) and ported here as of August 2017. A central design philosophy is to simplify text editing without making hidden or unexpected changes to your text.
+Text Trix started out as a homegrown project, originally at [SourceForge](https://sourceforge.net/projects/texttrix/) and ported here as of August 2017.
 
 ## Features
 
@@ -13,7 +13,8 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 * Line bookmarks for navigating within files
 * Emacs/Vi-style shortcuts available
 * Tab/space/mixed auto-indent
-* Cross-platform and completely free
+* Detect and preserve line endings
+* Cross-platform, open-source, and completely free
 
 ## Run
 
@@ -24,7 +25,7 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 
 ### Dependencies
 
-* Java 1.5+ (tested mostly on Java 8-10)
+* Java 1.5+ (mostly tested on Java 8-10)
 * [JSyntaxPaneTTx](https://github.com/the4thchild/jsyntaxpanettx)
 * [OsterTTx](https://github.com/the4thchild/osterttx)
 
@@ -42,8 +43,10 @@ git clone https://github.com/the4thchild/texttrix.git
 git clone https://github.com/the4thchild/jsyntaxpanettx.git
 git clone https://github.com/the4thchild/osterttx.git
 
-# build and run Text Trix
-texttrix/build.sh
+# build Text Trix with dependencies
+texttrix/build.sh --jsyn --oster
+
+# run Text Trix
 texttrix/run.sh
 ```
 
@@ -57,7 +60,7 @@ texttrix/pkg.sh
 
 ### Get plugins
 
-Plugin repos are collected in the [texttrix](https://github.com/topics/texttrix) topic on GitHub.
+Plugin repos are collected in the [plugin-texttrix](https://github.com/topics/plugin-texttrix) topic on GitHub.
 
 To start adding plugins, create a plugins folder in your main folder (alongside `texttrix`) and clone in a plugin repo:
 
@@ -70,7 +73,7 @@ cd ..
 texttrix/build.sh --plug
 ```
 
-The resulting plugin JAR will be placed in `texttrix\plugins\ttx_your_plugin.jar`, which will be loaded automatically by Text Trix at runtime.
+The resulting plugin JAR will be placed in `texttrix/plugins/ttx_your_plugin.jar`, which will be loaded automatically by Text Trix at runtime.
 
 ### Writing a plugin
 
