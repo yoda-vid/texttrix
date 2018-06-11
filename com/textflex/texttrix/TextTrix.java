@@ -1911,7 +1911,9 @@ public class TextTrix extends JFrame {
 		int maxChars = getPrefs().getTabNameMaxChars() 
 			? getPrefs().getTabNameMaxCharsNum() : -1;
 		String title = textPad.getFilename();
-		if (maxChars > 0) {
+		if (maxChars > 0 && title.length() >= maxChars) {
+			// truncate if prefs set to cap chars and the filename is longer 
+			// than this number of chars
 			title = title.substring(0, maxChars) + "\u2026";
 		}
 		//System.out.println("maxChars: " + maxChars + ", title: " + title);
