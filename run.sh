@@ -91,9 +91,6 @@ fi
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-# Platform and GUI detection
-source "$BASE_DIR"/build-setup.sh
-
 ##############
 # Respond to user arguments
 
@@ -126,25 +123,10 @@ then
 	done
 fi
 
-if [ x$JAVA = x"false" ]
-then
-	echo "Java software doesn't appear to be installed..."
-	echo "Please download it (for free!) from http://java.com."
-	echo "Or if it's already installed, please add it to your"
-	echo "PATH or to the JAVA variable in this script."
-	read -p "Press Enter to exit this script..."
-	exit 1
-fi
-
-# Appends a file separator to end of Java compiler path if none there
-if [ x$JAVA != "x" ]
-then
-	# appends the file separator after removing any separator already
-	# present to prevent double separators
-	JAVA=${JAVA%\/}/
-fi
-
 DIR="com/textflex/texttrix" # src package structure
+
+# Platform and GUI detection
+source "$BASE_DIR"/build-setup.sh
 
 ##############
 # Run Text Trix

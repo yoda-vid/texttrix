@@ -90,10 +90,6 @@ fi
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-# Platform and GUI detection as well as additional variables such as 
-# classes directory
-source "$BASE_DIR"/build-setup.sh
-
 ##############
 # Respond to user arguments
 
@@ -139,18 +135,14 @@ then
 	echo "...done"
 fi
 
-# Appends a file separator to end of Java compiler path if none there
-if [ x$JAVA != "x" ]
-then
-	# appends the file separator after removing any separator already
-	# present to prevent double separators
-	JAVA=${JAVA%\/}/
-fi
-
 # Sets the texttrix and plugin source directories
 TTX_DIR="$BASE_DIR" # texttrix folder within main dir
 PLGS_DIR="${BASE_DIR}/../plugins" # plugins src folder
 DIR="com/textflex/texttrix" # src package structure
+
+# Platform and GUI detection as well as additional variables such as 
+# classes directory
+source "$BASE_DIR"/build-setup.sh
 
 #####################
 # Build operations
