@@ -104,7 +104,6 @@ public class TextPad extends JTextPane implements StateEditable {
 	private LineDancePanel lineDancePanel = null; // the Line Dance panel
 	private FileModifiedThread fileModifiedThread = null;
 	private DocumentListener docListener = null;
-	private DocumentFilter docFilter = null;
 	private WrappedPlainView wrappedView = null;
 	private String eol = null;
 
@@ -430,68 +429,10 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
-	/**
-	 * Gets or makes a DocumentFilter for detecting changes in numbers of 
-	 * lines and making the corresponding updates to recorded line numbers
-	 * in the LineDancePanel.
-	 */
-	private DocumentFilter getOrMakeDocFilter() {
-		return (docFilter != null) ? docFilter : new DocumentFilter() {
-			public void insertString(DocumentFilter.FilterBypass fb, int offset,
-					String s, AttributeSet attr) {
-				try {
-					int origNum = getLineNumber();
-					super.insertString(fb, offset, s, attr);
-					// updates line numbers if the one or more lines have been
-					// added to the document
-					int newNum = getLineNumber();
-					if (newNum > origNum) {
-// 						System.out.println("new line added");
-						lineDancePanel.updateLineNumber(origNum, newNum);
-					}
-				} catch(BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			public void remove(DocumentFilter.FilterBypass fb, int offset,
-					int length) {
-				try {
-					int origNum = getLineNumber();
-					super.remove(fb, offset, length);
-					int newNum = getLineNumber();
-					// updates line numbers if the one or more lines have been
-					// removed from the document
-					if (newNum < origNum) {
-// 						System.out.println("line removed");
-						lineDancePanel.updateLineNumber(origNum, newNum);
-					}
-				} catch(BadLocationException e) {
-					e.printStackTrace();
-				}
-				
-			}
-			
-			public void replace(DocumentFilter.FilterBypass fb, int offset,
-					int length, String s, AttributeSet attr) {
-				try {
-					int origNum = getLineNumber();
-					super.replace(fb, offset, length, s, attr);
-					int newNum = getLineNumber();
-					// updates line numbers if the one or more lines have been
-					// added or removed from the documents
-					if (newNum != origNum) {
-// 						System.out.println("line replaced");
-						lineDancePanel.updateLineNumber(origNum, newNum);
-					}
-				} catch(BadLocationException e) {
-					e.printStackTrace();
-				}
-				
-			}
-		};
+	public void updateLineDance(DocumentEvent e) {
+		lineDancePanel.updateLineNumber(getDocument(), e);
 	}
-	
+
 	/*
 	public Dimension getPreferredScrollableViewportSize() {
 		return getPreferredSize();
@@ -1342,7 +1283,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void undo() {
 		if (undoManager.canUndo()) {
 			undoManager.undo();
-//			System.out.println("here");
+			System.out.println("here");
 			if (autoIndent) {
 				indentCurrentParagraph(getTabSize(), false);
 			}
@@ -1372,12 +1313,6 @@ public class TextPad extends JTextPane implements StateEditable {
 		doc.removeUndoableEditListener(undoManager);	
 		undoManager.discardAllEdits();
 		doc.addUndoableEditListener(undoManager);
-//  		applyAutoIndent();
-		
-		if (doc instanceof AbstractDocument) {
-			AbstractDocument abstracDoc = (AbstractDocument)doc;
-			abstracDoc.setDocumentFilter(getOrMakeDocFilter());
-		}
 	}
 	
 	/** Visually indents the tabs and word-wrapped lines
@@ -1858,11 +1793,15 @@ public class TextPad extends JTextPane implements StateEditable {
 	public void remLineNum(String name) {
 		if (name == null) name = "";
 		// adds a new entry in the table
+		try {
 		lineDancePanel.addRow(new String[] {
 			"" + getLineNumber(),
 // 			"" + getCaretPosition(),
 			name
-		});
+		}, getDocument().createPosition(getCaretPosition()));
+		} catch(BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/** Removes Line Dance table entry(ies).
