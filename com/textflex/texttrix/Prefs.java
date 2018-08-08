@@ -1473,7 +1473,7 @@ public class Prefs extends JDialog {//JFrame {
 						fontSizeSpinner,
 						constraints,
 						1,
-						9,
+						row,
 						1,
 						1,
 						0,
