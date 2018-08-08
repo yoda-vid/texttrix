@@ -126,7 +126,7 @@ then
 	done
 fi
 
-if [ x$JAVA = x"false" ]
+if [[ "$JAVA" = "false" ]]
 then
 	echo "Java software doesn't appear to be installed..."
 	echo "Please download it (for free!) from http://java.com."
@@ -137,7 +137,7 @@ then
 fi
 
 # Appends a file separator to end of Java compiler path if none there
-if [ x$JAVA != "x" ]
+if [[ -n "$JAVA" ]]
 then
 	# appends the file separator after removing any separator already
 	# present to prevent double separators
