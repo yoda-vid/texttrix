@@ -43,6 +43,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.table.*;
+import javax.swing.text.Position;
+import javax.swing.text.Document;
 
 /** A panel that contains the table for the Line Dance function.
  * The table records the line numbers and 
@@ -64,6 +66,8 @@ public class LineDancePanel extends JPanel {
 	LineDanceTable table = null; // the table
 	JScrollPane scrollPane = null; // scroll pane holding the table
 	private boolean editName = false;
+	private ArrayList<Position> positions = new ArrayList<Position>();
+	private ArrayList<Integer> lastKnownPos = new ArrayList<Integer>();
 	
 	/** Creates the Line Dance panel to be included in the Line
 	 * Dance dialog.
@@ -132,7 +136,7 @@ public class LineDancePanel extends JPanel {
 	 * @param rowData the data to add, usually a String of
 	 * line number, position, name
 	 */
-	public void addRow(Object[] rowData) {
+	public void addRow(Object[] rowData, Position pos) {
 		// adds the row
 		tableModel.addRow(rowData);
 		// selects the row
@@ -141,6 +145,8 @@ public class LineDancePanel extends JPanel {
 		// scrolls to the row
 		Rectangle rect = table.getCellRect(rowCount - 1, 0, true);
 		table.scrollRectToVisible(rect);
+		positions.add(pos);
+		lastKnownPos.add(pos.getOffset());
 	}
 	
 	/** Removes the given row.
@@ -183,46 +189,57 @@ public class LineDancePanel extends JPanel {
 	}
 	
 	/**
-	 * Updates the line numbers in the table based on changes to the
-	 * documents's line numbering.
+	 * Update the line numbers in the table based on document changes.
+	 *
 	 * For example, if a line was added in the middle of the documents, all
 	 * subsequent recorded line numbers should be incremented by one.
 	 * If two lines were added, the subsequent lines should be incremented 
 	 * by two. If three lines were deleted, any line numbers recorded in
 	 * the deleted section should be removed from the recorded lines, and 
-	 * all subsequent lines should be decremented by three. This function
-	 * should usually be called after making text changes that change
-	 * the number of lines in the text.
+	 * all subsequent lines should be decremented by three.
+	 *
+	 * Assume that the text change has already occurred.
 	 * 
-	 * @param origNum the line number of the caret prior to text changes
-	 * @param newNum the line number of the caret after text changes.
+	 * @param document the document underoing text change
+	 * @param evt the change event
 	 */
-	public void updateLineNumber(int origNum, int newNum) {
+	public void updateLineNumber(Document doc, DocumentEvent evt) {
 		int rows = tableModel.getRowCount();
-		int diff = newNum - origNum; // line change
 		int[] removeRows = new int[rows]; // table rows to remove
 		Arrays.fill(removeRows, 0); // 0 = keep, 1 = remove
 		
 		for (int i = 0; i < rows; i++) {
 			// the line number in given row of the table
-			int num = Integer.parseInt(
-				(String) tableModel.getValueAt(i, COL_LINE));
-			if (diff > 0 && num > origNum
-					|| diff < 0 && num >= origNum) {
-				// change recorded line numbers above the original caret
-				// position when lines have been added
-				table.setValueAt((num + diff) + "", i, COL_LINE);
-			} else if (diff < 0 && (num > newNum && num < origNum)) {
-				// flag to remove recorded line numbers for lines that have 
-				// been deleted from the document
+			Position pos = positions.get(i);
+			int offsetPos = pos.getOffset();
+			int offsetEvt = evt.getOffset();
+			int lastKnownOffset = lastKnownPos.get(i);
+			// deleting region containing Position changes its offset to the 
+			// beginning of that region, but need to check that the user 
+			// did not delete a region starting from that offset
+			if (offsetPos == offsetEvt
+					&& offsetEvt + evt.getLength() != lastKnownOffset) {
 				removeRows[i] = 1;
+				continue;
 			}
+			int newNum = doc.getDefaultRootElement()
+				.getElementIndex(offsetPos) + 1;
+			int origNum = Integer.parseInt(
+				(String) tableModel.getValueAt(i, COL_LINE));
+			if (newNum != origNum) {
+				table.setValueAt(newNum + "", i, COL_LINE);
+			}
+			lastKnownPos.set(i, offsetPos);
 		}
 		
 		for (int i = rows - 1; i >= 0; i--) {
-			// remove rows flagged to be removed, working from last to first
-			// to avoid having to adjust for prior row removals
-			if (removeRows[i] == 1) removeRow(i);
+			// remove rows and positions flagged to be removed, working from 
+			// last to first to avoid having to adjust for prior removals
+			if (removeRows[i] == 1) {
+				removeRow(i);
+				positions.remove(i);
+				lastKnownPos.remove(i);
+			}
 		}
 	}
 	

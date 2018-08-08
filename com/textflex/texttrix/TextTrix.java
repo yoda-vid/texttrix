@@ -3150,6 +3150,7 @@ public class TextTrix extends JFrame {
 		 */
 		public void insertUpdate(DocumentEvent e) {
 			setChanged();
+			pad.updateLineDance(e);
 		}
 
 		/**
@@ -3159,6 +3160,7 @@ public class TextTrix extends JFrame {
 		 */
 		public void removeUpdate(DocumentEvent e) {
 			setChanged();
+			pad.updateLineDance(e);
 		}
 
 		/**
