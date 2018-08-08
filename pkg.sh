@@ -104,9 +104,6 @@ fi
 cd "$BASE_DIR"
 BASE_DIR="$PWD"
 
-# Platform and GUI detection
-source "$BASE_DIR"/build-setup.sh
-
 ##############
 # Respond to user arguments
 ##############
@@ -166,14 +163,6 @@ then
 	done
 fi
 
-# Appends a file separator to end of Java compiler path if none there
-if [ x$JAVA != "x" ]
-then
-	# appends the file separator after removing any separator already
-	# present to prevent double separators
-	JAVA=${JAVA%\/}/
-fi
-
 # The working directory is the directory from which this script is run
 WK_DIR="$PWD"
 
@@ -184,6 +173,9 @@ BLD_DIR="$WK_DIR/build"
 TTX_DIR="$BASE_DIR" # texttrix folder within main dir
 PLGS_DIR="${BASE_DIR}/../plugins" # plugins src folder
 DIR="com/textflex/texttrix" # src package structure
+
+# Platform and GUI detection
+source "$BASE_DIR"/build-setup.sh
 
 ##############################
 # Build operations

@@ -62,7 +62,10 @@ then
 	LINUX="true"
 
 	# Java binary detection mechanism
-	if [ "`command -v /usr/lib/jvm/java-1.6.0/bin/javac`" != "" ]
+	if [[ -z "$JAVA" ]]; then
+		# Java path already set
+		:
+	elif [ "`command -v /usr/lib/jvm/java-1.6.0/bin/javac`" != "" ]
 	then
 		# OpenJDK directory on Fedora distributions
 		JAVA="/usr/lib/jvm/java-1.6.0/bin"
@@ -93,3 +96,9 @@ then
 	MAC="true"
 fi
 echo "found $SYSTEM"
+
+# ensure file separator present at end of Java path if set
+if [[ -n "$JAVA" ]]
+then
+	JAVA=${JAVA%\/}/
+fi
