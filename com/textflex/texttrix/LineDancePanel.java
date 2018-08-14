@@ -66,8 +66,7 @@ public class LineDancePanel extends JPanel {
 	LineDanceTable table = null; // the table
 	JScrollPane scrollPane = null; // scroll pane holding the table
 	private boolean editName = false;
-	private ArrayList<Position> positions = new ArrayList<Position>();
-	private ArrayList<Integer> lastKnownPos = new ArrayList<Integer>();
+	private ArrayList<LinePosition> positions = new ArrayList<LinePosition>();
 	
 	/** Creates the Line Dance panel to be included in the Line
 	 * Dance dialog.
@@ -145,8 +144,7 @@ public class LineDancePanel extends JPanel {
 		// scrolls to the row
 		Rectangle rect = table.getCellRect(rowCount - 1, 0, true);
 		table.scrollRectToVisible(rect);
-		positions.add(pos);
-		lastKnownPos.add(pos.getOffset());
+		positions.add(new LinePosition(pos));
 	}
 	
 	/** Removes the given row.
@@ -156,6 +154,7 @@ public class LineDancePanel extends JPanel {
 	 */
 	public void removeRow(int row) {
 		tableModel.removeRow(row);
+		positions.remove(row);
 		if (--row >= 0) {
 			table.setRowSelectionInterval(row, row);
 		} else if (table.getRowCount() > 0) {
@@ -210,10 +209,11 @@ public class LineDancePanel extends JPanel {
 		
 		for (int i = 0; i < rows; i++) {
 			// the line number in given row of the table
-			Position pos = positions.get(i);
+			LinePosition linePos = positions.get(i);
+			Position pos = linePos.getPos();
 			int offsetPos = pos.getOffset();
 			int offsetEvt = evt.getOffset();
-			int lastKnownOffset = lastKnownPos.get(i);
+			int lastKnownOffset = linePos.getLastKnownPos();
 			// deleting region containing Position changes its offset to the 
 			// beginning of that region, but need to check that the user 
 			// did not delete a region starting from that offset
@@ -229,7 +229,7 @@ public class LineDancePanel extends JPanel {
 			if (newNum != origNum) {
 				table.setValueAt(newNum + "", i, COL_LINE);
 			}
-			lastKnownPos.set(i, offsetPos);
+			linePos.updateLastKnownPos();
 		}
 		
 		for (int i = rows - 1; i >= 0; i--) {
@@ -237,8 +237,6 @@ public class LineDancePanel extends JPanel {
 			// last to first to avoid having to adjust for prior removals
 			if (removeRows[i] == 1) {
 				removeRow(i);
-				positions.remove(i);
-				lastKnownPos.remove(i);
 			}
 		}
 	}
@@ -262,6 +260,25 @@ public class LineDancePanel extends JPanel {
 		return line;
 	}
 	
+	
+	/** Store line positions values.
+	 */
+	private class LinePosition {
+		private Position pos = null; // updates automatically
+		private int lastKnownPos = -1; // to compare with new position
+		
+		public LinePosition(Position aPos) {
+			pos = aPos;
+			updateLastKnownPos();
+		}
+		
+		public void updateLastKnownPos() {
+			lastKnownPos = pos.getOffset();
+		}
+		
+		public Position getPos() { return pos; }
+		public int getLastKnownPos() { return lastKnownPos; }
+	}
 	
 	
 }
