@@ -106,6 +106,7 @@ public class TextPad extends JTextPane implements StateEditable {
 	private DocumentListener docListener = null;
 	private WrappedPlainView wrappedView = null;
 	private String eol = null;
+	private boolean suspendLineDanceUpdate = false;
 
 	/**Constructs a <code>TextPad</code> that includes a file
 	 * for the text area.
@@ -429,8 +430,14 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
+	/** Update LineDance bookmarks based on document event.
+	 *
+	 * @param e document event
+	 */
 	public void updateLineDance(DocumentEvent e) {
-		lineDancePanel.updateLineNumber(getDocument(), e);
+		if (!suspendLineDanceUpdate) {
+			lineDancePanel.updateLineNumber(getDocument(), e);
+		}
 	}
 
 	/*
@@ -1900,10 +1907,14 @@ public class TextPad extends JTextPane implements StateEditable {
 			final String text = LibTTx.readText(new BufferedReader(reader));
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					// flagging the change prior to the change prevents UI updates
-					// for the change from TextPadDocumentListener in TextTrix
+					// prevent UI and LineDance updates in TextPadDocListener; 
+					// LineDance positions are lost when replacing text, so 
+					// need to recreate those positions
 					setChanged(true);
+					suspendLineDanceUpdate = true;
 					setText(text);
+					suspendLineDanceUpdate = false;
+					lineDancePanel.restorePositions(getDocument());
 					applyAutoIndent();
 					setChanged(false);
 					// prevent caret from exceeding length of refreshed file

@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2006-7
+ * Portions created by the Initial Developer are Copyright (C) 2006-7, 2018
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -43,6 +43,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.table.*;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Position;
 import javax.swing.text.Document;
 
@@ -260,6 +261,26 @@ public class LineDancePanel extends JPanel {
 		return line;
 	}
 	
+	/** Restore offsets from prior positions as new Position markers.
+	 *
+	 * @param doc document in which to create new positions based on old ones
+	 */
+	public void restorePositions(Document doc) {
+		int rows = positions.size();
+		boolean[] removeRows = new boolean[rows]; // table rows to remove
+		Arrays.fill(removeRows, false); // 0 = keep, 1 = remove
+		int i = 0;
+		for (LinePosition pos : positions) {
+			removeRows[i++] = !pos.updatePos(doc);
+		}
+		// remove rows for positions that could not be restored
+		for (i = rows - 1; i >= 0; i--) {
+			if (removeRows[i]) {
+				removeRow(i);
+			}
+		}
+	}
+	
 	
 	/** Store line positions values.
 	 */
@@ -274,6 +295,31 @@ public class LineDancePanel extends JPanel {
 		
 		public void updateLastKnownPos() {
 			lastKnownPos = pos.getOffset();
+		}
+		
+		/** Recreate Position marker within document based on saved 
+		 * offset, such as when the document text is refreshed.
+		 *
+		 * @param doc document in which to create new positions based on old 
+		 * ones
+		 * @return true if the position was updated; false if it could not
+		 */
+		public boolean updatePos(Document doc) {
+			// offsets exceeding the document should be lost
+			if (lastKnownPos > doc.getLength()) {
+				System.out.println(
+					"Unable to create position at " + lastKnownPos
+					+ " as it may no longer exist");
+				return false;
+			}
+			try {
+				// create a new position based on the saved offset
+				pos = doc.createPosition(lastKnownPos);
+				return true;
+			} catch(BadLocationException e) {
+				e.printStackTrace();
+			}
+			return false;
 		}
 		
 		public Position getPos() { return pos; }
