@@ -2223,8 +2223,10 @@ public class TextTrix extends JFrame {
 		if (t == null) return false;
 		try {
 			LibTTx.writeText(path, t.getText(), t.getEOL());
-			System.out.println("saving eol..." 
-					+ LibTTx.getEOLName(t.getEOL()));
+			if (verbose) {
+				System.out.println("saving eol..." 
+						+ LibTTx.getEOLName(t.getEOL()));
+			}
 			// keeps track of orig filename to compare file extensions
 			// for syntax highlighting;
 			// assumes that path points to a valid file
