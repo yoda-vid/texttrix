@@ -89,7 +89,7 @@ BASE_DIR=""
 # compiler location
 JAVA=""
 
-LAUNCH4J="launch4j-3.9"
+LAUNCH4J="launch4j"
 LAUNCH4J_CONFIG="launch4j-config.xml"
 
 ##############################
