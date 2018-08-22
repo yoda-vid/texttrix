@@ -7,15 +7,31 @@ http://textflex.com/texttrix
 
 ----v.1.1.0 (2018-08-22)----
 
--Migrated repositories to Git
--Option to cap length of display tab name to pack more tabs into each row
--Option to refresh files changed elsewhere without prompting
--Build all dependencies within main build script
--Fix file loading and undo on Java 9+
--Fix preferences export
--Fix file auto-refresh occasionally missing updates
--Fix remembering cursor position during file refresh
--Fix bookmark positions during undo/redo
+This release marks a migration to Git in name and in spirit, including both 
+transitioning from Subversion on Sourceforge to Git on GitHub as well as 
+better support for actually using Git with the editor such as refreshing source 
+files when changing branches. The editor now also supports Java 9-10 and 
+brings a number of bug fixes.
+
+Changes:
+
+- Migrated repositories to Git
+- Option to cap length of display tab name to pack more tabs into each row
+- Option to refresh files changed elsewhere without prompting
+- Build all dependencies within main build script
+- Fix file loading and undo on Java 9+
+- Fix preferences export
+- Fix file auto-refresh occasionally missing updates
+- Fix returning to cursor position after file refresh
+- Fix bookmark positions during undo/redo
+
+Known issues:
+
+- Undo does not work when using the HTML-style syntax highlighter on 
+Java 9+ because of a Java bug 
+(https://bugs.openjdk.java.net/browse/JDK-8190763) reportedly being 
+fixed in Java 12. A workaround was introduced for the main syntax 
+highlighter in Text Trix.
 
 ----v.1.0.2 (2017-06-06)----
 
