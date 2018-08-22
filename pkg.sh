@@ -227,19 +227,20 @@ cp "$TTX_DIR"/$DIR/*.txt "$TTX_DIR"/$DIR/*.html $PKGDIR/$DIR
 JORTHO_DIR=com/inet/jortho
 cp -rf "$TTX_DIR"/$JORTHO_DIR/i18n $PKGDIR/$JORTHO_DIR
 
-# create the master package, which will eventually become the binary package
+# create binary package
 cd "$BLD_DIR/$PKGDIR"
 # remove unnecessary files and directories
 rm -rf com/.svn com/*/.svn com/*/*/.svn com/*/*/*/.svn dictionaries/.svn dictionaries/User*
 
-# create the source package from the master package
+# create source package
 cd $BLD_DIR
-mkdir $SRCPKGDIR # create empty source package to hold copy of master
-cp -rf $PKGDIR $SRCPKGDIR/texttrix # master --> one folder within source package
+mkdir $SRCPKGDIR
+cp -rf $PKGDIR $SRCPKGDIR/texttrix
+cp -rf "${TTX_DIR}/../jsyntaxpanettx" "${TTX_DIR}/../osterttx" "$SRCPKGDIR"
 
 # add the build files
 cd "$TTX_DIR"
-cp -rf pkg.sh run.sh manifest-additions.mf build*.sh README.md \
+cp -rf pkg.sh run.sh manifest-additions.mf build*.sh plug.sh README.md \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix
 sed 's/build:/build: '$DATE'/' $DIR/about.txt > \
 		"$BLD_DIR/$SRCPKGDIR"/texttrix/$DIR/about.txt
@@ -256,7 +257,6 @@ cp "$TTX_DIR"/plugins/*.jar $BLD_DIR/$PKGDIR/plugins # only want jars in binary 
 
 # create/package binaries
 cd $BLD_DIR/$PKGDIR
-#cp "$TTX_DIR"/plugins/*.jar plugins # only want jars in binary package
 rm -rf com
 
 # create JAR from source package and remove binary files from source
@@ -270,7 +270,7 @@ else
 fi
 # make executable so can be run as binary on systems where jexec is installed
 chmod 755 $BLD_DIR/$PKGDIR/$JAR
-rm -rf */*/*.class */*/*/*.class */*/*/*/*.class
+find . -type f -name "*.class" -delete
 
 # Builds launch4j executable
 echo -n "Creating Windows executable file..."
@@ -301,11 +301,14 @@ cd $BLD_DIR/$SRCPKGDIR
 # replace classes-oriented com with full com directory
 rm -rf texttrix/com
 cp -rf "$TTX_DIR"/com texttrix
-# remove non-source or src-related files from plugins;
-# assumes that all the directories in the "plugins" are just that--plugins
-rm -rf plugins/.svn plugins/*/.svn plugins/*/com/.svn plugins/*/com/textflex/.svn \
-	plugins/*/$DIR/.svn plugins/*/$DIR/*.class plugins/*/$DIR/*~ \
-	plugins/*.jar
+# clean up classes, git, and backup files
+rm -f plugins/*.jar
+rm -f texttrix/lib/*.jar
+find . -type f -name "*.class" -delete
+find . -type d -name "classes" | xargs rm -rf
+find . -type d -name ".git" | xargs rm -rf
+find . -type f -name ".gitignore" | xargs rm -rf
+find . -type f -name "*~" | xargs rm -rf
 mv texttrix/*.txt texttrix/*.md .
 
 # Add PKGDIR-specific files
