@@ -5,16 +5,17 @@ the text tinker
 Copyright (c) 2002, 2018, Text Flex
 http://textflex.com/texttrix
 
-----v.1.1.0 (2018-xx-xx)----
+----v.1.1.0 (2018-08-22)----
 
 -Migrated repositories to Git
 -Option to cap length of display tab name to pack more tabs into each row
 -Option to refresh files changed elsewhere without prompting
 -Build all dependencies within main build script
--Fix undo and loading on Java 9+
+-Fix file loading and undo on Java 9+
 -Fix preferences export
 -Fix file auto-refresh occasionally missing updates
 -Fix remembering cursor position during file refresh
+-Fix bookmark positions during undo/redo
 
 ----v.1.0.2 (2017-06-06)----
 
