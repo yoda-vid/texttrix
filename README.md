@@ -2,7 +2,7 @@
 
 The Text Trix editor is an open-source, cross-platform text editor whose goal is to make file and text navigation easier for coding and general editing. A central design philosophy is to simplify text editing without making hidden or unexpected changes to your text.
 
-Text Trix started out as a homegrown project, originally at [SourceForge](https://sourceforge.net/projects/texttrix/) and ported here as of August 2017.
+Text Trix started out as a homegrown project, originally at [SourceForge](https://sourceforge.net/projects/texttrix/) and ported here in August 2017.
 
 ## Features
 
@@ -11,23 +11,23 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 * Develop and install your own simple plugins
 * Quick find by word or line
 * Line bookmarks for navigating within files
-* Emacs/Vi-style shortcuts available
+* Simplified Vi/Emacs-style shortcuts options
 * Tab/space/mixed auto-indent
 * Detect and preserve line endings
 * Cross-platform, open-source, and completely free
 
 ## Run
 
-* Binaries of older version (Text Trix 1.0.2) available [here](https://sourceforge.net/projects/texttrix/files/1%29%20Text%20Trix/TextTrix-1.0.2)
-* Launch ``TextTrix.jar``, or use ``TextTrix.exe`` as a Windows shortcut
+* Binaries available in [releases](https://github.com/the4thchild/texttrix/releases)
+* Launch ``TextTrix.jar``
+* ``run.bat`` batch script provided to create a shortcut on Windows
 
 ## Compile
 
 ### Dependencies
 
-* Java 1.5+ (mostly tested on Java 8-10)
-* [JSyntaxPaneTTx](https://github.com/the4thchild/jsyntaxpanettx)
-* Maven (to build JSyntaxPaneTTx)
+* Java 5+ (tested on Java 8-11)
+* [JSyntaxPaneTTx](https://github.com/the4thchild/jsyntaxpanettx), which requires Maven
 * [OsterTTx](https://github.com/the4thchild/osterttx)
 
 ### Build
@@ -38,13 +38,11 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 # place Text Trix and all dependencies in the same folder
 mkdir ttx
 cd ttx
-
-# clone all repos
 git clone https://github.com/the4thchild/texttrix.git
 git clone https://github.com/the4thchild/jsyntaxpanettx.git
 git clone https://github.com/the4thchild/osterttx.git
 
-# build Text Trix with dependencies
+# build Text Trix and all of its dependencies
 texttrix/build.sh --jsyn --oster
 
 # run Text Trix
