@@ -227,7 +227,7 @@ public class TextPad extends JTextPane implements StateEditable {
 // 					System.out.println("tab over selection");
 					evt.consume();
 					try {
-						tabRegion("\t");
+						tabRegion("\t", false);
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
@@ -243,9 +243,9 @@ public class TextPad extends JTextPane implements StateEditable {
 					evt.consume();
 					try {
 						if (evt.isShiftDown()) {
-							tabRegionReverse();
+							tabRegion(" ", true);
 						} else {
-							tabRegion(" ");
+							tabRegion(" ", false);
 						}
 					} catch (BadLocationException e) {
 						e.printStackTrace();
@@ -572,7 +572,7 @@ public class TextPad extends JTextPane implements StateEditable {
  					System.out.println("shift tab");
 					try {
 						if (getSelectionStart() != getSelectionEnd()) {
-							tabRegionReverse();
+							tabRegion("\t", true);
 						} else {
 							unindentLeadingTab();
 						}
@@ -1032,19 +1032,23 @@ public class TextPad extends JTextPane implements StateEditable {
 		}
 	}
 	
-	/**Tabs each line in an entire selected region.
-	 * Any line that that starts or has a leading tab within the selected
-	 * region receives a new leading tab.
+	/**
+	 * Indents each line in an selected region.
+	 * The current line will be ignored if the current position is at the 
+	 * very end of the line.
 	 * 
-	 * @param whitespace the "tab" string, such as "\t" or " "
+	 * @param whitespace the indentation string, such as "\t" or " "
+	 * @param reverse true to reverse the indentation
+	 * @throws BadLocationException document location cannot be found
 	*/
-	public void tabRegion(String whitespace) throws BadLocationException {
+	public void tabRegion(String whitespace, boolean reverse) 
+			throws BadLocationException {
 		Document doc = getDocument();
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
-		String currChar = ""; // currently evaluated character
+		String currChar = "";
 		int charsAdded = 0; // char count for re-highlighting
-		boolean addTab = false; // flag to add a tab
+		boolean checkTab = false; // check for tab at beginning of last line
 		
 		// include the current line, but skip if current char is newline for 
 		// ease of highlighting by grabbing from the end of the prior line
@@ -1059,97 +1063,55 @@ public class TextPad extends JTextPane implements StateEditable {
 		for (int i = start - 1; i < end; i++) {
 			// get each character after the first char in the document
 			if (i != -1) currChar = doc.getText(i, 1);
-			// append every character but the one preceding the
-			// selected region
-			if (i != start - 1) builder.append(currChar);
-			// add a tab after any newline or at the start of 
-			// the document; the tab follows the newline
-			if (i == -1|| currChar.equals("\n")) {
-				builder.append(whitespace);
-				charsAdded++;
+			if (reverse) {
+				if (i != start - 1 && !(checkTab 
+						&& currChar.equals(whitespace))) {
+					builder.append(currChar);
+					charsAdded++;
+				} else {
+					// resets the tab flag after skipping a char
+					checkTab = false;
+				}
+				// flag tab check if newline or start of doc
+				if (i == -1|| currChar.equals("\n")) {
+					checkTab = true;
+				}
+			} else {
+				// append every character but the one preceding the region
+				if (i != start - 1) builder.append(currChar);
+				// add a tab after any newline or at the start of 
+				// the document; the tab follows the newline
+				if (i == -1|| currChar.equals("\n")) {
+					builder.append(whitespace);
+					charsAdded++;
+				}
 			}
 		}
 		// allow one undo to undo the entire edit
 		startCompoundEdit();
 		doc.remove(start, len);
 		doc.insertString(start, builder.toString(), null);
+		if (reverse) {
+			// remove one final tab if the last selected character is a newline 
+			// and the tab immediately follows the selection
+			end = start + charsAdded;
+			if (doc.getLength() > end && checkTab 
+					&& doc.getText(end, 1).equals(whitespace)) {
+				doc.remove(end, 1);
+			}
+		} else {
+			end += charsAdded;
+		}
 		stopCompoundEdit();
 		
 		// re-indent graphically, if necessary
-		if (autoIndent) indentRegion(start, end + charsAdded);
+		if (autoIndent) indentRegion(start, end);
 		
 		// re-highlight the text
-		setSelectionEnd(end + charsAdded);
-		moveCaretPosition(start);
-	}
-	
-	/**Removes a leading tab from each line in an entire selected region.
-	 * Any line that that has a leading tab within the selected
-	 * region loses a leading tab.
-	*/
-	public void tabRegionReverse() throws BadLocationException {
-		Document doc = getDocument();
-		int start = getSelectionStart();
-		int end = getSelectionEnd();
-		String currChar = ""; // currently evaluated character
-		int charsAdded = 0; // char count for re-highlighting
-		boolean checkTab = false; // flag to check for a tab
-		
-		// include the current line, but skip if current char is newline for 
-		// ease of highlighting by grabbing from the end of the prior line
-		int restart = LibTTx.reverseIndexOf(getAllText(), "\n", start + 1);
-		if (restart != -1) start = restart;
-		int len = end - start;
-		// slightly larger than the text to accommodate any new tabs
-		StringBuilder builder = new StringBuilder((int) (len + len * .1));
-		
-		// starts from the character just before the selected region
-		// to the last character that the selection encompasses
-		// TODO:
-		// -extend region to immediately preceding newline
-		// -remove whitespace only contiguously extending from newlines
-		for (int i = start - 1; i < end; i++) {
-			// gets each char except the char at the beginning of the doc
-			if (i != -1) currChar = doc.getText(i, 1);
-			// adds each char except the one immediately preceding the
-			// selected region and the first tab encountered in the line
-			if (i != start - 1 && !(checkTab 
-					&& (currChar.equals("\t") || currChar.equals(" ")))) {
-				builder.append(currChar);
-				charsAdded++;
-			} else {
-				// resets the tab flag after skipping a char
-				checkTab = false;
-			}
-			// flag tab check if newline or start of doc
-			if (i == -1|| currChar.equals("\n")) {
-				checkTab = true;
-			}
-		}
-		
-		// allow one undo to undo the entire edit
-		startCompoundEdit();
-		doc.remove(start, len);
-		doc.insertString(start, builder.toString(), null);
-		end = start + charsAdded;
-		
-		// remove one final tab if the last selected character is a newline,
-		// and the tab immediately follows the selection
-		if (doc.getLength() > end && checkTab 
-				&& (doc.getText(end, 1).equals("\t") 
-					|| doc.getText(end, 1).equals(" "))) {
-			doc.remove(end, 1);
-		}
-		stopCompoundEdit();
-		
-		// re-indent graphically and re-highlight
-		if (autoIndent) indentRegion(start, end);
 		setSelectionEnd(end);
 		moveCaretPosition(start);
 	}
-
-
-
+	
 
 
 
