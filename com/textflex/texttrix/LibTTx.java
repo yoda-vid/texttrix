@@ -556,10 +556,7 @@ public class LibTTx {
 	 * @param offset index of first character not included in the search
 	 * @return index of found string; -1 if not found
 	 */
-	public static int reverseIndexOf(
-		String str,
-		String searchStr,
-		int offset) {
+	public static int reverseIndexOf(String str, String searchStr, int offset) {
 		int searchLen = searchStr.length();
 		int strLen = str.length();
 		if (offset > strLen || offset < 0) return -1;

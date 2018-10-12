@@ -1035,18 +1035,24 @@ public class TextPad extends JTextPane implements StateEditable {
 	/**Tabs each line in an entire selected region.
 	 * Any line that that starts or has a leading tab within the selected
 	 * region receives a new leading tab.
+	 * 
+	 * @param whitespace the "tab" string, such as "\t" or " "
 	*/
 	public void tabRegion(String whitespace) throws BadLocationException {
 		Document doc = getDocument();
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
-		int len = end - start;
-		// buffer slightly larger than the text to accommodate
-		// any new tabs
-		StringBuffer buf = new StringBuffer((int) (len + len * .1));
 		String currChar = ""; // currently evaluated character
 		int charsAdded = 0; // char count for re-highlighting
 		boolean addTab = false; // flag to add a tab
+		
+		// include the current line, but skip if current char is newline for 
+		// ease of highlighting by grabbing from the end of the prior line
+		int restart = LibTTx.reverseIndexOf(getAllText(), "\n", start + 1);
+		if (restart != -1) start = restart;
+		int len = end - start;
+		// slightly larger than the text to accommodate any new tabs
+		StringBuilder builder = new StringBuilder((int) (len + len * .1));
 		
 		// starts from the character just before the selected region
 		// to the last character that the selection encompasses
@@ -1055,21 +1061,19 @@ public class TextPad extends JTextPane implements StateEditable {
 			if (i != -1) currChar = doc.getText(i, 1);
 			// append every character but the one preceding the
 			// selected region
-			if (i != start - 1) buf.append(currChar);
+			if (i != start - 1) builder.append(currChar);
 			// add a tab after any newline or at the start of 
 			// the document; the tab follows the newline
 			if (i == -1|| currChar.equals("\n")) {
-				buf.append(whitespace);
+				builder.append(whitespace);
 				charsAdded++;
 			}
 		}
 		// allow one undo to undo the entire edit
 		startCompoundEdit();
 		doc.remove(start, len);
-		doc.insertString(start, buf.toString(), null);
+		doc.insertString(start, builder.toString(), null);
 		stopCompoundEdit();
-		
-		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
 		
 		// re-indent graphically, if necessary
 		if (autoIndent) indentRegion(start, end + charsAdded);
@@ -1087,13 +1091,17 @@ public class TextPad extends JTextPane implements StateEditable {
 		Document doc = getDocument();
 		int start = getSelectionStart();
 		int end = getSelectionEnd();
-		int len = end - start;
-		// buffer slightly larger than the text to accommodate
-		// any new tabs
-		StringBuffer buf = new StringBuffer((int) (len + len * .1));
 		String currChar = ""; // currently evaluated character
 		int charsAdded = 0; // char count for re-highlighting
 		boolean checkTab = false; // flag to check for a tab
+		
+		// include the current line, but skip if current char is newline for 
+		// ease of highlighting by grabbing from the end of the prior line
+		int restart = LibTTx.reverseIndexOf(getAllText(), "\n", start + 1);
+		if (restart != -1) start = restart;
+		int len = end - start;
+		// slightly larger than the text to accommodate any new tabs
+		StringBuilder builder = new StringBuilder((int) (len + len * .1));
 		
 		// starts from the character just before the selected region
 		// to the last character that the selection encompasses
@@ -1107,7 +1115,7 @@ public class TextPad extends JTextPane implements StateEditable {
 			// selected region and the first tab encountered in the line
 			if (i != start - 1 && !(checkTab 
 					&& (currChar.equals("\t") || currChar.equals(" ")))) {
-				buf.append(currChar);
+				builder.append(currChar);
 				charsAdded++;
 			} else {
 				// resets the tab flag after skipping a char
@@ -1117,13 +1125,12 @@ public class TextPad extends JTextPane implements StateEditable {
 			if (i == -1|| currChar.equals("\n")) {
 				checkTab = true;
 			}
-			
 		}
 		
 		// allow one undo to undo the entire edit
 		startCompoundEdit();
 		doc.remove(start, len);
-		doc.insertString(start, buf.toString(), null);
+		doc.insertString(start, builder.toString(), null);
 		end = start + charsAdded;
 		
 		// remove one final tab if the last selected character is a newline,
@@ -1134,7 +1141,6 @@ public class TextPad extends JTextPane implements StateEditable {
 			doc.remove(end, 1);
 		}
 		stopCompoundEdit();
-		//System.out.println("start: " + start + ", end: " + end + ", len: " + len + ", charsAdded: " + charsAdded + ", getSelectionStart: " + getSelectionStart() + ", getSelectionEnd: " + getSelectionEnd());
 		
 		// re-indent graphically and re-highlight
 		if (autoIndent) indentRegion(start, end);
