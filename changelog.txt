@@ -5,6 +5,14 @@ the text tinker
 Copyright (c) 2002, 2018, Text Flex
 http://textflex.com/texttrix
 
+----v.1.1.1 (2018-12-xx)----
+
+- Include current line when block indenting
+- Fix text selection visibility on highlighted text
+- Bash syntax highlighting: support multiline comments, line width guide
+- Nasal syntax highlighting: preliminary support
+- XML syntax highlighting: change prettify shortcut to avoid conflict
+
 ----v.1.1.0 (2018-08-22)----
 
 This release marks a migration to Git in name and in spirit, including both 
