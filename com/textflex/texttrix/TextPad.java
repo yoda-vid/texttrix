@@ -125,6 +125,9 @@ public class TextPad extends JTextPane implements StateEditable {
 		setFileModifiedThread(modifiedThread);
 		modifiedThread.start();
 		
+		// custom editor with support for wrapping long words
+		setEditorKit(new WrapEditorKit());
+		
 		// Create Line Dance panel
 		
 		// Run the plug-in if the user hits "Enter" in components with this adapter
@@ -1376,7 +1379,7 @@ public class TextPad extends JTextPane implements StateEditable {
 		// records the edit event for undoing and gets the text
 		StateEdit stateEdit = new StateEdit(this);
 		String text = getText();
-		setEditorKit(createDefaultEditorKit()); // revert to default editor kit
+		setEditorKit(new WrapEditorKit()); // revert to default editor kit
 		
 		// sets the style
 		// use the default editor kit's <code>DefaultStyledDocument</code>
