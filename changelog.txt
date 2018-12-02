@@ -7,8 +7,12 @@ http://textflex.com/texttrix
 
 ----v.1.1.1 (2018-12-xx)----
 
+This update brings fixes to several long-standing quirks and adds several 
+syntax highlighting updates.
+
 - Include current line when block indenting
 - Fix text selection visibility on highlighted text
+- Fix word wrap for long words
 - Bash syntax highlighting: support multiline comments, line width guide
 - Nasal syntax highlighting: preliminary support
 - XML syntax highlighting: change prettify shortcut to avoid conflict
