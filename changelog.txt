@@ -5,13 +5,14 @@ the text tinker
 Copyright (c) 2002, 2018, Text Flex
 http://textflex.com/texttrix
 
-----v.1.1.1 (2018-12-xx)----
+----v.1.2.0 (2018-12-xx)----
 
-This update brings fixes to several long-standing quirks and adds several 
-syntax highlighting updates.
+This update brings fixes to several long-standing quirks and updates 
+syntax highlighting for a few languages.
 
-- Include current line when block indenting
-- Fix text selection visibility on highlighted text
+- Include current line when block indenting (backward compatible with 
+  prior behavior of excluding current line when cursor is at the line end)
+- Fix text selection visibility over syntax highlighted text
 - Fix word wrap for long words
 - Bash syntax highlighting: support multiline comments, line width guide
 - Nasal syntax highlighting: preliminary support
