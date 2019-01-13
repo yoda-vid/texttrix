@@ -2,10 +2,10 @@ changelog.txt
 
 Text Trix
 the text tinker
-Copyright (c) 2002, 2018, Text Flex
+Copyright (c) 2002, 2019, Text Flex
 http://textflex.com/texttrix
 
-----v.1.2.0 (2018-12-xx)----
+----v.1.2.0 (2019-01-13)----
 
 This update brings fixes to several long-standing quirks and updates 
 syntax highlighting for a few languages.
