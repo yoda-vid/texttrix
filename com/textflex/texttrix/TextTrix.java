@@ -2530,9 +2530,10 @@ public class TextTrix extends JFrame {
 	}
 
 	/**
-	 * Prepares the file save dialog. Finds the current directory if the file
-	 * and selects it, if the file has already been saved. If not, returns to
-	 * the most recent directory in the current session and selects no file.
+	 * Prepares the file save dialog. Finds the current directory of the file
+	 * and selects it if the file has already been saved. If not, returns to
+	 * the most recent directory in the current session and gives a generic 
+	 * filename.
 	 * 
 	 * @param t the pad from which to gather the path defaults; if
 	 *            <code>null</code> the pad defaults to the currently selected
@@ -2541,20 +2542,16 @@ public class TextTrix extends JFrame {
 	 *         a file
 	 */
 	public boolean prepFileSaveDialog(TextPad t) {
-		//	int tabIndex = getSelectedTabbedPane().getSelectedIndex();
-		if (t == null)
-			t = getSelectedTextPad();
+		if (t == null) t = getSelectedTextPad();
 		if (t != null) {
-			//	    TextPad t = (TextPad)textAreas.get(tabIndex);
 			if (t.fileExists()) {
-				//chooser.setCurrentDirectory(new File(t.getDir()));
 				// save to file's current location
 				chooser.setSelectedFile(new File(t.getPath()));
 			} else {
 				// if the file hasn't been created, default to the directory
 				// last saved to
 				chooser.setCurrentDirectory(new File(saveDir));
-				chooser.setSelectedFile(new File(""));
+				chooser.setSelectedFile(new File("MyFile.txt"));
 			}
 			// can't save to multiple files;
 			// if set to true, probably have to use double-quotes
