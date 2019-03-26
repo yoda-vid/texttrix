@@ -78,7 +78,7 @@ Last updated:
 # version number
 DATE=`date +'%Y-%m-%d-%Hh%M'`
 TIMESTAMP=0
-VER="1.2.0"
+VER="1.3.0"
 
 # the final destination of the resulting packages
 PREFIX=""
