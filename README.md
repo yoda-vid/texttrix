@@ -26,7 +26,7 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 
 ### Dependencies
 
-* Java 5+ (tested on Java 8-11)
+* Java 8+ (tested on Java 8-12)
 * [JSyntaxPaneTTx](https://github.com/the4thchild/jsyntaxpanettx), which requires Maven
 * [OsterTTx](https://github.com/the4thchild/osterttx)
 
