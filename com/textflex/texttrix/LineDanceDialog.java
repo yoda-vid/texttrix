@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2011
+ * Portions created by the Initial Developer are Copyright (C) 2011, 2019
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -126,14 +126,14 @@ class LineDanceDialog extends JDialog {
 		// creates a shortcut key (alt-L) as an alternative way to invoke
 		// the button
 		Action forgetSelLineAction = 
-			new AbstractAction("Forget line", null) {
+			new AbstractAction("Forget", null) {
 			public void actionPerformed(ActionEvent e) {
 				ttx.getSelectedTextPad().forgetSelectedLines();
 			}
 		};
 		LibTTx.setAcceleratedAction(
 			forgetSelLineAction,
-			"Forget line",
+			"Forget Line",
 			'F',
 			KeyStroke.getKeyStroke("alt F"));
 		JButton forgetSelLineBtn = new JButton(forgetSelLineAction);
@@ -163,7 +163,7 @@ class LineDanceDialog extends JDialog {
 		// creates a shortcut key (alt-L) as an alternative way to invoke
 		// the button
 		Action nameLineAction = 
-			new AbstractAction("Rename Line", null) {
+			new AbstractAction("Rename", null) {
 			public void actionPerformed(ActionEvent e) {
 				ttx.getSelectedTextPad().editLineName();
 			}

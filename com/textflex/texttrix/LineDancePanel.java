@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Text Flex.
- * Portions created by the Initial Developer are Copyright (C) 2006-7, 2018
+ * Portions created by the Initial Developer are Copyright (C) 2006-7, 2018-2019
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s): David Young <david@textflex.com>
@@ -85,7 +85,6 @@ public class LineDancePanel extends JPanel {
 		// the table column names
 		String[] cols = {
 			"Line",
-// 			"Position",
 			"Name"
 		};
 		
