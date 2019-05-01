@@ -1731,10 +1731,15 @@ public class TextPad extends JTextPane implements StateEditable {
 		return getDocument().getDefaultRootElement().getElementCount();
 	}
 	
+	/**
+	 * Get the end offset for the given line.
+	 *
+	 * @param line line number in zero-based indexing
+	 * @return starting offset within the document for the given line
+	 */
 	public int getLineOffset(int line) {
-		if (line - 2 < 0) line = 2;
-		return getDocument().getDefaultRootElement().getElement(line - 2)
-				.getEndOffset();
+		return getDocument().getDefaultRootElement().getElement(line)
+				.getStartOffset();
 	}
 	
 	/**Gets the index position within the document, given the line number.

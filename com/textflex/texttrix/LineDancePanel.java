@@ -222,6 +222,7 @@ public class LineDancePanel extends JPanel {
 				removeRows[i] = 1;
 				continue;
 			}
+			// display with 1-based indexing
 			int newNum = doc.getDefaultRootElement()
 				.getElementIndex(offsetPos) + 1;
 			int origNum = Integer.parseInt(
@@ -249,14 +250,17 @@ public class LineDancePanel extends JPanel {
 	}
 	
 	
-	/** Gets the position number from the currently selected entry.
+	/**
+	 * Gets the line number from the currently selected entry.
+	 * 
+	 * @return line number in zero-based indexing
 	 */
 	public int getLineNum() {
 		int row = table.getSelectedRow();
 		if (row == -1) return -1; // if none selected
 		// gets the recorded value
 		int line = Integer.parseInt(
-			(String) tableModel.getValueAt(row, COL_LINE));
+			(String) tableModel.getValueAt(row, COL_LINE)) - 1;
 		return line;
 	}
 	
