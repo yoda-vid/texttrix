@@ -18,7 +18,7 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 
 ## Run
 
-* Binaries available in [releases](https://github.com/the4thchild/texttrix/releases)
+* Binaries available in [releases](https://github.com/yoda-vid/texttrix/releases)
 * Launch ``TextTrix.jar``
 * ``run.bat`` batch script provided to use for shortcuts on Windows
 
@@ -26,9 +26,9 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 
 ### Dependencies
 
-* Java 8+ (tested on Java 8-12)
-* [JSyntaxPaneTTx](https://github.com/the4thchild/jsyntaxpanettx), which requires Maven
-* [OsterTTx](https://github.com/the4thchild/osterttx)
+* Java 8+ (tested on Java 8-13)
+* [JSyntaxPaneTTx](https://github.com/yoda-vid/jsyntaxpanettx), which requires Maven
+* [OsterTTx](https://github.com/yoda-vid/osterttx)
 
 ### Build
 
@@ -38,9 +38,9 @@ Text Trix started out as a homegrown project, originally at [SourceForge](https:
 # place Text Trix and all dependencies in the same folder
 mkdir ttx
 cd ttx
-git clone https://github.com/the4thchild/texttrix.git
-git clone https://github.com/the4thchild/jsyntaxpanettx.git
-git clone https://github.com/the4thchild/osterttx.git
+git clone https://github.com/yoda-vid/texttrix.git
+git clone https://github.com/yoda-vid/jsyntaxpanettx.git
+git clone https://github.com/yoda-vid/osterttx.git
 
 # build Text Trix and all of its dependencies
 texttrix/build.sh --jsyn --oster
@@ -57,18 +57,18 @@ texttrix/pkg.sh
 
 ## Plugins
 
-The [`PlugIn`](https://github.com/the4thchild/texttrix/blob/master/com/textflex/texttrix/PlugIn.java) class provides a simple API for direct text manipulation. [`PlugInWindow`](https://github.com/the4thchild/texttrix/blob/master/com/textflex/texttrix/PlugInWindow.java) allows access through a simple GUI dialog window.
+The [`PlugIn`](https://github.com/yoda-vid/texttrix/blob/master/com/textflex/texttrix/PlugIn.java) class provides a simple API for direct text manipulation. [`PlugInWindow`](https://github.com/yoda-vid/texttrix/blob/master/com/textflex/texttrix/PlugInWindow.java) allows access through a simple GUI dialog window.
 
 ### Get plugins
 
-Plugin repos are collected in the [plugin-texttrix](https://github.com/topics/plugin-texttrix) topic on GitHub. We recommend adding the [Search](https://github.com/the4thchild/ttx_search) plugin for Find/Replace functionality.
+Plugin repos are collected in the [plugin-texttrix](https://github.com/topics/plugin-texttrix) topic on GitHub. We recommend adding the [Search](https://github.com/yoda-vid/ttx_search) plugin for Find/Replace functionality.
 
 To start adding plugins, create a plugins folder in your main folder (alongside `texttrix`) and clone in a plugin repo:
 
 ```
 # assumed to be in the folder containing texttrix
 mkdir plugins
-git clone https://github.com/the4thchild/ttx_search.git
+git clone https://github.com/yoda-vid/ttx_search.git
 mv ttx_search.git plugins
 texttrix/build.sh --plug
 ```
